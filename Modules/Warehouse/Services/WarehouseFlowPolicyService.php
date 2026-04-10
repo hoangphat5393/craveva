@@ -8,6 +8,10 @@ use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 
 class WarehouseFlowPolicyService
 {
+    public function __construct(
+        protected WarehouseFlowConfigService $flowConfig
+    ) {}
+
     /**
      * Warehouses that can be sold from (reservation/outbound sales).
      *
@@ -48,10 +52,10 @@ class WarehouseFlowPolicyService
         ]);
     }
 
-    public function assertInboundSourceAllowed(string $source): void
+    public function assertInboundSourceAllowed(string $source, ?int $companyId = null): void
     {
-        $poEnabled = (bool) config('warehouse.inbound_from_purchase_order_delivered', true);
-        $doEnabled = (bool) config('warehouse.inbound_from_delivery_order_received', false);
+        $poEnabled = $this->flowConfig->inboundFromPurchaseOrderDelivered($companyId);
+        $doEnabled = $this->flowConfig->inboundFromDeliveryOrderReceived($companyId);
         if ($poEnabled && $doEnabled) {
             Log::warning('Warehouse inbound configuration conflict detected', [
                 'source_attempted' => $source,
@@ -63,14 +67,14 @@ class WarehouseFlowPolicyService
         }
     }
 
-    public function outboundMode(): string
+    public function outboundMode(?int $companyId = null): string
     {
-        return (string) config('warehouse.sales_outbound_mode', 'shipment');
+        return $this->flowConfig->salesOutboundMode($companyId);
     }
 
-    public function assertOutboundConfigurationValid(): void
+    public function assertOutboundConfigurationValid(?int $companyId = null): void
     {
-        $mode = $this->outboundMode();
+        $mode = $this->outboundMode($companyId);
         if (in_array($mode, ['invoice', 'shipment'], true)) {
             return;
         }

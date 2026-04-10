@@ -23,12 +23,14 @@ class InvoiceWarehouseStockService
 {
     public function __construct(
         protected StockMovementService $stockMovement,
-        protected WarehouseFlowPolicyService $flowPolicy
+        protected WarehouseFlowPolicyService $flowPolicy,
+        protected WarehouseFlowConfigService $flowConfig
     ) {}
 
-    public function isEnabled(): bool
+    public function isEnabled(?int $companyId = null): bool
     {
-        if (! (bool) config('warehouse.sales_outbound_enabled', false)) {
+        $cid = $this->normalizeCompanyId($companyId);
+        if (! $this->flowConfig->salesOutboundEnabled($cid)) {
             return false;
         }
 
@@ -49,14 +51,37 @@ class InvoiceWarehouseStockService
         return in_array('warehouse', user_modules() ?? [], true);
     }
 
-    public function shouldPostOutboundFromInvoice(): bool
+    public function shouldPostOutboundFromInvoice(?int $companyId = null): bool
     {
-        $this->flowPolicy->assertOutboundConfigurationValid();
+        $cid = $this->normalizeCompanyId($companyId);
+        $this->flowPolicy->assertOutboundConfigurationValid($cid);
 
         // Option B orchestration:
         // - mode=shipment => stock outbound happens when shipment is shipped, never here.
         // - mode=invoice  => keep legacy invoice outbound behavior.
-        return config('warehouse.sales_outbound_mode', 'shipment') === 'invoice';
+        return $this->flowConfig->salesOutboundMode($cid) === 'invoice';
+    }
+
+    protected function normalizeCompanyId(?int $companyId): ?int
+    {
+        if ($companyId !== null && $companyId > 0) {
+            return $companyId;
+        }
+
+        try {
+            if (function_exists('company')) {
+                $cmp = company();
+                if (is_object($cmp) && isset($cmp->id)) {
+                    $id = (int) $cmp->id;
+
+                    return $id > 0 ? $id : null;
+                }
+            }
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return null;
     }
 
     /**
@@ -64,7 +89,8 @@ class InvoiceWarehouseStockService
      */
     public function syncInvoiceStock(Invoice $invoice): void
     {
-        if (! $this->isEnabled() || ! $this->shouldPostOutboundFromInvoice()) {
+        $companyId = $invoice->company_id ? (int) $invoice->company_id : null;
+        if (! $this->isEnabled($companyId) || ! $this->shouldPostOutboundFromInvoice($companyId)) {
             return;
         }
 
@@ -111,7 +137,7 @@ class InvoiceWarehouseStockService
                     'expiry_date' => null,
                     'reference_type' => Invoice::class,
                     'reference_id' => $invoice->id,
-                    'idempotency_key' => 'invoice-outbound:' . $invoice->id . ':' . $item->id,
+                    'idempotency_key' => 'invoice-outbound:'.$invoice->id.':'.$item->id,
                 ];
 
                 $this->stockMovement->recordOutbound($payload);
@@ -130,7 +156,8 @@ class InvoiceWarehouseStockService
 
     public function reverseAllPostings(Invoice $invoice): void
     {
-        if (! $this->isEnabled() || ! $this->shouldPostOutboundFromInvoice()) {
+        $companyId = $invoice->company_id ? (int) $invoice->company_id : null;
+        if (! $this->isEnabled($companyId) || ! $this->shouldPostOutboundFromInvoice($companyId)) {
             return;
         }
 
@@ -155,7 +182,7 @@ class InvoiceWarehouseStockService
                     'expiry_date' => null,
                     'reference_type' => 'invoice_stock_reversal',
                     'reference_id' => $invoice->id,
-                    'idempotency_key' => 'invoice-reversal:' . $invoice->id . ':' . $posting->id,
+                    'idempotency_key' => 'invoice-reversal:'.$invoice->id.':'.$posting->id,
                 ]);
                 $posting->delete();
             }
@@ -207,7 +234,12 @@ class InvoiceWarehouseStockService
      */
     public function validateRequestLinesAgainstWarehouse(Request $request, ?int $excludeInvoiceId = null): array
     {
-        if (! $this->isEnabled() || ! $this->shouldPostOutboundFromInvoice() || $request->do_it_later !== 'direct') {
+        $sessionCompanyId = (int) (company()?->id ?? 0);
+        if (
+            ! $this->isEnabled($sessionCompanyId > 0 ? $sessionCompanyId : null)
+            || ! $this->shouldPostOutboundFromInvoice($sessionCompanyId > 0 ? $sessionCompanyId : null)
+            || $request->do_it_later !== 'direct'
+        ) {
             return [];
         }
 
@@ -265,7 +297,12 @@ class InvoiceWarehouseStockService
      */
     public function validateRequestHasResolvableWarehouse(Request $request): bool
     {
-        if (! $this->isEnabled() || ! $this->shouldPostOutboundFromInvoice() || $request->do_it_later !== 'direct') {
+        $sessionCompanyId = (int) (company()?->id ?? 0);
+        if (
+            ! $this->isEnabled($sessionCompanyId > 0 ? $sessionCompanyId : null)
+            || ! $this->shouldPostOutboundFromInvoice($sessionCompanyId > 0 ? $sessionCompanyId : null)
+            || $request->do_it_later !== 'direct'
+        ) {
             return true;
         }
 

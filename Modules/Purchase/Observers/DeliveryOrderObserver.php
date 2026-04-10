@@ -4,10 +4,12 @@ namespace Modules\Purchase\Observers;
 
 use App\Models\DeliveryOrder;
 use App\Models\Grn;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Purchase\Support\GrnRuntime;
 use Modules\Warehouse\Services\StockMovementService;
+use Modules\Warehouse\Services\WarehouseFlowConfigService;
 use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 
 /**
@@ -20,16 +22,23 @@ class DeliveryOrderObserver
 {
     public function saved(DeliveryOrder|Grn $deliveryOrder): void
     {
-        if (! config('warehouse.inbound_from_delivery_order_received', false)) {
+        $companyId = (int) $deliveryOrder->company_id;
+        if ($companyId <= 0) {
             return;
         }
 
-        app(WarehouseFlowPolicyService::class)->assertInboundSourceAllowed('delivery_order');
+        $flowConfig = app(WarehouseFlowConfigService::class);
+
+        if (! $flowConfig->inboundFromDeliveryOrderReceived($companyId)) {
+            return;
+        }
+
+        app(WarehouseFlowPolicyService::class)->assertInboundSourceAllowed('delivery_order', $companyId);
 
         // Safety guard: if both inbound channels are enabled and the linked PO is already delivered,
         // skip DO inbound posting to avoid double-counting the same receiving event.
         if (
-            config('warehouse.inbound_from_purchase_order_delivered', true)
+            $flowConfig->inboundFromPurchaseOrderDelivered($companyId)
             && $deliveryOrder->purchaseOrder
             && $deliveryOrder->purchaseOrder->delivery_status === 'delivered'
         ) {
@@ -83,7 +92,7 @@ class DeliveryOrderObserver
 
             $expiry = null;
             if ($item->expiry_date) {
-                $expiry = $item->expiry_date instanceof \Carbon\Carbon
+                $expiry = $item->expiry_date instanceof Carbon
                     ? $item->expiry_date->format('Y-m-d')
                     : (string) $item->expiry_date;
             }
@@ -103,7 +112,7 @@ class DeliveryOrderObserver
                 'reference_type' => get_class($deliveryOrder),
                 'reference_id' => $deliveryOrder->id,
                 'delivery_order_item_id' => $item->id,
-                'idempotency_key' => 'delivery-order-inbound:' . $deliveryOrder->id . ':' . $item->id,
+                'idempotency_key' => 'delivery-order-inbound:'.$deliveryOrder->id.':'.$item->id,
             ];
         }
 
@@ -121,7 +130,7 @@ class DeliveryOrderObserver
                     'updated_at' => now(),
                 ]);
         } catch (\Throwable $e) {
-            Log::error('DeliveryOrder inbound stock failed: ' . $e->getMessage(), [
+            Log::error('DeliveryOrder inbound stock failed: '.$e->getMessage(), [
                 'delivery_order_id' => $deliveryOrder->id,
             ]);
             throw $e;

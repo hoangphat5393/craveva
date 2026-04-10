@@ -4,6 +4,7 @@ namespace Modules\Purchase\Observers;
 
 use App\Models\Payment;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
+use Modules\Warehouse\Services\WarehouseFlowConfigService;
 
 class PaymentObserver
 {
@@ -32,7 +33,8 @@ class PaymentObserver
 
     public function adjustStock($invoice, $addOrMinus)
     {
-        if (config('warehouse.sales_outbound_enabled')) {
+        $companyId = $invoice->company_id ? (int) $invoice->company_id : null;
+        if (app(WarehouseFlowConfigService::class)->salesOutboundEnabled($companyId)) {
             return;
         }
 

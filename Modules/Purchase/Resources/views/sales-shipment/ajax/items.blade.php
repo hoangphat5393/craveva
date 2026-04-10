@@ -7,6 +7,7 @@
         <thead>
             <tr>
                 <th>@lang('app.description')</th>
+                <th>@lang('purchase::app.sku')</th>
                 <th class="text-right">@lang('modules.invoices.qty')</th>
                 <th class="text-right">@lang('purchase::app.remainingQty')</th>
                 <th class="text-right">@lang('purchase::app.shipQty')</th>
@@ -21,6 +22,7 @@
                     $qtyShipped = $line ? (float) $line->quantity_shipped : 0;
                     $maxQty = $remaining + $qtyShipped;
                     $lineDisabled = $maxQty <= 0;
+                    $lineSku = $item->sku ?: $item->product?->sku ?? null;
                 @endphp
                 <tr>
                     <td>
@@ -30,6 +32,7 @@
                         <input type="hidden" name="unit_id[]" value="{{ $item->unit_id }}">
                         <input type="hidden" name="quantity_ordered[]" value="{{ $item->quantity }}">
                     </td>
+                    <td class="text-dark-grey f-12">{{ $lineSku ?: '—' }}</td>
                     <td class="text-right">{{ number_format((float) $item->quantity, 2) }}</td>
                     <td class="text-right">{{ number_format($remaining, 2) }}</td>
                     <td class="text-right">

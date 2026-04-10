@@ -10,12 +10,15 @@ use App\Models\Order;
 use App\Models\OrderItems;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Modules\Warehouse\Exceptions\WarehouseBusinessException;
+use Modules\Warehouse\Services\WarehouseAvailabilityService;
+use Modules\Warehouse\Services\WarehouseFlowConfigService;
 
 class AiOrderWebhookController extends Controller
 {
     public function store(StoreAiOrderWebhookRequest $request, string $hash): JsonResponse
     {
-        $expectedSecret = (string) config('app.ai_order_webhook_secret', env('AI_ORDER_WEBHOOK_SECRET', ''));
+        $expectedSecret = (string) config('app.ai_order_webhook_secret', '');
         $headerSecret = (string) $request->header('X-AI-Webhook-Secret', '');
 
         if ($expectedSecret === '' || ! hash_equals($expectedSecret, $hash) || ! hash_equals($expectedSecret, $headerSecret)) {
@@ -33,7 +36,7 @@ class AiOrderWebhookController extends Controller
         if (! empty($externalEventId)) {
             $exists = Order::withoutGlobalScopes()
                 ->where('company_id', $companyId)
-                ->where('note', 'like', '%[ai_event:' . $externalEventId . ']%')
+                ->where('note', 'like', '%[ai_event:'.$externalEventId.']%')
                 ->exists();
 
             if ($exists) {
@@ -47,6 +50,23 @@ class AiOrderWebhookController extends Controller
 
         $company = Company::withoutGlobalScopes()->findOrFail($companyId);
         $items = $payload['items'];
+
+        $warehouseIds = isset($payload['warehouse_ids']) && is_array($payload['warehouse_ids'])
+            ? array_values(array_filter(array_map('intval', $payload['warehouse_ids'])))
+            : [];
+
+        $skipPayloadStockCheck = array_key_exists('check_stock', $payload) && $payload['check_stock'] === false;
+
+        if (app(WarehouseFlowConfigService::class)->aiOrderWebhookCheckStock($companyId) && ! $skipPayloadStockCheck) {
+            try {
+                app(WarehouseAvailabilityService::class)->validateAiOrderWebhookItems($companyId, $items, $warehouseIds);
+            } catch (WarehouseBusinessException $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+        }
 
         $subTotal = collect($items)->sum(function ($item) {
             return round((float) $item['quantity'] * (float) $item['unit_price'], 2);
@@ -70,11 +90,11 @@ class AiOrderWebhookController extends Controller
                 ->value('id');
         }
 
-        $metaTag = ! empty($externalEventId) ? '[ai_event:' . $externalEventId . ']' : '[ai_event:manual-test]';
-        $note = trim(($payload['note'] ?? '') . ' ' . $metaTag);
+        $metaTag = ! empty($externalEventId) ? '[ai_event:'.$externalEventId.']' : '[ai_event:manual-test]';
+        $note = trim(($payload['note'] ?? '').' '.$metaTag);
 
         $order = DB::transaction(function () use ($payload, $company, $defaultAddressId, $subTotal, $total, $discountValue, $discountType, $items, $note) {
-            $order = new Order();
+            $order = new Order;
             $order->company_id = $company->id;
             $order->client_id = $payload['client_id'] ?? null;
             $order->project_id = $payload['project_id'] ?? null;

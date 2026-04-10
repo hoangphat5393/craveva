@@ -44,6 +44,7 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 | File                                                                                                       | Nội dung                                                                       |
 | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | [WAREHOUSE_INDEX.md](WAREHOUSE_INDEX.md)                                                                   | **Mục lục Warehouse** (FLOW, UAT, audit, PM)                                   |
+| [WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)         | **Biến `.env`** kho + PO/GRN/Sales DO/webhook AI (tham chiếu một chỗ)          |
 | [AUDIT_WAREHOUSE_MODULE_VI.md](AUDIT_WAREHOUSE_MODULE_VI.md)                                               | Audit **code** module Warehouse (route, quyền, API, liên kết Purchase/Invoice) |
 | [QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                   | Quy trình PO / DO / SO / Invoice / Kho (VI, một chỗ)                           |
 | [WAREHOUSE_MASTER_GUIDE.md](WAREHOUSE_MASTER_GUIDE.md)                                                     | Tài liệu Warehouse gộp (analysis + UI + DB)                                    |

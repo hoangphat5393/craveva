@@ -12,7 +12,8 @@ class SalesShipmentStockService
     public function __construct(
         protected StockMovementService $stockMovementService,
         protected StockReservationService $stockReservationService,
-        protected WarehouseFlowPolicyService $flowPolicy
+        protected WarehouseFlowPolicyService $flowPolicy,
+        protected WarehouseFlowConfigService $flowConfig
     ) {}
 
     /**
@@ -21,7 +22,7 @@ class SalesShipmentStockService
      */
     public function applyOutboundForShipment($shipment): void
     {
-        if (! $this->shouldPostOutboundFromShipment()) {
+        if (! $this->shouldPostOutboundFromShipment($shipment)) {
             return;
         }
 
@@ -52,7 +53,7 @@ class SalesShipmentStockService
                     'expiry_date' => null,
                     'reference_type' => get_class($locked),
                     'reference_id' => $locked->id,
-                    'idempotency_key' => 'sales-do-outbound:' . $locked->id . ':' . $item->id,
+                    'idempotency_key' => 'sales-do-outbound:'.$locked->id.':'.$item->id,
                 ]);
             }
 
@@ -68,7 +69,7 @@ class SalesShipmentStockService
      */
     public function reverseOutboundForShipment($shipment): void
     {
-        if (! $this->shouldPostOutboundFromShipment()) {
+        if (! $this->shouldPostOutboundFromShipment($shipment)) {
             return;
         }
 
@@ -104,7 +105,7 @@ class SalesShipmentStockService
                     'expiry_date' => $movement->expiry_date,
                     'reference_type' => 'sales_shipment_stock_reversal',
                     'reference_id' => $locked->id,
-                    'idempotency_key' => 'sales-do-reversal:' . $locked->id . ':' . $movement->id,
+                    'idempotency_key' => 'sales-do-reversal:'.$locked->id.':'.$movement->id,
                 ]);
             }
 
@@ -113,11 +114,17 @@ class SalesShipmentStockService
         });
     }
 
-    public function shouldPostOutboundFromShipment(): bool
+    public function shouldPostOutboundFromShipment($shipment = null): bool
     {
-        $this->flowPolicy->assertOutboundConfigurationValid();
+        $companyId = null;
+        if (is_object($shipment) && isset($shipment->company_id)) {
+            $cid = (int) $shipment->company_id;
+            $companyId = $cid > 0 ? $cid : null;
+        }
 
-        return config('warehouse.sales_outbound_mode', 'shipment') === 'shipment';
+        $this->flowPolicy->assertOutboundConfigurationValid($companyId);
+
+        return $this->flowConfig->salesOutboundMode($companyId) === 'shipment';
     }
 
     public function ensureReservationsForShipment($shipment): void

@@ -45,13 +45,13 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-    \Mockery::close();
+    Mockery::close();
     Schema::dropIfExists('sales_shipment_items');
     Schema::dropIfExists('sales_shipments');
 });
 
 it('confirms shipment only when draft with items', function () {
-    $mockStock = \Mockery::mock(SalesShipmentStockService::class);
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
     $service = new SalesDoService($mockStock);
 
     $shipment = SalesShipment::create([
@@ -73,13 +73,15 @@ it('confirms shipment only when draft with items', function () {
         'quantity_shipped' => 2,
     ]);
 
+    $mockStock->shouldReceive('ensureReservationsForShipment')->once();
+
     expect($service->confirm($shipment->fresh('items')))->toBeNull();
     expect($shipment->fresh()->status)->toBe('confirmed');
     expect((int) $shipment->fresh()->updated_by)->toBe(999);
 });
 
 it('ships shipment and triggers outbound once', function () {
-    $mockStock = \Mockery::mock(SalesShipmentStockService::class);
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
     $service = new SalesDoService($mockStock);
 
     $shipment = SalesShipment::create([
@@ -99,6 +101,7 @@ it('ships shipment and triggers outbound once', function () {
         'quantity_shipped' => 3,
     ]);
 
+    $mockStock->shouldReceive('ensureReservationsForShipment')->once();
     $mockStock->shouldReceive('applyOutboundForShipment')->once()->withArgs(function ($arg) use ($shipment) {
         return (int) $arg->id === (int) $shipment->id;
     });
@@ -108,7 +111,7 @@ it('ships shipment and triggers outbound once', function () {
 });
 
 it('delivers, reverses and cancels shipment with expected guards', function () {
-    $mockStock = \Mockery::mock(SalesShipmentStockService::class);
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
     $service = new SalesDoService($mockStock);
 
     $shipment = SalesShipment::create([
@@ -129,6 +132,7 @@ it('delivers, reverses and cancels shipment with expected guards', function () {
     expect($shipment->fresh()->status)->toBe('delivered');
 
     $mockStock->shouldReceive('reverseOutboundForShipment')->once();
+    $mockStock->shouldReceive('ensureReservationsForShipment')->once();
     expect($service->reverse($shipment->fresh()))->toBeNull();
     expect($shipment->fresh()->status)->toBe('confirmed');
 

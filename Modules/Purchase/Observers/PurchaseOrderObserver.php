@@ -11,8 +11,9 @@ use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\PurchaseOrderHistory;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
 use Modules\Purchase\Events\NewPurchaseOrderEvent;
-use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 use Modules\Warehouse\Services\StockMovementService;
+use Modules\Warehouse\Services\WarehouseFlowConfigService;
+use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 
 class PurchaseOrderObserver
 {
@@ -130,7 +131,7 @@ class PurchaseOrderObserver
                         $filename = '';
 
                         if (isset($order_item_image[$key])) {
-                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
+                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
                         }
 
                         $var = PurchaseItemImage::create(
@@ -255,17 +256,17 @@ class PurchaseOrderObserver
                     }
 
                     /* order file save here */
-                    if ((isset($order_item_image[$key]) && $request->hasFile('order_item_image.' . $key)) || isset($order_item_image_url[$key])) {
+                    if ((isset($order_item_image[$key]) && $request->hasFile('order_item_image.'.$key)) || isset($order_item_image_url[$key])) {
 
                         /* Delete previous uploaded file if it not a product (because product images cannot be deleted) */
                         if (! isset($order_item_image_url[$key]) && $orderItem && $orderItem->purchaseItemImage) {
-                            Files::deleteFile($orderItem->purchaseItemImage->hashname, PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
+                            Files::deleteFile($orderItem->purchaseItemImage->hashname, PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
                         }
 
                         $filename = '';
 
                         if (isset($order_item_image[$key])) {
-                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
+                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
                         }
 
                         PurchaseItemImage::updateOrCreate(
@@ -296,7 +297,7 @@ class PurchaseOrderObserver
 
         if ($orderItems) {
             foreach ($orderItems as $orderItem) {
-                Files::deleteDirectory(PurchaseItemImage::FILE_PATH . '/' . $orderItem->id);
+                Files::deleteDirectory(PurchaseItemImage::FILE_PATH.'/'.$orderItem->id);
             }
         }
     }
@@ -306,11 +307,16 @@ class PurchaseOrderObserver
      */
     private function recordPurchaseOrderInbound(PurchaseOrder $order, int $productId, float $quantity, ?int $unitId = null): void
     {
-        if (! config('warehouse.inbound_from_purchase_order_delivered', true)) {
+        $companyId = (int) $order->company_id;
+        if ($companyId <= 0) {
             return;
         }
 
-        app(WarehouseFlowPolicyService::class)->assertInboundSourceAllowed('purchase_order');
+        if (! app(WarehouseFlowConfigService::class)->inboundFromPurchaseOrderDelivered($companyId)) {
+            return;
+        }
+
+        app(WarehouseFlowPolicyService::class)->assertInboundSourceAllowed('purchase_order', $companyId);
 
         if ($quantity <= 0 || ! $order->warehouse_id) {
             return;

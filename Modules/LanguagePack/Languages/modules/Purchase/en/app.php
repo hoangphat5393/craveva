@@ -93,6 +93,7 @@ return [
     'ship' => 'Ship',
     'shipmentNumber' => 'Shipment Number',
     'remainingQty' => 'Remaining Qty',
+    'sku' => 'SKU',
     'shipQty' => 'Ship Qty',
     'batchNumber' => 'Batch Number',
     'deliveryOrderNumber' => 'Delivery Order Number',

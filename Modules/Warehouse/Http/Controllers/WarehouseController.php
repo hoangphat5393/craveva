@@ -14,10 +14,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Modules\Warehouse\Imports\WarehouseImport;
-use Modules\Warehouse\Jobs\ImportWarehouseChunkJob;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Http\Controllers\Concerns\HandlesWarehouseErrors;
+use Modules\Warehouse\Imports\WarehouseImport;
+use Modules\Warehouse\Jobs\ImportWarehouseChunkJob;
+use Modules\Warehouse\Services\WarehouseFlowConfigService;
 
 class WarehouseController extends AccountBaseController
 {
@@ -69,7 +70,7 @@ class WarehouseController extends AccountBaseController
         }
 
         if ($request->filled('search')) {
-            $term = '%' . $request->search . '%';
+            $term = '%'.$request->search.'%';
             $query->where(function ($q) use ($term) {
                 $q->where('name', 'like', $term)
                     ->orWhere('code', 'like', $term)
@@ -79,9 +80,13 @@ class WarehouseController extends AccountBaseController
 
         $this->pageTitle = 'warehouse::app.warehouses';
         $this->pageIcon = 'ti-layout';
-        $this->hasInboundConfigConflict = (bool) config('warehouse.inbound_from_purchase_order_delivered', true)
-            && (bool) config('warehouse.inbound_from_delivery_order_received', false);
-        $this->outboundMode = (string) config('warehouse.sales_outbound_mode', 'shipment');
+        $flowConfig = app(WarehouseFlowConfigService::class);
+        $sessionCompany = function_exists('company') ? company() : null;
+        $cid = (is_object($sessionCompany) && isset($sessionCompany->id)) ? (int) $sessionCompany->id : 0;
+        $companyId = $cid > 0 ? $cid : null;
+        $this->hasInboundConfigConflict = $flowConfig->inboundFromPurchaseOrderDelivered($companyId)
+            && $flowConfig->inboundFromDeliveryOrderReceived($companyId);
+        $this->outboundMode = $flowConfig->salesOutboundMode($companyId);
         $this->hasOutboundModeConflict = ! in_array($this->outboundMode, ['shipment', 'invoice'], true);
         $this->warehouseSortBy = $hasColumnSort ? $sortBy : null;
         $this->warehouseSortDir = $sortDir;
@@ -176,7 +181,7 @@ class WarehouseController extends AccountBaseController
         $addPermission = user()->permission('add_warehouses');
         abort_if(! in_array($addPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
 
-        $this->pageTitle = __('app.importExcel') . ' ' . __('warehouse::app.warehouse');
+        $this->pageTitle = __('app.importExcel').' '.__('warehouse::app.warehouse');
         $this->view = 'warehouse::ajax.import';
 
         if (request()->ajax()) {
@@ -224,7 +229,7 @@ class WarehouseController extends AccountBaseController
         $batch = $this->importJobProcessChunked($request, WarehouseImport::class, ImportWarehouseChunkJob::class, $chunkSize);
         $batchId = data_get($batch, 'id');
         if ($batchId) {
-            Cache::put('import_metrics_' . $batchId, [
+            Cache::put('import_metrics_'.$batchId, [
                 'created' => 0,
                 'updated' => 0,
                 'skipped' => 0,
@@ -350,7 +355,7 @@ class WarehouseController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50|unique:warehouses,code,' . $id,
+            'code' => 'nullable|string|max:50|unique:warehouses,code,'.$id,
             'warehouse_type' => 'nullable|in:normal,locked,scrap,transit',
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
@@ -462,7 +467,7 @@ class WarehouseController extends AccountBaseController
         foreach ($warehouses as $warehouse) {
             $blockMessage = $this->deleteBlockedMessage($warehouse);
             if ($blockMessage !== null) {
-                return response()->json(Reply::error($warehouse->name . ': ' . $blockMessage), 422);
+                return response()->json(Reply::error($warehouse->name.': '.$blockMessage), 422);
             }
         }
 

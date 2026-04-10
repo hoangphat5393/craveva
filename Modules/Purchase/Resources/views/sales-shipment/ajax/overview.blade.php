@@ -45,13 +45,19 @@
                         <table class="inv-detail f-14 table-responsive-sm" width="100%">
                             <tr class="i-d-heading bg-light-grey text-dark-grey font-weight-bold">
                                 <td class="border-right-0">@lang('app.description')</td>
+                                <td class="border-left-0 border-right-0">@lang('purchase::app.sku')</td>
                                 <td class="border-left-0 border-right-0" align="right">@lang('modules.invoices.qty')</td>
                                 <td class="border-left-0 border-right-0" align="right">@lang('purchase::app.shipQty')</td>
                                 <td class="border-left-0">@lang('purchase::app.batchNumber')</td>
                             </tr>
                             @foreach ($shipment->items as $item)
+                                @php
+                                    $oi = $item->orderItem;
+                                    $overviewSku = $oi?->sku ?: $oi?->product?->sku ?? null;
+                                @endphp
                                 <tr class="text-dark font-weight-semibold f-13">
-                                    <td>{{ $item->orderItem?->item_name ?: '#' . $item->order_item_id }}</td>
+                                    <td>{{ $oi?->item_name ?: '#' . $item->order_item_id }}</td>
+                                    <td class="text-dark-grey f-12">{{ $overviewSku ?: '—' }}</td>
                                     <td align="right">{{ number_format((float) $item->quantity_ordered, 2) }}</td>
                                     <td align="right">{{ number_format((float) $item->quantity_shipped, 2) }}</td>
                                     <td>{{ $item->batch_number ?: '—' }}</td>

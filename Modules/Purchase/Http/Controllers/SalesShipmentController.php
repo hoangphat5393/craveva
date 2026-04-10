@@ -13,6 +13,7 @@ use Modules\Purchase\DataTables\SalesShipmentDataTable;
 use Modules\Purchase\Services\SalesDoService;
 use Modules\Purchase\Support\FlowPermission;
 use Modules\Purchase\Support\SalesDoRuntime;
+use Modules\Warehouse\Entities\Warehouse;
 
 class SalesShipmentController extends AccountBaseController
 {
@@ -20,7 +21,7 @@ class SalesShipmentController extends AccountBaseController
     {
         $prefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do';
 
-        return $prefix . '.' . $action;
+        return $prefix.'.'.$action;
     }
 
     private function salesDoTitleKey(): string
@@ -41,7 +42,7 @@ class SalesShipmentController extends AccountBaseController
     public function create(Request $request)
     {
         abort_403(! FlowPermission::allowsAlias('sales_do.create'));
-        $this->pageTitle = __('app.add') . ' ' . __($this->salesDoTitleKey());
+        $this->pageTitle = __('app.add').' '.__($this->salesDoTitleKey());
         $this->warehouses = $this->warehouseList();
         $this->orders = Order::query()
             ->where('company_id', $this->company?->id)
@@ -68,7 +69,7 @@ class SalesShipmentController extends AccountBaseController
     public function edit($id)
     {
         abort_403(! FlowPermission::allowsAlias('sales_do.update'));
-        $this->pageTitle = __('app.edit') . ' ' . __($this->salesDoTitleKey());
+        $this->pageTitle = __('app.edit').' '.__($this->salesDoTitleKey());
         $this->shipment = $this->queryByCompany()->with(['items.orderItem', 'order'])->findOrFail($id);
         abort_if(in_array($this->shipment->status, ['shipped', 'delivered'], true), 403);
 
@@ -118,7 +119,7 @@ class SalesShipmentController extends AccountBaseController
 
         $order = Order::query()
             ->where('company_id', $this->company?->id)
-            ->with(['items.unit', 'clientdetails'])
+            ->with(['items.unit', 'items.product', 'clientdetails'])
             ->findOrFail($orderId);
 
         $this->shipment = $shipmentId > 0 ? $this->queryByCompany()->with('items')->find($shipmentId) : null;
@@ -239,7 +240,7 @@ class SalesShipmentController extends AccountBaseController
                 'string',
                 'max:64',
                 Rule::unique(SalesDoRuntime::headerTable(), SalesDoRuntime::numberColumn())
-                    ->where(fn($q) => $q->where('company_id', $this->company?->id))
+                    ->where(fn ($q) => $q->where('company_id', $this->company?->id))
                     ->ignore($shipmentId),
             ],
             'shipment_date' => 'required|string',
@@ -302,7 +303,7 @@ class SalesShipmentController extends AccountBaseController
         $ordered = OrderItems::query()
             ->where('order_id', $orderId)
             ->pluck('quantity', 'id')
-            ->map(fn($qty) => (float) $qty)
+            ->map(fn ($qty) => (float) $qty)
             ->toArray();
 
         $itemModelClass = SalesDoRuntime::itemModelClass();
@@ -311,14 +312,14 @@ class SalesShipmentController extends AccountBaseController
         $itemForeignKey = SalesDoRuntime::itemForeignKey();
 
         $alreadyShipped = $itemModelClass::query()
-            ->selectRaw($itemTable . '.order_item_id, SUM(' . $itemTable . '.quantity_shipped) as shipped_qty')
-            ->join($headerTable, $headerTable . '.id', '=', $itemTable . '.' . $itemForeignKey)
-            ->where($headerTable . '.order_id', $orderId)
-            ->whereNotIn($headerTable . '.status', ['cancelled'])
-            ->when($excludeShipmentId, fn($q) => $q->where($headerTable . '.id', '!=', $excludeShipmentId))
-            ->groupBy($itemTable . '.order_item_id')
+            ->selectRaw($itemTable.'.order_item_id, SUM('.$itemTable.'.quantity_shipped) as shipped_qty')
+            ->join($headerTable, $headerTable.'.id', '=', $itemTable.'.'.$itemForeignKey)
+            ->where($headerTable.'.order_id', $orderId)
+            ->whereNotIn($headerTable.'.status', ['cancelled'])
+            ->when($excludeShipmentId, fn ($q) => $q->where($headerTable.'.id', '!=', $excludeShipmentId))
+            ->groupBy($itemTable.'.order_item_id')
             ->pluck('shipped_qty', 'order_item_id')
-            ->map(fn($qty) => (float) $qty)
+            ->map(fn ($qty) => (float) $qty)
             ->toArray();
 
         $remaining = [];
@@ -336,7 +337,7 @@ class SalesShipmentController extends AccountBaseController
             ->where('company_id', $this->company?->id)
             ->max('id');
 
-        return 'SS-' . str_pad((string) ((int) $lastId + 1), 6, '0', STR_PAD_LEFT);
+        return 'SS-'.str_pad((string) ((int) $lastId + 1), 6, '0', STR_PAD_LEFT);
     }
 
     protected function parseCompanyDate(string $value): string
@@ -357,11 +358,11 @@ class SalesShipmentController extends AccountBaseController
 
     protected function warehouseList()
     {
-        if (! $this->company || ! class_exists(\Modules\Warehouse\Entities\Warehouse::class)) {
+        if (! $this->company || ! class_exists(Warehouse::class)) {
             return collect();
         }
 
-        return \Modules\Warehouse\Entities\Warehouse::query()
+        return Warehouse::query()
             ->where('company_id', $this->company->id)
             ->where('status', 'active')
             ->orderBy('name')
@@ -371,11 +372,11 @@ class SalesShipmentController extends AccountBaseController
     protected function resolveOrderDefaultWarehouseId(Order $order): ?int
     {
         $candidate = (int) ($order->clientdetails?->default_warehouse_id ?? 0);
-        if ($candidate <= 0 || ! class_exists(\Modules\Warehouse\Entities\Warehouse::class)) {
+        if ($candidate <= 0 || ! class_exists(Warehouse::class)) {
             return null;
         }
 
-        $exists = \Modules\Warehouse\Entities\Warehouse::query()
+        $exists = Warehouse::query()
             ->where('id', $candidate)
             ->where('company_id', $this->company?->id)
             ->where('status', 'active')

@@ -9,11 +9,12 @@ use Modules\Warehouse\Console\WarehouseReconciliationReportCommand;
 use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 use Modules\Warehouse\Services\StockMovementService;
 use Modules\Warehouse\Services\StockReservationService;
-use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 use Modules\Warehouse\Services\WarehouseAvailabilityService;
+use Modules\Warehouse\Services\WarehouseFlowConfigService;
+use Modules\Warehouse\Services\WarehouseFlowPolicyService;
+use Modules\Warehouse\Services\WarehouseQueryService;
 use Modules\Warehouse\Services\WarehouseReconciliationService;
 use Modules\Warehouse\Services\WarehouseUnitConversionService;
-use Modules\Warehouse\Services\WarehouseQueryService;
 
 class WarehouseServiceProvider extends ServiceProvider
 {
@@ -46,6 +47,7 @@ class WarehouseServiceProvider extends ServiceProvider
         $this->app->singleton(StockMovementService::class);
         $this->app->singleton(InvoiceWarehouseStockService::class);
         $this->app->singleton(StockReservationService::class);
+        $this->app->singleton(WarehouseFlowConfigService::class);
         $this->app->singleton(WarehouseFlowPolicyService::class);
         $this->app->singleton(WarehouseAvailabilityService::class);
         $this->app->singleton(WarehouseUnitConversionService::class);
@@ -77,17 +79,21 @@ class WarehouseServiceProvider extends ServiceProvider
 
     /**
      * Register translations.
+     *
+     * Always load defaults from the module, then merge published overrides from
+     * resources/lang/modules/{warehouse} when that directory exists (Language Pack / deploy customisations).
      */
     public function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
+        $moduleLangPath = module_path($this->moduleName, 'Resources/lang');
 
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom($langPath);
-        } else {
-            $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->moduleName, 'Resources/lang'));
+        $this->loadTranslationsFrom($moduleLangPath, $this->moduleNameLower);
+        $this->loadJsonTranslationsFrom($moduleLangPath);
+
+        $publishedPath = resource_path('lang/modules/' . $this->moduleNameLower);
+        if (is_dir($publishedPath)) {
+            $this->loadTranslationsFrom($publishedPath, $this->moduleNameLower);
+            $this->loadJsonTranslationsFrom($publishedPath);
         }
     }
 

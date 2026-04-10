@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\SalesDo;
-use Modules\Purchase\Services\SalesDoService;
 use Modules\Purchase\Observers\PurchaseOrderObserver;
+use Modules\Purchase\Services\SalesDoService;
 use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 use Modules\Warehouse\Services\StockMovementService;
@@ -170,7 +170,7 @@ it('blocks outbound from locked or scrap warehouse types', function () {
 
     $service = app(StockMovementService::class);
 
-    expect(fn() => $service->recordOutbound([
+    expect(fn () => $service->recordOutbound([
         'company_id' => 1,
         'warehouse_id' => 10,
         'product_id' => 100,
@@ -243,7 +243,7 @@ it('prevents oversell when 2 orders reserve nearly at the same time', function (
     $shipment2 = SalesDo::with('items')->findOrFail($shipmentId2);
 
     expect($service->confirm($shipment1))->toBeNull();
-    expect(fn() => $service->confirm($shipment2))->toThrow(\RuntimeException::class);
+    expect(fn () => $service->confirm($shipment2))->toThrow(RuntimeException::class);
 });
 
 it('guards double inbound config to avoid duplicate posting', function () {
@@ -271,7 +271,7 @@ it('guards double inbound config to avoid duplicate posting', function () {
     $method = (new ReflectionClass(PurchaseOrderObserver::class))->getMethod('recordPurchaseOrderInbound');
     $method->setAccessible(true);
 
-    expect(fn() => $method->invoke($observer, $po, 100, 5.0))
+    expect(fn () => $method->invoke($observer, $po, 100, 5.0))
         ->toThrow(WarehouseBusinessException::class);
     expect(DB::table('stock_movements')->count())->toBe(0);
 });
@@ -379,9 +379,105 @@ it('returns correct sellable and available quantities from unified service', fun
     expect(collect($result['warehouses'])->firstWhere('warehouse_id', 15)['sellable'])->toBe(0.0);
 });
 
+it('validates AI webhook order lines against sellable stock', function () {
+    DB::table('warehouses')->insert([
+        'id' => 20,
+        'company_id' => 1,
+        'name' => 'WH-Webhook',
+        'code' => 'WH20',
+        'warehouse_type' => 'normal',
+        'status' => 'active',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    DB::table('warehouse_product_batches')->insert([
+        'company_id' => 1,
+        'warehouse_id' => 20,
+        'product_id' => 100,
+        'batch_number' => 'B20',
+        'quantity' => 10,
+        'reserved_quantity' => 0,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $service = app(WarehouseAvailabilityService::class);
+    $service->validateAiOrderWebhookItems(1, [
+        ['product_id' => 100, 'quantity' => 9],
+    ], []);
+
+    expect(fn () => $service->validateAiOrderWebhookItems(1, [
+        ['product_id' => 100, 'quantity' => 11],
+    ], []))->toThrow(WarehouseBusinessException::class);
+});
+
 it('guards invalid outbound mode to prevent ambiguous double deduction flows', function () {
     Config::set('warehouse.sales_outbound_mode', 'both');
 
-    expect(fn() => app(InvoiceWarehouseStockService::class)->shouldPostOutboundFromInvoice())
+    expect(fn () => app(InvoiceWarehouseStockService::class)->shouldPostOutboundFromInvoice())
         ->toThrow(WarehouseBusinessException::class);
+});
+
+/**
+ * @see FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md §E — UAT smoke có thể thay bằng test này (ship → movement outbound).
+ */
+it('QA smoke: ship posts outbound stock_movement referencing SalesDo; shipment mode skips invoice outbound', function () {
+    DB::table('warehouses')->insert([
+        'id' => 16,
+        'company_id' => 1,
+        'name' => 'Ship WH',
+        'warehouse_type' => 'normal',
+        'status' => 'active',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    DB::table('warehouse_product_batches')->insert([
+        'company_id' => 1,
+        'warehouse_id' => 16,
+        'product_id' => 100,
+        'batch_number' => null,
+        'quantity' => 20,
+        'reserved_quantity' => 0,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $shipmentId = DB::table('sales_dos')->insertGetId([
+        'company_id' => 1,
+        'warehouse_id' => 16,
+        'status' => 'draft',
+        'do_number' => 'DO-QA-16',
+        'do_date' => now()->toDateString(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    DB::table('sales_do_items')->insert([
+        'sales_do_id' => $shipmentId,
+        'product_id' => 100,
+        'quantity_shipped' => 3,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    Config::set('warehouse.sales_outbound_mode', 'shipment');
+
+    $salesDoService = app(SalesDoService::class);
+    $shipment = SalesDo::with('items')->findOrFail($shipmentId);
+    expect($salesDoService->confirm($shipment))->toBeNull();
+    $shipment = SalesDo::with('items')->findOrFail($shipmentId);
+    expect($salesDoService->ship($shipment))->toBeNull();
+
+    expect(app(InvoiceWarehouseStockService::class)->shouldPostOutboundFromInvoice())->toBeFalse();
+
+    $movement = DB::table('stock_movements')
+        ->where('movement_type', 'outbound')
+        ->where('reference_id', $shipmentId)
+        ->where('reference_type', SalesDo::class)
+        ->first();
+
+    expect($movement)->not->toBeNull();
+    expect((float) $movement->quantity)->toBe(3.0);
 });

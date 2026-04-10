@@ -94,6 +94,7 @@ return [
     'deliveryOrderNumber' => 'Delivery Order Number',
     'shipmentNumber' => 'Shipment Number',
     'remainingQty' => 'Remaining Qty',
+    'sku' => 'Mã SKU',
     'shipQty' => 'Ship Qty',
     'batchNumber' => 'Batch Number',
 ];

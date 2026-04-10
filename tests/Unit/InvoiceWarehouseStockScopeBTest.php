@@ -5,9 +5,10 @@ namespace Tests\Unit;
 use App\Models\Invoice;
 use Mockery;
 use Modules\Purchase\Observers\PaymentObserver;
-use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 use Modules\Warehouse\Services\StockMovementService;
+use Modules\Warehouse\Services\WarehouseFlowConfigService;
+use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 use Tests\TestCase;
 
 class InvoiceWarehouseStockScopeBTest extends TestCase
@@ -28,6 +29,18 @@ class InvoiceWarehouseStockScopeBTest extends TestCase
         $this->assertSame('shipment', config('warehouse.sales_outbound_mode'));
         $svc = app(InvoiceWarehouseStockService::class);
         $this->assertFalse($svc->shouldPostOutboundFromInvoice());
+    }
+
+    public function test_should_post_outbound_from_invoice_when_mode_is_invoice(): void
+    {
+        config(['warehouse.sales_outbound_mode' => 'invoice']);
+
+        try {
+            $svc = app(InvoiceWarehouseStockService::class);
+            $this->assertTrue($svc->shouldPostOutboundFromInvoice());
+        } finally {
+            config(['warehouse.sales_outbound_mode' => 'shipment']);
+        }
     }
 
     public function test_invoice_warehouse_stock_service_is_registered(): void
@@ -70,9 +83,9 @@ class InvoiceWarehouseStockScopeBTest extends TestCase
             $mock->shouldNotReceive('recordOutbound');
             $mock->shouldNotReceive('recordInbound');
 
-            $svc = new class($mock, app(WarehouseFlowPolicyService::class)) extends InvoiceWarehouseStockService
+            $svc = new class($mock, app(WarehouseFlowPolicyService::class), app(WarehouseFlowConfigService::class)) extends InvoiceWarehouseStockService
             {
-                public function isEnabled(): bool
+                public function isEnabled(?int $companyId = null): bool
                 {
                     return true;
                 }
@@ -95,9 +108,9 @@ class InvoiceWarehouseStockScopeBTest extends TestCase
             $mock = Mockery::mock(StockMovementService::class);
             $mock->shouldNotReceive('recordInbound');
 
-            $svc = new class($mock, app(WarehouseFlowPolicyService::class)) extends InvoiceWarehouseStockService
+            $svc = new class($mock, app(WarehouseFlowPolicyService::class), app(WarehouseFlowConfigService::class)) extends InvoiceWarehouseStockService
             {
-                public function isEnabled(): bool
+                public function isEnabled(?int $companyId = null): bool
                 {
                     return true;
                 }

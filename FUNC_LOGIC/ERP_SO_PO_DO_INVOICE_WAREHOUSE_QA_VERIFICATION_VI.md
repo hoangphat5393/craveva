@@ -1,6 +1,7 @@
 # ERP — Kiểm tra SO / PO / DO / Invoice / Multi-Warehouse / Inventory (codebase)
 
 **Ngày cập nhật:** 2026-03-30  
+**Bổ sung 2026-04:** Đã có **`WarehouseFlowPolicyService`** — nếu bật đồng thời inbound PO + DO (`WAREHOUSE_INBOUND_FROM_PO_DELIVERED` và `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`), hệ thống **fail fast** (exception) thay vì chỉ “guard nhẹ” ở một observer. Tiến độ WUP và runbook: `FUNC_LOGIC/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`.  
 **Phương pháp:** Phân tích luồng thực tế trong code (Laravel + `Modules/Purchase`, `Modules/Warehouse`), **không** chạy UAT tự động trên DB staging.  
 **Chốt flow bán (mặc định code):** `WAREHOUSE_SALES_OUTBOUND_MODE=shipment` → xuất kho theo **Sales Shipment**; invoice không post outbound (trừ khi đặt mode `invoice`).  
 **Tham chiếu:** `FUNC_LOGIC/SALES_PURCHASE_FLOW.md`, `Modules/Warehouse/Config/config.php`, `SalesShipmentStockService`, `InvoiceWarehouseStockService`, `PurchaseOrderObserver`, `DeliveryOrderObserver`.
@@ -62,6 +63,23 @@
 | **3** | **SO → phiếu giao bán:** đã có **Option B** (`sales_shipments`); không dùng `delivery_orders` cho bán.                                                                                                                                                                                                                   |
 | **4** | **Nhiều invoice / SO:** DB + `Order::invoices()` hỗ trợ nhiều bản ghi; cần hoàn thiện luồng tạo invoice từ SO trên UI nếu nghiệp vụ bắt buộc.                                                                                                                                                                            |
 | **5** | **Kiểm tra** `client_details.default_warehouse_id` và sản phẩm `goods`/`service` trên từng dòng invoice.                                                                                                                                                                                                                 |
+
+**Ghi chú bước 2 (code hiện tại):** Phiếu giao bán dùng entity **`SalesDo`** / bảng `sales_dos`; `stock_movements.reference_type` khi ship là class `Modules\Purchase\Entities\SalesDo` (không còn `SalesShipment` khi cutover runtime bật — xem `SalesDoRuntime`).
+
+### E.1 Smoke tự động (bổ sung UAT tay)
+
+Chạy tối thiểu sau khi đổi env hoặc chỉnh luồng kho:
+
+```bash
+php artisan test --compact tests/Feature/WarehouseUpgradeP0Test.php tests/Feature/PurchaseInboundStockFlowTest.php tests/Unit/InvoiceWarehouseStockScopeBTest.php
+```
+
+| Test / file                                                 | Ý nghĩa                                                                                                                                   |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `WarehouseUpgradeP0Test` → _QA smoke: ship posts outbound…_ | SO không trực tiếp trừ tồn; **confirm → ship** tạo outbound gắn `SalesDo`; mode `shipment` thì `shouldPostOutboundFromInvoice()` = false. |
+| `WarehouseUpgradeP0Test` → _guards double inbound config_   | Hai cờ inbound PO+DO cùng bật → fail fast (không nhập đôi).                                                                               |
+| `PurchaseInboundStockFlowTest`                              | Nhập từ DO received hoặc PO path (và tắt khi config off).                                                                                 |
+| `InvoiceWarehouseStockScopeBTest`                           | Mode mặc định `shipment`; mode `invoice` bật post từ invoice; legacy `PaymentObserver` bỏ qua khi outbound warehouse bật.                 |
 
 ---
 

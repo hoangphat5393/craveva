@@ -4,11 +4,13 @@ namespace Modules\Warehouse\Services;
 
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
+use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 
 class WarehouseAvailabilityService
 {
     public function __construct(
-        protected WarehouseFlowPolicyService $flowPolicy
+        protected WarehouseFlowPolicyService $flowPolicy,
+        protected WarehouseUnitConversionService $unitConversion
     ) {}
 
     /**
@@ -96,5 +98,64 @@ class WarehouseAvailabilityService
             'sellable_yes_no' => $totalSellable > 0 ? 'YES' : 'NO',
             'warehouses' => $resultRows,
         ];
+    }
+
+    /**
+     * Validate AI / webhook order lines against sellable stock (same rules as availability API).
+     * Lines without product_id are skipped. Quantities are converted to base unit when unit_id is provided.
+     *
+     * @param  array<int, array<string, mixed>>  $items
+     * @param  array<int>  $warehouseIds  Empty = all active warehouses for the company.
+     *
+     * @throws WarehouseBusinessException
+     */
+    public function validateAiOrderWebhookItems(int $companyId, array $items, array $warehouseIds = []): void
+    {
+        $byProduct = [];
+
+        foreach ($items as $item) {
+            $productId = isset($item['product_id']) ? (int) $item['product_id'] : 0;
+            if ($productId <= 0) {
+                continue;
+            }
+
+            $qty = (float) ($item['quantity'] ?? 0);
+            $unitId = isset($item['unit_id']) ? (int) $item['unit_id'] : 0;
+
+            $baseQty = $this->unitConversion->convertToBase(
+                $companyId,
+                $productId,
+                $qty,
+                $unitId > 0 ? $unitId : null
+            );
+
+            $byProduct[$productId] = ($byProduct[$productId] ?? 0) + $baseQty;
+        }
+
+        if ($byProduct === []) {
+            return;
+        }
+
+        foreach ($byProduct as $productId => $neededBase) {
+            $snapshot = $this->availabilityByProduct($companyId, $productId, $warehouseIds);
+            $sellable = (float) $snapshot['total_sellable'];
+
+            if ($sellable + 1e-9 < $neededBase) {
+                throw new WarehouseBusinessException(
+                    __('warehouse::app.err_ai_order_insufficient_sellable', [
+                        'product_id' => $productId,
+                        'needed' => $neededBase,
+                        'sellable' => $sellable,
+                    ]),
+                    [
+                        'company_id' => $companyId,
+                        'product_id' => $productId,
+                        'needed_base' => $neededBase,
+                        'sellable' => $sellable,
+                        'availability' => $snapshot,
+                    ]
+                );
+            }
+        }
     }
 }

@@ -20,7 +20,8 @@ class StockMovementService
 
     public function __construct(
         protected WarehouseFlowPolicyService $flowPolicy,
-        protected WarehouseUnitConversionService $unitConversionService
+        protected WarehouseUnitConversionService $unitConversionService,
+        protected WarehouseFlowConfigService $flowConfig
     ) {}
 
     public function recordInbound(array $payload): void
@@ -107,7 +108,7 @@ class StockMovementService
 
         $rows = $this->resolveOutboundRows($payload);
         $available = (float) $rows->sum('quantity');
-        $this->guardStockNotNegative($available, $requested, $allowNegativeStock);
+        $this->guardStockNotNegative($available, $requested, $allowNegativeStock, $companyId);
 
         $remaining = $requested;
         foreach ($rows as $row) {
@@ -182,18 +183,18 @@ class StockMovementService
         });
     }
 
-    public function isNegativeStockAllowed(?bool $override = null): bool
+    public function isNegativeStockAllowed(?bool $override = null, ?int $companyId = null): bool
     {
         if (! is_null($override)) {
             return $override;
         }
 
-        return (bool) config('warehouse.allow_negative_stock', false);
+        return $this->flowConfig->allowNegativeStock($companyId);
     }
 
-    public function guardStockNotNegative(float $available, float $requested, ?bool $allowNegativeStock = null): void
+    public function guardStockNotNegative(float $available, float $requested, ?bool $allowNegativeStock = null, ?int $companyId = null): void
     {
-        if ($this->isNegativeStockAllowed($allowNegativeStock)) {
+        if ($this->isNegativeStockAllowed($allowNegativeStock, $companyId)) {
             return;
         }
 

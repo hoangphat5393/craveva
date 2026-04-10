@@ -9,6 +9,10 @@ use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 
 class WarehouseUnitConversionService
 {
+    public function __construct(
+        protected WarehouseFlowConfigService $flowConfig
+    ) {}
+
     public function convertToBase(
         int $companyId,
         int $productId,
@@ -31,7 +35,7 @@ class WarehouseUnitConversionService
             ->value('factor_to_base');
 
         if ($factor === null) {
-            if ((bool) config('warehouse.strict_unit_conversion', false)) {
+            if ($this->flowConfig->strictUnitConversion($companyId)) {
                 throw new WarehouseBusinessException(__('warehouse::app.err_missing_unit_conversion', [
                     'product_id' => $productId,
                     'unit_id' => $fromUnitId,

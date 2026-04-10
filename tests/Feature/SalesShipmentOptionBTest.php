@@ -3,11 +3,11 @@
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Modules\Purchase\Entities\SalesShipment;
-use Modules\Purchase\Entities\SalesShipmentItem;
+use Modules\Purchase\Entities\SalesDo;
+use Modules\Purchase\Entities\SalesDoItem;
+use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 use Modules\Warehouse\Services\SalesShipmentStockService;
-use Modules\Warehouse\Services\StockMovementService;
 
 beforeEach(function () {
     Config::set('database.default', 'sqlite');
@@ -20,6 +20,7 @@ beforeEach(function () {
         $table->id();
         $table->unsignedInteger('company_id');
         $table->string('name')->nullable();
+        $table->string('warehouse_type')->default('normal');
         $table->string('status')->default('active');
         $table->timestamps();
     });
@@ -53,6 +54,20 @@ beforeEach(function () {
         $table->timestamps();
     });
 
+    Schema::create('stock_reservations', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->unsignedBigInteger('warehouse_id');
+        $table->unsignedBigInteger('product_id');
+        $table->string('batch_number')->nullable();
+        $table->date('expiration_date')->nullable();
+        $table->decimal('reserved_quantity', 20, 4)->default(0);
+        $table->string('reference_type')->nullable();
+        $table->unsignedBigInteger('reference_id')->nullable();
+        $table->string('status', 20)->default('active');
+        $table->timestamps();
+    });
+
     Schema::create('stock_movements', function ($table) {
         $table->id();
         $table->unsignedInteger('company_id')->nullable();
@@ -70,13 +85,13 @@ beforeEach(function () {
         $table->timestamps();
     });
 
-    Schema::create('sales_shipments', function ($table) {
+    Schema::create('sales_dos', function ($table) {
         $table->id();
         $table->unsignedInteger('company_id');
-        $table->unsignedBigInteger('order_id');
-        $table->unsignedBigInteger('warehouse_id');
-        $table->string('shipment_number');
-        $table->date('shipment_date');
+        $table->unsignedBigInteger('order_id')->nullable();
+        $table->unsignedBigInteger('warehouse_id')->nullable();
+        $table->string('do_number')->nullable();
+        $table->date('do_date')->nullable();
         $table->string('status')->default('draft');
         $table->boolean('outbound_stock_applied')->default(false);
         $table->text('notes')->nullable();
@@ -85,10 +100,10 @@ beforeEach(function () {
         $table->timestamps();
     });
 
-    Schema::create('sales_shipment_items', function ($table) {
+    Schema::create('sales_do_items', function ($table) {
         $table->id();
-        $table->unsignedBigInteger('sales_shipment_id');
-        $table->unsignedBigInteger('order_item_id');
+        $table->unsignedBigInteger('sales_do_id');
+        $table->unsignedBigInteger('order_item_id')->nullable();
         $table->unsignedBigInteger('product_id')->nullable();
         $table->decimal('quantity_ordered', 20, 4)->default(0);
         $table->decimal('quantity_shipped', 20, 4)->default(0);
@@ -140,8 +155,9 @@ beforeEach(function () {
 
 afterEach(function () {
     Schema::dropIfExists('invoice_warehouse_stock_postings');
-    Schema::dropIfExists('sales_shipment_items');
-    Schema::dropIfExists('sales_shipments');
+    Schema::dropIfExists('sales_do_items');
+    Schema::dropIfExists('sales_dos');
+    Schema::dropIfExists('stock_reservations');
     Schema::dropIfExists('stock_movements');
     Schema::dropIfExists('warehouse_product_stock');
     Schema::dropIfExists('warehouse_product_batches');
@@ -153,34 +169,34 @@ it('posts outbound by shipment, prevents idempotent double post, and blocks over
     Config::set('warehouse.sales_outbound_mode', 'shipment');
     Config::set('warehouse.allow_negative_stock', false);
 
-    $shipment1 = SalesShipment::create([
+    $shipment1 = SalesDo::create([
         'company_id' => 10,
         'order_id' => 1001,
         'warehouse_id' => 1,
-        'shipment_number' => 'SS-000001',
-        'shipment_date' => now()->toDateString(),
+        'do_number' => 'DO-000001',
+        'do_date' => now()->toDateString(),
         'status' => 'confirmed',
     ]);
 
-    SalesShipmentItem::create([
-        'sales_shipment_id' => $shipment1->id,
+    SalesDoItem::create([
+        'sales_do_id' => $shipment1->id,
         'order_item_id' => 501,
         'product_id' => 99,
         'quantity_ordered' => 10,
         'quantity_shipped' => 4,
     ]);
 
-    $shipment2 = SalesShipment::create([
+    $shipment2 = SalesDo::create([
         'company_id' => 10,
         'order_id' => 1001,
         'warehouse_id' => 1,
-        'shipment_number' => 'SS-000002',
-        'shipment_date' => now()->toDateString(),
+        'do_number' => 'DO-000002',
+        'do_date' => now()->toDateString(),
         'status' => 'confirmed',
     ]);
 
-    SalesShipmentItem::create([
-        'sales_shipment_id' => $shipment2->id,
+    SalesDoItem::create([
+        'sales_do_id' => $shipment2->id,
         'order_item_id' => 501,
         'product_id' => 99,
         'quantity_ordered' => 10,
@@ -203,23 +219,23 @@ it('posts outbound by shipment, prevents idempotent double post, and blocks over
         ->value('quantity');
     expect($stock)->toBe(0.0);
 
-    $shipment3 = SalesShipment::create([
+    $shipment3 = SalesDo::create([
         'company_id' => 10,
         'order_id' => 1001,
         'warehouse_id' => 1,
-        'shipment_number' => 'SS-000003',
-        'shipment_date' => now()->toDateString(),
+        'do_number' => 'DO-000003',
+        'do_date' => now()->toDateString(),
         'status' => 'confirmed',
     ]);
-    SalesShipmentItem::create([
-        'sales_shipment_id' => $shipment3->id,
+    SalesDoItem::create([
+        'sales_do_id' => $shipment3->id,
         'order_item_id' => 501,
         'product_id' => 99,
         'quantity_ordered' => 10,
         'quantity_shipped' => 1,
     ]);
 
-    $this->expectException(\Modules\Warehouse\Exceptions\WarehouseBusinessException::class);
+    $this->expectException(WarehouseBusinessException::class);
     $service->applyOutboundForShipment($shipment3);
 });
 
@@ -227,17 +243,17 @@ it('reverses outbound without stock drift', function () {
     Config::set('warehouse.sales_outbound_mode', 'shipment');
     Config::set('warehouse.allow_negative_stock', false);
 
-    $shipment = SalesShipment::create([
+    $shipment = SalesDo::create([
         'company_id' => 10,
         'order_id' => 1002,
         'warehouse_id' => 1,
-        'shipment_number' => 'SS-000101',
-        'shipment_date' => now()->toDateString(),
+        'do_number' => 'DO-000101',
+        'do_date' => now()->toDateString(),
         'status' => 'shipped',
     ]);
 
-    SalesShipmentItem::create([
-        'sales_shipment_id' => $shipment->id,
+    SalesDoItem::create([
+        'sales_do_id' => $shipment->id,
         'order_item_id' => 601,
         'product_id' => 99,
         'quantity_ordered' => 10,
@@ -272,6 +288,6 @@ it('reverses outbound without stock drift', function () {
 
 it('disables invoice outbound posting when shipment mode is active', function () {
     Config::set('warehouse.sales_outbound_mode', 'shipment');
-    $svc = new InvoiceWarehouseStockService(app(StockMovementService::class));
+    $svc = app(InvoiceWarehouseStockService::class);
     expect($svc->shouldPostOutboundFromInvoice())->toBeFalse();
 });

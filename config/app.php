@@ -255,6 +255,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | AI order webhook (integrations)
+    |--------------------------------------------------------------------------
+    |
+    | Shared secret for POST /ai-order-webhook/{hash}. Set in .env as AI_ORDER_WEBHOOK_SECRET.
+    |
+    */
+
+    'ai_order_webhook_secret' => env('AI_ORDER_WEBHOOK_SECRET', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |

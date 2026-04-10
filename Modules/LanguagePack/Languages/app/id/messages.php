@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Pilih setidaknya 1.',
     'addItem' => 'Tambahkan setidaknya 1 item.',
     'quantityNumber' => 'Kuantitas harus berupa angka',
+    'salesDoShipQuantityRequired' => 'Kuantitas pengiriman harus lebih dari nol pada minimal satu baris. Edit surat jalan dan isi kuantitas pengiriman.',
     'unitPriceNumber' => 'Harga satuan harus berupa angka',
     'amountNumber' => 'Jumlah harus berupa angka.',
     'itemBlank' => 'Nama item tidak boleh kosong.',

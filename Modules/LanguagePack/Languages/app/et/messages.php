@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Valige vähemalt 1.',
     'addItem' => 'Lisage vähemalt 1 üksus.',
     'quantityNumber' => 'Kogus peaks olema arv',
+    'salesDoShipQuantityRequired' => 'Saadetav kogus peab olema suurem kui null vähemalt ühel real. Muutke tarne tellimust ja sisestage kogused.',
     'unitPriceNumber' => 'Ühiku hind peaks olema arv',
     'amountNumber' => 'Summa peaks olema arv.',
     'itemBlank' => 'Üksuse nime väli ei tohi olla tühi.',

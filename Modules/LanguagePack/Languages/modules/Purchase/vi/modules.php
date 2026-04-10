@@ -39,8 +39,8 @@ return [
         'dataTableTotalNetQtyAdjustments' => 'Tổng SL ròng (các dòng điều chỉnh Purchase)',
         'dataTableProductCardExpiry' => 'Hạn dùng trên thẻ SP (không phải lô / kho)',
         'dataTableAllowClientPurchase' => 'Cho phép khách hàng mua',
-        'manufacturingDate' => 'Manufacturing Date',
-        'expirationDate' => 'Expiration Date',
+        'manufacturingDate' => 'Ngày sản xuất',
+        'expirationDate' => 'Ngày hết hạn',
     ],
     'inventory' => [
         'adjustmentReason' => 'Lý do điều chỉnh cổ phiếu',

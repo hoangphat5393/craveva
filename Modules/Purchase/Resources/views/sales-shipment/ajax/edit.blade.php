@@ -22,7 +22,7 @@
                     <div class="col-md-4">
                         <x-forms.select fieldId="warehouse_id" :fieldLabel="__('purchase::modules.deliveryOrder.warehouse')" fieldName="warehouse_id" search="true">
                             @foreach ($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}" @selected($shipment->warehouse_id === $warehouse->id)>{{ $warehouse->name }}</option>
+                                <option value="{{ $warehouse->id }}" @selected($shipment->warehouse_id === $warehouse->id)>{{ filled($warehouse->code) ? $warehouse->name . ' (' . $warehouse->code . ')' : $warehouse->name }}</option>
                             @endforeach
                         </x-forms.select>
                     </div>

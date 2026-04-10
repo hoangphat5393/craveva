@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Wybierz co najmniej 1.',
     'addItem' => 'Dodaj co najmniej 1 element.',
     'quantityNumber' => 'Ilość powinna być liczbą',
+    'salesDoShipQuantityRequired' => 'Ilość wysyłki musi być większa od zera w co najmniej jednej linii. Edytuj dokument dostawy i uzupełnij ilości.',
     'unitPriceNumber' => 'Cena jednostkowa powinna być liczbą',
     'amountNumber' => 'Kwota powinna być liczbą.',
     'itemBlank' => 'Nazwa elementu nie może być pusta.',

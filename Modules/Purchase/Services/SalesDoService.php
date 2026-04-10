@@ -81,7 +81,7 @@ class SalesDoService
         }
 
         if ($shipment->items->sum('quantity_shipped') <= 0) {
-            return 'messages.quantityNumber';
+            return 'messages.salesDoShipQuantityRequired';
         }
 
         DB::transaction(function () use ($shipment) {

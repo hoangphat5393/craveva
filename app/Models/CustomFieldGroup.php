@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Modules\Purchase\Entities\PurchaseInventory;
@@ -24,11 +25,11 @@ use Modules\Purchase\Entities\PurchaseOrder;
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup whereName($value)
  *
  * @property int|null $company_id
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup whereCompanyId($value)
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustomField[] $customField
+ * @property-read Collection|CustomField[] $customField
  * @property-read int|null $custom_field_count
  *
  * @mixin \Eloquent
@@ -97,6 +98,8 @@ class CustomFieldGroup extends BaseModel
                     'visible' => (! is_null($customField['visible'])) ? $customField['visible'] : false,
                     'exportable' => (! is_null($customField['export'])) ? $customField['export'] : false,
                     'orderable' => false,
+                    // Avoid DataTables warning TN/4 when a row JSON omits this key (e.g. after redraw/delete, stateSave drift).
+                    'defaultContent' => '',
                 ],
             ];
 

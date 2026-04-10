@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Chọn ít nhất 1.',
     'addItem' => 'Thêm ít nhất 1 mục.',
     'quantityNumber' => 'Số lượng phải là một con số',
+    'salesDoShipQuantityRequired' => 'Số lượng giao (Ship Qty) phải lớn hơn 0 ở ít nhất một dòng. Vui lòng sửa phiếu giao bán và nhập số lượng giao.',
     'unitPriceNumber' => 'Đơn giá phải là một con số',
     'amountNumber' => 'Số tiền phải là một con số.',
     'itemBlank' => 'Tên mặt hàng không được để trống.',

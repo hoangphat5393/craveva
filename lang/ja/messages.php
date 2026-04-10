@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => '少なくとも 1 つを選択してください。',
     'addItem' => '少なくとも 1 つの項目を追加します。',
     'quantityNumber' => '数量は数値である必要があります',
+    'salesDoShipQuantityRequired' => '少なくとも1行で出荷数量を0より大きくしてください。納品書を編集して出荷数量を入力してください。',
     'unitPriceNumber' => '単価は数値である必要があります',
     'amountNumber' => '金額は数値である必要があります。',
     'itemBlank' => '項目名を空白にすることはできません。',

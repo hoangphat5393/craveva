@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => '최소 1개를 선택하세요.',
     'addItem' => '항목을 1개 이상 추가하세요.',
     'quantityNumber' => '수량은 숫자여야 합니다.',
+    'salesDoShipQuantityRequired' => '최소 한 줄 이상의 출고 수량이 0보다 커야 합니다. 납품서를 수정하여 출고 수량을 입력하세요.',
     'unitPriceNumber' => '단가는 숫자여야 합니다.',
     'amountNumber' => '금액은 숫자여야 합니다.',
     'itemBlank' => '항목 이름은 비워둘 수 없습니다.',

@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => '至少選擇 1 個。',
     'addItem' => '新增至少 1 項。',
     'quantityNumber' => '數量應該是一個數字',
+    'salesDoShipQuantityRequired' => '至少一行的出貨數量必須大於 0。請編輯銷貨出貨單並填寫出貨數量。',
     'unitPriceNumber' => '單價應該是個數字',
     'amountNumber' => '金額應該是一個數字。',
     'itemBlank' => '項目名稱不能為空。',

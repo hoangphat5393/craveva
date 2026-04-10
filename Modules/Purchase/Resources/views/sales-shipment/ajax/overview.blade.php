@@ -28,7 +28,11 @@
                         </p>
                         <p class="mb-0">@lang('app.date'): {{ $shipment->shipment_date?->translatedFormat(company()->date_format) }}</p>
                         @if ($shipment->warehouse)
-                            <p class="mb-0">@lang('purchase::modules.deliveryOrder.warehouse'): {{ $shipment->warehouse->name }}</p>
+                            @php
+                                $wh = $shipment->warehouse;
+                                $whDisplay = filled($wh->code) ? $wh->name . ' (' . $wh->code . ')' : $wh->name;
+                            @endphp
+                            <p class="mb-0">@lang('purchase::modules.deliveryOrder.warehouse'): {{ $whDisplay }}</p>
                         @endif
                     </td>
                     <td align="right">

@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => '至少选择 1 个。',
     'addItem' => '添加至少 1 项。',
     'quantityNumber' => '数量应该是一个数字',
+    'salesDoShipQuantityRequired' => '至少一行的发货数量必须大于 0。请编辑销售交货单并填写发货数量。',
     'unitPriceNumber' => '单价应该是一个数字',
     'amountNumber' => '金额应该是一个数字。',
     'itemBlank' => '项目名称不能为空。',

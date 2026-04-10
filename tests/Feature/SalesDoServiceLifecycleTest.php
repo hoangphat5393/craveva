@@ -110,6 +110,33 @@ it('ships shipment and triggers outbound once', function () {
     expect($shipment->fresh()->status)->toBe('shipped');
 });
 
+it('ship returns a dedicated translation key when total shipped quantity is zero', function () {
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
+    $service = new SalesDoService($mockStock);
+
+    $shipment = SalesShipment::create([
+        'company_id' => 10,
+        'order_id' => 2,
+        'warehouse_id' => 1,
+        'shipment_number' => 'SS-Z',
+        'shipment_date' => now()->toDateString(),
+        'status' => 'confirmed',
+    ]);
+
+    SalesShipmentItem::create([
+        'sales_shipment_id' => $shipment->id,
+        'order_item_id' => 101,
+        'product_id' => 201,
+        'quantity_ordered' => 10,
+        'quantity_shipped' => 0,
+    ]);
+
+    $mockStock->shouldNotReceive('ensureReservationsForShipment');
+    $mockStock->shouldNotReceive('applyOutboundForShipment');
+
+    expect($service->ship($shipment->fresh('items')))->toBe('messages.salesDoShipQuantityRequired');
+});
+
 it('delivers, reverses and cancels shipment with expected guards', function () {
     $mockStock = Mockery::mock(SalesShipmentStockService::class);
     $service = new SalesDoService($mockStock);

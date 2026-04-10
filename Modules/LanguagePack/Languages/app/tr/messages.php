@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'En az 1 tanesini seçin.',
     'addItem' => 'En az 1 öğe ekleyin.',
     'quantityNumber' => 'Miktar bir sayı olmalıdır',
+    'salesDoShipQuantityRequired' => 'Gönderim miktarı en az bir satırda sıfırdan büyük olmalıdır. Teslimat belgesini düzenleyip gönderim miktarlarını girin.',
     'unitPriceNumber' => 'Birim fiyatı bir sayı olmalıdır',
     'amountNumber' => 'Tutar bir sayı olmalıdır.',
     'itemBlank' => 'Öğe adı boş olamaz.',

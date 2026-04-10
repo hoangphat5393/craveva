@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Zgjidhni të paktën 1.',
     'addItem' => 'Shto të paktën 1 artikull.',
     'quantityNumber' => 'Sasia duhet të jetë një numër',
+    'salesDoShipQuantityRequired' => 'Sasia e dërgesës duhet të jetë më e madhe se zero në të paktën një rresht. Redaktoni urdhrin e dorëzimit dhe plotësoni sasitë.',
     'unitPriceNumber' => 'Çmimi për njësi duhet të jetë një numër',
     'amountNumber' => 'Shuma duhet të jetë një numër.',
     'itemBlank' => 'Emri i artikullit nuk mund të jetë bosh.',

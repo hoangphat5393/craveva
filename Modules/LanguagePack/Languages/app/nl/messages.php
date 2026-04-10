@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Kies er minimaal 1.',
     'addItem' => 'Voeg minimaal 1 item toe.',
     'quantityNumber' => 'Hoeveelheid moet een getal zijn',
+    'salesDoShipQuantityRequired' => 'De verzendhoeveelheid moet groter dan nul zijn op minstens één regel. Bewerk de leverbon en vul de verzendhoeveelheden in.',
     'unitPriceNumber' => 'De eenheidsprijs moet een getal zijn',
     'amountNumber' => 'Bedrag moet een getal zijn.',
     'itemBlank' => 'De itemnaam mag niet leeg zijn.',

@@ -8,7 +8,11 @@
             <div class="row">
                 <div class="col-md-8">
                     <x-cards.data-row :label="__('app.date')" :value="\Carbon\Carbon::parse($inventory->date)->translatedFormat(company()->date_format) ?? '--'" />
-                    <x-cards.data-row :label="__('purchase::modules.inventory.warehouse')" :value="$inventory->warehouse?->name ?? '--'" />
+                    @php
+                        $invWh = $inventory->warehouse;
+                        $invWhDisplay = $invWh ? (filled($invWh->code) ? $invWh->name . ' (' . $invWh->code . ')' : $invWh->name) : '--';
+                    @endphp
+                    <x-cards.data-row :label="__('purchase::modules.inventory.warehouse')" :value="$invWhDisplay" />
                     <x-cards.data-row :label="__('purchase::modules.product.reason')" :value="$inventory->reason ? $inventory->reason->name : '--'" />
                     <x-cards.data-row :label="__('purchase::modules.product.modeOfAdjustment')" :value="$inventory->type ?? '--'" />
 
@@ -59,6 +63,7 @@
                                     <td class="f-15">@lang('purchase::modules.product.changedValue')</td>
                                     <td class="f-15">@lang('purchase::modules.product.adjustedValue')</td>
                                 @endif
+                                <td class="f-15">@lang('purchase::modules.inventory.batchNumber')</td>
                                 <td class="f-15">@lang('app.description')</td>
                             </tr>
                         </thead>
@@ -74,6 +79,7 @@
                                         <td>{{ $item->changed_value }}</td>
                                         <td>{{ $item->adjusted_value }}</td>
                                     @endif
+                                    <td>{{ filled($item->batch_number) ? $item->batch_number : '—' }}</td>
                                     <td>{{ $item->description }}</td>
                                 </tr>
                             @endforeach

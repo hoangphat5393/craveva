@@ -44,6 +44,7 @@ return [
     'signatureAdded' => 'Signature Added Successfully',
     'contractRenewSuccess' => 'Contract renewed successfully.',
     'quantityNumber' => 'Quantity should be a number',
+    'salesDoShipQuantityRequired' => 'Ship quantity must be greater than zero on at least one line. Edit the delivery order to set ship quantities.',
     'unitPriceNumber' => 'Unit price should be a number',
     'amountNumber' => 'Amount should be a number.',
     'itemBlank' => 'Item name cannot be blank.',

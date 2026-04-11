@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mua hàng - Kho - Bán hàng</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+
+<body>
+    <h2>Mua hàng - Kho - Bán hàng</h2>
+    <div class="mermaid">
+        graph TD
+        %% Khối Mua Hàng (Purchasing)
+        subgraph "MUA HÀNG & NHẬP KHO"
+        A[Yêu cầu mua hàng] --> B[Purchase Order - PO]
+        B --> C{Nhà CC giao hàng}
+        C --> D[Nhập kho - GRN]
+        D --> E{So khớp 3 bên}
+        B -.-> E
+        F[Invoice từ Nhà CC] -.-> E
+        E --> G[Xác nhận thanh toán]
+        end
+
+        %% Khối Kho (Inventory)
+        D --> H[(KHO HÀNG)]
+        H --> I[Cập nhật tồn kho]
+
+        %% Khối Bán Hàng (Sales)
+        subgraph "BÁN HÀNG & XUẤT KHO"
+        J[Khách đặt hàng] --> K[Sales Order - SO]
+        K --> L{Kiểm tra tồn kho}
+        L -- Còn hàng --> M[Xuất kho - DO]
+        L -- Hết hàng --> A
+        M --> N[Giao hàng cho khách]
+        N --> O[Xuất Sales Invoice]
+        O --> P[Thu tiền khách hàng]
+        end
+
+        %% Kết nối
+        M --> H
+    </div>
+</body>
+
+</html>

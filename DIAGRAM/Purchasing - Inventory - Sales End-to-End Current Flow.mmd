@@ -1,0 +1,36 @@
+%% End-to-end flow — Craveva staging (2026-04)
+%% Sales stock: default sales_outbound_mode = shipment → trừ kho khi Sales DO **Ship** (không trừ thêm từ Invoice).
+%% Mode `invoice`: xuất kho theo Invoice (không dùng chuỗi DO ship để trừ tồn) — nhánh thay thế, không vẽ chi tiết dưới đây.
+
+graph TD
+%% Khối Mua Hàng (Purchasing)
+subgraph "MUA HÀNG & NHẬP KHO"
+A[Yêu cầu mua hàng] --> B[Purchase Order - PO]
+B --> C{Nhà CC giao hàng}
+C --> D[Nhập kho - GRN]
+D --> E{So khớp 3 bên}
+B -.-> E
+F[Invoice từ Nhà CC] -.-> E
+E --> G[Xác nhận thanh toán]
+end
+
+    %% Khối Kho (Inventory)
+    D --> H[(KHO HÀNG)]
+    H --> I[Cập nhật tồn kho]
+
+    %% Khối Bán Hàng (Sales) — khớp app: Order SO + Sales DO sales_dos + Invoice AR
+    subgraph "BÁN HÀNG & XUẤT KHO (mode shipment — mặc định)"
+        J[Khách đặt hàng] --> K[Sales Order - SO]
+        K --> L{Đủ tồn / kế hoạch?}
+        L -- Có --> M1[Sales DO - Phiếu giao bán]
+        L -- Thiếu hàng / cần mua --> A
+        M1 --> M2[Confirm DO — giữ chỗ tồn]
+        M2 --> M3[Ship DO — trừ kho xuất]
+        M3 --> N[Giao vật lý / Delivered trên DO]
+        N -.->|thứ tự nghiệp vụ tùy DN| O[Xuất Sales Invoice — công nợ / doanh thu]
+        O --> P[Thu tiền khách hàng]
+        K -.->|có thể lập HĐ sớm hơn giao| O
+    end
+
+    %% Kết nối kho: xuất bán giảm tồn tại H (khi Ship)
+    M3 --> H

@@ -1,36 +1,61 @@
 %% End-to-end flow — Craveva staging (2026-04)
-%% Sales stock: default sales_outbound_mode = shipment → trừ kho khi Sales DO **Ship** (không trừ thêm từ Invoice).
-%% Mode `invoice`: xuất kho theo Invoice (không dùng chuỗi DO ship để trừ tồn) — nhánh thay thế, không vẽ chi tiết dưới đây.
+%% + Lớp StockMovement (sổ cái) và tồn batch — dễ hình dung quan hệ với chứng từ.
+%% Sales: mặc định sales_outbound_mode = shipment → outbound khi Ship DO (status shipped, SalesDoService::ship).
+%% Mode invoice: outbound từ Invoice — nhánh nét đứt.
+%% Mua: PO delivered HOẶC GRN received (grns) — một nguồn nhập chuẩn / tenant; xem QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md
+%% Trả hàng mua: Vendor Credit dòng hàng — recordOutbound ref PurchaseVendorCredit (PURCHASE_RETURN_VENDOR_CREDIT_STOCK_VI.md)
 
 graph TD
-%% Khối Mua Hàng (Purchasing)
+%% --- Mua hàng ---
 subgraph "MUA HÀNG & NHẬP KHO"
 A[Yêu cầu mua hàng] --> B[Purchase Order - PO]
 B --> C{Nhà CC giao hàng}
-C --> D[Nhập kho - GRN]
+C --> D[Nhập kho — GRN / DO nhập received]
 D --> E{So khớp 3 bên}
 B -.-> E
-F[Invoice từ Nhà CC] -.-> E
-E --> G[Xác nhận thanh toán]
+F[Invoice / bill từ NCC] -.-> E
+E --> G[Xác nhận thanh toán AP]
+VC[Vendor Credit — trả hàng NCC / dòng hàng] -.->|recordOutbound ref PurchaseVendorCredit| SM
+F -.->|bill / PO| VC
 end
 
-    %% Khối Kho (Inventory)
-    D --> H[(KHO HÀNG)]
-    H --> I[Cập nhật tồn kho]
+%% --- Lớp kho kỹ thuật: sổ phát sinh + tồn lô ---
+subgraph "KHO — SỔ PHÁT SINH & TỒN (Warehouse module)"
+    SM[(stock_movements — sổ cái kho<br/>inbound · outbound · transfer<br/>reference_type + idempotency)]
+    H[(Tồn vật lý — warehouse_product_batches<br/>+ reserved_quantity khi đặt chỗ)]
+    SM -->|cập nhật số lượng lô / kho| H
+    RPT[Báo cáo / màn Movements / tồn SP]
+    H --> RPT
+end
 
-    %% Khối Bán Hàng (Sales) — khớp app: Order SO + Sales DO sales_dos + Invoice AR
-    subgraph "BÁN HÀNG & XUẤT KHO (mode shipment — mặc định)"
-        J[Khách đặt hàng] --> K[Sales Order - SO]
-        K --> L{Đủ tồn / kế hoạch?}
-        L -- Có --> M1[Sales DO - Phiếu giao bán]
-        L -- Thiếu hàng / cần mua --> A
-        M1 --> M2[Confirm DO — giữ chỗ tồn]
-        M2 --> M3[Ship DO — trừ kho xuất]
-        M3 --> N[Giao vật lý / Delivered trên DO]
-        N -.->|thứ tự nghiệp vụ tùy DN| O[Xuất Sales Invoice — công nợ / doanh thu]
-        O --> P[Thu tiền khách hàng]
-        K -.->|có thể lập HĐ sớm hơn giao| O
-    end
+%% Nhập kho: bản ghi inbound (tùy cấu hình công ty)
+D -->|recordInbound ref GRN hoặc DO inbound| SM
+B -.->|recordInbound ref PO khi delivered<br/>inbound_from_purchase_order_delivered| SM
 
-    %% Kết nối kho: xuất bán giảm tồn tại H (khi Ship)
-    M3 --> H
+%% --- Bán hàng ---
+subgraph "BÁN HÀNG — mode shipment (mặc định)"
+J[Khách đặt hàng] --> K[Sales Order — SO]
+K --> L{Đủ tồn / kế hoạch?}
+L -- Có --> M1[Sales DO — sales_dos]
+L -- Thiếu hàng / cần mua --> A
+M1 --> M2[Confirm DO — đặt chỗ tồn]
+M2 -->|StockReservationService + batch| H
+M2 --> M3[Ship DO — recordOutbound ref SalesDo]
+M3 --> SM
+M3 --> N[Giao vật lý / Delivered]
+N -.->|thứ tự nghiệp vụ tùy DN| O[Sales Invoice — AR / doanh thu]
+O --> P[Thu tiền khách]
+K -.->|có thể lập HĐ sớm| O
+end
+
+%% Outbound từ HĐ chỉ khi mode invoice (tránh trùng với shipment)
+O -.->|recordOutbound ref Invoice<br/>chỉ khi sales_outbound_mode = invoice| SM
+
+%% Trả hàng bán — Credit Note (reverse logistics)
+CN[Credit Note — dòng hàng hóa trả] -->|recordInbound ref CreditNotes<br/>idempotent theo CN + dòng<br/>reversal outbound khi xóa CN| SM
+O -.->|CN gắn invoice / SO| CN
+CN -.->|warehouse: dòng CN hoặc DO đã ship cùng order+SP| M1
+
+%% Bổ sung quan hệ khác (nét đứt — có trong hệ thống, không vẽ hết chi tiết)
+XFR[Chuyển kho — transfer] -.->|in + out| SM
+ADJ[Điều chỉnh tồn — Purchase Inventory / adjust] -.->|tùy luồng| SM

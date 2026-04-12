@@ -1,29 +1,28 @@
+%% Bản rút gọn — đồng bộ với FUNC_LOGIC/QUY_TRINH + SALES_PURCHASE_FLOW (2026-04).
+%% Chi tiết ledger + idempotency: Purchasing - Inventory - Sales End-to-End Current Flow.mmd
+
 graph TD
-%% Khối Mua Hàng (Purchasing)
-subgraph "MUA HÀNG & NHẬP KHO"
-    A[Yêu cầu mua hàng] --> B[Purchase Order - PO]
-    B --> C{Nhà CC giao hàng}
-    C --> D[Nhập kho - GRN]
-    D --> E{So khớp 3 bên}
-    B -.-> E
-    F[Invoice từ Nhà CC] -.-> E
-    E --> G[Xác nhận thanh toán]
-end
+  subgraph mua [Mua hàng và nhập kho]
+    A[PO] --> B{Inbound chuẩn tenant}
+    B -->|PO delivered + flag| I[(Tồn / batches)]
+    B -->|GRN received + flag| I
+    POINV[Purchase Inventory adjust] --> I
+    F[PurchaseBill — AP] -.->|không ghi stock_movements| G[Công nợ NCC]
+    VC[Vendor Credit] -.->|giảm AP; chưa gắn xuất kho tự động trong code| G
+  end
 
-%% Khối Kho (Inventory)
-D --> H[(KHO HÀNG)]
-H --> I[Cập nhật tồn kho]
+  subgraph ban [Bán và xuất kho]
+    J[SO / Order] --> K[Sales DO]
+    K --> L[Confirm DO — reservation]
+    L --> M[Ship DO — outbound nếu mode shipment]
+    M --> I
+    J -.-> N[Sales Invoice — AR]
+    N -.->|mode invoice: outbound từ HĐ| I
+    N --> CN[Credit Note — trả hàng]
+    CN -->|recordInbound| I
+  end
 
-%% Khối Bán Hàng (Sales)
-subgraph "BÁN HÀNG & XUẤT KHO"
-    J[Khách đặt hàng] --> K[Sales Order - SO]
-    K --> L{Kiểm tra tồn kho}
-    L -- Còn hàng --> M[Xuất kho - DO]
-    L -- Hết hàng --> A
-    M --> N[Giao hàng cho khách]
-    N --> O[Xuất Sales Invoice]
-    O --> P[Thu tiền khách hàng]
-end
-
-%% Kết nối
-M --> H
+  subgraph kho [Sổ cái]
+    SM[(stock_movements)]
+    I --> SM
+  end

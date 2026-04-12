@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
+use Modules\Warehouse\Entities\Warehouse;
 
 /**
  * App\Models\CreditNoteItem
@@ -16,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property float $unit_price
  * @property float $amount
  * @property string|null $taxes
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $hsn_sac_code
  * @property-read mixed $icon
  *
@@ -36,18 +38,22 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNoteItem whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNoteItem whereUpdatedAt($value)
  *
- * @property-read \App\Models\CreditNoteItemImage|null $creditNoteItemImage
+ * @property-read CreditNoteItemImage|null $creditNoteItemImage
  * @property string|null $item_summary
  * @property-read mixed $tax_list
  *
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNoteItem whereItemSummary($value)
  *
- * @property-read \App\Models\UnitType|null $unit
+ * @property-read UnitType|null $unit
  * @property int|null $unit_id
  * @property int|null $product_id
  *
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNoteItem whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNoteItem whereUnitId($value)
+ *
+ * @property int|null $warehouse_id
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|CreditNoteItem whereWarehouseId($value)
  *
  * @mixin \Eloquent
  */
@@ -70,6 +76,16 @@ class CreditNoteItem extends BaseModel
     public function unit(): BelongsTo
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
+    }
+
+    public function creditNote(): BelongsTo
+    {
+        return $this->belongsTo(CreditNotes::class, 'credit_note_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 
     public function getTaxListAttribute()

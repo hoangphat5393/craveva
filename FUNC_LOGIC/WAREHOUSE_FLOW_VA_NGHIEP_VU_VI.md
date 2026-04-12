@@ -4,7 +4,7 @@
 **Đối tượng:** Người cần hiểu **business logic** (không cần đọc code).  
 **Quy trình tổng PO/DO/SO/Invoice/kho (đọc trước):** [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)  
 **Runbook + kế hoạch nâng cấp (WUP):** [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md)  
-**Checklist test tay đầy đủ:** [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)  
+**Checklist UAT E2E (Mua · Bán · Kho):** [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)  
 **Kỹ thuật sâu (DB, URL, permission):** [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)
 
 ---

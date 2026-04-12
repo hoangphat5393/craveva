@@ -9,9 +9,20 @@ use Modules\Purchase\Entities\PurchaseVendorCreditHistory;
 use Modules\Purchase\Entities\PurchaseVendorCreditItemImage;
 use Modules\Purchase\Entities\PurchaseVendorItem;
 use Modules\Purchase\Events\VendorCreditEvent;
+use Modules\Warehouse\Services\VendorCreditWarehouseStockService;
 
 class PurchaseVendorCreditObserver
 {
+    public function deleting(PurchaseVendorCredit $vendorCredit): void
+    {
+        if (function_exists('isSeedingData') && isSeedingData()) {
+            return;
+        }
+
+        $vendorCredit->loadMissing('items');
+        app(VendorCreditWarehouseStockService::class)->reverseAllOutboundForVendorCredit($vendorCredit);
+    }
+
     public function saving(PurchaseVendorCredit $vendorCredit)
     {
 
@@ -113,9 +124,7 @@ class PurchaseVendorCreditObserver
                             $this->duplicateImageStore($estimateOldImg, $vendorCreditItem);
                         }
                     }
-
                 }
-
             }
 
             if (request()->billId) {
@@ -125,13 +134,11 @@ class PurchaseVendorCreditObserver
                 $billId->credit_note = 1;
 
                 $billId->save();
-
             }
 
             $vendorID = request()->vendor_id;
 
             $this->logVendorActivity(company()->id, $vendorID, $vendorCredit->id, $vendorCredit->total, user()->id, 'vendorCreditCreated', 'Created');
-
         }
     }
 
@@ -234,7 +241,6 @@ class PurchaseVendorCreditObserver
         $vendorID = request()->vendor_id;
 
         $this->logVendorActivity(company()->id, $vendorID, $vendorCredit->id, $vendorCredit->total, user()->id, 'vendorCreditUpdated', 'Updated');
-
     }
 
     public function duplicateImageStore($estimateOldImg, $vendorCreditItem)
@@ -253,7 +259,6 @@ class PurchaseVendorCreditObserver
             $file->hashname = $fileName;
             $file->size = $estimateOldImg->size;
             $file->save();
-
         }
     }
 

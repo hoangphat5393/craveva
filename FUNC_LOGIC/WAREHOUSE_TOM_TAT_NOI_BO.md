@@ -13,7 +13,7 @@ Các tài liệu nội bộ cũ (audit trước nâng cấp, prompt UAT, §10–
 | **Trạng thái WUP-01…WUP-07**, runbook local, checklist UAT nhanh | [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md) (mục §1 Runbook + §6 Trạng thái triển khai) |
 | **Mục lục** toàn bộ tài liệu Warehouse                           | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)                                                                                         |
 | QA đối chiếu SO / PO / DO / Invoice / kho với code               | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)                     |
-| Checklist UAT tay (Miaolin)                                      | [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)                                                         |
+| Checklist UAT E2E (Mua · Bán · Kho)                              | [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)                                                       |
 
 ---
 

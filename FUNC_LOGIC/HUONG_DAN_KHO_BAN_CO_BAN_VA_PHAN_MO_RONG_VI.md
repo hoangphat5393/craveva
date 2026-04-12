@@ -61,7 +61,7 @@ Thứ tự thực tế khi cấu hình **`WAREHOUSE_SALES_OUTBOUND_MODE=shipment
 Khách đặt 100 áo → tạo SO → tạo **một** Sales DO 100 áo → **Ship** → kho trừ 100 → xuất hóa đơn (invoice) cho khách.
 
 **Ví dụ B — giao nhiều đợt:**  
-SO 100 áo → Sales DO đợt 1: 30 áo → Ship đợt 1 → trừ 30 tồn → sau đó Sales DO đợt 2: 70 áo → Ship → trừ 70. Hóa đơn có thể một hoặc nhiều lần tùy quy trình kế toán (hệ thống cho phép nhiều invoice gắn một SO ở mức DB, UI có thể cần quy ước nội bộ).
+SO 100 áo → Sales DO đợt 1: 30 áo → Ship đợt 1 → trừ 30 tồn → sau đó Sales DO đợt 2: 70 áo → Ship → trừ 70. **Hóa đơn (invoice) gắn SO:** model hiện tại là **tối đa một** `Invoice` với cùng `order_id` (xem `SALES_PURCHASE_FLOW.md` §2.1); thanh toán từng phần = nhiều **Payment** trên cùng một invoice, hoặc hóa đơn **không** gắn SO nếu tách chứng từ.
 
 ---
 

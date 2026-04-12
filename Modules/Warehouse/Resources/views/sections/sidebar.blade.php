@@ -5,6 +5,7 @@
     $viewWarehouseStock = user()->permission('view_warehouse_stock');
     $addWarehouseStock = user()->permission('add_warehouse_stock');
     $manageWarehouseTransfer = user()->permission('manage_warehouse_transfer');
+    $canSeeWarehouseTransferUi = $manageWarehouseTransfer && $manageWarehouseTransfer != 'none';
     $hasWarehouseMenu = ($viewWarehouses && $viewWarehouses != 'none') || ($addWarehouses && $addWarehouses != 'none') || ($viewWarehouseStock && $viewWarehouseStock != 'none') || ($addWarehouseStock && $addWarehouseStock != 'none') || ($manageWarehouseTransfer && $manageWarehouseTransfer != 'none');
 @endphp
 
@@ -21,7 +22,11 @@
             @endif
 
             @if ($viewWarehouseStock && $viewWarehouseStock != 'none')
-                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" :active="request()->routeIs('warehouse.stock.*', 'warehouse.transfer.*')" />
+                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" :active="request()->routeIs('warehouse.stock.*')" />
+            @endif
+
+            @if ($canSeeWarehouseTransferUi)
+                <x-sub-menu-item :link="route('warehouse.transfer.create')" :text="__('warehouse::app.transferStock')" :permission="true" :active="request()->routeIs('warehouse.transfer.*')" />
             @endif
 
             @if ($viewWarehouseStock && $viewWarehouseStock != 'none')

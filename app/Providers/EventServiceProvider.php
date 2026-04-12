@@ -196,6 +196,7 @@ use App\Models\ContractRenew;
 use App\Models\ContractSign;
 use App\Models\ContractTemplate;
 use App\Models\ContractType;
+use App\Models\CreditNoteItem;
 use App\Models\CreditNotes;
 use App\Models\Currency;
 use App\Models\CurrencyFormatSetting;
@@ -352,6 +353,7 @@ use App\Observers\ContractRenewObserver;
 use App\Observers\ContractSignObserver;
 use App\Observers\ContractTemplateObserver;
 use App\Observers\ContractTypeObserver;
+use App\Observers\CreditNoteItemObserver;
 use App\Observers\CreditNoteObserver;
 use App\Observers\CurrencyFormatSettingObserver;
 use App\Observers\CurrencyObserver;
@@ -596,6 +598,7 @@ class EventServiceProvider extends ServiceProvider
         ContractDiscussion::class => [ContractDiscussionObserver::class],
         ContractFile::class => [ContractFileObserver::class],
         ContractRenew::class => [ContractRenewObserver::class],
+        CreditNoteItem::class => [CreditNoteItemObserver::class],
         CreditNotes::class => [CreditNoteObserver::class],
         CustomField::class => [CustomFieldsObserver::class],
         Discussion::class => [DiscussionObserver::class],

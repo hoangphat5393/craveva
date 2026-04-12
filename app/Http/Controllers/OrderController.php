@@ -134,7 +134,7 @@ class OrderController extends AccountBaseController
             $condition = $this->orderSetting->order_digit - strlen($this->lastOrder);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0' . $this->zero;
+                $this->zero = '0'.$this->zero;
             }
         }
 
@@ -393,11 +393,11 @@ class OrderController extends AccountBaseController
 
         if ($term !== '') {
             $query->where(function ($q) use ($term) {
-                $q->where('users.name', 'like', '%' . $term . '%')
-                    ->orWhere('users.email', 'like', '%' . $term . '%')
-                    ->orWhere('users.mobile', 'like', '%' . $term . '%')
-                    ->orWhere('client_details.company_name', 'like', '%' . $term . '%')
-                    ->orWhere('client_details.client_code', 'like', '%' . $term . '%');
+                $q->where('users.name', 'like', '%'.$term.'%')
+                    ->orWhere('users.email', 'like', '%'.$term.'%')
+                    ->orWhere('users.mobile', 'like', '%'.$term.'%')
+                    ->orWhere('client_details.company_name', 'like', '%'.$term.'%')
+                    ->orWhere('client_details.client_code', 'like', '%'.$term.'%');
             });
         }
 
@@ -440,8 +440,8 @@ class OrderController extends AccountBaseController
 
         if ($term !== '') {
             $query->where(function ($q) use ($term) {
-                $q->where('name', 'like', '%' . $term . '%')
-                    ->orWhere('sku', 'like', '%' . $term . '%');
+                $q->where('name', 'like', '%'.$term.'%')
+                    ->orWhere('sku', 'like', '%'.$term.'%');
             });
         }
 
@@ -634,10 +634,10 @@ class OrderController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = OrderItems::taxbyid($tax)->first();
 
-                if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
-                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($this->tax->rate_percent / 100) * $item->amount;
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($this->tax->rate_percent / 100) * $item->amount;
                 } else {
-                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($this->tax->rate_percent / 100) * $item->amount);
+                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($this->tax->rate_percent / 100) * $item->amount);
                 }
             }
         }
@@ -738,7 +738,7 @@ class OrderController extends AccountBaseController
                     'customer' => $customer->id,
                     'setup_future_usage' => 'off_session',
                     'payment_method_types' => ['card'],
-                    'description' => $this->order->id . ' Payment',
+                    'description' => $this->order->id.' Payment',
                     'metadata' => ['integration_check' => 'accept_a_payment', 'order_id' => $id],
                 ]
             );
@@ -1049,6 +1049,8 @@ class OrderController extends AccountBaseController
                         'item_summary' => $item->item_summary,
                         'hsn_sac_code' => $item->hsn_sac_code,
                         'sku' => $item->sku,
+                        'product_id' => $item->product_id,
+                        'unit_id' => $item->unit_id,
                         'quantity' => $item->quantity,
                         'unit_price' => round($item->unit_price, 2),
                         'amount' => round($item->amount, 2),
@@ -1093,7 +1095,7 @@ class OrderController extends AccountBaseController
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -1131,11 +1133,11 @@ class OrderController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = OrderItems::taxbyid($tax)->first();
 
-                if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
-                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                 } else {
-                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                 }
             }
         }
@@ -1152,7 +1154,7 @@ class OrderController extends AccountBaseController
                 * { text-transform: none !important; }
             </style>';
 
-        $pdf->loadHTML($customCss . view('orders.pdf.' . $this->invoiceSetting->template, $this->data)->render());
+        $pdf->loadHTML($customCss.view('orders.pdf.'.$this->invoiceSetting->template, $this->data)->render());
         $filename = $this->order->order_number;
 
         return [
@@ -1171,7 +1173,7 @@ class OrderController extends AccountBaseController
 
     public function importOrder()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.orders');
+        $this->pageTitle = __('app.importExcel').' '.__('app.menu.orders');
         $this->addPermission = user()->permission('add_order');
         abort_403(! in_array($this->addPermission, ['all', 'added', 'both']));
 
@@ -1211,7 +1213,7 @@ class OrderController extends AccountBaseController
 
         $batchId = data_get($batch, 'id');
         if ($batchId) {
-            Cache::put('import_metrics_' . $batchId, [
+            Cache::put('import_metrics_'.$batchId, [
                 'created' => 0,
                 'updated' => 0,
                 'skipped' => 0,

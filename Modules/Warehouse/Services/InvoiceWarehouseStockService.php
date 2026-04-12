@@ -198,6 +198,11 @@ class InvoiceWarehouseStockService
         return $invoice->status !== 'draft';
     }
 
+    public function resolveDefaultWarehouseIdForInvoice(Invoice $invoice): int
+    {
+        return $this->resolveWarehouseId($invoice);
+    }
+
     protected function resolveWarehouseId(Invoice $invoice): int
     {
         $companyId = (int) $invoice->company_id;

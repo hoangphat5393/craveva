@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Scopes\ActiveScope;
 use App\Traits\EmployeeActivityTrait;
 use App\Traits\UnitTypeSaveTrait;
+use Modules\Warehouse\Services\CreditNoteWarehouseStockService;
 
 class CreditNoteObserver
 {
@@ -40,11 +41,14 @@ class CreditNoteObserver
 
         $invoiceSettings = company() ? company()->invoiceSetting : $creditNote->company->invoiceSetting;
         $creditNote->original_credit_note_number = str($creditNote->cn_number)->replace($invoiceSettings->credit_note_prefix.$invoiceSettings->credit_note_number_separator, '');
-
     }
 
     public function deleting(CreditNotes $creditNote)
     {
+        if (! function_exists('isSeedingData') || ! isSeedingData()) {
+            app(CreditNoteWarehouseStockService::class)->reverseInboundForCreditNote($creditNote);
+        }
+
         $universalSearches = UniversalSearch::where('searchable_id', $creditNote->id)->where('module_type', 'creditNote')->get();
 
         if ($universalSearches) {
@@ -55,7 +59,6 @@ class CreditNoteObserver
 
         $notifyData = ['App\Notifications\NewCreditNote'];
         Notification::deleteNotification($notifyData, $creditNote->id);
-
     }
 
     public function created(CreditNotes $creditNote)
@@ -98,7 +101,6 @@ class CreditNoteObserver
                 $payment->paid_on = now();
                 $payment->save();
             }
-
         }
     }
 
@@ -113,7 +115,6 @@ class CreditNoteObserver
     {
         if (user()) {
             self::createEmployeeActivity(user()->id, 'creditNote-deleted');
-
         }
     }
 }

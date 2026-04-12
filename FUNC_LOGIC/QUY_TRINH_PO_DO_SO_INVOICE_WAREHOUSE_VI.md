@@ -2,15 +2,16 @@
 
 **Mục đích:** Một file **hướng dẫn nghiệp vụ + vận hành** theo thứ tự: mua (PO/DO), kho, bán (SO/Invoice), cấu hình.  
 **Đối tượng:** PM, BA, vận hành, dev mới.  
-**Cập nhật:** 2026-04-09
+**Cập nhật:** 2026-04-12
 
 **Bảng thật trên DB (GRN / Sales DO) vs legacy:** [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md) — trong file này vẫn dùng từ nghiệp vụ “DO nhận hàng”, “phiếu giao bán”; **bảng ghi hiện tại** lần lượt là `grns` và `sales_dos`, không còn `delivery_orders` / `sales_shipments` cho CRUD chính.
 
 **Chi tiết kỹ thuật (class, bảng, observer):** [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)  
+**Trả hàng bán (Credit Note → nhập kho):** [`SALES_RETURN_CREDIT_NOTE_STOCK_VI.md`](SALES_RETURN_CREDIT_NOTE_STOCK_VI.md)  
 **Chỉ riêng module kho (điều chỉnh, chuyển, ledger):** [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)  
 **URL, quyền, DB:** [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)  
 **Trạng thái triển khai, audit, prompt Cursor:** [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11  
-**Test tay:** [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)
+**Test tay / UAT E2E:** [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md) · _redirect:_ [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)
 
 ---
 
@@ -44,6 +45,13 @@
 - Điều chỉnh tồn theo **số đích** từng kho + sản phẩm → delta → movement.
 - Chi tiết bảng ghi: [`FLOW_ADD_INVENTORY.md`](FLOW_ADD_INVENTORY.md).
 
+### 2.4 Trả hàng mua / Vendor Credit / công nợ NCC
+
+- **PurchaseBill** = hóa đơn/công nợ phải trả gắn PO; **không** ghi `stock_movements` trong observer bill.
+- **Vendor Credit** (`PurchaseVendorCredit`) = chứng từ **giảm phải trả** (thường gắn bill → gián tiếp PO). **Xuất kho trả NCC:** dòng `purchase_vendor_items` loại `item` có `product_id` → `VendorCreditWarehouseStockService` / `StockMovementService::recordOutbound`; xóa chứng từ hoặc sửa/xóa dòng → hoàn tác / đồng bộ lại (idempotent theo khóa movement). Chi tiết: [`PURCHASE_RETURN_VENDOR_CREDIT_STOCK_VI.md`](PURCHASE_RETURN_VENDOR_CREDIT_STOCK_VI.md).
+- **Vendor Payment** = thanh toán / cấn trừ bill (và có thể áp credit).
+- Luồng vận hành nên thống nhất: **ghi Vendor Credit khi đã thống nhất SL trả** và cấu hình inbound/outbound kho để tránh lệch với thực tế vật lý.
+
 ---
 
 ## 3) Luồng kho thuần (không qua PO)
@@ -65,8 +73,8 @@
 
 1. Tạo một hoặc nhiều **Sales DO** từ cùng một SO (partial shipment). Route/controller có thể vẫn mang tên “shipment”; dữ liệu lưu ở **`sales_dos` / `sales_do_items`** (xem ma trận legacy).
 2. Chuyển trạng thái: `draft -> confirmed -> shipped -> delivered` (hoặc `cancelled`).
-3. Khi mode outbound là `shipment`, lúc `shipped` hệ thống post outbound qua `SalesShipmentStockService`.
-4. Có action `reverse outbound` để hoàn kho và đưa shipment về `confirmed` khi cần xử lý sai lệch vận hành.
+3. Khi mode outbound là `shipment`, action **Ship** (`SalesDoService::ship`, trạng thái → **`shipped`**) gọi `SalesShipmentStockService::applyOutboundForShipment` — **đây là bước trừ tồn**, không phải `delivered` một mình.
+4. Có action **reverse** (`SalesDoService::reverse`) hoặc **cancel** (nếu đã outbound) để hoàn kho / hủy reservation khi xử lý sai lệch vận hành.
 
 ### 4.3 Invoice (hóa đơn bán)
 
@@ -90,6 +98,11 @@ Quy tắc tránh double deduction:
 
 **Tắt flag** = không tự tạo outbound từ shipment/invoice (tồn chỉ thay đổi bởi PO/DO/inventory/chuyển kho/điều chỉnh).
 
+### 4.5 Trả hàng bán (Credit Note)
+
+- Khi phát hành dòng **Credit Note** có `product_id` (hàng): **nhập kho** qua `CreditNoteWarehouseStockService` (idempotent; xóa CN hoàn tác). Chi tiết: [`SALES_RETURN_CREDIT_NOTE_STOCK_VI.md`](SALES_RETURN_CREDIT_NOTE_STOCK_VI.md).
+- Mode `shipment`: kho nhận trả có thể suy từ **Sales DO** đã ship cùng order + sản phẩm; có thể ghi đè bằng `credit_note_items.warehouse_id` (migration Warehouse).
+
 ---
 
 ## 5) Sơ đồ tổng (tóm tắt)
@@ -98,7 +111,7 @@ Quy tắc tránh double deduction:
 flowchart TB
   subgraph mua [Mua hàng]
     PO[PO delivered]
-    DO[DO inbound received]
+    GRN[GRN received]
     INVADJ[Purchase Inventory]
   end
   subgraph kho [Kho]
@@ -106,14 +119,19 @@ flowchart TB
   end
   subgraph ban [Bán hàng]
     SO[Order SO]
+    SDO[Sales DO ship → shipped]
     INV[Invoice không draft]
+    CN[Credit Note dòng hàng]
   end
-  PO --> WH
-  DO --> WH
+  PO -->|"inbound nếu flag PO"| WH
+  GRN -->|"inbound nếu flag GRN/DO"| WH
   INVADJ --> WH
-  WH --> WH
-  SO --> INV
-  INV -->|"Scope B bật"| WH
+  SO --> SDO
+  SO -.-> INV
+  SDO -->|"sales_outbound_mode = shipment"| WH
+  INV -->|"sales_outbound_mode = invoice"| WH
+  INV -.-> CN
+  CN -->|"nhập kho trả"| WH
 ```
 
 ---
@@ -124,7 +142,7 @@ flowchart TB
 - [ ] `WAREHOUSE_ALLOW_NEGATIVE_STOCK` theo policy.
 - [ ] Chọn đúng mode outbound (`shipment` hoặc `invoice`) theo quy trình vận hành.
 - [ ] Thử 1 PO delivered → tồn tăng + có dòng movement inbound.
-- [ ] Nếu mode `shipment`: thử SO 10 -> shipment 4 + 6, không cho shipment vượt phần còn lại.
+- [ ] Nếu mode `shipment`: thử SO 10 → **Ship** DO 4 + 6 (trừ tồn tại bước ship), không cho vượt tồn khả dụng.
 - [ ] Nếu mode `invoice`: thử 1 invoice không draft -> tồn giảm + outbound + posting.
 - [ ] Sửa/xóa invoice → reversal đúng kỳ vọng (UAT).
 

@@ -4,8 +4,9 @@ namespace Modules\Purchase\Providers;
 
 use App\Events\NewCompanyCreatedEvent;
 use App\Models\Currency;
-use App\Models\Payment;
+use App\Models\DeliveryOrder;
 use App\Models\Grn;
+use App\Models\Payment;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Modules\Purchase\Entities\PurchaseBill;
 use Modules\Purchase\Entities\PurchaseInventory;
@@ -19,6 +20,7 @@ use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
 use Modules\Purchase\Entities\PurchaseVendor;
 use Modules\Purchase\Entities\PurchaseVendorContact;
 use Modules\Purchase\Entities\PurchaseVendorCredit;
+use Modules\Purchase\Entities\PurchaseVendorItem;
 use Modules\Purchase\Entities\PurchaseVendorNote;
 use Modules\Purchase\Entities\PurchaseVendorPayment;
 use Modules\Purchase\Events\NewPurchaseBillEvent;
@@ -36,7 +38,6 @@ use Modules\Purchase\Listeners\PurchaseInventoryListener;
 use Modules\Purchase\Listeners\UpdateVendorPaymentListener;
 use Modules\Purchase\Listeners\VendorCreditListener;
 use Modules\Purchase\Listeners\VendorCreditPaymentMade;
-use App\Models\DeliveryOrder;
 use Modules\Purchase\Observers\CurrencyObserver;
 use Modules\Purchase\Observers\DeliveryOrderObserver;
 use Modules\Purchase\Observers\PaymentObserver;
@@ -50,6 +51,7 @@ use Modules\Purchase\Observers\PurchaseProductObserver;
 use Modules\Purchase\Observers\PurchaseStockAdjustmentObserver;
 use Modules\Purchase\Observers\PurchaseVendorContactObserver;
 use Modules\Purchase\Observers\PurchaseVendorCreditObserver;
+use Modules\Purchase\Observers\PurchaseVendorItemObserver;
 use Modules\Purchase\Observers\PurchaseVendorNotesObserver;
 use Modules\Purchase\Observers\PurchaseVendorObserver;
 use Modules\Purchase\Observers\PurchaseVendorPaymentObserver;
@@ -76,6 +78,7 @@ class EventServiceProvider extends ServiceProvider
         PurchaseVendorContact::class => [PurchaseVendorContactObserver::class],
         PurchaseVendorNote::class => [PurchaseVendorNotesObserver::class],
         PurchaseVendorCredit::class => [PurchaseVendorCreditObserver::class],
+        PurchaseVendorItem::class => [PurchaseVendorItemObserver::class],
         PurchaseStockAdjustmentReason::class => [StockAdjustmentReasonObserver::class],
         PurchaseStockAdjustment::class => [PurchaseStockAdjustmentObserver::class],
         PurchaseInventory::class => [PurchaseInventoryObserver::class],

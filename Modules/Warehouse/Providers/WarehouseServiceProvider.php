@@ -6,9 +6,13 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Modules\Warehouse\Console\WarehouseReconciliationReportCommand;
+use Modules\Warehouse\Contracts\SalesReturnInboundGateInterface;
+use Modules\Warehouse\Services\AllowAllSalesReturnInboundGate;
+use Modules\Warehouse\Services\CreditNoteWarehouseStockService;
 use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 use Modules\Warehouse\Services\StockMovementService;
 use Modules\Warehouse\Services\StockReservationService;
+use Modules\Warehouse\Services\VendorCreditWarehouseStockService;
 use Modules\Warehouse\Services\WarehouseAvailabilityService;
 use Modules\Warehouse\Services\WarehouseFlowConfigService;
 use Modules\Warehouse\Services\WarehouseFlowPolicyService;
@@ -46,6 +50,9 @@ class WarehouseServiceProvider extends ServiceProvider
     {
         $this->app->singleton(StockMovementService::class);
         $this->app->singleton(InvoiceWarehouseStockService::class);
+        $this->app->singleton(CreditNoteWarehouseStockService::class);
+        $this->app->singleton(VendorCreditWarehouseStockService::class);
+        $this->app->bind(SalesReturnInboundGateInterface::class, AllowAllSalesReturnInboundGate::class);
         $this->app->singleton(StockReservationService::class);
         $this->app->singleton(WarehouseFlowConfigService::class);
         $this->app->singleton(WarehouseFlowPolicyService::class);
@@ -90,7 +97,7 @@ class WarehouseServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom($moduleLangPath, $this->moduleNameLower);
         $this->loadJsonTranslationsFrom($moduleLangPath);
 
-        $publishedPath = resource_path('lang/modules/' . $this->moduleNameLower);
+        $publishedPath = resource_path('lang/modules/'.$this->moduleNameLower);
         if (is_dir($publishedPath)) {
             $this->loadTranslationsFrom($publishedPath, $this->moduleNameLower);
             $this->loadJsonTranslationsFrom($publishedPath);
@@ -102,7 +109,7 @@ class WarehouseServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $this->publishes([module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php')], 'config');
+        $this->publishes([module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower.'.php')], 'config');
         $this->mergeConfigFrom(module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower);
     }
 
@@ -111,14 +118,14 @@ class WarehouseServiceProvider extends ServiceProvider
      */
     public function registerViews(): void
     {
-        $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
+        $viewPath = resource_path('views/modules/'.$this->moduleNameLower);
         $sourcePath = module_path($this->moduleName, 'Resources/views');
 
-        $this->publishes([$sourcePath => $viewPath], ['views', $this->moduleNameLower . '-module-views']);
+        $this->publishes([$sourcePath => $viewPath], ['views', $this->moduleNameLower.'-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
 
-        $componentNamespace = str_replace('/', '\\', config('modules.namespace') . '\\' . $this->moduleName . '\\' . config('modules.paths.generator.component-class.path'));
+        $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.config('modules.paths.generator.component-class.path'));
         Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
     }
 
@@ -134,8 +141,8 @@ class WarehouseServiceProvider extends ServiceProvider
     {
         $paths = [];
         foreach (config('view.paths') as $path) {
-            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
-                $paths[] = $path . '/modules/' . $this->moduleNameLower;
+            if (is_dir($path.'/modules/'.$this->moduleNameLower)) {
+                $paths[] = $path.'/modules/'.$this->moduleNameLower;
             }
         }
 

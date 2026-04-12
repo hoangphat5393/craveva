@@ -8,6 +8,7 @@ use App\Models\UnitType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Modules\Warehouse\Entities\Warehouse;
 
 class PurchaseVendorItem extends BaseModel
 {
@@ -32,6 +33,16 @@ class PurchaseVendorItem extends BaseModel
     public function unit(): BelongsTo
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
+    }
+
+    public function vendorCredit(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseVendorCredit::class, 'credit_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 
     public function getTaxListAttribute()

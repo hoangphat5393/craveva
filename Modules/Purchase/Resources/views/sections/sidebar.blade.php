@@ -15,12 +15,12 @@
     $salesDoRouteName = $flowNamingMode === 'legacy' ? 'sales-shipments.index' : 'sales-do.index';
     // Warehouse module: migration chỉ gán quyền vào role "admin"; employee thường chưa có view_warehouses → hiển thị kèm quyền Inventory.
     $viewWarehouses = user()->permission('view_warehouses');
-    $addWarehouses = user()->permission('add_warehouses');
     $viewWarehouseStock = user()->permission('view_warehouse_stock');
     $addWarehouseStock = user()->permission('add_warehouse_stock');
     $manageWarehouseTransfer = user()->permission('manage_warehouse_transfer');
     $canSeeWarehouseMaster = ($viewWarehouses && $viewWarehouses != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
     $canSeeWarehouseStockUi = ($viewWarehouseStock && $viewWarehouseStock != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
+    $canSeeWarehouseTransferUi = ($manageWarehouseTransfer && $manageWarehouseTransfer != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
     $operationsMenuActive = request()->routeIs('orders.*', 'vendors.*', 'purchase-products.*', 'purchase_products.*', 'purchase-order.*', 'delivery-orders.*', 'sales-shipments.*', 'bills.*', 'vendor-payments.*', 'vendor-credits.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*', 'grn.*', 'sales-do.*', 'sales-history.*');
 @endphp
 @if (in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()) &&
@@ -45,51 +45,53 @@
 
         <div class="accordionItemContent pb-2">
 
+            {{-- Thứ tự Operations: Mua hàng → Bán hàng → Sản phẩm → Tồn kho / kho vật lý (đồng bộ LanguagePack vi) --}}
+
+            {{-- 1–6: Procurement --}}
             <x-sub-menu-item :link="route('vendors.index')" :text="__('purchase::app.menu.vendor')" :permission="$purchaseViewVendorPermission != 'none' && $purchaseViewVendorPermission != ''" />
 
-            <!-- NAV ITEM - PRODUCTS -->
-            @if (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 5 && $sidebarUserPermissions['view_product'] != 'none')
-                <x-sub-menu-item :link="route('purchase-products.index')" :text="__('purchase::app.menu.products')" :active="request()->routeIs('purchase-products.*', 'purchase_products.*')" />
-            @endif
+            <x-sub-menu-item :link="route('purchase-order.index')" :text="__('purchase::app.menu.purchaseOrder')" :permission="$purchaseViewOrderPermission != 'none' && $purchaseViewOrderPermission != ''" />
 
+            <x-sub-menu-item :link="route($grnRouteName)" :text="$grnLabel" :permission="$canViewGrn" />
+
+            <x-sub-menu-item :link="route('bills.index')" :text="__('purchase::app.menu.bills')" :permission="$purchaseViewBillPermission != 'none' && $purchaseViewBillPermission != ''" />
+
+            <x-sub-menu-item :link="route('vendor-payments.index')" :text="__('purchase::app.purchaseOrder.vendorPayments')" :permission="$purchaseViewPaymentPermission != 'none' && $purchaseViewPaymentPermission != ''" />
+
+            <x-sub-menu-item :link="route('vendor-credits.index')" :text="__('purchase::app.menu.vendorCredits')" :permission="$purchaseViewCreditPermission != 'none' && $purchaseViewCreditPermission != ''" />
+
+            {{-- 7–9: Sales --}}
             @if (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 5 && $sidebarUserPermissions['view_order'] != 'none')
                 <x-sub-menu-item :link="route('orders.index')" :text="__('app.menu.orders')" />
             @endif
+
+            <x-sub-menu-item :link="route($salesDoRouteName)" :text="$salesDoLabel" :permission="$canViewSalesDo" />
 
             @if (in_array('orders', user_modules()) && user()->permission('view_sales_history') === 'all')
                 <x-sub-menu-item :link="route('sales-history.index')" :text="__('app.menu.salesHistory')" :active="request()->routeIs('sales-history.*')" />
             @endif
 
-            <!-- NAV ITEM - SALES SHIPMENTS -->
-            <x-sub-menu-item :link="route($salesDoRouteName)" :text="$salesDoLabel" :permission="$canViewSalesDo" />
+            {{-- 10: Products (đầu nhóm master data / danh mục) --}}
+            @if (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 5 && $sidebarUserPermissions['view_product'] != 'none')
+                <x-sub-menu-item :link="route('purchase-products.index')" :text="__('purchase::app.menu.products')" :active="request()->routeIs('purchase-products.*', 'purchase_products.*')" />
+            @endif
 
-            <!-- NAV ITEM - ORDERS -->
-            <x-sub-menu-item :link="route('purchase-order.index')" :text="__('purchase::app.menu.purchaseOrder')" :permission="$purchaseViewOrderPermission != 'none' && $purchaseViewOrderPermission != ''" />
-
-            <!-- NAV ITEM - DELIVERY ORDERS -->
-            <x-sub-menu-item :link="route($grnRouteName)" :text="$grnLabel" :permission="$canViewGrn" />
-
-            <!-- NAV ITEM - BILLS -->
-            <x-sub-menu-item :link="route('bills.index')" :text="__('purchase::app.menu.bills')" :permission="$purchaseViewBillPermission != 'none' && $purchaseViewBillPermission != ''" />
-
-            <!-- NAV ITEM - PAYMENTS -->
-            <x-sub-menu-item :link="route('vendor-payments.index')" :text="__('purchase::app.purchaseOrder.vendorPayments')" :permission="$purchaseViewPaymentPermission != 'none' && $purchaseViewPaymentPermission != ''" />
-
-            <x-sub-menu-item :link="route('vendor-credits.index')" :text="__('purchase::app.menu.vendorCredits')" :permission="$purchaseViewCreditPermission != 'none' && $purchaseViewCreditPermission != ''" />
-
-            <!-- NAV ITEM - INVENTORY -->
+            {{-- 11–15: Inventory & warehouse --}}
             <x-sub-menu-item :link="route('purchase-inventory.index')" :text="__('purchase::app.menu.inventory')" :permission="$purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != ''" />
 
-            <!-- NAV ITEM - WAREHOUSE (master + stock; module warehouse + quyền Inventory hoặc quyền warehouse riêng) -->
             @if (in_array('warehouse', user_modules()) && $canSeeWarehouseMaster)
                 <x-sub-menu-item :link="route('warehouse.index')" :text="__('warehouse::app.warehouses')" :permission="true" :active="request()->routeIs('warehouse.index', 'warehouse.show', 'warehouse.edit', 'warehouse.create')" />
             @endif
+            @if (in_array('warehouse', user_modules()) && $canSeeWarehouseTransferUi)
+                <x-sub-menu-item :link="route('warehouse.transfer.create')" :text="__('warehouse::app.transferStock')" :permission="true" :active="request()->routeIs('warehouse.transfer.*')" />
+            @endif
             @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
-                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" :active="request()->routeIs('warehouse.stock.*', 'warehouse.transfer.*')" />
+                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" :active="request()->routeIs('warehouse.stock.*')" />
             @endif
             @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
                 <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" :active="request()->routeIs('warehouse.movements.*')" />
             @endif
+
             <x-sub-menu-item :link="route('reports.index')" :text="__('purchase::app.menu.reports')" :permission="$purchaseViewOrderReportPermission != 'none' && $purchaseViewOrderReportPermission != '' && false" />
 
         </div>

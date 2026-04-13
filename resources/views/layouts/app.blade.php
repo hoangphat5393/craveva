@@ -618,7 +618,7 @@
         $(document).ready(function() {
             const aiWorkspaceKey = 'ai_workspace_active';
             const container = $('#ai-chatbot-container');
-            const widgetScriptUrl = 'https://ai.craveva.com/api/v1/agents/69d4bdab3ab4301603dfc69a/widget.js';
+            const widgetScriptUrl = 'https://ai.craveva.com/api/v1/agents/69dc90fc39aaa17b3944a648/widget.js';
             let isScriptLoaded = false;
 
             // Function to load the widget script

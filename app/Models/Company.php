@@ -373,7 +373,7 @@ class Company extends BaseModel
             return global_setting()->light_logo_url;
         }
 
-        return asset_url_local_s3('app-logo/'.$this->light_logo);
+        return asset_url_local_s3('app-logo/' . $this->light_logo);
     }
 
     public function defaultLogo()
@@ -382,7 +382,7 @@ class Company extends BaseModel
             return global_setting()->dark_logo_url;
         }
 
-        return asset_url_local_s3('app-logo/'.$this->logo);
+        return asset_url_local_s3('app-logo/' . $this->logo);
     }
 
     public function getLightLogoUrlAttribute()
@@ -391,7 +391,7 @@ class Company extends BaseModel
             return global_setting()->light_logo_url;
         }
 
-        return asset_url_local_s3('app-logo/'.$this->light_logo);
+        return asset_url_local_s3('app-logo/' . $this->light_logo);
     }
 
     public function getDarkLogoUrlAttribute()
@@ -401,7 +401,7 @@ class Company extends BaseModel
             return asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/'.$this->logo);
+        return asset_url_local_s3('app-logo/' . $this->logo);
     }
 
     public function getLoginBackgroundUrlAttribute()
@@ -411,7 +411,7 @@ class Company extends BaseModel
             return null;
         }
 
-        return asset_url_local_s3('login-background/'.$this->login_background);
+        return asset_url_local_s3('login-background/' . $this->login_background);
     }
 
     public function maskedDefaultLogo(): Attribute
@@ -422,7 +422,7 @@ class Company extends BaseModel
                     return global_setting()->dark_logo_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
+                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo);
             },
         );
     }
@@ -445,7 +445,7 @@ class Company extends BaseModel
                     return global_setting()->light_logo_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/'.$this->light_logo);
+                return $this->generateMaskedImageAppUrl('app-logo/' . $this->light_logo);
             },
         );
     }
@@ -458,7 +458,7 @@ class Company extends BaseModel
                     return global_setting()->light_logo_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/'.$this->light_logo);
+                return $this->generateMaskedImageAppUrl('app-logo/' . $this->light_logo);
             },
         );
     }
@@ -471,7 +471,7 @@ class Company extends BaseModel
                     return asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
+                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo);
             },
         );
     }
@@ -484,7 +484,7 @@ class Company extends BaseModel
                     return null;
                 }
 
-                return $this->generateMaskedImageAppUrl('login-background/'.$this->login_background);
+                return $this->generateMaskedImageAppUrl('login-background/' . $this->login_background);
             },
         );
     }
@@ -497,7 +497,7 @@ class Company extends BaseModel
                     return global_setting()->favicon_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('favicon/'.$this->favicon);
+                return $this->generateMaskedImageAppUrl('favicon/' . $this->favicon);
             },
         );
     }
@@ -522,7 +522,7 @@ class Company extends BaseModel
             return global_setting()->favicon_url;
         }
 
-        return asset_url_local_s3('favicon/'.$this->favicon);
+        return asset_url_local_s3('favicon/' . $this->favicon);
     }
 
     public function paymentGatewayCredentials(): HasOne

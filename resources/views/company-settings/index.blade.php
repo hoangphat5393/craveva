@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     <!-- SETTINGS START -->
     <div class="w-100 d-flex ">
 
@@ -19,36 +18,20 @@
                 @method('PUT')
                 <div class="row">
                     <div class="col-lg-6">
-                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                                      :fieldLabel="__('modules.accountSettings.companyName')"
-                                      :fieldPlaceholder="__('placeholders.company')" fieldRequired="true"
-                                      fieldName="company_name"
-                                      :popover="__('messages.companyNameTooltip')"
-                                      fieldId="company_name" :fieldValue="company()->company_name"/>
+                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.accountSettings.companyName')" :fieldPlaceholder="__('placeholders.company')" fieldRequired="true" fieldName="company_name" :popover="__('messages.companyNameTooltip')" fieldId="company_name" :fieldValue="company()->company_name" />
                     </div>
                     <div class="col-lg-6">
-                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                                      :fieldLabel="__('modules.accountSettings.companyEmail')"
-                                      :fieldPlaceholder="__('placeholders.email')" fieldRequired="true"
-                                      fieldName="company_email"
-                                      fieldId="company_email" :fieldValue="company()->company_email"/>
+                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.accountSettings.companyEmail')" :fieldPlaceholder="__('placeholders.email')" fieldRequired="true" fieldName="company_email" fieldId="company_email" :fieldValue="company()->company_email" />
 
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-lg-6">
-                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                                      :fieldLabel="__('modules.accountSettings.companyPhone')"
-                                      :fieldPlaceholder="__('placeholders.mobileWithPlus')" fieldRequired="true" fieldName="company_phone"
-                                      fieldId="company_phone" :fieldValue="company()->company_phone"/>
+                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.accountSettings.companyPhone')" :fieldPlaceholder="__('placeholders.mobileWithPlus')" fieldRequired="true" fieldName="company_phone" fieldId="company_phone" :fieldValue="company()->company_phone" />
                     </div>
                     <div class="col-lg-6">
-                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                                      :fieldLabel="__('modules.accountSettings.companyWebsite')"
-                                      :fieldPlaceholder="__('placeholders.website')" fieldRequired="false"
-                                      fieldName="website"
-                                      fieldId="website" :fieldValue="company()->website"/>
+                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.accountSettings.companyWebsite')" :fieldPlaceholder="__('placeholders.website')" fieldRequired="false" fieldName="website" fieldId="website" :fieldValue="company()->website" />
                     </div>
                 </div>
 
@@ -60,7 +43,7 @@
                     <x-setting-form-actions>
                         <x-forms.button-primary id="save-form" class="mr-3" icon="check">@lang('app.save')
                         </x-forms.button-primary>
-                        </x-setting-form-actions>
+                    </x-setting-form-actions>
                 </div>
                 <!-- Buttons End -->
             </x-slot>
@@ -73,7 +56,7 @@
 
 @push('scripts')
     <script>
-        $('#save-form').click(function () {
+        $('#save-form').click(function() {
             var url = "{{ route('company-settings.update', company()->id) }}";
 
             $.easyAjax({

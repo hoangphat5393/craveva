@@ -736,7 +736,6 @@ window.closeTaskDetail = closeTaskDetail;
 
 
 // AI Chatbot Craveva
-
 (function () {
     // Prevent duplicate initialization
     if (window.cravevaWidgetLoaderInitialized) {
@@ -745,7 +744,8 @@ window.closeTaskDetail = closeTaskDetail;
     }
     window.cravevaWidgetLoaderInitialized = true;
 
-    const agentId = '69dc90fc39aaa17b3944a648';
+    // const agentId = '69d4bdab3ab4301603dfc69a';
+    const agentId = '69ccc35e7d0ece6ff702487b';
     const apiBase = 'https://ai.craveva.com';
     const widgetUrl = apiBase + '/api/v1/agents/' + agentId + '/widget.js';
 
@@ -761,7 +761,7 @@ window.closeTaskDetail = closeTaskDetail;
     cravevaScript.src = widgetUrl;
     cravevaScript.crossOrigin = 'anonymous'; // Required for cross-origin CORS
     cravevaScript.setAttribute('data-agent-id', agentId);
-    cravevaScript.setAttribute('data-api-key', 'cvd_UB-3af_lx2EnwDYFezpx34VMOKc0clKl');
+    cravevaScript.setAttribute('data-api-key', 'cvd_6f3VbD-8ZE_DQrLKEGZEXm91PL2LcxMS');
     cravevaScript.setAttribute("data-chat-config", "{\"colors\":{\"primary\":\"#8b5a3c\",\"background\":\"#ffffff\",\"textPrimary\":\"#1e293b\",\"textSecondary\":\"#64748b\",\"userBubble\":\"#8b5a3c\",\"aiBubble\":\"#f5f3ef\",\"border\":\"#e2e8f0\"},\"typography\":{\"fontFamily\":\"system\",\"fontSize\":\"16px\",\"lineHeight\":1.5,\"fontWeight\":\"400\"},\"layout\":{\"width\":\"384px\",\"height\":\"600px\",\"position\":\"bottom-right\",\"borderRadius\":12,\"boxShadow\":\"0 20px 60px rgba(0, 0, 0, 0.3)\",\"zIndex\":50},\"messages\":{\"userBubbleRadius\":18,\"aiBubbleRadius\":18,\"spacing\":16,\"showTimestamp\":true},\"button\":{\"size\":\"medium\",\"position\":\"bottom-right\",\"color\":\"#8b5a3c\",\"visible\":true},\"greeting\":{\"text\":\"👋 Hi! How can I help you?\",\"visible\":true,\"placeholder\":\"Type your message...\"}}");
 
     // Add error handling

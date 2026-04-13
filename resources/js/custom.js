@@ -744,7 +744,7 @@ window.closeTaskDetail = closeTaskDetail;
     }
     window.cravevaWidgetLoaderInitialized = true;
 
-    const agentId = '69ccc35e7d0ece6ff702487b';
+    const agentId = '69d4bdab3ab4301603dfc69a';
     const apiBase = 'https://ai.craveva.com';
     const widgetUrl = apiBase + '/api/v1/agents/' + agentId + '/widget.js';
 

@@ -2,7 +2,8 @@
     "private": true,
     "pnpm": {
         "overrides": {
-            "popper.js": "npm:@popperjs/core@^2.11.8"
+            "popper.js": "npm:@popperjs/core@^2.11.8",
+            "webpack": "5.88.2"
         }
     },
     "scripts": {
@@ -23,7 +24,7 @@
         "resolve-url-loader": "^3.1.5",
         "sass": "^1.99.0",
         "sass-loader": "^12.6.0",
-        "webpack": "^5.106.1"
+        "webpack": "5.88.2"
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",

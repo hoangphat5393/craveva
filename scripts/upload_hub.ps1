@@ -41,10 +41,16 @@ if ($GitPull) {
 }
 
 # Lệnh bảo trì (Permissions, Migration, Optimize)
+# Code: owner deploy + group www-data. storage/bootstrap: www-data (cache).
+# Language Pack Publish (UI): FPM = www-data phải ghi resources/lang, lang/, Modules/*/Resources/lang — cần ug+rwX + setgid thư mục (SERVER_RUNBOOK_VI §4.8).
 $RemoteCommand += " && sudo chown -R hoangphat5393:www-data ."
+$RemoteCommand += " && sudo mkdir -p lang resources/lang storage/logs"
 $RemoteCommand += " && sudo chown -R www-data:www-data storage bootstrap/cache"
 $RemoteCommand += " && sudo chmod -R 775 storage bootstrap/cache"
-$RemoteCommand += " && sudo mkdir -p storage/logs && sudo chmod 2777 storage/logs"
+$RemoteCommand += " && sudo chmod 2777 storage/logs"
+$RemoteCommand += " && sudo chmod -R ug+rwX Modules/LanguagePack/Languages resources/lang lang"
+$RemoteCommand += " && sudo find Modules/LanguagePack/Languages resources/lang lang -type d -exec chmod g+s {} \; 2>/dev/null || true"
+$RemoteCommand += ' && for d in Modules/*/Resources/lang; do [ -d "$d" ] && sudo chmod -R ug+rwX "$d" && sudo find "$d" -type d -exec chmod g+s {} \;; done'
 $RemoteCommand += " && sudo -u www-data php artisan migrate --force"
 $RemoteCommand += " && sudo -u www-data php artisan languagepack:publish-translation"
 $RemoteCommand += " && sudo -u www-data php artisan optimize:clear"

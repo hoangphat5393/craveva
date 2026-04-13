@@ -60,7 +60,7 @@ class DeveloperToolsController extends AccountBaseController
 
         $this->credentials = DeveloperToolsCredential::where('company_id', $company->id)->get();
         $policy = app(DbAccessPolicy::class);
-        $this->availableModules = $policy->availableModules();
+        $this->availableModules = $policy->availableModulesForUi();
         $this->defaultModules = $policy->defaultModules();
         $this->accessLogs = DbAccessLog::where('company_id', $company->id)->latest()->limit(25)->get();
         $this->credentialDisplayHost = $this->resolveCredentialDisplayHost();
@@ -174,6 +174,13 @@ class DeveloperToolsController extends AccountBaseController
         $requestedModules = array_values(array_filter($requestedModules, fn($m) => is_string($m) && $m !== ''));
         $effectiveModules = $policy->normalizeRequestedModules($requestedModules);
 
+        $implicitModuleKeys = config('developertools.db_access.implicit_modules_on_credential', []);
+        if (! is_array($implicitModuleKeys)) {
+            $implicitModuleKeys = [];
+        }
+        $implicitModuleKeys = array_values(array_filter($implicitModuleKeys, fn($k) => is_string($k) && $k !== ''));
+        $modulesForCredentialRecord = array_values(array_unique(array_merge($effectiveModules, $implicitModuleKeys)));
+
         // 1. Generate Creds
 
         // Use a safe prefix and random string
@@ -224,6 +231,10 @@ class DeveloperToolsController extends AccountBaseController
             }
 
             $allowedTables = $policy->resolveAllowedTables($mainDb, $effectiveModules);
+            if ($implicitModuleKeys !== []) {
+                $implicitTables = $policy->resolveAllowedTables($mainDb, $implicitModuleKeys);
+                $allowedTables = array_values(array_unique(array_merge($allowedTables, $implicitTables)));
+            }
             $globalTables = $policy->globalTables();
             $joinViews = $policy->joinViews();
 
@@ -339,7 +350,7 @@ class DeveloperToolsController extends AccountBaseController
                 'db_username' => $dbUsername,
                 'db_database' => $gatewayDb,
                 'db_host' => $this->resolveCredentialDisplayHost(),
-                'allowed_modules' => $effectiveModules,
+                'allowed_modules' => $modulesForCredentialRecord,
                 'created_views_count' => $createdViewsCount,
                 'generation_duration_ms' => $durationMs,
                 'last_generated_at' => now(),
@@ -366,7 +377,7 @@ class DeveloperToolsController extends AccountBaseController
             session()->flash('new_db_password', $dbPassword);
             session()->flash('new_db_username', $dbUsername);
             session()->flash('new_db_name', $gatewayDb);
-            session()->flash('new_db_modules', $effectiveModules);
+            session()->flash('new_db_modules', $modulesForCredentialRecord);
             session()->flash('new_db_views_count', $createdViewsCount);
 
             return back()->with('success', 'Database credential created successfully. Please save the password now.');
@@ -420,12 +431,16 @@ class DeveloperToolsController extends AccountBaseController
 
         $credential = DeveloperToolsCredential::where('company_id', $company->id)->findOrFail($id);
 
+        $mysqlDropError = null;
         try {
             $userQuoted = DB::getPdo()->quote($credential->db_username);
             DB::statement("DROP USER IF EXISTS {$userQuoted}@'%'");
-        } catch (\Exception $e) {
-            // User might already be deleted or permission denied
-            // Continue to delete record
+        } catch (\Throwable $e) {
+            $mysqlDropError = $e->getMessage();
+            Log::warning('DeveloperTools revoke: DROP USER failed', [
+                'db_username' => $credential->db_username,
+                'error' => $mysqlDropError,
+            ]);
         }
 
         // Delete mapping
@@ -434,6 +449,13 @@ class DeveloperToolsController extends AccountBaseController
         // Delete credential record
         $credential->delete();
 
-        return back()->with('success', 'Credential revoked.');
+        if ($mysqlDropError !== null) {
+            return back()->with(
+                'warning',
+                'Credential removed from the app, but MySQL could not drop user `' . $credential->db_username . '`: ' . $mysqlDropError
+            );
+        }
+
+        return back()->with('success', 'Credential revoked and MySQL user removed.');
     }
 }

@@ -10,6 +10,18 @@
 
 - **Ngôn ngữ `en` (không `eng`):** xem [SERVER_RUNBOOK_VI §6](SERVER_RUNBOOK_VI.md#6-ngôn-ngữ-en-không-dùng-eng).
 - **Git deploy, `sudo -u www-data`, Supervisor, quyền storage:** xem [SERVER_RUNBOOK_VI](SERVER_RUNBOOK_VI.md).
+- **Language Pack — Publish / Publish All báo `Permission denied` trên `resources/lang/...`:** PHP-FPM chạy user **`www-data`**; thư mục đích phải **ghi được** theo [SERVER_RUNBOOK_VI §4.8](SERVER_RUNBOOK_VI.md#48-language-pack--sync-keys--publish-all-ghi-file-trong-repo). Script **`scripts/upload_staging.ps1`** và **`scripts/upload_hub.ps1`** (sau chỉnh 2026-04) đã thêm `chmod ug+rwX` + `g+s` cho `resources/lang`, `lang/`, `Modules/LanguagePack/Languages` và `Modules/*/Resources/lang`. Trên server **đã lỗi sẵn**, SSH một lần (đổi `APP` / user deploy nếu khác):
+
+```bash
+APP=/var/www/hub.craveva.com   # hoặc staging: /var/www/craveva-staging/current/craveva
+U=hoangphat5393
+cd "$APP" && sudo mkdir -p lang resources/lang
+sudo chown -R "$U":www-data Modules/LanguagePack/Languages resources/lang lang
+sudo chmod -R ug+rwX Modules/LanguagePack/Languages resources/lang lang
+sudo find Modules/LanguagePack/Languages resources/lang lang -type d -exec chmod g+s {} \;
+for d in Modules/*/Resources/lang; do [ -d "$d" ] || continue; sudo chown -R "$U":www-data "$d"; sudo chmod -R ug+rwX "$d"; sudo find "$d" -type d -exec chmod g+s {} \;; done
+sudo -u www-data touch "$APP/resources/lang/.write_test" && sudo rm -f "$APP/resources/lang/.write_test" && echo "OK: www-data can write resources/lang"
+```
 
 ---
 

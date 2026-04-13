@@ -18,6 +18,13 @@ return [
     ],
     'db_access' => [
         'default_modules' => ['core', 'pricing', 'warehouse'],
+        /*
+         * Always merged into gateway views on credential create (not shown as checkboxes).
+         * Ensures custom field definitions and per-company values are available to AI/tools.
+         */
+        'implicit_modules_on_credential' => [
+            'custom_fields',
+        ],
         'modules' => [
             'core' => [
                 'label' => 'Core (Products/Orders/Customers)',
@@ -151,6 +158,16 @@ return [
                     'invoice_payment_details',
                 ],
             ],
+            'custom_fields' => [
+                'label' => 'Custom fields (definitions & values)',
+                'internal_only' => true,
+                'depends_on' => [],
+                'table_patterns' => [
+                    'custom_field_groups',
+                    'custom_fields',
+                    'custom_fields_data',
+                ],
+            ],
         ],
         'deny_tables' => [
             'migrations',
@@ -233,6 +250,11 @@ return [
                 'select' => 'iii.*',
                 'from' => '{mainDb}.invoice_item_images iii JOIN {mainDb}.invoice_items ii ON ii.id = iii.invoice_item_id JOIN {mainDb}.invoices i ON i.id = ii.invoice_id',
                 'where' => 'i.company_id = {companyId}',
+            ],
+            'custom_fields_data' => [
+                'select' => 'cfd.*',
+                'from' => '{mainDb}.custom_fields_data cfd JOIN {mainDb}.custom_fields cf ON cf.id = cfd.custom_field_id',
+                'where' => 'cf.company_id = {companyId}',
             ],
         ],
     ],

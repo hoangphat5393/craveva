@@ -31,7 +31,7 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="mb-3">
-                                                    <div class="mb-2 font-weight-bold">Allowed modules (read-only)</div>
+                                                    <div class="mb-2 font-weight-bold">Allowed modules</div>
                                                     <div class="d-flex flex-wrap">
                                                         @foreach ($availableModules ?? [] as $moduleKey => $moduleDef)
                                                             <div class="mr-4 mb-2">
@@ -42,7 +42,11 @@
                                                             </div>
                                                         @endforeach
                                                     </div>
-                                                    <div class="text-muted">Only tables mapped to selected modules are exposed through database views.</div>
+                                                    <div class="text-muted">
+                                                        Tables mapped to the selected modules are exposed as <strong>views</strong> in your company gateway database (<code>api_gateway_&lt;company_id&gt;</code>), scoped to your company.
+                                                        <strong>Custom field</strong> tables (<code>custom_field_groups</code>, <code>custom_fields</code>, <code>custom_fields_data</code>) are included automatically on every new credential.
+                                                        The generated MySQL user receives <strong>ALL PRIVILEGES</strong> on that gateway database only (not on the main application schema).
+                                                    </div>
                                                 </div>
                                                 <button type="submit" class="btn btn-primary">
                                                     <i class="fa fa-plus"></i> Generate Credential
@@ -53,6 +57,9 @@
 
                                     @if (session('success'))
                                         <div class="alert alert-success">{{ session('success') }}</div>
+                                    @endif
+                                    @if (session('warning'))
+                                        <div class="alert alert-warning">{{ session('warning') }}</div>
                                     @endif
                                     @if (session('error'))
                                         <div class="alert alert-danger">{{ session('error') }}</div>
@@ -291,8 +298,8 @@
                                                 <li><strong>Password:</strong> (Generated above)</li>
                                             </ul>
                                             <p class="text-muted mb-0">
-                                                <i class="fa fa-info-circle"></i> Note: This connection is restricted to <strong>READ-ONLY</strong> access only for your company's data and selected modules.
-                                                You cannot see or modify other companies' data.
+                                                <i class="fa fa-info-circle"></i> Note: You connect to the <strong>gateway</strong> database only. Data is exposed as views filtered to your company.
+                                                The MySQL user has <strong>full privileges (ALL PRIVILEGES)</strong> on that gateway schema (e.g. create temporary tables); it cannot access other companies or the raw main DB outside those views.
                                             </p>
                                         </div>
                                     </div>

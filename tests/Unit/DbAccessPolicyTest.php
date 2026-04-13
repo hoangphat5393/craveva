@@ -38,6 +38,33 @@ class DbAccessPolicyTest extends TestCase
         $this->assertArrayHasKey('label', $available['inventory']);
     }
 
+    public function test_available_modules_for_ui_excludes_internal_only_modules(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $forUi = $policy->availableModulesForUi();
+
+        $this->assertArrayNotHasKey('custom_fields', $forUi);
+        $this->assertArrayHasKey('inventory', $forUi);
+    }
+
+    public function test_custom_fields_module_and_join_view_are_configured(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $modules = $policy->availableModules();
+        $this->assertArrayHasKey('custom_fields', $modules);
+        $this->assertTrue($modules['custom_fields']['internal_only'] ?? false);
+
+        $joinViews = $policy->joinViews();
+        $this->assertArrayHasKey('custom_fields_data', $joinViews);
+        $this->assertArrayHasKey('from', $joinViews['custom_fields_data']);
+        $this->assertArrayHasKey('where', $joinViews['custom_fields_data']);
+
+        $implicit = config('developertools.db_access.implicit_modules_on_credential', []);
+        $this->assertContains('custom_fields', $implicit);
+    }
+
     public function test_it_uses_defaults_when_empty(): void
     {
         $policy = new DbAccessPolicy;

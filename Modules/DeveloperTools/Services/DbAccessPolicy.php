@@ -12,6 +12,19 @@ class DbAccessPolicy
         return config('developertools.db_access.modules', []);
     }
 
+    /**
+     * Modules shown as checkboxes on Developer Tools (excludes internal-only e.g. custom fields always merged on credential create).
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function availableModulesForUi(): array
+    {
+        return array_filter(
+            $this->availableModules(),
+            static fn(array $def): bool => empty($def['internal_only'])
+        );
+    }
+
     public function defaultModules(): array
     {
         return config('developertools.db_access.default_modules', []);
@@ -20,7 +33,7 @@ class DbAccessPolicy
     public function normalizeRequestedModules(array $requested): array
     {
         $available = array_keys($this->availableModules());
-        $requested = array_values(array_unique(array_filter($requested, fn ($m) => is_string($m) && $m !== '')));
+        $requested = array_values(array_unique(array_filter($requested, fn($m) => is_string($m) && $m !== '')));
 
         $requested = array_values(array_intersect($requested, $available));
 
@@ -55,7 +68,7 @@ class DbAccessPolicy
             $tables = array_merge($tables, $this->matchTablesByPatterns($schemaTables, $patterns));
         }
 
-        $tables = array_values(array_unique(array_filter($tables, fn ($t) => is_string($t) && $t !== '')));
+        $tables = array_values(array_unique(array_filter($tables, fn($t) => is_string($t) && $t !== '')));
         $tables = array_values(array_diff($tables, $denyTables));
 
         $sensitive = $this->sensitiveTables();
@@ -122,7 +135,7 @@ class DbAccessPolicy
                 continue;
             }
             if (isset($existingMap[$col])) {
-                $safe[] = '`'.str_replace('`', '``', $col).'`';
+                $safe[] = '`' . str_replace('`', '``', $col) . '`';
             }
         }
 
@@ -135,7 +148,7 @@ class DbAccessPolicy
 
     public function matchTablesByPatterns(array $schemaTables, array $patterns): array
     {
-        $patterns = array_values(array_filter($patterns, fn ($p) => is_string($p) && $p !== ''));
+        $patterns = array_values(array_filter($patterns, fn($p) => is_string($p) && $p !== ''));
         if (empty($patterns)) {
             return [];
         }
@@ -183,6 +196,6 @@ class DbAccessPolicy
         $quoted = preg_quote($pattern, '/');
         $quoted = str_replace('%', '.*', $quoted);
 
-        return '/^'.$quoted.'$/i';
+        return '/^' . $quoted . '$/i';
     }
 }

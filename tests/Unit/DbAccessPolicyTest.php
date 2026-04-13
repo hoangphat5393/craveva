@@ -17,6 +17,27 @@ class DbAccessPolicyTest extends TestCase
         $this->assertContains('core', $modules);
     }
 
+    public function test_inventory_module_includes_core_and_warehouse_dependencies(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $modules = $policy->normalizeRequestedModules(['inventory']);
+
+        $this->assertContains('inventory', $modules);
+        $this->assertContains('core', $modules);
+        $this->assertContains('warehouse', $modules);
+    }
+
+    public function test_available_modules_includes_inventory(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $available = $policy->availableModules();
+
+        $this->assertArrayHasKey('inventory', $available);
+        $this->assertArrayHasKey('label', $available['inventory']);
+    }
+
     public function test_it_uses_defaults_when_empty(): void
     {
         $policy = new DbAccessPolicy;

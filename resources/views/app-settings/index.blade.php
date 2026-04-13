@@ -1,15 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-
     <!-- SETTINGS START -->
     <div class="w-100 d-flex ">
 
         {{-- SAAS --}}
-        @if(user()->is_superadmin)
-            <x-super-admin.setting-sidebar :activeMenu="$activeSettingMenu"/>
+        @if (user()->is_superadmin)
+            <x-super-admin.setting-sidebar :activeMenu="$activeSettingMenu" />
         @else
-            <x-setting-sidebar :activeMenu="$activeSettingMenu"/>
+            <x-setting-sidebar :activeMenu="$activeSettingMenu" />
         @endif
 
         <x-setting-card>
@@ -20,27 +19,20 @@
                 <div class="s-b-n-header" id="tabs">
                     <nav class="tabs px-4 border-bottom-grey">
                         <div class="nav" id="nav-tab" role="tablist">
-                            <a class="nav-item nav-link f-15 active app-setting"
-                               href="{{ route('app-settings.index') }}" role="tab" aria-controls="nav-ticketAgents"
-                               aria-selected="true">@lang('app.menu.appSettings')
+                            <a class="nav-item nav-link f-15 active app-setting" href="{{ route('app-settings.index') }}" role="tab" aria-controls="nav-ticketAgents" aria-selected="true">@lang('app.menu.appSettings')
                             </a>
-                            @if(!user()->is_superadmin && in_array('clients', user_modules()))
-                                <a class="nav-item nav-link f-15 client-signup-setting"
-                                   href="{{ route('app-settings.index') }}?tab=client-signup-setting" role="tab"
-                                   aria-controls="nav-ticketTypes" aria-selected="true"
-                                   ajax="false">@lang('app.clientSignUpSettings')
+                            @if (!user()->is_superadmin && in_array('clients', user_modules()))
+                                <a class="nav-item nav-link f-15 client-signup-setting" href="{{ route('app-settings.index') }}?tab=client-signup-setting" role="tab" aria-controls="nav-ticketTypes" aria-selected="true" ajax="false">@lang('app.clientSignUpSettings')
                                 </a>
                             @endif
-                            @if(user()->is_superadmin)
-                                <a class="nav-item nav-link f-15 file-upload-setting"
-                                   href="{{ route('app-settings.index') }}?tab=file-upload-setting" role="tab"
-                                   aria-controls="nav-ticketTypes" aria-selected="true" ajax="false">@lang('modules.accountSettings.fileUploadSetting')
+                            @if (user()->is_superadmin)
+                                <a class="nav-item nav-link f-15 file-upload-setting" href="{{ route('app-settings.index') }}?tab=file-upload-setting" role="tab" aria-controls="nav-ticketTypes" aria-selected="true" ajax="false">@lang('modules.accountSettings.fileUploadSetting')
                                 </a>
 
-                                <a class="nav-item nav-link f-15 google-map-setting"
-                                   href="{{ route('app-settings.index') }}?tab=google-map-setting" role="tab"
-                                   aria-controls="nav-ticketTypes" aria-selected="true"
-                                   ajax="false">@lang('app.googleMapSettings')
+                                <a class="nav-item nav-link f-15 google-map-setting" href="{{ route('app-settings.index') }}?tab=google-map-setting" role="tab" aria-controls="nav-ticketTypes" aria-selected="true" ajax="false">@lang('app.googleMapSettings')
+                                </a>
+
+                                <a class="nav-item nav-link f-15 ai-workspace-setting" href="{{ route('app-settings.index') }}?tab=ai-workspace-setting" role="tab" aria-controls="nav-ai-workspace" aria-selected="true" ajax="false">@lang('app.menu.aiWorkspace')
                                 </a>
                             @endif
                         </div>
@@ -55,7 +47,6 @@
 
     </div>
     <!-- SETTINGS END -->
-
 @endsection
 
 @push('scripts')

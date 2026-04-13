@@ -59,6 +59,17 @@ return [
                     'stock_%',
                 ],
             ],
+            'inventory' => [
+                'label' => 'Inventory (Purchase inventory / adjustments)',
+                'depends_on' => ['core', 'warehouse'],
+                'table_patterns' => [
+                    'purchase_inventory_adjustment',
+                    'purchase_inventory_files',
+                    'purchase_inventory_histories',
+                    'purchase_stock_adjustments',
+                    'purchase_stock_adjustment_reasons',
+                ],
+            ],
             'purchase' => [
                 'label' => 'Purchase',
                 'depends_on' => ['core', 'warehouse'],

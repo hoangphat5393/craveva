@@ -20,6 +20,7 @@
     <ul class="settings-menu" id="settingsMenu">
         @if (user()->permission('manage_superadmin_app_settings') == 'all')
             <x-setting-menu-item :active="$activeMenu" menu="app_settings" :href="route('app-settings.index')" :text="__('app.menu.appSettings')" />
+            <x-setting-menu-item :active="$activeMenu" menu="ai_workspace_settings" :href="route('app-settings.index', ['tab' => 'ai-workspace-setting'])" :text="__('app.menu.aiWorkspace')" />
         @endif
         <x-setting-menu-item :active="$activeMenu" menu="profile_settings" :href="route('superadmin.settings.super-admin-profile.index')" :text="__('app.menu.profileSettings')" />
 

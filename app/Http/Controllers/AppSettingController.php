@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Http\Requests\Admin\App\UpdateAiWorkspaceSetting;
 use App\Http\Requests\Admin\App\UpdateAppSetting;
 use App\Models\Company;
 use App\Models\Currency;
@@ -12,9 +13,14 @@ use App\Models\SuperAdmin\FrontDetail;
 use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\User;
 use DateTimeZone;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
 
 class AppSettingController extends AccountBaseController
 {
@@ -32,11 +38,13 @@ class AppSettingController extends AccountBaseController
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function index()
     {
         $tab = request('tab');
+
+        $this->activeSettingMenu = $tab === 'ai-workspace-setting' ? 'ai_workspace_settings' : 'app_settings';
 
         switch ($tab) {
 
@@ -53,6 +61,11 @@ class AppSettingController extends AccountBaseController
                 abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
 
                 $this->view = 'app-settings.ajax.map-setting';
+                break;
+            case 'ai-workspace-setting':
+                abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
+
+                $this->view = 'app-settings.ajax.ai-workspace-setting';
                 break;
             default:
                 $this->view = 'app-settings.ajax.app-setting';
@@ -106,6 +119,15 @@ class AppSettingController extends AccountBaseController
                 break;
             case 'google-map-setting':
                 isCraveva() ? $this->updateGoogleMapSetting($request) : '';
+                break;
+            case 'ai-workspace-setting':
+                abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
+                $aiWorkspaceRequest = UpdateAiWorkspaceSetting::createFrom($request);
+                $aiWorkspaceRequest->setContainer(app())->setRedirector(app('redirect'));
+                $validator = Validator::make($request->all(), $aiWorkspaceRequest->rules());
+                $aiWorkspaceRequest->withValidator($validator);
+                $validator->validate();
+                $this->updateAiWorkspaceSetting($request);
                 break;
             default:
                 $this->updateAppSetting($request);
@@ -229,6 +251,26 @@ class AppSettingController extends AccountBaseController
     {
         $globalSetting = \global_setting();
         $globalSetting->google_map_key = $request->google_map_key;
+        $globalSetting->save();
+        cache()->forget('global_setting');
+    }
+
+    public function updateAiWorkspaceSetting(Request $request): void
+    {
+        $globalSetting = GlobalSetting::first();
+        $globalSetting->ai_workspace_agent_id = $request->filled('ai_workspace_agent_id')
+            ? $request->input('ai_workspace_agent_id')
+            : null;
+        $globalSetting->ai_workspace_api_base = $request->filled('ai_workspace_api_base')
+            ? rtrim((string) $request->input('ai_workspace_api_base'), '/')
+            : null;
+
+        if ($request->boolean('ai_workspace_api_key_remove')) {
+            $globalSetting->ai_workspace_api_key = null;
+        } elseif ($request->filled('ai_workspace_api_key')) {
+            $globalSetting->ai_workspace_api_key = $request->input('ai_workspace_api_key');
+        }
+
         $globalSetting->save();
         cache()->forget('global_setting');
     }

@@ -611,85 +611,80 @@
     @endif
 
 
-    <!-- Chat Module Component (External Widget Integration) -->
-    <div id="ai-chatbot-container" style="display: none;"></div>
+    @php
+        $aiWorkspaceWidgetUrl = global_setting()->aiWorkspaceWidgetScriptUrl();
+        $aiWorkspaceApiKey = global_setting()->ai_workspace_api_key;
+    @endphp
+    @if ($aiWorkspaceWidgetUrl)
+        <!-- Chat Module Component (External Widget Integration) -->
+        <div id="ai-chatbot-container" style="display: none;"></div>
 
-    <script>
-        $(document).ready(function() {
-            const aiWorkspaceKey = 'ai_workspace_active';
-            const container = $('#ai-chatbot-container');
-            const widgetScriptUrl = 'https://ai.craveva.com/api/v1/agents/69ccc35e7d0ece6ff702487b/widget.js';
-            let isScriptLoaded = false;
+        <script>
+            $(document).ready(function() {
+                const aiWorkspaceKey = 'ai_workspace_active';
+                const container = $('#ai-chatbot-container');
+                const widgetScriptUrl = @json($aiWorkspaceWidgetUrl);
+                const aiWorkspaceApiKey = @json($aiWorkspaceApiKey);
+                let isScriptLoaded = false;
 
-            // Function to load the widget script
-            function loadWidget() {
-                if (isScriptLoaded) return;
+                function loadWidget() {
+                    if (isScriptLoaded) return;
 
-                // MutationObserver to catch the widget when it renders and move it to our container
-                const observer = new MutationObserver((mutations) => {
-                    mutations.forEach((mutation) => {
-                        mutation.addedNodes.forEach((node) => {
-                            // Check if it's an element node and direct child of body
-                            // We assume the widget appends itself to body.
-                            if (node.nodeType === 1 && node.parentNode === document.body) {
-                                // Move it to our container to control visibility/animation
-                                container.append(node);
-                            }
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            mutation.addedNodes.forEach((node) => {
+                                if (node.nodeType === 1 && node.parentNode === document.body) {
+                                    container.append(node);
+                                }
+                            });
                         });
                     });
-                });
 
-                // Start observing body for additions
-                observer.observe(document.body, {
-                    childList: true
-                });
+                    observer.observe(document.body, {
+                        childList: true
+                    });
 
-                const script = document.createElement('script');
-                script.src = widgetScriptUrl;
-                script.async = true;
-                script.onload = () => {
-                    // Optional: Stop observing after a timeout if we think it's done
-                    setTimeout(() => observer.disconnect(), 5000);
-                };
-                document.body.appendChild(script);
-                isScriptLoaded = true;
-            }
-
-            function showChat() {
-                loadWidget();
-                container.show();
-                // Force reflow
-                container[0].offsetHeight;
-                container.addClass('active');
-                localStorage.setItem(aiWorkspaceKey, 'true');
-            }
-
-            function hideChat() {
-                container.removeClass('active');
-                // Wait for transition to finish before hiding (400ms matches CSS)
-                setTimeout(() => {
-                    container.hide();
-                }, 400);
-                localStorage.setItem(aiWorkspaceKey, 'false');
-            }
-
-            // Initial State
-            // if (localStorage.getItem(aiWorkspaceKey) === 'true') {
-            //     showChat();
-            // }
-
-            // Toggle Handler with delegated event
-            $(document).on('click', '#ai-workspace-menu-item a', function(e) {
-                e.preventDefault();
-
-                if (container.hasClass('active')) {
-                    hideChat();
-                } else {
-                    showChat();
+                    const script = document.createElement('script');
+                    script.src = widgetScriptUrl;
+                    script.async = true;
+                    if (aiWorkspaceApiKey) {
+                        script.setAttribute('data-api-key', aiWorkspaceApiKey);
+                    }
+                    script.onload = () => {
+                        setTimeout(() => observer.disconnect(), 5000);
+                    };
+                    document.body.appendChild(script);
+                    isScriptLoaded = true;
                 }
+
+                function showChat() {
+                    loadWidget();
+                    container.show();
+                    container[0].offsetHeight;
+                    container.addClass('active');
+                    localStorage.setItem(aiWorkspaceKey, 'true');
+                }
+
+                function hideChat() {
+                    container.removeClass('active');
+                    setTimeout(() => {
+                        container.hide();
+                    }, 400);
+                    localStorage.setItem(aiWorkspaceKey, 'false');
+                }
+
+                $(document).on('click', '#ai-workspace-menu-item a', function(e) {
+                    e.preventDefault();
+
+                    if (container.hasClass('active')) {
+                        hideChat();
+                    } else {
+                        showChat();
+                    }
+                });
             });
-        });
-    </script>
+        </script>
+    @endif
 
 </body>
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\GlobalSetting;
 use App\Models\User;
 use App\Models\UserAuth;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -11,6 +12,19 @@ use Tests\TestCase;
 class ChatboxToggleTest extends TestCase
 {
     use DatabaseTransactions;
+
+    protected function seedAiWorkspaceGlobalConfig(): void
+    {
+        $global = GlobalSetting::first();
+        if ($global) {
+            $global->update([
+                'ai_workspace_agent_id' => '69ccc35e7d0ece6ff702487b',
+                'ai_workspace_api_base' => 'https://ai.craveva.com',
+                'ai_workspace_api_key' => null,
+            ]);
+            cache()->forget('global_setting');
+        }
+    }
 
     /**
      * Helper to get an authenticatable user instance.
@@ -44,6 +58,8 @@ class ChatboxToggleTest extends TestCase
     #[Test]
     public function it_contains_chatbox_container_in_layout()
     {
+        $this->seedAiWorkspaceGlobalConfig();
+
         $user = $this->getAuthenticatableUser();
         $this->actingAs($user);
 
@@ -56,6 +72,8 @@ class ChatboxToggleTest extends TestCase
     #[Test]
     public function it_contains_toggle_logic_in_layout()
     {
+        $this->seedAiWorkspaceGlobalConfig();
+
         $user = $this->getAuthenticatableUser();
         $this->actingAs($user);
 
@@ -71,6 +89,8 @@ class ChatboxToggleTest extends TestCase
     #[Test]
     public function it_does_not_auto_show_chatbox_on_load()
     {
+        $this->seedAiWorkspaceGlobalConfig();
+
         $user = $this->getAuthenticatableUser();
         $this->actingAs($user);
 

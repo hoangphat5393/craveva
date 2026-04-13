@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\GlobalSetting;
 use App\Models\User;
 use App\Models\UserAuth;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ChatboxTest extends TestCase
@@ -77,23 +77,41 @@ class ChatboxTest extends TestCase
             $this->markTestSkipped('No valid UserAuth found in database to test with.');
         }
 
-        // Force user into session to ensure helpers work correctly
-        $user = User::where('user_auth_id', $userAuth->id)->first();
-        if ($user) {
-            session(['user' => $user]);
+        $global = GlobalSetting::first();
+        if (! $global) {
+            $this->markTestSkipped('No global_settings row found.');
         }
 
-        $this->actingAs($userAuth);
+        $backup = [
+            'ai_workspace_agent_id' => $global->ai_workspace_agent_id,
+            'ai_workspace_api_base' => $global->ai_workspace_api_base,
+            'ai_workspace_api_key' => $global->ai_workspace_api_key,
+        ];
 
-        // 2. Visit the dashboard (or a page where menu is visible)
-        $response = $this->get(route('dashboard'));
+        $global->update([
+            'ai_workspace_agent_id' => '69ccc35e7d0ece6ff702487b',
+            'ai_workspace_api_base' => 'https://ai.craveva.com',
+            'ai_workspace_api_key' => null,
+        ]);
+        cache()->forget('global_setting');
 
-        // 3. Assert Response OK
-        $response->assertStatus(200);
+        try {
+            // Force user into session to ensure helpers work correctly
+            $user = User::where('user_auth_id', $userAuth->id)->first();
+            if ($user) {
+                session(['user' => $user]);
+            }
 
-        // 4. Assert Menu Item exists
-        // Searching for the ID we added: id="ai-workspace-menu-item"
-        $response->assertSee('id="ai-workspace-menu-item"', false);
+            $this->actingAs($userAuth);
+
+            $response = $this->get(route('dashboard'));
+
+            $response->assertStatus(200);
+            $response->assertSee('id="ai-workspace-menu-item"', false);
+        } finally {
+            $global->update($backup);
+            cache()->forget('global_setting');
+        }
     }
 
     /**
@@ -109,20 +127,38 @@ class ChatboxTest extends TestCase
             $this->markTestSkipped('No valid UserAuth found in database to test with.');
         }
 
-        $this->actingAs($userAuth);
+        $global = GlobalSetting::first();
+        if (! $global) {
+            $this->markTestSkipped('No global_settings row found.');
+        }
 
-        $response = $this->get(route('dashboard'));
+        $backup = [
+            'ai_workspace_agent_id' => $global->ai_workspace_agent_id,
+            'ai_workspace_api_base' => $global->ai_workspace_api_base,
+            'ai_workspace_api_key' => $global->ai_workspace_api_key,
+        ];
 
-        // 1. Assert Chatbox Container Div exists and is hidden by default
-        $response->assertSee('id="ai-chatbot-container" style="display: none;"', false);
+        $global->update([
+            'ai_workspace_agent_id' => '69ccc35e7d0ece6ff702487b',
+            'ai_workspace_api_base' => 'https://ai.craveva.com',
+            'ai_workspace_api_key' => null,
+        ]);
+        cache()->forget('global_setting');
 
-        // 2. Assert Custom CSS is linked with version parameter
-        // <link href="{{ asset('css/app-custom.css') }}?v=..." rel="stylesheet">
-        $response->assertSee('css/app-custom.css');
-        $response->assertSee('?v=');
+        try {
+            $this->actingAs($userAuth);
 
-        // 3. Assert the External Widget Script is NOT loaded by default (Lazy Load verification)
-        // It should NOT be present as a <script src="..."> tag in the initial HTML
-        $response->assertDontSee('<script src="https://ai.craveva.com/api/v1/agents/6989954407fe94d489fecbf5/widget.js"', false);
+            $response = $this->get(route('dashboard'));
+
+            $response->assertSee('id="ai-chatbot-container" style="display: none;"', false);
+
+            $response->assertSee('css/app-custom.css');
+            $response->assertSee('?v=');
+
+            $response->assertDontSee('<script src="https://ai.craveva.com/api/v1/agents/', false);
+        } finally {
+            $global->update($backup);
+            cache()->forget('global_setting');
+        }
     }
 }

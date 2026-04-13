@@ -736,6 +736,7 @@ window.closeTaskDetail = closeTaskDetail;
 
 
 // AI Chatbot Craveva
+
 (function () {
     // Prevent duplicate initialization
     if (window.cravevaWidgetLoaderInitialized) {

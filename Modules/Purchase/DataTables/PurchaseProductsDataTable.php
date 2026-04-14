@@ -221,7 +221,7 @@ class PurchaseProductsDataTable extends BaseDataTable
 
         $datatables->editColumn('stock_on_hand', function ($row) {
             if ($row->track_inventory == 1) {
-                return $row->inventory->sum('net_quantity');
+                return (float) ($row->stock_on_hand ?? 0);
             } else {
                 return '--';
             }
@@ -257,8 +257,10 @@ class PurchaseProductsDataTable extends BaseDataTable
     {
         $request = $this->request();
 
-        $model = $model->with('tax', 'category', 'subCategory', 'inventory', 'inventory.product')->join('unit_types', 'unit_types.id', '=', 'products.unit_id')
-            ->select('products.id', 'products.name', 'products.sku', 'products.price', 'products.status', 'products.taxes', 'products.unit_id', 'products.opening_stock', 'products.track_inventory', 'products.allow_purchase', 'products.added_by', 'products.default_image', 'products.category_id', 'products.sub_category_id', 'products.description', 'products.product_source', 'products.brand', 'products.product_grade', 'products.expiry_date', 'products.specification', 'products.shelf_life_days');
+        $model = $model->with('tax', 'category', 'subCategory', 'inventory', 'inventory.product')
+            ->join('unit_types', 'unit_types.id', '=', 'products.unit_id')
+            ->select('products.id', 'products.name', 'products.sku', 'products.price', 'products.status', 'products.taxes', 'products.unit_id', 'products.opening_stock', 'products.track_inventory', 'products.allow_purchase', 'products.added_by', 'products.default_image', 'products.category_id', 'products.sub_category_id', 'products.description', 'products.product_source', 'products.brand', 'products.product_grade', 'products.expiry_date', 'products.specification', 'products.shelf_life_days')
+            ->withSum('inventory as stock_on_hand', 'net_quantity');
 
         if (! is_null($request->category_id) && $request->category_id != 'all' && $request->category_id > 0) {
             $model->where('category_id', $request->category_id);

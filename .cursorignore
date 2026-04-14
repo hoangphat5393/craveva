@@ -1,3 +1,4 @@
-﻿# vendor/
+﻿# Dependencies & Laravel runtime - excluded from Cursor index
+vendor/
 node_modules/
-
+storage/

@@ -65,6 +65,24 @@ class DbAccessPolicyTest extends TestCase
         $this->assertContains('custom_fields', $implicit);
     }
 
+    public function test_recruit_module_and_join_views_are_configured(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $modules = $policy->availableModules();
+        $this->assertArrayHasKey('recruit', $modules);
+        $this->assertContains('core', $modules['recruit']['depends_on'] ?? []);
+
+        $sensitive = $policy->sensitiveTables();
+        $this->assertArrayHasKey('recruit_global_settings', $sensitive);
+        $this->assertTrue($sensitive['recruit_global_settings']['deny'] ?? false);
+
+        $joinViews = $policy->joinViews();
+        foreach (['recruit_job_questions', 'job_interview_stages', 'offer_letter_histories', 'recruit_jobboard_settings'] as $table) {
+            $this->assertArrayHasKey($table, $joinViews, "Missing join_views for {$table}");
+        }
+    }
+
     public function test_it_uses_defaults_when_empty(): void
     {
         $policy = new DbAccessPolicy;

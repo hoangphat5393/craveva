@@ -158,6 +158,17 @@ return [
                     'invoice_payment_details',
                 ],
             ],
+            'recruit' => [
+                'label' => 'Recruit',
+                'depends_on' => ['core'],
+                'table_patterns' => [
+                    'recruit_%',
+                    'application_sources',
+                    'recruiters',
+                    'offer_letter_histories',
+                    'job_interview_stages',
+                ],
+            ],
             'custom_fields' => [
                 'label' => 'Custom fields (definitions & values)',
                 'internal_only' => true,
@@ -202,6 +213,9 @@ return [
                 'deny' => true,
             ],
             'payment_gateway_credentials' => [
+                'deny' => true,
+            ],
+            'recruit_global_settings' => [
                 'deny' => true,
             ],
         ],
@@ -255,6 +269,41 @@ return [
                 'select' => 'cfd.*',
                 'from' => '{mainDb}.custom_fields_data cfd JOIN {mainDb}.custom_fields cf ON cf.id = cfd.custom_field_id',
                 'where' => 'cf.company_id = {companyId}',
+            ],
+            'recruit_job_questions' => [
+                'select' => 'rjq.*',
+                'from' => '{mainDb}.recruit_job_questions rjq JOIN {mainDb}.recruit_jobs rj ON rj.id = rjq.recruit_job_id',
+                'where' => 'rj.company_id = {companyId}',
+            ],
+            'recruit_job_custom_answers' => [
+                'select' => 'rjca.*',
+                'from' => '{mainDb}.recruit_job_custom_answers rjca JOIN {mainDb}.recruit_jobs rj ON rj.id = rjca.recruit_job_id',
+                'where' => 'rj.company_id = {companyId}',
+            ],
+            'recruit_job_offer_questions' => [
+                'select' => 'rjoq.*',
+                'from' => '{mainDb}.recruit_job_offer_questions rjoq JOIN {mainDb}.recruit_job_offer_letter rjol ON rjol.id = rjoq.recruit_job_offer_letter_id',
+                'where' => 'rjol.company_id = {companyId}',
+            ],
+            'job_interview_stages' => [
+                'select' => 'jis.*',
+                'from' => '{mainDb}.job_interview_stages jis JOIN {mainDb}.recruit_jobs rj ON rj.id = jis.recruit_job_id',
+                'where' => 'rj.company_id = {companyId}',
+            ],
+            'offer_letter_histories' => [
+                'select' => 'olh.*',
+                'from' => '{mainDb}.offer_letter_histories olh JOIN {mainDb}.recruit_job_offer_letter rjol ON rjol.id = olh.recruit_job_offer_letter_id',
+                'where' => 'rjol.company_id = {companyId}',
+            ],
+            'recruit_candidate_follow_ups' => [
+                'select' => 'rcfu.*',
+                'from' => '{mainDb}.recruit_candidate_follow_ups rcfu JOIN {mainDb}.recruit_job_applications rja ON rja.id = rcfu.recruit_job_application_id',
+                'where' => 'rja.company_id = {companyId}',
+            ],
+            'recruit_jobboard_settings' => [
+                'select' => 'rjbs.*',
+                'from' => '{mainDb}.recruit_jobboard_settings rjbs JOIN {mainDb}.users u ON u.id = rjbs.user_id',
+                'where' => 'u.company_id = {companyId}',
             ],
         ],
     ],

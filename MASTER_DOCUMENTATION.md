@@ -16,6 +16,7 @@ This document is the central reference for **business flow**, **business logic**
 8. [References](#8-references)
     - [Recent fixes (known issues)](#81-recent-fixes-known-issues)
 9. [Laravel 11 upgrade](#9-laravel-11-upgrade)
+10. [Recent platform updates (handover)](#10-recent-platform-updates-handover)
 
 ---
 
@@ -359,33 +360,33 @@ Below, each **core module** is listed with its **main user-facing features** and
 
 These live under `Modules/` and can be enabled/disabled per package or company. Route registration and menu visibility depend on module being active and `Route::has()` checks. See `storage/app/modules_statuses.json` for current status.
 
-| Module              | Purpose                                  | Main user-facing features (summary)                                                         |
-| ------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **Affiliate**       | Affiliate program                        | Affiliate signup, tracking, commissions.                                                    |
-| **Asset**           | Asset management                         | Register assets, issue/return, history.                                                     |
-| **Biolinks**        | Bio link pages                           | Create/share bio link pages; phone/email collection.                                        |
-| **Biometric**       | Biometric devices                        | Device management, sync attendance from devices.                                            |
-| **CyberSecurity**   | Security                                 | XSS/config hardening, blacklist IPs.                                                        |
-| **DeveloperTools**  | Dev utilities                            | DB user mapping, dev helpers (dev only).                                                    |
-| **EInvoice**        | E-invoicing                              | E-invoice generation, license types, XML.                                                   |
-| **LanguagePack**    | Languages                                | Additional language packs for UI.                                                           |
-| **Letter**          | Letter/documents                         | Letter/document generation.                                                                 |
-| **LineIntegration** | LINE integration                         | LINE bot/messaging integration.                                                             |
-| **Onboarding**      | Onboarding/offboarding                   | Employee onboarding/offboarding checklists.                                                 |
-| **Payroll**         | Payroll                                  | Salary, pay cycles, overtime, TDS, salary slips.                                            |
-| **Performance**     | Performance                              | Objectives, reviews, appraisals.                                                            |
-| **Policy**          | Policies                                 | Policy documents, publish, acknowledge.                                                     |
-| **Pricing**         | (Core pricing in app; module may extend) | Pricing tiers, client pricing.                                                              |
-| **ProjectRoadmap**  | Roadmap                                  | Project roadmap view/planning.                                                              |
-| **Purchase**        | Purchasing                               | Purchase orders, bills, vendors, inventory impact.                                          |
-| **QRCode**          | QR codes                                 | Generate/manage QR codes.                                                                   |
-| **Recruit**         | Recruitment                              | Jobs, job applications, interviews, offer letters, candidates, skills, sources, board view. |
-| **ServerManager**   | Server/hosting                           | Domain/hosting management.                                                                  |
-| **Sms**             | SMS                                      | SMS notifications (invoices, tasks, 2FA, etc.).                                             |
-| **Subdomain**       | Subdomains                               | Custom subdomains per company (optional).                                                   |
-| **Warehouse**       | Warehouse                                | Warehouses, stock, transfers.                                                               |
-| **Webhooks**        | Webhooks                                 | Outbound webhooks, logs.                                                                    |
-| **Zoom**            | Zoom                                     | Zoom meeting integration.                                                                   |
+| Module              | Purpose                                  | Main user-facing features (summary)                                                                 |
+| ------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Affiliate**       | Affiliate program                        | Affiliate signup, tracking, commissions.                                                            |
+| **Asset**           | Asset management                         | Register assets, issue/return, history.                                                             |
+| **Biolinks**        | Bio link pages                           | Create/share bio link pages; phone/email collection.                                                |
+| **Biometric**       | Biometric devices                        | Device management, sync attendance from devices.                                                    |
+| **CyberSecurity**   | Security                                 | XSS/config hardening, blacklist IPs.                                                                |
+| **DeveloperTools**  | Dev utilities                            | DB user mapping, dev helpers (dev only).                                                            |
+| **EInvoice**        | E-invoicing                              | E-invoice generation, license types, XML.                                                           |
+| **LanguagePack**    | Languages                                | Additional language packs for UI.                                                                   |
+| **Letter**          | Letter/documents                         | Letter/document generation.                                                                         |
+| **LineIntegration** | LINE integration                         | LINE bot/messaging integration.                                                                     |
+| **Onboarding**      | Onboarding/offboarding                   | Employee onboarding/offboarding checklists.                                                         |
+| **Payroll**         | Payroll                                  | Salary, pay cycles, overtime, TDS, salary slips.                                                    |
+| **Performance**     | Performance                              | Objectives, reviews, appraisals.                                                                    |
+| **Policy**          | Policies                                 | Policy documents, publish, acknowledge.                                                             |
+| **Pricing**         | (Core pricing in app; module may extend) | Pricing tiers, client pricing.                                                                      |
+| **ProjectRoadmap**  | Roadmap                                  | Project roadmap view/planning.                                                                      |
+| **Purchase**        | Purchasing                               | Purchase orders, bills, vendors, inventory impact, delivery order flow, stock adjustment alignment. |
+| **QRCode**          | QR codes                                 | Generate/manage QR codes.                                                                           |
+| **Recruit**         | Recruitment                              | Jobs, job applications, interviews, offer letters, candidates, skills, sources, board view.         |
+| **ServerManager**   | Server/hosting                           | Domain/hosting management.                                                                          |
+| **Sms**             | SMS                                      | SMS notifications (invoices, tasks, 2FA, etc.).                                                     |
+| **Subdomain**       | Subdomains                               | Custom subdomains per company (optional).                                                           |
+| **Warehouse**       | Warehouse                                | Warehouses, stock, transfers, multi-warehouse SO/DO reconciliation and rehearsal tooling.           |
+| **Webhooks**        | Webhooks                                 | Outbound webhooks, logs.                                                                            |
+| **Zoom**            | Zoom                                     | Zoom meeting integration.                                                                           |
 
 Exact permissions and routes for each add-on are defined inside the module (e.g. `Modules/<Name>/Routes/web.php`, seeders, or config). For implementation details see the corresponding module folder and any `docs/` inside it (e.g. `Modules/Pricing/docs/`, `Modules/Webhooks/WEBHOOK_IMPLEMENTATION_REPORT.md`).
 
@@ -461,6 +462,12 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 | `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md`                | Fix: Social Auth Settings crash `The MAC is invalid.` when encrypted secrets cannot decrypt.   |
 | `docs/MENU_ROUTES_AND_CACHE.md`                                   | Why menu routes can fail and how to fix (route:clear, Route::has).                             |
 | `docs/PACKAGE_MODULES_ACTIVATE.md`                                | Activating package modules.                                                                    |
+| `docs/axios-migration/README.md`                                  | easyAjax → `window.apiHttp` migration standards and module wave tracker.                       |
+| `docs/STAGING_OPERATIONS.md`                                      | Staging rehearsal, non-destructive operation policy, and deploy safety notes.                  |
+| `docs/SERVER_RUNBOOK_VI.md`                                       | Hub/staging runbook: deploy flow, permissions, queue, and go-live pitfalls.                    |
+| `docs/ORDER_CREATE_PERFORMANCE_IMPROVEMENT_PLAN_2026-03-30.md`    | Create Order performance strategy (server-side search/pagination, rollout phases).             |
+| `docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md`                       | Staging progress log for PHP 8.3 + Laravel 11 + safe deploy procedures.                        |
+| `docs/GCP_INFRA_INVENTORY_SUMMARY.md`                             | Current VM/Cloud SQL inventory snapshot for operations context.                                |
 | `DIAGRAM/order_process_flowchart.md`                              | Order process (chat → PO → DO → invoice).                                                      |
 | `DIAGRAM/chat_order_flow.md`                                      | Chat and order flow.                                                                           |
 | `app/Models/Module.php`                                           | Full list of modules and permissions (MODULE_LIST, SUPERADMIN_MODULE_LIST).                    |
@@ -480,4 +487,43 @@ Nâng cấp framework **Laravel 10 → 11** (breaking changes, migration, QA tha
 
 ---
 
-_Last updated: 2026-04-06. Update this file when adding or changing major business flows, modules, or permissions._
+## 10. Recent platform updates (handover)
+
+This section summarizes major updates added after the initial version of this document, so teammates can quickly catch up before diving into module-level docs.
+
+### 10.1 Frontend request layer migration
+
+- Core and module UIs are being migrated from legacy `$.easyAjax` to `window.apiHttp` (Axios wrapper in `resources/js/http/apiClient.js`).
+- Completed migration waves include key business areas: tasks, projects, leads, tickets, event calendar, super-admin, and multiple add-on modules.
+- Migration rules and module trackers are maintained in `docs/axios-migration/README.md` and per-module files under `docs/axios-migration/`.
+
+### 10.2 Sales / Purchase / Warehouse flow strengthening
+
+- SO/DO business flow has added rehearsal and reconciliation commands for safe verification before any data mutation.
+- Purchase and Delivery Order features were expanded (delivery-order screens, item linkage, inventory-related migrations, stock-related consistency checks).
+- Warehouse-related docs and reconciliation gates now support multi-warehouse validation before cutover.
+
+### 10.3 Performance and scale improvements
+
+- `Create Order` large-data performance has a documented rollout plan: server-side search, pagination/infinite scroll, debounce, and phased KPI checks.
+- Focus is to reduce DOM-heavy dropdown load for large client/product datasets while preserving current order business logic.
+
+### 10.4 Operations and deployment hardening
+
+- Staging/hub operational policy emphasizes **non-destructive DB operations** and **Git-based deploy discipline**.
+- LanguagePack publish permissions and shared write-path ownership have documented fixes in runbooks.
+- Composer guidance was hardened for server environments: keep lockfile-driven installs for deploy stability; avoid ad-hoc update flows on production-like servers unless explicitly planned.
+
+### 10.5 Infrastructure visibility
+
+- GCP inventory summary was added for quick environment orientation (VMs, Cloud SQL instances, project context).
+- This helps onboarding and incident triage without requiring immediate console exploration.
+
+### 10.6 Hub server git-state note (current)
+
+- Nginx serves hub from `/var/www/hub.craveva.com/public`.
+- Git repository metadata was initialized at `/var/www/hub.craveva.com` with `origin` set to `https://github.com/CRAVEVA/craveva-hub-server.git` (remote setup only; pull strategy handled separately).
+
+---
+
+_Last updated: 2026-04-15. Update this file when adding or changing major business flows, modules, or permissions._

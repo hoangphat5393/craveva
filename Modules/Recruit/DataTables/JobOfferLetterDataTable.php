@@ -4,7 +4,9 @@ namespace Modules\Recruit\DataTables;
 
 use App\DataTables\BaseDataTable;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Recruit\Entities\RecruitJobOfferLetter;
+use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Column;
 
 class JobOfferLetterDataTable extends BaseDataTable
@@ -27,23 +29,23 @@ class JobOfferLetterDataTable extends BaseDataTable
      * Build DataTable class.
      *
      * @param  mixed  $query  Results from query() method.
-     * @return \Yajra\DataTables\DataTableAbstract
+     * @return DataTableAbstract
      */
     public function dataTable($query)
     {
         return datatables()
             ->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
+                return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
             })
             ->addColumn('offer', function ($row) {
-                return '<a href="'.route('job-offer-letter.show', [$row->id]).'" class="text-darkest-grey" >Offer-'.$row->id.'</a>';
+                return '<a href="' . route('job-offer-letter.show', [$row->id]) . '" class="text-darkest-grey" >Offer-' . $row->id . '</a>';
             })
             ->addColumn('job_name', function ($row) {
-                return '<a href="'.route('jobs.show', [$row->recruit_job_id]).'" class="text-darkest-grey" >'.$row->title.'</a>';
+                return '<a href="' . route('jobs.show', [$row->recruit_job_id]) . '" class="text-darkest-grey" >' . $row->title . '</a>';
             })
             ->addColumn('job_application', function ($row) {
-                return '<a href="'.route('job-applications.show', [$row->recruit_job_application_id]).'" class=" text-darkest-grey openRightModal" >'.$row->full_name.'</a>';
+                return '<a href="' . route('job-applications.show', [$row->recruit_job_application_id]) . '" class=" text-darkest-grey openRightModal" >' . $row->full_name . '</a>';
             })
             ->editColumn('added_by', function ($row) {
                 if (! is_null($row->user)) {
@@ -56,47 +58,47 @@ class JobOfferLetterDataTable extends BaseDataTable
             })
             ->editColumn('job_expire', function ($row) {
                 return $row->job_expire ? $row->job_expire->translatedFormat($this->company->date_format) : '';
-
             })
             ->editColumn('expected_joining_date', function ($row) {
                 return $row->expected_joining_date ? $row->expected_joining_date->translatedFormat($this->company->date_format) : '';
-
             })
             ->editColumn('status', function ($row) {
-                if ($this->editPermission == 'all' ||
+                if (
+                    $this->editPermission == 'all' ||
                     ($this->editPermission == 'added' && $row->added_by == user()->id) ||
                     ($this->editPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->editPermission == 'both' && user()->id == $row->recruiter_id) ||
-                    $row->added_by == user()->id) {
-                    $status = '<select class="form-control select-picker change-letter-status" data-letter-id="'.$row->id.'">';
+                    $row->added_by == user()->id
+                ) {
+                    $status = '<select class="form-control select-picker change-letter-status" data-letter-id="' . $row->id . '">';
                     $status .= '<option ';
 
                     if ($row->status == 'pending') {
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="pending" data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> '.__('app.pending').'">'.__('app.pending').'</option>';
+                    $status .= ' value="pending" data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> ' . __('app.pending') . '">' . __('app.pending') . '</option>';
                     $status .= '<option ';
 
                     if ($row->status == 'withdraw') {
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="withdraw" data-content="<i class=\'fa fa-circle mr-2 text-blue\'></i> '.__('recruit::app.job.withdraw').'"'.__('recruit::app.job.withdraw').'</option>';
+                    $status .= ' value="withdraw" data-content="<i class=\'fa fa-circle mr-2 text-blue\'></i> ' . __('recruit::app.job.withdraw') . '"' . __('recruit::app.job.withdraw') . '</option>';
                     $status .= '<option ';
 
                     if ($row->status == 'accept') {
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="accept" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> '.__('app.accept').'"'.__('app.accept').'</option>';
+                    $status .= ' value="accept" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> ' . __('app.accept') . '"' . __('app.accept') . '</option>';
                     $status .= '<option ';
 
                     if ($row->status == 'expired') {
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="expired" data-content="<i class=\'fa fa-circle mr-2 text-black\'></i> '.__('recruit::app.job.expired').'">'.__('recruit::app.job.expired').'</option>';
+                    $status .= ' value="expired" data-content="<i class=\'fa fa-circle mr-2 text-black\'></i> ' . __('recruit::app.job.expired') . '">' . __('recruit::app.job.expired') . '</option>';
 
                     $status .= '<option ';
 
@@ -104,7 +106,7 @@ class JobOfferLetterDataTable extends BaseDataTable
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="decline" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> '.__('app.decline').'">'.__('app.decline').'</option>';
+                    $status .= ' value="decline" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> ' . __('app.decline') . '">' . __('app.decline') . '</option>';
 
                     $status .= '<option ';
 
@@ -112,7 +114,7 @@ class JobOfferLetterDataTable extends BaseDataTable
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="draft" data-content="<i class=\'fa fa-circle mr-2 text-brown\'></i> '.__('recruit::app.job.draft').'">'.__('recruit::app.job.draft').'</option>';
+                    $status .= ' value="draft" data-content="<i class=\'fa fa-circle mr-2 text-brown\'></i> ' . __('recruit::app.job.draft') . '">' . __('recruit::app.job.draft') . '</option>';
 
                     $status .= '</select>';
                 } else {
@@ -136,7 +138,7 @@ class JobOfferLetterDataTable extends BaseDataTable
                         $status = __('app.rejected');
                     }
 
-                    $status = '<i class="fa fa-circle mr-1 '.$class.' f-10"></i> '.$status;
+                    $status = '<i class="fa fa-circle mr-1 ' . $class . ' f-10"></i> ' . $status;
                 }
 
                 return $status;
@@ -148,73 +150,83 @@ class JobOfferLetterDataTable extends BaseDataTable
                 $action = '<div class="task_view">
 
                     <div class="dropdown">
-                        <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"  data-boundary="window" 
-                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"  data-boundary="window"
+                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
 
-                if ($this->viewPermission == 'all' ||
+                if (
+                    $this->viewPermission == 'all' ||
                     ($this->viewPermission == 'added' && $row->added_by == user()->id) ||
                     ($this->viewPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->viewPermission == 'both' && user()->id == $row->recruiter_id) ||
-                    $row->added_by == user()->id) {
-                    $action .= '<a href="'.route('job-offer-letter.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
+                    $row->added_by == user()->id
+                ) {
+                    $action .= '<a href="' . route('job-offer-letter.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
                 }
 
-                if ($this->editPermission == 'all' ||
+                if (
+                    $this->editPermission == 'all' ||
                     ($this->editPermission == 'added' && $row->added_by == user()->id) ||
                     ($this->editPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->editPermission == 'both' && user()->id == $row->recruiter_id) ||
-                    $row->added_by == user()->id) {
+                    $row->added_by == user()->id
+                ) {
                     if ($row->employee_id == null && $row->status != 'accept' && $row->status != 'decline') {
-                        $action .= '<a class="dropdown-item openRightModal" href="'.route('job-offer-letter.edit', [$row->id]).'">
+                        $action .= '<a class="dropdown-item openRightModal" href="' . route('job-offer-letter.edit', [$row->id]) . '">
                                     <i class="fa fa-edit mr-2"></i>
-                                    '.trans('app.edit').'
+                                    ' . trans('app.edit') . '
                                 </a>';
                     }
                 }
 
-                if ($this->deletePermission == 'all' ||
+                if (
+                    $this->deletePermission == 'all' ||
                     ($this->deletePermission == 'added' && $row->added_by == user()->id) ||
                     ($this->deletePermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->deletePermission == 'both' && user()->id == $row->recruiter_id) ||
-                    $row->added_by == user()->id) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-offer-id="'.$row->id.'">
+                    $row->added_by == user()->id
+                ) {
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-offer-id="' . $row->id . '">
                                     <i class="fa fa-trash mr-2"></i>
-                                    '.trans('app.delete').'
+                                    ' . trans('app.delete') . '
                                 </a>';
                 }
 
-                if ($this->editPermission == 'all' ||
+                if (
+                    $this->editPermission == 'all' ||
                     ($this->editPermission == 'added' && $row->added_by == user()->id) ||
                     ($this->editPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->editPermission == 'both' && user()->id == $row->recruiter_id) ||
-                    $row->added_by == user()->id) {
+                    $row->added_by == user()->id
+                ) {
                     if ($row->status == 'pending' || $row->status == 'draft' || $row->status == 'withdraw' && $row->employee_id == null && $date1->greaterThanOrEqualTo($date2)) {
-                        $action .= '<a class="dropdown-item send-offer-letter" href="javascript:;" data-send-id="'.$row->id.'">
+                        $action .= '<a class="dropdown-item send-offer-letter" href="javascript:;" data-send-id="' . $row->id . '">
                                     <i class="fa fa-paper-plane mr-2"></i>
-                                    '.__('recruit::modules.joboffer.sendoffer').'
+                                    ' . __('recruit::modules.joboffer.sendoffer') . '
                                 </a>';
                     }
 
                     if ($row->status == 'accept' && $row->employee_id == null) {
-                        $action .= '<a class="dropdown-item create-employee" href="javascript:;" data-offer-id="'.$row->id.'">
+                        $action .= '<a class="dropdown-item create-employee" href="javascript:;" data-offer-id="' . $row->id . '">
                             <i class="fa fa-plus mr-2"></i>
-                                '.__('recruit::modules.joboffer.create_emp').'
+                                ' . __('recruit::modules.joboffer.create_emp') . '
                             </a>';
                     }
                 }
 
-                if ($this->editPermission == 'all' ||
+                if (
+                    $this->editPermission == 'all' ||
                     ($this->editPermission == 'added' && $row->added_by == user()->id) ||
                     ($this->editPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->editPermission == 'both' && user()->id == $row->recruiter_id) ||
-                    $row->added_by == user()->id) {
+                    $row->added_by == user()->id
+                ) {
                     if ($row->status == 'pending' || $row->status == 'draft' && $row->employee_id == null && $date1->greaterThanOrEqualTo($date2)) {
-                        $action .= '<a class="dropdown-item withdraw-offer-letter" href="javascript:;" data-withdraw-id="'.$row->id.'">
+                        $action .= '<a class="dropdown-item withdraw-offer-letter" href="javascript:;" data-withdraw-id="' . $row->id . '">
                                 <i class="fa fa-backward mr-2"></i>
-                                '.__('recruit::modules.joboffer.withdraw').'
+                                ' . __('recruit::modules.joboffer.withdraw') . '
                             </a>';
                     }
                 }
@@ -226,7 +238,7 @@ class JobOfferLetterDataTable extends BaseDataTable
                 return $action;
             })
             ->addIndexColumn()
-            ->setRowId(fn ($row) => 'row-'.$row->id)
+            ->setRowId(fn($row) => 'row-' . $row->id)
             ->rawColumns(['action', 'job_name', 'job_application', 'added_by', 'job_expire', 'expected_joining_date', 'check', 'status', 'offer'])
             ->removeColumn('updated_at')
             ->removeColumn('created_at');
@@ -236,7 +248,7 @@ class JobOfferLetterDataTable extends BaseDataTable
      * Get query source of dataTable.
      *
      * @param  $model
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function query(RecruitJobOfferLetter $jobs)
     {
@@ -289,7 +301,7 @@ class JobOfferLetterDataTable extends BaseDataTable
 
         if ($this->request()->searchText != '') {
             $jobs = $jobs->where(function ($query) {
-                $query->where('recruit_job_applications.full_name', 'like', '%'.request('searchText').'%');
+                $query->where('recruit_job_applications.full_name', 'like', '%' . request('searchText') . '%');
             });
         }
 
@@ -337,7 +349,7 @@ class JobOfferLetterDataTable extends BaseDataTable
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'visible' => false, 'exportable' => false, 'title' => __('app.id')],
-            __('Offer') => ['data' => 'offer', 'name' => 'id', 'title' => __('Offer')],
+            __('Offer.Offer') => ['data' => 'offer', 'name' => 'id', 'title' => __('Offer.Offer')],
             __('recruit::modules.joboffer.job') => ['data' => 'job_name', 'name' => 'recruit_jobs.title', 'title' => __('recruit::modules.joboffer.job')],
             __('recruit::app.jobOffer.jobApplicant') => ['data' => 'job_application', 'name' => 'recruit_job_applications.full_name', 'title' => __('recruit::app.jobOffer.jobApplicant')],
             __('app.addedBy') => ['data' => 'added_by', 'name' => 'added_by', 'title' => __('app.addedBy')],

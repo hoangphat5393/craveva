@@ -5,6 +5,7 @@ namespace Modules\Pricing\Http\Controllers;
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Modules\Pricing\Entities\PricingTier;
 use Modules\Pricing\Entities\PricingTierItem;
@@ -144,7 +145,7 @@ class PricingTierController extends AccountBaseController
 
         $this->pricingTier = PricingTier::with(['items.product.unit'])->findOrFail($id);
         $this->products = Product::query()
-            ->select(['id', 'name', 'allow_purchase', 'status', 'unit_id'])
+            ->select(['id', 'name', 'sku', 'allow_purchase', 'status', 'unit_id'])
             ->with('unit')
             ->orderBy('name')
             ->get();
@@ -278,9 +279,9 @@ class PricingTierController extends AccountBaseController
         $format = company()->date_format;
 
         try {
-            return \Carbon\Carbon::createFromFormat($format, $value)->format('Y-m-d');
+            return Carbon::createFromFormat($format, $value)->format('Y-m-d');
         } catch (\Throwable) {
-            return \Carbon\Carbon::parse($value)->format('Y-m-d');
+            return Carbon::parse($value)->format('Y-m-d');
         }
     }
 }

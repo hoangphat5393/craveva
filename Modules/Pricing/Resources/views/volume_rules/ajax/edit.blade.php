@@ -7,8 +7,7 @@
                 </h4>
                 <div class="row p-20">
                     <div class="col-md-4">
-                        <x-forms.text fieldId="name" :fieldLabel="__('pricing::app.ruleName')" fieldName="name" fieldRequired="true"
-                                      :fieldPlaceholder="__('app.name')" :fieldValue="$rule->name" />
+                        <x-forms.text fieldId="name" :fieldLabel="__('pricing::app.ruleName')" fieldName="name" fieldRequired="true" :fieldPlaceholder="__('app.name')" :fieldValue="$rule->name" />
                     </div>
                     <div class="col-md-4">
                         <x-forms.select fieldId="discount_type" :fieldLabel="__('pricing::app.discountType')" fieldName="discount_type" fieldRequired="true">
@@ -37,7 +36,9 @@
                         <x-forms.select fieldId="product_id" :fieldLabel="__('app.product')" fieldName="product_id">
                             <option value="">@lang('app.select') @lang('app.product')</option>
                             @foreach ($products as $product)
-                                <option value="{{ $product->id }}" {{ $rule->applies_to_product_id == $product->id ? 'selected' : '' }}>{{ $product->name }}</option>
+                                <option value="{{ $product->id }}" {{ $rule->applies_to_product_id == $product->id ? 'selected' : '' }}>
+                                    {{ $product->name }}{{ !empty($product->sku) ? ' (' . $product->sku . ')' : '' }}
+                                </option>
                             @endforeach
                         </x-forms.select>
                     </div>

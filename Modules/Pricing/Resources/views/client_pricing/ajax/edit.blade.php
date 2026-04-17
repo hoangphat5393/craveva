@@ -10,7 +10,9 @@
                         <x-forms.select fieldId="client_id" :fieldLabel="__('app.client')" fieldName="client_id" search="true">
                             @foreach ($clients as $client)
                                 <option value="{{ $client->id }}" @if ($client->id == $pricing->client_id) selected @endif>
-                                    @if (!empty($client->client_code)){{ $client->client_code }} - @endif{{ $client->name }}
+                                    @if (!empty($client->client_code))
+                                        {{ $client->client_code }} -
+                                    @endif{{ $client->name }}
                                     @if (!empty($client->company_name))
                                         ({{ $client->company_name }})
                                     @endif
@@ -22,7 +24,7 @@
                         <x-forms.select fieldId="product_id" :fieldLabel="__('app.product')" fieldName="product_id" search="true">
                             @foreach ($products as $product)
                                 <option value="{{ $product->id }}" data-base-price="{{ $product->price }}" @if ($product->id == $pricing->product_id) selected @endif>
-                                    {{ $product->name }}
+                                    {{ $product->name }}{{ !empty($product->sku) ? ' (' . $product->sku . ')' : '' }}
                                 </option>
                             @endforeach
                         </x-forms.select>
@@ -85,7 +87,7 @@
 
     $('#save-client-pricing').on('click', function(e) {
         e.preventDefault();
-        
+
         if ($('#save-client-pricing').prop('disabled')) {
             return;
         }
@@ -119,7 +121,7 @@
         const dp1 = datepicker('#start_date', {
             position: 'bl',
             @if ($pricing->start_date)
-            dateSelected: new Date("{{ $pricing->start_date }}"),
+                dateSelected: new Date("{{ $pricing->start_date }}"),
             @endif
             @if ($pricing->start_date && $pricing->start_date->isPast())
                 minDate: new Date("{{ $pricing->start_date }}"),
@@ -135,7 +137,7 @@
         const dp2 = datepicker('#end_date', {
             position: 'bl',
             @if ($pricing->end_date)
-            dateSelected: new Date("{{ $pricing->end_date }}"),
+                dateSelected: new Date("{{ $pricing->end_date }}"),
             @endif
             onSelect: (instance, date) => {
                 validateFormState(dp1.dateSelected, instance.dateSelected);
@@ -175,7 +177,7 @@
                     $('#error-end_date').removeClass('d-block').addClass('d-none');
                 }
             } else {
-                 $('#error-end_date').removeClass('d-block').addClass('d-none');
+                $('#error-end_date').removeClass('d-block').addClass('d-none');
             }
 
             $('#save-client-pricing').prop('disabled', !isValid);
@@ -185,12 +187,12 @@
         $('#product_id').on('change', function() {
             validateFormState(dp1.dateSelected, dp2.dateSelected);
         });
-        
+
         $('#start_date').on('blur', function() {
-             validateFormState(dp1.dateSelected, dp2.dateSelected);
+            validateFormState(dp1.dateSelected, dp2.dateSelected);
         });
         $('#end_date').on('blur', function() {
-             validateFormState(dp1.dateSelected, dp2.dateSelected);
+            validateFormState(dp1.dateSelected, dp2.dateSelected);
         });
 
         // Initial check

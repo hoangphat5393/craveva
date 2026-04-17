@@ -10,7 +10,9 @@
                         <x-forms.select fieldId="client_id" :fieldLabel="__('app.client')" fieldName="client_id" search="true">
                             @foreach ($clients as $client)
                                 <option value="{{ $client->id }}">
-                                    @if (!empty($client->client_code)){{ $client->client_code }} - @endif{{ $client->name }}
+                                    @if (!empty($client->client_code))
+                                        {{ $client->client_code }} -
+                                    @endif{{ $client->name }}
                                     @if (!empty($client->company_name))
                                         ({{ $client->company_name }})
                                     @endif
@@ -22,7 +24,9 @@
                         <x-forms.select fieldId="product_id" :fieldLabel="__('app.product')" fieldName="product_id" search="true">
                             <option value="">-- @lang('app.select') @lang('app.product') --</option>
                             @foreach ($products as $product)
-                                <option value="{{ $product->id }}" data-base-price="{{ $product->price }}">{{ $product->name }}</option>
+                                <option value="{{ $product->id }}" data-base-price="{{ $product->price }}">
+                                    {{ $product->name }}{{ !empty($product->sku) ? ' (' . $product->sku . ')' : '' }}
+                                </option>
                             @endforeach
                         </x-forms.select>
                         <div class="invalid-feedback d-none" id="error-product_id">@lang('pricing::app.productRequired')</div>
@@ -85,7 +89,7 @@
 
     function validateForm() {
         let isValid = true;
-        
+
         // 1. Validate Product
         const productId = $('#product_id').val();
         if (!productId) {
@@ -97,35 +101,35 @@
 
         // 2. Validate Start Date
         const startDateVal = $('#start_date').val();
-        // We use the datepicker object attached to the element if available, 
+        // We use the datepicker object attached to the element if available,
         // but since we declared dp1 locally in document.ready, we might not access it easily globally.
         // However, we can re-parse or check the input string if not empty.
         // Better: check if input is empty.
-        
+
         if (!startDateVal) {
-             $('#error-start_date').text("@lang('pricing::app.startDateRequired')");
-             $('#error-start_date').removeClass('d-none').addClass('d-block');
-             isValid = false;
+            $('#error-start_date').text("@lang('pricing::app.startDateRequired')");
+            $('#error-start_date').removeClass('d-none').addClass('d-block');
+            isValid = false;
         } else {
             // Check if past
-            // Need to parse date based on format. 
+            // Need to parse date based on format.
             // Since this is complex in pure JS without knowing format map, we rely on the backend for strict check,
             // BUT user asked for client-side check "start date >= today".
             // We can try to use the datepicker instance.
-            
+
             // Let's assume standard datepicker usage.
             // We will do this check inside the datepicker onSelect callback or separate function accessing datepicker.
             // For now, basic empty check. The datepicker config handles invalid formats mostly.
-             $('#error-start_date').removeClass('d-block').addClass('d-none');
+            $('#error-start_date').removeClass('d-block').addClass('d-none');
         }
 
         // 3. Validate End Date >= Start Date
         const endDateVal = $('#end_date').val();
         if (startDateVal && endDateVal) {
-             // We need to compare. 
-             // Accessing the date objects from the DOM elements if stored there?
-             // Not reliably.
-             // We will implement comparison logic in the datepicker setup below.
+            // We need to compare.
+            // Accessing the date objects from the DOM elements if stored there?
+            // Not reliably.
+            // We will implement comparison logic in the datepicker setup below.
         }
 
         // Enable/Disable Button
@@ -135,7 +139,7 @@
 
     $('#save-client-pricing').on('click', function(e) {
         e.preventDefault();
-        
+
         // Final Validation before submit
         if ($('#save-client-pricing').prop('disabled')) {
             return;
@@ -201,16 +205,16 @@
             } else {
                 // Check if past (ignoring time)
                 const today = new Date();
-                today.setHours(0,0,0,0);
+                today.setHours(0, 0, 0, 0);
                 const checkDate = new Date(startDate);
-                checkDate.setHours(0,0,0,0);
+                checkDate.setHours(0, 0, 0, 0);
 
                 if (checkDate < today) {
-                     $('#error-start_date').text("@lang('pricing::app.startDateRequired')");
-                     $('#error-start_date').removeClass('d-none').addClass('d-block');
-                     isValid = false;
+                    $('#error-start_date').text("@lang('pricing::app.startDateRequired')");
+                    $('#error-start_date').removeClass('d-none').addClass('d-block');
+                    isValid = false;
                 } else {
-                     $('#error-start_date').removeClass('d-block').addClass('d-none');
+                    $('#error-start_date').removeClass('d-block').addClass('d-none');
                 }
             }
 
@@ -223,7 +227,7 @@
                     $('#error-end_date').removeClass('d-block').addClass('d-none');
                 }
             } else {
-                 $('#error-end_date').removeClass('d-block').addClass('d-none');
+                $('#error-end_date').removeClass('d-block').addClass('d-none');
             }
 
             $('#save-client-pricing').prop('disabled', !isValid);
@@ -232,19 +236,19 @@
         // Bind events
         $('#product_id').on('change', function() {
             // We need current dates
-            // Accessing internal datepicker state via the global variable might be tricky if scope is lost, 
+            // Accessing internal datepicker state via the global variable might be tricky if scope is lost,
             // but here inside ready it is fine.
             // However, dp1.dateSelected might be null if not selected.
             // But datepicker library (qs-datepicker?) usually exposes it.
             validateFormState(dp1.dateSelected, dp2.dateSelected);
         });
-        
+
         // Input Blur events
         $('#start_date').on('blur', function() {
-             validateFormState(dp1.dateSelected, dp2.dateSelected);
+            validateFormState(dp1.dateSelected, dp2.dateSelected);
         });
         $('#end_date').on('blur', function() {
-             validateFormState(dp1.dateSelected, dp2.dateSelected);
+            validateFormState(dp1.dateSelected, dp2.dateSelected);
         });
 
         // Initial check

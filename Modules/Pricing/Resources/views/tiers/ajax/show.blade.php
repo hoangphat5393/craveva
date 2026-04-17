@@ -69,7 +69,9 @@
                             <x-forms.select fieldId="product_id" :fieldLabel="__('app.product')" fieldName="product_id" search="true">
                                 <option value="">-- @lang('app.select') @lang('app.product') --</option>
                                 @foreach ($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                    <option value="{{ $product->id }}">
+                                        {{ $product->name }}{{ !empty($product->sku) ? ' (' . $product->sku . ')' : '' }}
+                                    </option>
                                 @endforeach
                             </x-forms.select>
                         </div>
@@ -129,7 +131,9 @@
                             @forelse($pricingTier->items as $item)
                                 <tr id="item-row-{{ $item->id }}">
                                     <td><input type="checkbox" class="select-items-row" value="{{ $item->id }}"></td>
-                                    <td>{{ $item->product->name ?? '--' }}</td>
+                                    <td>
+                                        {{ $item->product->name ?? '--' }}{{ !empty($item->product?->sku) ? ' (' . $item->product->sku . ')' : '' }}
+                                    </td>
                                     <td>{{ ucfirst($item->discount_type) }}</td>
                                     <td>{{ $item->discount_value }}</td>
                                     <td>--</td>

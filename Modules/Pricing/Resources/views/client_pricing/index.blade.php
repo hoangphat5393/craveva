@@ -64,7 +64,9 @@
                                     </div>
                                 </div>
                             </td>
-                            <td data-order="{{ $row->product?->name ?? '' }}">{{ $row->product?->name }}</td>
+                            <td data-order="{{ $row->product?->name ?? '' }}">
+                                {{ $row->product?->name }}{{ !empty($row->product?->sku) ? ' (' . $row->product->sku . ')' : '' }}
+                            </td>
                             <td data-order="{{ $row->custom_price ?? 0 }}">{{ $row->custom_price }}</td>
                             <td>{{ $row->discount_type }}</td>
                             <td data-order="{{ $row->discount_value ?? 0 }}">{{ $row->discount_value }}</td>
@@ -235,10 +237,10 @@
             var token = "{{ csrf_token() }}";
 
             window.apiHttp.postUrlEncoded(url, {
-                '_token': token,
-                'id': id,
-                'status': status
-            })
+                    '_token': token,
+                    'id': id,
+                    'status': status
+                })
                 .then(function(response) {
                     if (response.status == "success") {
                         // Nothing to do, toast already shown

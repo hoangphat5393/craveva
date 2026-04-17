@@ -24,16 +24,16 @@
         @lang('messages.adminPermissionError')
     </x-alert>
 @else
-    <x-table class="table-bordered table-hover mt-4 permisison-table bg-white rounded" headType="thead-light">
+    <x-table class="table-bordered table-hover mt-4 permisison-table bg-white rounded w-100" headType="thead-light">
         <x-slot name="thead">
             <th width="20%">
                 @lang('app.module')
             </th>
-            <th width="16%">@lang('app.add')</th>
-            <th width="16%">@lang('app.view')</th>
-            <th width="16%">@lang('app.update')</th>
-            <th width="16%">@lang('app.delete')</th>
-            <th width="16%"></th>
+            <th width="15%">@lang('app.add')</th>
+            <th width="15%">@lang('app.view')</th>
+            <th width="15%">@lang('app.update')</th>
+            <th width="15%">@lang('app.delete')</th>
+            <th width="20%"></th>
         </x-slot>
         @foreach ($modulesData as $moduleData)
             @php

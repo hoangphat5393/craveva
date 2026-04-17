@@ -2,16 +2,14 @@
 
 @push('styles')
     <style>
-        .role-permission-select .btn {
+        .permisison-table .bootstrap-select>.dropdown-toggle {
             border: none;
-            width: auto;
+            width: 100%;
         }
-
     </style>
 @endpush
 
 @section('content')
-
     <!-- SETTINGS START -->
     <div class="w-100 d-flex ">
 
@@ -40,7 +38,7 @@
                     <div class="d-flex justify-content-between border rounded my-3 px-4 py-2 align-items-center">
                         <div>
                             <div class="heading-h4">{{ $role->display_name }}</div>
-                            <div class="simple-text text-lightest mt-1">{{ $role->name == 'employee' ? ($role->users_count - $otherRoleUserCount) : $role->users_count }} @lang('app.member')
+                            <div class="simple-text text-lightest mt-1">{{ $role->name == 'employee' ? $role->users_count - $otherRoleUserCount : $role->users_count }} @lang('app.member')
                             </div>
                         </div>
                         <div>
@@ -66,7 +64,6 @@
 
 @push('scripts')
     <script>
-
         $('body').on('click', '.view-permission', function() {
             var roleId = $(this).data('role-id');
             var url = "{{ route('role-permissions.permissions') }}";
@@ -89,7 +86,7 @@
                             $('.role-permissions').html('');
                             $('#role-permission-' + roleId).html(response.html);
 
-                            setTimeout(function(){
+                            setTimeout(function() {
                                 $('[data-toggle="popover"]').popover();
                             }, 300);
                         }
@@ -188,9 +185,9 @@
                             ).remove();
                         } else {
                             moduleRow.after(response.html);
-                            
+
                             // Initialize popovers for custom permissions
-                            setTimeout(function(){
+                            setTimeout(function() {
                                 $('[data-toggle="popover"]').popover();
                             }, 300);
                         }

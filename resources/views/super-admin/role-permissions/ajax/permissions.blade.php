@@ -1,17 +1,17 @@
-<x-table class="table-bordered mt-3 permisison-table table-hover" headType="thead-light">
+<x-table class="table-bordered mt-3 permisison-table table-hover w-100" headType="thead-light">
     <x-slot name="thead">
         <th width="20%">
             @lang('app.module')
         </th>
-        <th width="16%">@lang('app.add')</th>
-        <th width="16%">@lang('app.view')</th>
-        <th width="16%">@lang('app.update')</th>
-        <th width="16%">@lang('app.delete')</th>
-        <th width="16%"></th>
+        <th width="15%">@lang('app.add')</th>
+        <th width="15%">@lang('app.view')</th>
+        <th width="15%">@lang('app.update')</th>
+        <th width="15%">@lang('app.delete')</th>
+        <th width="20%"></th>
     </x-slot>
     @foreach ($modulesData as $moduleData)
         <tr>
-            <td>@lang('superadmin.modules.'.$moduleData->module_name)
+            <td>@lang('superadmin.modules.' . $moduleData->module_name)
             </td>
             @foreach ($moduleData->permissions as $permission)
                 @php
@@ -19,13 +19,11 @@
                     $permissionType = $role->permissionType($permission->id);
                 @endphp
                 <td>
-                    <select class="select-picker role-permission-select border-0"
-                            data-permission-id="{{ $permission->id }}" data-role-id="{{ $role->id }}">
+                    <select class="select-picker role-permission-select border-0" data-permission-id="{{ $permission->id }}" data-role-id="{{ $role->id }}">
                         @if (!is_null($allowedPermissions))
                             @foreach ($allowedPermissions as $key => $item)
-                                <option @if ($permissionType == $item) selected @endif
-                                @if (!$permissionType && $item == 5) selected @endif value="{{ $item }}">
-                                    @lang('app.'.$key)</option>
+                                <option @if ($permissionType == $item) selected @endif @if (!$permissionType && $item == 5) selected @endif value="{{ $item }}">
+                                    @lang('app.' . $key)</option>
                             @endforeach
                         @endif
                     </select>
@@ -42,8 +40,7 @@
             <td class="text-center bg-light border-left">
                 <div class="p-2">
                     @if ($moduleData->custom_permissions_count > 0)
-                        <a href="javascript:;" data-module-id="{{ $moduleData->id }}" data-role-id="{{ $role->id }}"
-                            class="text-dark-grey show-custom-permission dropdown-toggle">
+                        <a href="javascript:;" data-module-id="{{ $moduleData->id }}" data-role-id="{{ $role->id }}" class="text-dark-grey show-custom-permission dropdown-toggle">
                             @lang('app.more') <i class="fa fa-chevron-down"></i>
                         </a>
                     @else

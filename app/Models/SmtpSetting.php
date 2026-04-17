@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 
@@ -17,8 +18,8 @@ use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
  * @property string $mail_from_name
  * @property string $mail_from_email
  * @property string|null $mail_encryption
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $verified
  * @property int $email_verified
  * @property-read mixed $icon
@@ -70,8 +71,8 @@ class SmtpSetting extends BaseModel
         try {
             $tls = $this->mail_encryption === 'ssl';
             $transport = new EsmtpTransport($this->mail_host, $this->mail_port, $tls);
-            $transport->setUsername($this->mail_username);
-            $transport->setPassword($this->mail_password);
+            $transport->setUsername((string) ($this->mail_username ?? ''));
+            $transport->setPassword((string) ($this->mail_password ?? ''));
             $transport->start();
 
             if ($this->verified == 0) {

@@ -2,23 +2,21 @@
 
 @push('styles')
     <style>
-        .role-permission-select .btn {
+        .permisison-table .bootstrap-select>.dropdown-toggle {
             border: none;
-            width: auto;
+            width: 100%;
         }
-
     </style>
 @endpush
 
 @section('content')
-
     <!-- SETTINGS START -->
     <div class="w-100 d-flex ">
 
-        @if(user()->is_superadmin)
-            <x-super-admin.setting-sidebar :activeMenu="$activeSettingMenu"/>
+        @if (user()->is_superadmin)
+            <x-super-admin.setting-sidebar :activeMenu="$activeSettingMenu" />
         @else
-            <x-setting-sidebar :activeMenu="$activeSettingMenu"/>
+            <x-setting-sidebar :activeMenu="$activeSettingMenu" />
         @endif
 
         <x-setting-card>
@@ -33,38 +31,38 @@
             </x-slot>
 
 
-                <x-slot name="header">
-                    <div class="s-b-n-header" id="tabs">
-                        <h2 class="mb-0 p-20 f-21 font-weight-normal text-capitalize border-bottom-grey">
-                            @lang($pageTitle) </h2>
-                    </div>
-                </x-slot>
+            <x-slot name="header">
+                <div class="s-b-n-header" id="tabs">
+                    <h2 class="mb-0 p-20 f-21 font-weight-normal text-capitalize border-bottom-grey">
+                        @lang($pageTitle) </h2>
+                </div>
+            </x-slot>
 
-                <div class="col-lg-12 col-md-12 ntfcn-tab-content-left w-100">
-                    @forelse($roles as $role)
-                        <div class="d-flex justify-content-between border rounded my-3 px-4 py-2 align-items-center">
-                            <div>
-                                <div class="heading-h4">{{ $role->display_name }}</div>
-                                <div class="simple-text text-lightest mt-1">{{ $role->users_count }} @lang('app.member')
-                                </div>
-                            </div>
-                            <div>
-                                @if ($role->name == 'superadmin')
-                                    <span class="text-lightest">@lang('superadmin.superadminPermissionsCantChange')</span>
-                                @else
-                                    <x-forms.button-secondary class="view-permission" data-role-id="{{ $role->id }}" icon="key">
-                                        @lang('modules.permission.permissions')
-                                    </x-forms.button-secondary>
-                                @endif
+            <div class="col-lg-12 col-md-12 ntfcn-tab-content-left w-100">
+                @forelse($roles as $role)
+                    <div class="d-flex justify-content-between border rounded my-3 px-4 py-2 align-items-center">
+                        <div>
+                            <div class="heading-h4">{{ $role->display_name }}</div>
+                            <div class="simple-text text-lightest mt-1">{{ $role->users_count }} @lang('app.member')
                             </div>
                         </div>
-                        <div class="table-sm-responsive role-permissions" id="role-permission-{{ $role->id }}"></div>
-                    @empty
-                        <x-alert type="info" class="mt-3" icon="info-circle">
-                            @lang('superadmin.roleNotFound')
-                        </x-alert>
-                    @endforelse
-                </div>
+                        <div>
+                            @if ($role->name == 'superadmin')
+                                <span class="text-lightest">@lang('superadmin.superadminPermissionsCantChange')</span>
+                            @else
+                                <x-forms.button-secondary class="view-permission" data-role-id="{{ $role->id }}" icon="key">
+                                    @lang('modules.permission.permissions')
+                                </x-forms.button-secondary>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="table-sm-responsive role-permissions" id="role-permission-{{ $role->id }}"></div>
+                @empty
+                    <x-alert type="info" class="mt-3" icon="info-circle">
+                        @lang('superadmin.roleNotFound')
+                    </x-alert>
+                @endforelse
+            </div>
 
         </x-setting-card>
 
@@ -94,8 +92,12 @@
                         }
                     }
                 })
-                .catch(function (err) { $.handleApiFormError(err); })
-                .finally(function () { $.easyUnblockUI('.settings-box'); });
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('.settings-box');
+                });
         });
 
         $('body').on('change', '.role-permission-select', function() {
@@ -111,8 +113,12 @@
                     'permissionType': permissionType,
                     '_token': '{{ csrf_token() }}'
                 })
-                .catch(function (err) { $.handleApiFormError(err); })
-                .finally(function () { $.easyUnblockUI('.main-container'); });
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('.main-container');
+                });
         });
 
         $('body').on('click', '.show-custom-permission', function() {
@@ -144,8 +150,12 @@
                             .toggleClass("fa-chevron-down fa-chevron-up");
                     }
                 })
-                .catch(function (err) { $.handleApiFormError(err); })
-                .finally(function () { $.easyUnblockUI('#role-permission-' + roleId); });
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#role-permission-' + roleId);
+                });
         });
 
 

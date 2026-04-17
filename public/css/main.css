@@ -19644,6 +19644,20 @@ table.dataTable {
     text-align: left
 }
 
+.permisison-table {
+    width: 100%;
+    table-layout: fixed
+}
+
+.permisison-table .bootstrap-select {
+    width: 100% !important;
+    max-width: 100%
+}
+
+.permisison-table .bootstrap-select>.dropdown-toggle {
+    width: 100%
+}
+
 .permisison-table .thead-light {
     position: sticky;
     top: 63px;
@@ -19658,7 +19672,8 @@ table.dataTable {
 }
 
 .role-permission-select {
-    width: 100px
+    width: 100%;
+    max-width: 100%
 }
 
 .set-btns {

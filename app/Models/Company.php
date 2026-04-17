@@ -10,10 +10,12 @@ use App\Traits\CustomFieldsTrait;
 use App\Traits\HasMaskImage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Cashier\Billable;
 
@@ -44,8 +46,8 @@ use Laravel\Cashier\Billable;
  * @property string|null $currency_converter_key
  * @property string|null $google_map_key
  * @property string $task_self
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $purchase_code
  * @property string|null $supported_until
  * @property string $google_recaptcha_status
@@ -67,7 +69,7 @@ use Laravel\Cashier\Billable;
  * @property int $dashboard_clock
  * @property int $taskboard_length
  * @property string|null $favicon
- * @property-read \App\Models\Currency|null $currency
+ * @property-read Currency|null $currency
  * @property-read mixed $dark_logo_url
  * @property-read mixed $favicon_url
  * @property-read mixed $icon
@@ -178,38 +180,38 @@ use Laravel\Cashier\Billable;
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereRtl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereStatus($value)
  *
- * @property-read \App\Models\AttendanceSetting|null $attendanceSetting
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CompanyAddress[] $companyAddress
+ * @property-read AttendanceSetting|null $attendanceSetting
+ * @property-read Collection|CompanyAddress[] $companyAddress
  * @property-read int|null $company_address_count
- * @property-read \App\Models\InvoiceSetting|null $invoiceSetting
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\LeadAgent[] $leadAgents
+ * @property-read InvoiceSetting|null $invoiceSetting
+ * @property-read Collection|LeadAgent[] $leadAgents
  * @property-read int|null $lead_agents_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\LeadCategory[] $leadCategories
+ * @property-read Collection|LeadCategory[] $leadCategories
  * @property-read int|null $lead_categories_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\LeadSource[] $leadSources
+ * @property-read Collection|LeadSource[] $leadSources
  * @property-read int|null $lead_sources_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\LeadStatus[] $leadStats
+ * @property-read Collection|LeadStatus[] $leadStats
  * @property-read int|null $lead_stats_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\LeaveType[] $leaveTypes
+ * @property-read Collection|LeaveType[] $leaveTypes
  * @property-read int|null $leave_types_count
- * @property-read \App\Models\MessageSetting|null $messageSetting
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\OfflinePaymentMethod[] $offlinePaymentMethod
+ * @property-read MessageSetting|null $messageSetting
+ * @property-read Collection|OfflinePaymentMethod[] $offlinePaymentMethod
  * @property-read int|null $offline_payment_method_count
- * @property-read \App\Models\PaymentGatewayCredentials|null $paymentGatewayCredentials
- * @property-read \App\Models\ProjectSetting|null $projectSetting
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProjectStatusSetting[] $projectStatusSettings
+ * @property-read PaymentGatewayCredentials|null $paymentGatewayCredentials
+ * @property-read ProjectSetting|null $projectSetting
+ * @property-read Collection|ProjectStatusSetting[] $projectStatusSettings
  * @property-read int|null $project_status_settings_count
- * @property-read \App\Models\TaskSetting|null $taskSetting
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tax[] $taxes
+ * @property-read TaskSetting|null $taskSetting
+ * @property-read Collection|Tax[] $taxes
  * @property-read int|null $taxes_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TicketChannel[] $ticketChannels
+ * @property-read Collection|TicketChannel[] $ticketChannels
  * @property-read int|null $ticket_channels_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TicketType[] $ticketTypes
+ * @property-read Collection|TicketType[] $ticketTypes
  * @property-read int|null $ticket_types_count
- * @property-read \App\Models\ProjectTimeLog|null $timeLogSetting
+ * @property-read ProjectTimeLog|null $timeLogSetting
  * @property string|null $hash
- * @property-read \App\Models\LeaveSetting|null $leaveSetting
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ModuleSetting[] $moduleSetting
+ * @property-read LeaveSetting|null $leaveSetting
+ * @property-read Collection|ModuleSetting[] $moduleSetting
  * @property-read int|null $module_setting_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereHash($value)
@@ -221,33 +223,33 @@ use Laravel\Cashier\Billable;
  * @property string|null $card_last_four
  * @property string|null $trial_ends_at
  * @property string|null $licence_expire_on
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $clients
+ * @property-read Collection|User[] $clients
  * @property-read int|null $clients_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Contract[] $contracts
+ * @property-read Collection|Contract[] $contracts
  * @property-read int|null $contracts_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Currency[] $currencies
+ * @property-read Collection|Currency[] $currencies
  * @property-read int|null $currencies_count
- * @property-read \App\Models\CompanyAddress|null $defaultAddress
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $employees
+ * @property-read CompanyAddress|null $defaultAddress
+ * @property-read Collection|User[] $employees
  * @property-read int|null $employees_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Estimate[] $estimates
+ * @property-read Collection|Estimate[] $estimates
  * @property-read int|null $estimates_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FileStorage[] $fileStorage
+ * @property-read Collection|FileStorage[] $fileStorage
  * @property-read int|null $file_storage_count
  * @property-read mixed $extras
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $invoices
+ * @property-read Collection|Invoice[] $invoices
  * @property-read int|null $invoices_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Lead[] $leads
+ * @property-read Collection|Lead[] $leads
  * @property-read int|null $leads_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Order[] $orders
+ * @property-read Collection|Order[] $orders
  * @property-read int|null $orders_count
  * @property-read Package|null $package
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Project[] $projects
+ * @property-read Collection|Project[] $projects
  * @property-read int|null $projects_count
- * @property-read \App\Models\SlackSetting|null $slackSetting
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @property-read SlackSetting|null $slackSetting
+ * @property-read Collection|Task[] $tasks
  * @property-read int|null $tasks_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ticket[] $tickets
+ * @property-read Collection|Ticket[] $tickets
  * @property-read int|null $tickets_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereYearStartsFrom($value)
@@ -257,7 +259,7 @@ use Laravel\Cashier\Billable;
  * @property int $show_new_webhook_alert
  * @property string|null $pm_type
  * @property string|null $pm_last_four
- * @property-read \App\Models\CompanyAddress|null $defaultAddress
+ * @property-read CompanyAddress|null $defaultAddress
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereDatatableRowLimit($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereHeaderColor($value)
@@ -275,8 +277,8 @@ use Laravel\Cashier\Billable;
  *
  * @mixin \Eloquent
  *
- * @property-read \App\Models\User|null $user
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property-read User|null $user
+ * @property-read Collection|User[] $users
  * @property-read int|null $users_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereCardBrand($value)
@@ -370,28 +372,28 @@ class Company extends BaseModel
         }
 
         if (is_null($this->light_logo)) {
-            return global_setting()->light_logo_url;
+            return global_setting()?->light_logo_url ?? asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->light_logo);
+        return asset_url_local_s3('app-logo/'.$this->light_logo);
     }
 
     public function defaultLogo()
     {
         if (is_null($this->logo)) {
-            return global_setting()->dark_logo_url;
+            return global_setting()?->dark_logo_url ?? asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->logo);
+        return asset_url_local_s3('app-logo/'.$this->logo);
     }
 
     public function getLightLogoUrlAttribute()
     {
         if (is_null($this->light_logo)) {
-            return global_setting()->light_logo_url;
+            return global_setting()?->light_logo_url ?? asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->light_logo);
+        return asset_url_local_s3('app-logo/'.$this->light_logo);
     }
 
     public function getDarkLogoUrlAttribute()
@@ -401,7 +403,7 @@ class Company extends BaseModel
             return asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->logo);
+        return asset_url_local_s3('app-logo/'.$this->logo);
     }
 
     public function getLoginBackgroundUrlAttribute()
@@ -411,7 +413,7 @@ class Company extends BaseModel
             return null;
         }
 
-        return asset_url_local_s3('login-background/' . $this->login_background);
+        return asset_url_local_s3('login-background/'.$this->login_background);
     }
 
     public function maskedDefaultLogo(): Attribute
@@ -419,10 +421,10 @@ class Company extends BaseModel
         return Attribute::make(
             get: function () {
                 if (is_null($this->logo)) {
-                    return global_setting()->dark_logo_url;
+                    return global_setting()?->dark_logo_url ?? asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
             },
         );
     }
@@ -442,10 +444,10 @@ class Company extends BaseModel
                 }
 
                 if (is_null($this->light_logo)) {
-                    return global_setting()->light_logo_url;
+                    return global_setting()?->light_logo_url ?? asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->light_logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->light_logo);
             },
         );
     }
@@ -455,10 +457,10 @@ class Company extends BaseModel
         return Attribute::make(
             get: function () {
                 if (is_null($this->light_logo)) {
-                    return global_setting()->light_logo_url;
+                    return global_setting()?->light_logo_url ?? asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->light_logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->light_logo);
             },
         );
     }
@@ -471,7 +473,7 @@ class Company extends BaseModel
                     return asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
             },
         );
     }
@@ -484,7 +486,7 @@ class Company extends BaseModel
                     return null;
                 }
 
-                return $this->generateMaskedImageAppUrl('login-background/' . $this->login_background);
+                return $this->generateMaskedImageAppUrl('login-background/'.$this->login_background);
             },
         );
     }
@@ -494,10 +496,10 @@ class Company extends BaseModel
         return Attribute::make(
             get: function () {
                 if (is_null($this->favicon)) {
-                    return global_setting()->favicon_url;
+                    return global_setting()?->favicon_url ?? asset('favicon.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('favicon/' . $this->favicon);
+                return $this->generateMaskedImageAppUrl('favicon/'.$this->favicon);
             },
         );
     }
@@ -519,10 +521,10 @@ class Company extends BaseModel
     public function getFaviconUrlAttribute()
     {
         if (is_null($this->favicon)) {
-            return global_setting()->favicon_url;
+            return global_setting()?->favicon_url ?? asset('favicon.png');
         }
 
-        return asset_url_local_s3('favicon/' . $this->favicon);
+        return asset_url_local_s3('favicon/'.$this->favicon);
     }
 
     public function paymentGatewayCredentials(): HasOne

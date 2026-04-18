@@ -3,6 +3,7 @@
 namespace Modules\DeveloperTools\Http\Controllers;
 
 use App\Http\Controllers\AccountBaseController;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -13,6 +14,8 @@ use Modules\DeveloperTools\Entities\DbAccessLog;
 use Modules\DeveloperTools\Entities\DbUserMapping;
 use Modules\DeveloperTools\Entities\DeveloperToolsCredential;
 use Modules\DeveloperTools\Entities\FileRecord;
+use Modules\DeveloperTools\Http\Requests\PreviewDeveloperToolsTablesRequest;
+use Modules\DeveloperTools\Http\Requests\StoreDeveloperToolsCredentialRequest;
 use Modules\DeveloperTools\Services\DbAccessPolicy;
 use Modules\DeveloperTools\Services\FileScanner;
 use Modules\DeveloperTools\Support\GatewayDatabasePassword;
@@ -66,6 +69,49 @@ class DeveloperToolsController extends AccountBaseController
         $this->credentialDisplayHost = $this->resolveCredentialDisplayHost();
 
         return view('developertools::index', $this->data);
+    }
+
+    public function previewTables(PreviewDeveloperToolsTablesRequest $request): JsonResponse
+    {
+        $this->ensureDeveloperToolsAccess();
+
+        if (! company()) {
+            return response()->json(['message' => 'Company context required'], 403);
+        }
+
+        $policy = app(DbAccessPolicy::class);
+        $validated = $request->validated();
+        $requestedModules = array_values($validated['modules'] ?? []);
+        $effectiveModules = $policy->normalizeRequestedModules($requestedModules);
+
+        $implicitModuleKeys = config('developertools.db_access.implicit_modules_on_credential', []);
+        if (! is_array($implicitModuleKeys)) {
+            $implicitModuleKeys = [];
+        }
+        $implicitModuleKeys = array_values(array_filter($implicitModuleKeys, fn($k) => is_string($k) && $k !== ''));
+
+        $mainDb = DB::connection()->getDatabaseName();
+        $schemaExists = DB::table('information_schema.SCHEMATA')
+            ->where('SCHEMA_NAME', $mainDb)
+            ->exists();
+
+        if (! $schemaExists) {
+            $row = DB::selectOne('SELECT DATABASE() AS db');
+            if ($row && isset($row->db) && is_string($row->db) && $row->db !== '') {
+                $mainDb = $row->db;
+            }
+        }
+
+        $implicitTablesOnly = $implicitModuleKeys === []
+            ? []
+            : $policy->resolveAllowedTables($mainDb, $implicitModuleKeys);
+        $tables = $policy->buildCredentialTableAllowlist($mainDb, $effectiveModules, $implicitModuleKeys);
+
+        return response()->json([
+            'tables' => $tables,
+            'implicit_tables' => $implicitTablesOnly,
+            'count' => count($tables),
+        ]);
     }
 
     public function codeMap(Request $request)
@@ -155,7 +201,7 @@ class DeveloperToolsController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreDeveloperToolsCredentialRequest $request): RedirectResponse
     {
         $this->ensureDeveloperToolsAccess();
 
@@ -167,11 +213,9 @@ class DeveloperToolsController extends AccountBaseController
         }
 
         $policy = app(DbAccessPolicy::class);
-        $requestedModules = $request->input('modules', []);
-        if (! is_array($requestedModules)) {
-            $requestedModules = [];
-        }
-        $requestedModules = array_values(array_filter($requestedModules, fn($m) => is_string($m) && $m !== ''));
+        $validated = $request->validated();
+        $requestedModules = array_values($validated['modules'] ?? []);
+        $requestedTables = array_values($validated['tables'] ?? []);
         $effectiveModules = $policy->normalizeRequestedModules($requestedModules);
 
         $implicitModuleKeys = config('developertools.db_access.implicit_modules_on_credential', []);
@@ -199,6 +243,7 @@ class DeveloperToolsController extends AccountBaseController
         $startedAt = microtime(true);
         $warnings = [];
         $createdViewsCount = 0;
+        $allowedTables = null;
 
         try {
             Log::info('Attempting to create DB user: ' . $dbUsername);
@@ -230,11 +275,11 @@ class DeveloperToolsController extends AccountBaseController
                 $mainDbSafe = preg_replace('/[^a-zA-Z0-9]/', '', $mainDb);
             }
 
-            $allowedTables = $policy->resolveAllowedTables($mainDb, $effectiveModules);
-            if ($implicitModuleKeys !== []) {
-                $implicitTables = $policy->resolveAllowedTables($mainDb, $implicitModuleKeys);
-                $allowedTables = array_values(array_unique(array_merge($allowedTables, $implicitTables)));
-            }
+            $fullAllowlist = $policy->buildCredentialTableAllowlist($mainDb, $effectiveModules, $implicitModuleKeys);
+            $implicitTablesOnly = $implicitModuleKeys === []
+                ? []
+                : $policy->resolveAllowedTables($mainDb, $implicitModuleKeys);
+            $allowedTables = $policy->intersectRequestedTablesWithAllowlist($fullAllowlist, $implicitTablesOnly, $requestedTables);
             $globalTables = $policy->globalTables();
             $joinViews = $policy->joinViews();
 
@@ -351,6 +396,7 @@ class DeveloperToolsController extends AccountBaseController
                 'db_database' => $gatewayDb,
                 'db_host' => $this->resolveCredentialDisplayHost(),
                 'allowed_modules' => $modulesForCredentialRecord,
+                'allowed_tables' => $allowedTables,
                 'created_views_count' => $createdViewsCount,
                 'generation_duration_ms' => $durationMs,
                 'last_generated_at' => now(),
@@ -365,6 +411,7 @@ class DeveloperToolsController extends AccountBaseController
                 'db_username' => $dbUsername,
                 'db_database' => $gatewayDb,
                 'requested_modules' => $requestedModules,
+                'allowed_tables' => $allowedTables,
                 'allowed_tables_count' => count($allowedTables),
                 'created_views_count' => $createdViewsCount,
                 'duration_ms' => $durationMs,
@@ -378,6 +425,7 @@ class DeveloperToolsController extends AccountBaseController
             session()->flash('new_db_username', $dbUsername);
             session()->flash('new_db_name', $gatewayDb);
             session()->flash('new_db_modules', $modulesForCredentialRecord);
+            session()->flash('new_db_tables_count', count($allowedTables));
             session()->flash('new_db_views_count', $createdViewsCount);
 
             return back()->with('success', 'Database credential created successfully. Please save the password now.');
@@ -402,7 +450,8 @@ class DeveloperToolsController extends AccountBaseController
                     'db_username' => $dbUsername ?? null,
                     'db_database' => $gatewayDb ?? null,
                     'requested_modules' => $requestedModules ?? null,
-                    'allowed_tables_count' => null,
+                    'allowed_tables' => is_array($allowedTables) ? $allowedTables : null,
+                    'allowed_tables_count' => is_array($allowedTables) ? count($allowedTables) : null,
                     'created_views_count' => $createdViewsCount ?? null,
                     'duration_ms' => $durationMs,
                     'status' => 'failed',

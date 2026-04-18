@@ -25,6 +25,7 @@ Route::group([
     'prefix' => 'account',
 ], function () {
     Route::get('developertools', [DeveloperToolsController::class, 'index'])->name('developertools.index');
+    Route::post('developertools/preview-tables', [DeveloperToolsController::class, 'previewTables'])->name('developertools.preview_tables');
     Route::post('developertools/create-credential', [DeveloperToolsController::class, 'store'])->name('developertools.store');
     Route::delete('developertools/revoke/{id}', [DeveloperToolsController::class, 'destroy'])->name('developertools.destroy');
 

@@ -18,6 +18,7 @@ class DeveloperToolsCredential extends Model
         'db_port',
         'db_database',
         'allowed_modules',
+        'allowed_tables',
         'created_views_count',
         'generation_duration_ms',
         'last_generated_at',
@@ -27,6 +28,7 @@ class DeveloperToolsCredential extends Model
 
     protected $casts = [
         'allowed_modules' => 'array',
+        'allowed_tables' => 'array',
         'last_generated_at' => 'datetime',
     ];
 }

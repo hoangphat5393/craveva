@@ -65,7 +65,15 @@ class DbAccessPolicy
 
         foreach ($requestedModules as $moduleKey) {
             $patterns = Arr::get($modules, "{$moduleKey}.table_patterns", []);
-            $tables = array_merge($tables, $this->matchTablesByPatterns($schemaTables, $patterns));
+            $matched = $this->matchTablesByPatterns($schemaTables, $patterns);
+            $excludePatterns = Arr::get($modules, "{$moduleKey}.exclude_table_patterns", []);
+            if (is_array($excludePatterns) && $excludePatterns !== []) {
+                $matched = array_values(array_filter(
+                    $matched,
+                    fn(string $t): bool => ! $this->tableMatchesAnyPattern($t, $excludePatterns)
+                ));
+            }
+            $tables = array_merge($tables, $matched);
         }
 
         $tables = array_values(array_unique(array_filter($tables, fn($t) => is_string($t) && $t !== '')));
@@ -78,9 +86,127 @@ class DbAccessPolicy
             return ! is_array($rule) || empty($rule['deny']);
         }));
 
+        $globalExcludeTables = config('developertools.db_access.exclude_tables', []);
+        if (is_array($globalExcludeTables) && $globalExcludeTables !== []) {
+            $tables = array_values(array_diff($tables, $globalExcludeTables));
+        }
+
+        $globalExcludePatterns = config('developertools.db_access.exclude_table_patterns', []);
+        if (is_array($globalExcludePatterns) && $globalExcludePatterns !== []) {
+            $tables = array_values(array_filter(
+                $tables,
+                fn(string $t): bool => ! $this->tableMatchesAnyPattern($t, $globalExcludePatterns)
+            ));
+        }
+
         sort($tables);
 
         return $tables;
+    }
+
+    /**
+     * Build the merged allowlist (selected modules + implicit modules) for gateway views.
+     *
+     * @param  array<int, string>  $effectiveModules
+     * @param  array<int, string>  $implicitModuleKeys
+     * @return array<int, string>
+     */
+    public function buildCredentialTableAllowlist(string $mainDb, array $effectiveModules, array $implicitModuleKeys): array
+    {
+        $userTables = $this->resolveAllowedTables($mainDb, $effectiveModules);
+        $implicitTables = $implicitModuleKeys === []
+            ? []
+            : $this->resolveAllowedTables($mainDb, $implicitModuleKeys);
+
+        return $this->sortUniqueTableNames(array_merge($userTables, $implicitTables));
+    }
+
+    /**
+     * Apply optional user table selection. Unknown names are dropped. Implicit-module tables are always included.
+     *
+     * @param  array<int, string>  $fullAllowlist  merged user + implicit resolved names
+     * @param  array<int, string>  $implicitTables  resolved names for implicit modules only
+     * @param  array<int, string>  $requestedTableNames  empty = use full allowlist
+     * @return array<int, string>
+     */
+    public function intersectRequestedTablesWithAllowlist(array $fullAllowlist, array $implicitTables, array $requestedTableNames): array
+    {
+        $fullAllowlist = $this->sortUniqueTableNames($fullAllowlist);
+        $implicitTables = $this->sortUniqueTableNames($implicitTables);
+
+        $allowMap = array_fill_keys($fullAllowlist, true);
+
+        if (! is_array($requestedTableNames) || $requestedTableNames === []) {
+            return $fullAllowlist;
+        }
+
+        $requestedTableNames = array_values(array_unique(array_filter(
+            $requestedTableNames,
+            fn($t) => is_string($t) && $t !== ''
+        )));
+
+        $picked = [];
+        foreach ($requestedTableNames as $tableName) {
+            if (! $this->isSafeSqlTableIdentifier($tableName)) {
+                continue;
+            }
+            if (isset($allowMap[$tableName])) {
+                $picked[] = $tableName;
+            }
+        }
+
+        $picked = $this->sortUniqueTableNames($picked);
+
+        foreach ($implicitTables as $tableName) {
+            if (! in_array($tableName, $picked, true)) {
+                $picked[] = $tableName;
+            }
+        }
+
+        return $this->sortUniqueTableNames($picked);
+    }
+
+    public function isSafeSqlTableIdentifier(string $name): bool
+    {
+        if ($name === '') {
+            return false;
+        }
+
+        if (! preg_match('/^[a-zA-Z0-9_]+$/', $name)) {
+            return false;
+        }
+
+        return $this->sanitizeIdentifier($name) === $name;
+    }
+
+    /**
+     * @param  array<int, string>  $patterns
+     */
+    private function tableMatchesAnyPattern(string $tableName, array $patterns): bool
+    {
+        foreach ($patterns as $pattern) {
+            if (! is_string($pattern) || $pattern === '') {
+                continue;
+            }
+            $re = $this->patternToRegex($pattern);
+            if (preg_match($re, $tableName) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<int, string>  $names
+     * @return array<int, string>
+     */
+    private function sortUniqueTableNames(array $names): array
+    {
+        $names = array_values(array_unique(array_filter($names, fn($t) => is_string($t) && $t !== '')));
+        sort($names);
+
+        return $names;
     }
 
     public function globalTables(): array

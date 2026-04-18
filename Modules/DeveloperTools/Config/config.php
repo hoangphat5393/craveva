@@ -195,6 +195,12 @@ return [
             'oauth_personal_access_clients',
             'oauth_refresh_tokens',
         ],
+        /*
+         * Optional global exclusions after pattern matching (defense in depth).
+         * exclude_table_patterns use the same % wildcard rules as table_patterns.
+         */
+        'exclude_tables' => [],
+        'exclude_table_patterns' => [],
         'global_tables' => [
             'countries',
             'currencies',

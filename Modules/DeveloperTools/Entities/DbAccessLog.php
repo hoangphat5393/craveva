@@ -13,6 +13,7 @@ class DbAccessLog extends Model
         'db_username',
         'db_database',
         'requested_modules',
+        'allowed_tables',
         'allowed_tables_count',
         'created_views_count',
         'duration_ms',
@@ -24,5 +25,6 @@ class DbAccessLog extends Model
 
     protected $casts = [
         'requested_modules' => 'array',
+        'allowed_tables' => 'array',
     ];
 }

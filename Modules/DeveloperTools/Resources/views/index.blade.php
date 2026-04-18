@@ -23,7 +23,7 @@
                                         <h4 class="f-16 font-weight-bold">Credentials</h4>
                                     </div>
 
-                                    <form action="{{ route('developertools.store') }}" method="POST" class="mb-4">
+                                    <form id="devtools-credential-form" action="{{ route('developertools.store') }}" method="POST" class="mb-4">
                                         @csrf
                                         <div class="card">
                                             <div class="card-header">
@@ -44,8 +44,24 @@
                                                     </div>
                                                     <div class="text-muted">
                                                         Tables mapped to the selected modules are exposed as <strong>views</strong> in your company gateway database (<code>api_gateway_&lt;company_id&gt;</code>), scoped to your company.
-                                                        <strong>Custom field</strong> tables (<code>custom_field_groups</code>, <code>custom_fields</code>, <code>custom_fields_data</code>) are included automatically on every new credential.
+                                                        <strong>Custom field</strong> tables are merged automatically (implicit module); they cannot be unchecked when customizing tables.
                                                         The generated MySQL user receives <strong>ALL PRIVILEGES</strong> on that gateway database only (not on the main application schema).
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 border-top pt-3">
+                                                    <label class="mb-2 d-block font-weight-bold">
+                                                        <input type="checkbox" name="customize_tables" value="1" id="devtools-customize-tables">
+                                                        Customize exposed tables (optional)
+                                                    </label>
+                                                    <div id="devtools-table-picker" class="d-none">
+                                                        <div class="d-flex flex-wrap align-items-center mb-2">
+                                                            <input type="text" class="form-control form-control-xl mr-2 mb-2" style="max-width: 280px" id="devtools-table-filter" placeholder="Filter table names..." autocomplete="off">
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary mb-2 mr-1" id="devtools-tables-select-all">Select all</button>
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary mb-2" id="devtools-tables-select-none">Deselect all</button>
+                                                            <span class="text-muted small mb-2 ml-2" id="devtools-table-count"></span>
+                                                        </div>
+                                                        <div class="border rounded p-2 bg-white" style="max-height: 320px; overflow-y: auto;" id="devtools-tables-list"></div>
+                                                        <div class="text-muted small mt-1">If customization is off, all tables for the selected modules (plus implicit custom fields) are exposed. Turn on to limit which views are created.</div>
                                                     </div>
                                                 </div>
                                                 <button type="submit" class="btn btn-primary">
@@ -54,6 +70,170 @@
                                             </div>
                                         </div>
                                     </form>
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul class="mb-0 pl-3">
+                                                @foreach ($errors->all() as $err)
+                                                    <li>{{ $err }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                    <script>
+                                        (function() {
+                                            var previewUrl = @json(route('developertools.preview_tables'));
+                                            var token = document.querySelector('meta[name="csrf-token"]');
+                                            var csrf = token ? token.getAttribute('content') : '';
+                                            var form = document.getElementById('devtools-credential-form');
+                                            var moduleInputs = function() {
+                                                return Array.prototype.slice.call(document.querySelectorAll('input[name="modules[]"]:checked')).map(function(i) {
+                                                    return i.value;
+                                                });
+                                            };
+                                            var customize = document.getElementById('devtools-customize-tables');
+                                            var picker = document.getElementById('devtools-table-picker');
+                                            var listEl = document.getElementById('devtools-tables-list');
+                                            var filterEl = document.getElementById('devtools-table-filter');
+                                            var countEl = document.getElementById('devtools-table-count');
+                                            var implicitSet = {};
+
+                                            function setImplicitSet(arr) {
+                                                implicitSet = {};
+                                                (arr || []).forEach(function(t) {
+                                                    implicitSet[t] = true;
+                                                });
+                                            }
+
+                                            function renderTables(names, implicitTables) {
+                                                setImplicitSet(implicitTables || []);
+                                                listEl.innerHTML = '';
+                                                (names || []).forEach(function(name) {
+                                                    var isImplicit = !!implicitSet[name];
+                                                    var row = document.createElement('div');
+                                                    row.className = 'devtools-table-row mb-1';
+                                                    row.setAttribute('data-table-name', name);
+                                                    var lab = document.createElement('label');
+                                                    lab.className = 'mb-0 d-block';
+                                                    var cb = document.createElement('input');
+                                                    cb.type = 'checkbox';
+                                                    cb.name = 'tables[]';
+                                                    cb.value = name;
+                                                    cb.checked = true;
+                                                    if (isImplicit) {
+                                                        cb.checked = true;
+                                                        cb.disabled = true;
+                                                        var h = document.createElement('input');
+                                                        h.type = 'hidden';
+                                                        h.name = 'tables[]';
+                                                        h.value = name;
+                                                        lab.appendChild(h);
+                                                    }
+                                                    lab.appendChild(cb);
+                                                    lab.appendChild(document.createTextNode(' ' + name + (isImplicit ? ' (always included)' : '')));
+                                                    row.appendChild(lab);
+                                                    listEl.appendChild(row);
+                                                });
+                                                applyFilter();
+                                                updateCount();
+                                            }
+
+                                            function applyFilter() {
+                                                var q = (filterEl && filterEl.value) ? filterEl.value.toLowerCase() : '';
+                                                Array.prototype.forEach.call(listEl.querySelectorAll('.devtools-table-row'), function(row) {
+                                                    var n = (row.getAttribute('data-table-name') || '').toLowerCase();
+                                                    row.style.display = !q || n.indexOf(q) !== -1 ? '' : 'none';
+                                                });
+                                            }
+
+                                            function updateCount() {
+                                                var total = listEl.querySelectorAll('input[type=checkbox][name="tables[]"]').length;
+                                                var checked = listEl.querySelectorAll('input[type=checkbox][name="tables[]"]:checked').length;
+                                                if (countEl) {
+                                                    countEl.textContent = total ? (checked + ' / ' + total + ' selected') : '';
+                                                }
+                                            }
+
+                                            function loadPreview() {
+                                                if (!listEl) return;
+                                                listEl.innerHTML = '<span class="text-muted">Loading tables…</span>';
+                                                var body = new URLSearchParams();
+                                                moduleInputs().forEach(function(m) {
+                                                    body.append('modules[]', m);
+                                                });
+                                                fetch(previewUrl, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                                        'X-CSRF-TOKEN': csrf,
+                                                        'Accept': 'application/json'
+                                                    },
+                                                    body: body.toString(),
+                                                    credentials: 'same-origin'
+                                                }).then(function(r) {
+                                                    return r.json();
+                                                }).then(function(data) {
+                                                    if (!data || !Array.isArray(data.tables)) {
+                                                        listEl.innerHTML = '<span class="text-danger">Could not load table list.</span>';
+                                                        return;
+                                                    }
+                                                    renderTables(data.tables, data.implicit_tables || []);
+                                                }).catch(function() {
+                                                    listEl.innerHTML = '<span class="text-danger">Could not load table list.</span>';
+                                                });
+                                            }
+
+                                            if (customize) {
+                                                customize.addEventListener('change', function() {
+                                                    if (customize.checked) {
+                                                        picker.classList.remove('d-none');
+                                                        loadPreview();
+                                                    } else {
+                                                        picker.classList.add('d-none');
+                                                        listEl.innerHTML = '';
+                                                    }
+                                                });
+                                            }
+                                            document.querySelectorAll('input[name="modules[]"]').forEach(function(inp) {
+                                                inp.addEventListener('change', function() {
+                                                    if (customize && customize.checked) {
+                                                        loadPreview();
+                                                    }
+                                                });
+                                            });
+                                            if (filterEl) {
+                                                filterEl.addEventListener('input', applyFilter);
+                                            }
+                                            document.getElementById('devtools-tables-select-all') && document.getElementById('devtools-tables-select-all').addEventListener('click', function() {
+                                                listEl.querySelectorAll('input[type=checkbox][name="tables[]"]:not(:disabled)').forEach(function(c) {
+                                                    c.checked = true;
+                                                });
+                                                updateCount();
+                                            });
+                                            document.getElementById('devtools-tables-select-none') && document.getElementById('devtools-tables-select-none').addEventListener('click', function() {
+                                                listEl.querySelectorAll('input[type=checkbox][name="tables[]"]:not(:disabled)').forEach(function(c) {
+                                                    c.checked = false;
+                                                });
+                                                updateCount();
+                                            });
+                                            listEl && listEl.addEventListener('change', function(e) {
+                                                if (e.target && e.target.name === 'tables[]') {
+                                                    updateCount();
+                                                }
+                                            });
+                                            if (form) {
+                                                form.addEventListener('submit', function() {
+                                                    if (!customize || !customize.checked) {
+                                                        listEl.querySelectorAll('input[name="tables[]"]').forEach(function(i) {
+                                                            i.remove();
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                            if (customize && customize.checked) {
+                                                loadPreview();
+                                            }
+                                        })();
+                                    </script>
 
                                     @if (session('success'))
                                         <div class="alert alert-success">{{ session('success') }}</div>
@@ -96,6 +276,12 @@
                                                     <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ $modulesStr }}" title="Copy"><i class="fa fa-copy"></i></button>
                                                 </p>
                                             @endif
+                                            @if (session('new_db_tables_count'))
+                                                <p><strong>Exposed tables (views):</strong>
+                                                    <span class="credential-value" data-copy="{{ session('new_db_tables_count') }}">{{ session('new_db_tables_count') }}</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ session('new_db_tables_count') }}" title="Copy"><i class="fa fa-copy"></i></button>
+                                                </p>
+                                            @endif
                                             @if (session('new_db_views_count'))
                                                 <p><strong>Created Views:</strong>
                                                     <span class="credential-value" data-copy="{{ session('new_db_views_count') }}">{{ session('new_db_views_count') }}</span>
@@ -107,6 +293,9 @@
                                                 $copyAllLines = ['Database Host: ' . $credentialDisplayHost, 'Database Name: ' . session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')), 'Username: ' . session('new_db_username'), 'Password: ' . session('new_db_password')];
                                                 if (session('new_db_modules')) {
                                                     $copyAllLines[] = 'Allowed Modules: ' . (is_array(session('new_db_modules')) ? implode(', ', session('new_db_modules')) : session('new_db_modules'));
+                                                }
+                                                if (session('new_db_tables_count')) {
+                                                    $copyAllLines[] = 'Exposed tables (count): ' . session('new_db_tables_count');
                                                 }
                                                 if (session('new_db_views_count')) {
                                                     $copyAllLines[] = 'Created Views: ' . session('new_db_views_count');
@@ -201,6 +390,7 @@
                                                     <th>DB Name</th>
                                                     <th>Host</th>
                                                     <th>Modules</th>
+                                                    <th>Tables</th>
                                                     <th>Views</th>
                                                     <th>Created At</th>
                                                     <th>Action</th>
@@ -218,6 +408,13 @@
                                                                 {{ implode(', ', $cred->allowed_modules) }}
                                                             @endif
                                                         </td>
+                                                        <td>
+                                                            @if (is_array($cred->allowed_tables))
+                                                                {{ count($cred->allowed_tables) }}
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $cred->created_views_count }}</td>
                                                         <td>{{ $cred->created_at }}</td>
                                                         <td>
@@ -230,7 +427,7 @@
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="8" class="text-center">No credentials found.</td>
+                                                        <td colspan="9" class="text-center">No credentials found.</td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>
@@ -248,6 +445,7 @@
                                                     <th>DB Username</th>
                                                     <th>DB Name</th>
                                                     <th>Modules</th>
+                                                    <th>Tables</th>
                                                     <th>Views</th>
                                                     <th>Duration (ms)</th>
                                                     <th>Created At</th>
@@ -264,13 +462,22 @@
                                                                 {{ implode(', ', $log->requested_modules) }}
                                                             @endif
                                                         </td>
+                                                        <td>
+                                                            @if (is_array($log->allowed_tables))
+                                                                {{ count($log->allowed_tables) }}
+                                                            @elseif ($log->allowed_tables_count !== null)
+                                                                {{ $log->allowed_tables_count }}
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $log->created_views_count }}</td>
                                                         <td>{{ $log->duration_ms }}</td>
                                                         <td>{{ $log->created_at }}</td>
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="7" class="text-center">No logs found.</td>
+                                                        <td colspan="8" class="text-center">No logs found.</td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>

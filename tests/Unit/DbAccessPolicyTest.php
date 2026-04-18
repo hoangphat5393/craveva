@@ -112,4 +112,39 @@ class DbAccessPolicyTest extends TestCase
         $this->assertSame('api_gateway_20', $policy->sanitizeIdentifier('api-gateway-20'));
         $this->assertSame('', $policy->sanitizeIdentifier('!!!'));
     }
+
+    public function test_is_safe_sql_table_identifier(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $this->assertTrue($policy->isSafeSqlTableIdentifier('orders'));
+        $this->assertFalse($policy->isSafeSqlTableIdentifier('orders;drop'));
+        $this->assertFalse($policy->isSafeSqlTableIdentifier(''));
+    }
+
+    public function test_intersect_requested_tables_empty_uses_full_allowlist(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $full = ['orders', 'products', 'custom_fields'];
+        $implicit = ['custom_fields'];
+
+        $this->assertSame(['custom_fields', 'orders', 'products'], $policy->intersectRequestedTablesWithAllowlist($full, $implicit, []));
+    }
+
+    public function test_intersect_requested_tables_keeps_subset_and_merges_implicit(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $full = ['orders', 'products', 'custom_fields', 'custom_field_groups'];
+        $implicit = ['custom_fields', 'custom_field_groups'];
+
+        $out = $policy->intersectRequestedTablesWithAllowlist($full, $implicit, ['products', 'evil_table', 'orders']);
+
+        $this->assertContains('orders', $out);
+        $this->assertContains('products', $out);
+        $this->assertContains('custom_fields', $out);
+        $this->assertContains('custom_field_groups', $out);
+        $this->assertNotContains('evil_table', $out);
+    }
 }

@@ -47,7 +47,7 @@
                 </thead>
                 <tbody>
                     @foreach ($pricings as $row)
-                        <tr id="row-{{ $row->id }}">
+                        <tr id="row-{{ $row->id }}" data-pricing-id="{{ $row->id }}">
                             <td>
                                 <input type="checkbox" class="select-table-row" id="datatable-row-{{ $row->id }}" name="datatable_ids[]" value="{{ $row->id }}">
                             </td>
@@ -230,9 +230,34 @@
             });
         });
 
-        $('body').on('change', '.change-pricing-status', function() {
-            var id = $(this).attr('data-pricing-id');
-            var status = $(this).val();
+        function resolveClientPricingRowId($select) {
+            var id = $select.attr('data-pricing-id');
+            if (id) {
+                return String(id);
+            }
+            var $tr = $select.closest('tr');
+            id = $tr.attr('data-pricing-id');
+            if (id) {
+                return String(id);
+            }
+            var tid = $tr.attr('id');
+            if (tid && tid.indexOf('row-') === 0) {
+                return tid.slice(4);
+            }
+
+            return '';
+        }
+
+        function postClientPricingStatusChange(selectElement) {
+            var $select = $(selectElement);
+            if (!$select.is('select')) {
+                return;
+            }
+            var id = resolveClientPricingRowId($select);
+            var status = $select.val();
+            if (!id || !status) {
+                return;
+            }
             var url = "{{ route('pricing.client_pricing.change_status') }}";
             var token = "{{ csrf_token() }}";
 
@@ -242,13 +267,35 @@
                     'status': status
                 })
                 .then(function(response) {
-                    if (response.status == "success") {
-                        // Nothing to do, toast already shown
+                    if (response.status == "success" && typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message || @json(__('messages.updateSuccess')),
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            showClass: {
+                                popup: 'swal2-noanimation',
+                                backdrop: 'swal2-noanimation',
+                            },
+                        });
                     }
                 })
                 .catch(function(err) {
                     $.handleApiFormError(err);
                 });
+        }
+
+        $('body').on('changed.bs.select', 'select.change-pricing-status', function() {
+            postClientPricingStatusChange(this);
+        });
+        $('body').on('change', 'select.change-pricing-status', function() {
+            if ($(this).data('selectpicker')) {
+                return;
+            }
+            postClientPricingStatusChange(this);
         });
 
         $('body').on('click', '.delete-client-pricing', function() {

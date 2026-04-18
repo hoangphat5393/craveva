@@ -32,7 +32,7 @@ class ContractPricingTest extends TestCase
         $this->company->save();
 
         // Create Client
-        $clientEmail = 'client_'.uniqid().'@example.com';
+        $clientEmail = 'client_' . uniqid() . '@example.com';
         $clientAuth = UserAuth::create([
             'email' => $clientEmail,
             'password' => bcrypt('123456'),
@@ -52,7 +52,7 @@ class ContractPricingTest extends TestCase
         ]);
 
         // Login as admin
-        $adminEmail = 'admin_'.uniqid().'@example.com';
+        $adminEmail = 'admin_' . uniqid() . '@example.com';
         $adminAuth = UserAuth::create([
             'email' => $adminEmail,
             'password' => bcrypt('123456'),
@@ -184,5 +184,28 @@ class ContractPricingTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+    }
+
+    public function test_change_status_updates_client_product_pricing(): void
+    {
+        $pricing = ClientProductPricing::create([
+            'company_id' => $this->company->id,
+            'client_id' => $this->client->id,
+            'product_id' => $this->product->id,
+            'custom_price' => 800,
+            'discount_type' => null,
+            'discount_value' => null,
+            'start_date' => now()->addDay(),
+            'end_date' => now()->addMonths(2),
+            'is_active' => true,
+        ]);
+
+        $response = $this->post(route('pricing.client_pricing.change_status'), [
+            'id' => $pricing->id,
+            'status' => 'inactive',
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertFalse((bool) $pricing->fresh()->is_active);
     }
 }

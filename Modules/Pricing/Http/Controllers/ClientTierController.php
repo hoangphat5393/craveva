@@ -68,7 +68,7 @@ class ClientTierController extends AccountBaseController
 
     public function update(Request $request, $id)
     {
-        $editPermission = user()->permission('edit_client_pricing');
+        $editPermission = user()->permission('edit_client_tiers');
         abort_403($editPermission == 'none');
 
         $request->validate([

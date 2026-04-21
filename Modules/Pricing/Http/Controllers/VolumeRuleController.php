@@ -27,7 +27,7 @@ class VolumeRuleController extends AccountBaseController
 
     public function index()
     {
-        $viewPermission = user()->permission('view_pricing_tiers');
+        $viewPermission = user()->permission('view_volume_discounts');
         abort_403($viewPermission == 'none');
 
         $this->rules = VolumeDiscountRule::query()
@@ -39,7 +39,7 @@ class VolumeRuleController extends AccountBaseController
 
     public function create()
     {
-        $addPermission = user()->permission('add_pricing_tiers');
+        $addPermission = user()->permission('add_volume_discounts');
         abort_403($addPermission == 'none');
 
         $this->products = Product::all();
@@ -54,7 +54,7 @@ class VolumeRuleController extends AccountBaseController
 
     public function store(Request $request)
     {
-        $addPermission = user()->permission('add_pricing_tiers');
+        $addPermission = user()->permission('add_volume_discounts');
         abort_403($addPermission == 'none');
 
         $request->validate([
@@ -93,7 +93,7 @@ class VolumeRuleController extends AccountBaseController
 
     public function edit($id)
     {
-        $editPermission = user()->permission('edit_pricing_tiers');
+        $editPermission = user()->permission('edit_volume_discounts');
         abort_403($editPermission == 'none');
 
         $this->rule = VolumeDiscountRule::findOrFail($id);
@@ -109,7 +109,7 @@ class VolumeRuleController extends AccountBaseController
 
     public function update(Request $request, $id)
     {
-        $editPermission = user()->permission('edit_pricing_tiers');
+        $editPermission = user()->permission('edit_volume_discounts');
         abort_403($editPermission == 'none');
 
         $request->validate([
@@ -144,7 +144,7 @@ class VolumeRuleController extends AccountBaseController
 
     public function changeStatus(Request $request)
     {
-        $editPermission = user()->permission('edit_pricing_tiers');
+        $editPermission = user()->permission('edit_volume_discounts');
         abort_403($editPermission == 'none');
 
         $rule = VolumeDiscountRule::find($request->id);
@@ -161,7 +161,7 @@ class VolumeRuleController extends AccountBaseController
 
     public function destroy($id)
     {
-        $deletePermission = user()->permission('delete_pricing_tiers');
+        $deletePermission = user()->permission('delete_volume_discounts');
         abort_403($deletePermission == 'none');
 
         VolumeDiscountRule::destroy($id);
@@ -187,7 +187,7 @@ class VolumeRuleController extends AccountBaseController
 
     protected function deleteRecords(Request $request)
     {
-        $deletePermission = user()->permission('delete_pricing_tiers');
+        $deletePermission = user()->permission('delete_volume_discounts');
         abort_403($deletePermission == 'none');
 
         $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
@@ -200,7 +200,7 @@ class VolumeRuleController extends AccountBaseController
 
     protected function changeStatusBulk(Request $request)
     {
-        $editPermission = user()->permission('edit_pricing_tiers');
+        $editPermission = user()->permission('edit_volume_discounts');
         abort_403($editPermission == 'none');
 
         $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));

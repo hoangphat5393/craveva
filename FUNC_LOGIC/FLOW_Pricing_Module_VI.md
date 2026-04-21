@@ -10,6 +10,39 @@ Tài liệu mô tả luồng route → controller → service → model → CSDL
 
 ---
 
+## 0. Đọc nhanh cho business (Tier Pricing)
+
+### 0.1 Giá nào đang là "public price"?
+
+- Hiện tại hệ thống **chưa có tầng Public Price tách riêng** trong module Pricing.
+- Giá mặc định đang dùng là **`products.price`**.
+- Vì vậy, khi chưa có rule nào cao hơn, đơn giá lấy từ `products.price`.
+
+### 0.2 Tier có 2 loại giảm giá và không cộng dồn
+
+Trong Tier Pricing có hai chỗ dễ nhầm:
+
+1. **Tier-level discount** (ở màn Edit Tier): giảm giá mặc định cho toàn bộ sản phẩm trong tier.
+2. **Product rule** (`pricing_tier_items`): giảm giá riêng cho từng SKU trong tier.
+
+Khi tính giá:
+
+- Nếu có `Product rule` cho SKU đó thì **ưu tiên Product rule**.
+- Nếu không có Product rule thì mới dùng **Tier-level discount**.
+- Hai mức này **không cộng dồn** với nhau.
+
+### 0.3 Thứ tự ưu tiên tổng thể (đúng với code hiện tại)
+
+> Tầng cuối cùng luôn có thể bị điều chỉnh thêm bởi volume discount theo số lượng.
+
+1. **Client Product Pricing** (Contract theo client + product + ngày hiệu lực)
+2. **Company-Customer Pricing** (hợp đồng doanh nghiệp, gồm cả nhánh tier trong hợp đồng nếu có)
+3. **Client Assigned Tier** (`client_details.pricing_tier_id`)
+4. **Base Price** (`products.price`)
+5. **Volume Discount** (áp sau khi đã có đơn giá từ các bước trên)
+
+---
+
 ## 1. Tóm tắt module
 
 ### Mục đích

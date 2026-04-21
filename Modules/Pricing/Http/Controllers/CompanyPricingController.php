@@ -28,7 +28,7 @@ class CompanyPricingController extends AccountBaseController
 
     public function index()
     {
-        $viewPermission = user()->permission('view_client_pricing');
+        $viewPermission = user()->permission('view_company_pricing');
         abort_403($viewPermission == 'none');
 
         $this->pricings = CompanyCustomerPricing::with(['client', 'client.clientDetails', 'tier'])
@@ -41,7 +41,7 @@ class CompanyPricingController extends AccountBaseController
 
     public function create()
     {
-        $addPermission = user()->permission('add_client_pricing');
+        $addPermission = user()->permission('add_company_pricing');
         abort_403($addPermission == 'none');
 
         // Get all clients
@@ -64,7 +64,7 @@ class CompanyPricingController extends AccountBaseController
 
     public function store(Request $request)
     {
-        $addPermission = user()->permission('add_client_pricing');
+        $addPermission = user()->permission('add_company_pricing');
         abort_403($addPermission == 'none');
 
         $request->validate([
@@ -101,7 +101,7 @@ class CompanyPricingController extends AccountBaseController
 
     public function edit($id)
     {
-        $editPermission = user()->permission('edit_client_pricing');
+        $editPermission = user()->permission('edit_company_pricing');
         abort_403($editPermission == 'none');
 
         $this->pricing = CompanyCustomerPricing::findOrFail($id);
@@ -124,7 +124,7 @@ class CompanyPricingController extends AccountBaseController
 
     public function update(Request $request, $id)
     {
-        $editPermission = user()->permission('edit_client_pricing');
+        $editPermission = user()->permission('edit_company_pricing');
         abort_403($editPermission == 'none');
 
         $request->validate([
@@ -158,7 +158,7 @@ class CompanyPricingController extends AccountBaseController
 
     public function changeStatus(Request $request)
     {
-        $editPermission = user()->permission('edit_client_pricing');
+        $editPermission = user()->permission('edit_company_pricing');
         abort_403($editPermission == 'none');
 
         $pricing = CompanyCustomerPricing::where('company_id', user()->company_id)
@@ -177,8 +177,8 @@ class CompanyPricingController extends AccountBaseController
 
     public function destroy($id)
     {
-        $editPermission = user()->permission('edit_client_pricing');
-        abort_403($editPermission == 'none');
+        $deletePermission = user()->permission('delete_company_pricing');
+        abort_403($deletePermission == 'none');
 
         $pricing = CompanyCustomerPricing::where('company_id', user()->company_id)
             ->where('id', $id)
@@ -207,8 +207,8 @@ class CompanyPricingController extends AccountBaseController
 
     protected function deleteRecords(Request $request)
     {
-        $editPermission = user()->permission('edit_client_pricing');
-        abort_403($editPermission == 'none');
+        $deletePermission = user()->permission('delete_company_pricing');
+        abort_403($deletePermission == 'none');
 
         $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
         if (empty($ids)) {
@@ -220,7 +220,7 @@ class CompanyPricingController extends AccountBaseController
 
     protected function changeStatusBulk(Request $request)
     {
-        $editPermission = user()->permission('edit_client_pricing');
+        $editPermission = user()->permission('edit_company_pricing');
         abort_403($editPermission == 'none');
 
         $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));

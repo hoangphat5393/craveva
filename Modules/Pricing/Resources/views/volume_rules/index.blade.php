@@ -44,7 +44,7 @@
     <div class="content-wrapper">
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center">
-                @if (in_array('admin', user_roles()) || user()->permission('add_pricing_tiers') == 'all' || user()->permission('add_pricing_tiers') == 'added')
+                @if (in_array('admin', user_roles()) || user()->permission('add_volume_discounts') == 'all' || user()->permission('add_volume_discounts') == 'added')
                     <x-forms.link-primary :link="route('pricing.volume_rules.create')" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('app.add') @lang('pricing::app.volumeRule')
                     </x-forms.link-primary>
@@ -176,7 +176,7 @@
                     var row = $(this);
                     var rowStatus = row.find('.change-status').val();
                     var rowName = row.find('td:eq(2)').text().trim().toLowerCase();
-                    
+
                     if (!rowName) return; // Skip empty rows
 
                     var statusMatch = (status === 'all') ||
@@ -217,10 +217,10 @@
                 var token = "{{ csrf_token() }}";
 
                 window.apiHttp.postUrlEncoded(url, {
-                    '_token': token,
-                    id: id,
-                    status: status
-                })
+                        '_token': token,
+                        id: id,
+                        status: status
+                    })
                     .then(function(data) {
                         if (data.status == "success") {
                             // Optional: show toast

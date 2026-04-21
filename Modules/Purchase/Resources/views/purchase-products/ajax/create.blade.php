@@ -475,6 +475,11 @@
             $.ajaxModal(MODAL_LG, url);
         });
 
+        datepicker('#expiry_date', {
+            position: 'bl',
+            ...datepickerConfig
+        });
+
         init(RIGHT_MODAL);
     });
 </script>

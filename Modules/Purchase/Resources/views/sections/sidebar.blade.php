@@ -20,6 +20,9 @@
     $canSeeWarehouseMaster = ($viewWarehouses && $viewWarehouses != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
     $canSeeWarehouseStockUi = ($viewWarehouseStock && $viewWarehouseStock != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
     $canSeeWarehouseTransferUi = ($manageWarehouseTransfer && $manageWarehouseTransfer != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
+    $canViewOperationsProducts = in_array('client', user_roles())
+        ? in_array('orders', user_modules()) && user()->permission('add_order') == 'all' && isset($sidebarUserPermissions['view_product']) && !in_array($sidebarUserPermissions['view_product'], [5, 'none'])
+        : in_array('products', user_modules()) && isset($sidebarUserPermissions['view_product']) && !in_array($sidebarUserPermissions['view_product'], [5, 'none']);
     $operationsMenuActive = request()->routeIs('orders.*', 'vendors.*', 'purchase-products.*', 'purchase_products.*', 'purchase-order.*', 'delivery-orders.*', 'sales-shipments.*', 'bills.*', 'vendor-payments.*', 'vendor-credits.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*', 'grn.*', 'sales-do.*', 'sales-history.*');
 @endphp
 @if (in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()) &&
@@ -32,7 +35,7 @@
             $purchaseViewPaymentPermission != 'none' ||
             $canViewSalesDo ||
             $canViewGrn ||
-            (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 'none') ||
+            $canViewOperationsProducts ||
             (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 'none') ||
             (in_array('orders', user_modules()) && isset($sidebarUserPermissions['view_sales_history']) && $sidebarUserPermissions['view_sales_history'] != 'none')))
 
@@ -61,7 +64,7 @@
 
             {{-- 7–9: Sales --}}
             @if (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 5 && $sidebarUserPermissions['view_order'] != 'none')
-                <x-sub-menu-item :link="route('orders.index')" :text="__('app.menu.orders')" />
+                <x-sub-menu-item :link="route('orders.index')" :text="__('app.menu.saleOrders')" />
             @endif
 
             <x-sub-menu-item :link="route($salesDoRouteName)" :text="$salesDoLabel" :permission="$canViewSalesDo" />
@@ -71,7 +74,7 @@
             @endif
 
             {{-- 10: Products (đầu nhóm master data / danh mục) --}}
-            @if (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 5 && $sidebarUserPermissions['view_product'] != 'none')
+            @if ($canViewOperationsProducts)
                 <x-sub-menu-item :link="route('purchase-products.index')" :text="__('purchase::app.menu.products')" :active="request()->routeIs('purchase-products.*', 'purchase_products.*')" />
             @endif
 

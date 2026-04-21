@@ -1,10 +1,12 @@
 @php
     $viewPricingTiersPermission = user()->permission('view_pricing_tiers');
     $viewClientPricingPermission = user()->permission('view_client_pricing');
+    $viewCompanyPricingPermission = user()->permission('view_company_pricing');
     $viewClientTiersPermission = user()->permission('view_client_tiers');
+    $viewVolumeDiscountsPermission = user()->permission('view_volume_discounts');
 @endphp
 
-@if (!user()->is_superadmin && in_array('pricing', array_map('strtolower', user_modules())) && ($viewPricingTiersPermission != 'none' || $viewClientPricingPermission != 'none' || $viewClientTiersPermission != 'none'))
+@if (!user()->is_superadmin && in_array('pricing', array_map('strtolower', user_modules())) && ($viewPricingTiersPermission != 'none' || $viewClientPricingPermission != 'none' || $viewCompanyPricingPermission != 'none' || $viewClientTiersPermission != 'none' || $viewVolumeDiscountsPermission != 'none'))
     <x-menu-item icon="tag" :text="__('pricing::app.menu.pricing')" :active="request()->routeIs('pricing.*')">
         <x-slot name="iconPath">
             <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z" />
@@ -13,9 +15,9 @@
         <div class="accordionItemContent">
             <x-sub-menu-item :link="route('pricing.client_tiers.index')" :text="__('pricing::app.menu.clientTiers')" :permission="$viewClientTiersPermission != 'none'" :active="request()->routeIs('pricing.client_tiers.*')" />
             <x-sub-menu-item :link="route('pricing.tiers.index')" :text="__('pricing::app.menu.tiers')" :permission="$viewPricingTiersPermission != 'none'" :active="request()->routeIs('pricing.tiers.*')" />
-            <x-sub-menu-item :link="route('pricing.volume_rules.index')" :text="__('pricing::app.menu.volumeDiscounts')" :permission="$viewPricingTiersPermission != 'none'" :active="request()->routeIs('pricing.volume_rules.*')" />
+            <x-sub-menu-item :link="route('pricing.volume_rules.index')" :text="__('pricing::app.menu.volumeDiscounts')" :permission="$viewVolumeDiscountsPermission != 'none'" :active="request()->routeIs('pricing.volume_rules.*')" />
             {{-- Client Contract Pricing hidden as per request --}}
-            {{-- <x-sub-menu-item :link="route('pricing.company_pricing.index')" :text="__('pricing::app.menu.companyPricing')" :permission="$viewClientPricingPermission != 'none'" :active="request()->routeIs('pricing.company_pricing.*')" /> --}}
+            {{-- <x-sub-menu-item :link="route('pricing.company_pricing.index')" :text="__('pricing::app.menu.companyPricing')" :permission="$viewCompanyPricingPermission != 'none'" :active="request()->routeIs('pricing.company_pricing.*')" /> --}}
             <x-sub-menu-item :link="route('pricing.client_pricing.index')" :text="__('pricing::app.menu.contractPricing')" :permission="$viewClientPricingPermission != 'none'" :active="request()->routeIs('pricing.client_pricing.*')" />
         </div>
     </x-menu-item>

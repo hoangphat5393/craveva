@@ -1859,6 +1859,7 @@ return [
         'settings' => 'Settings',
         'dashboards' => 'Dashboards',
         'orders' => 'Orders',
+        'saleOrders' => 'Sale Orders',
         'sms' => 'SMS',
         'knowledgebase' => 'Knowledge Base',
         'addknowledgebaseCategory' => 'Manage Article Category',

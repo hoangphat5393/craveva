@@ -118,6 +118,7 @@
                             <tr>
                                 <th style="width:40px"><input type="checkbox" id="select-all-items"></th>
                                 <th>@lang('app.product')</th>
+                                <th>@lang('app.price')</th>
                                 <th>@lang('pricing::app.discountType')</th>
                                 <th>@lang('pricing::app.value')</th>
                                 <th>@lang('purchase::modules.product.stockOnHand')</th>
@@ -134,6 +135,7 @@
                                     <td>
                                         {{ $item->product->name ?? '--' }}{{ !empty($item->product?->sku) ? ' (' . $item->product->sku . ')' : '' }}
                                     </td>
+                                    <td>{{ isset($item->product?->price) ? number_format((float) $item->product->price, 2) : '--' }}</td>
                                     <td>{{ ucfirst($item->discount_type) }}</td>
                                     <td>{{ $item->discount_value }}</td>
                                     <td>--</td>
@@ -160,7 +162,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">
+                                    <td colspan="9" class="text-center">
                                         <div class="empty-space" style="height: 200px;">
                                             <div class="empty-space-inner">
                                                 <div class="icon" style="font-size:30px"><i class="fa fa-box-open"></i>
@@ -326,7 +328,7 @@
                     info: false,
                     columnDefs: [{
                         orderable: false,
-                        targets: [0, 8]
+                        targets: [0, 9]
                     }],
                     order: [
                         [1, 'asc']

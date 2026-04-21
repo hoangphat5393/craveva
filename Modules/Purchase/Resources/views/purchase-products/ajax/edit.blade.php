@@ -625,6 +625,11 @@
             $('input[type=hidden][name="' + elementName + '"]').val('');
         });
 
+        datepicker('#expiry_date', {
+            position: 'bl',
+            ...datepickerConfig
+        });
+
         init(RIGHT_MODAL);
 
         $('#downloadable').change(function() {

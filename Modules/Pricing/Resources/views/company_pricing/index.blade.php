@@ -4,7 +4,7 @@
     <div class="content-wrapper">
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center">
-                @if (in_array('admin', user_roles()) || user()->permission('add_client_pricing') == 'all' || user()->permission('add_client_pricing') == 'added')
+                @if (in_array('admin', user_roles()) || user()->permission('add_company_pricing') == 'all' || user()->permission('add_company_pricing') == 'added')
                     <x-forms.link-primary :link="route('pricing.company_pricing.create')" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('pricing::app.addCompanyPricing')
                     </x-forms.link-primary>
@@ -80,7 +80,7 @@
                                 </select>
                             </td>
                             <td class="text-right">
-                                @if (in_array('admin', user_roles()) || user()->permission('add_client_pricing') == 'all' || user()->permission('add_client_pricing') == 'added' || user()->permission('edit_client_pricing') != 'none')
+                                @if (in_array('admin', user_roles()) || user()->permission('add_company_pricing') == 'all' || user()->permission('add_company_pricing') == 'added' || user()->permission('edit_company_pricing') != 'none')
                                     <div class="dropdown">
                                         <button class="btn btn-outline-secondary border-0 dropdown-toggle" type="button" id="actionDropdown{{ $row->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fa fa-ellipsis-v"></i>

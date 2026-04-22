@@ -45,8 +45,11 @@ if ($GitPull) {
 # Language Pack Publish (UI): FPM = www-data phải ghi resources/lang, lang/, Modules/*/Resources/lang — cần ug+rwX + setgid thư mục (SERVER_RUNBOOK_VI §4.8).
 $RemoteCommand += " && sudo chown -R hoangphat5393:www-data ."
 $RemoteCommand += " && sudo mkdir -p lang resources/lang storage/logs"
+$RemoteCommand += " && sudo mkdir -p public/user-uploads public/user-uploads/temp public/user-uploads/front/client"
 $RemoteCommand += " && sudo chown -R www-data:www-data storage bootstrap/cache"
+$RemoteCommand += " && sudo chown -R www-data:www-data public/user-uploads"
 $RemoteCommand += " && sudo chmod -R 775 storage bootstrap/cache"
+$RemoteCommand += " && sudo chmod -R 775 public/user-uploads"
 $RemoteCommand += " && sudo chmod 2777 storage/logs"
 $RemoteCommand += " && sudo chmod -R ug+rwX Modules/LanguagePack/Languages resources/lang lang"
 $RemoteCommand += " && sudo find Modules/LanguagePack/Languages resources/lang lang -type d -exec chmod g+s {} \; 2>/dev/null || true"

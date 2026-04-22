@@ -36,3 +36,7 @@ mix.copy('node_modules/quill-magic-url/dist/index.js', 'public/vendor/quill/quil
 // Copy Cropper.js assets
 mix.copy('node_modules/cropperjs/dist/cropper.min.js', 'public/vendor/cropper/cropper.min.js');
 mix.copy('node_modules/cropperjs/dist/cropper.min.css', 'public/vendor/cropper/cropper.min.css');
+
+// Copy Pickr assets
+mix.copy('node_modules/@simonwep/pickr/dist/pickr.min.js', 'public/vendor/pickr/pickr.min.js');
+mix.copy('node_modules/@simonwep/pickr/dist/themes/classic.min.css', 'public/vendor/pickr/themes/classic.min.css');

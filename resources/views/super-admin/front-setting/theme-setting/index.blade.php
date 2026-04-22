@@ -32,11 +32,16 @@
 
         .pickr-trigger {
             display: inline-flex;
-            width: 28px;
-            height: 28px;
+            width: 1.5rem;
+            height: 1.5rem;
             border-radius: 4px;
             border: 1px solid #d6d6d6;
             cursor: pointer;
+        }
+
+        .pickr {
+            display: inline-block;
+            line-height: 0;
         }
 
         .pickr-trigger.pcr-button {
@@ -122,7 +127,7 @@
                                 <input type="text" class="form-control height-35 f-14 header_color" autocomplete="off" value="{{ $frontDetail->primary_color }}" id="primary_color" placeholder="{{ __('placeholders.colorPicker') }}" name="primary_color">
 
                                 <x-slot name="append">
-                                    <span class="input-group-text height-35"><span class="pickr-trigger" data-input-id="primary_color" aria-label="@lang('superadmin.frontCms.primaryColor')"></span></span>
+                                    <span class="input-group-text height-35"><span class="pickr"><span class="pickr-trigger" data-input-id="primary_color" aria-label="@lang('superadmin.frontCms.primaryColor')"></span></span></span>
                                 </x-slot>
                             </x-forms.input-group>
                         </div>
@@ -182,7 +187,7 @@
                         <x-forms.input-group class="pickr-input-group">
                             <input type="text" class="form-control height-35 f-14 header_color" autocomplete="off" value="{{ $frontDetail->background_color }}" id="background_color" placeholder="{{ __('placeholders.colorPicker') }}" name="background_color">
                             <x-slot name="append">
-                                <span class="input-group-text height-35"><span class="pickr-trigger" data-input-id="background_color" aria-label="@lang('superadmin.frontCms.setBackgroundColor')"></span></span>
+                                <span class="input-group-text height-35"><span class="pickr"><span class="pickr-trigger" data-input-id="background_color" aria-label="@lang('superadmin.frontCms.setBackgroundColor')"></span></span></span>
                             </x-slot>
                         </x-forms.input-group>
                     </div>
@@ -234,6 +239,11 @@
             return hex ? raw : fallback;
         }
 
+        function setTriggerColor(triggerElement, colorValue) {
+            const normalized = normalizeHexForPickr(colorValue, '#000000');
+            triggerElement.style.backgroundColor = normalized;
+        }
+
         document.querySelectorAll('.pickr-trigger').forEach(function(triggerElement) {
             const inputId = triggerElement.dataset.inputId;
             const inputElement = document.getElementById(inputId);
@@ -266,20 +276,32 @@
                 }
             });
 
+            setTriggerColor(triggerElement, inputElement.value);
+
+            pickr.on('change', function(color) {
+                if (color) {
+                    setTriggerColor(triggerElement, color.toHEXA().toString());
+                }
+            });
+
             pickr.on('save', function(color, instance) {
                 if (color) {
-                    inputElement.value = color.toHEXA().toString();
+                    const hex = color.toHEXA().toString();
+                    inputElement.value = hex;
+                    setTriggerColor(triggerElement, hex);
                 }
 
                 instance.hide();
             });
 
             pickr.on('cancel', function(instance) {
+                setTriggerColor(triggerElement, inputElement.value);
                 instance.hide();
             });
 
             inputElement.addEventListener('change', function() {
-                pickr.setColor(normalizeHexForPickr(inputElement.value), true);
+                pickr.setColor(normalizeHexForPickr(inputElement.value));
+                setTriggerColor(triggerElement, inputElement.value);
             });
 
             pickrInstances.push(pickr);

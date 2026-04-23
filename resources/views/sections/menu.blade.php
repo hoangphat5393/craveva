@@ -153,9 +153,6 @@
                     @if (in_array('expenses', user_modules()) && $sidebarUserPermissions['view_expenses'] != 5 && $sidebarUserPermissions['view_expenses'] != 'none')
                         <x-sub-menu-item :link="route('expenses.index')" :text="__('app.menu.expenses')" />
                     @endif
-                    @if (in_array('admin', array_map('strtolower', user_roles() ?? [])) && in_array('pricing', user_modules()) && Route::has('pricing.volume_rules.index'))
-                        <x-sub-menu-item :link="route('pricing.volume_rules.index')" :text="__('app.menu.discountRules')" />
-                    @endif
                     @if (in_array('bankaccount', user_modules()) && $sidebarUserPermissions['view_bankaccount'] != 5 && $sidebarUserPermissions['view_bankaccount'] != 'none')
                         <x-sub-menu-item :link="route('bankaccounts.index')" :text="__('app.menu.bankaccount')" />
                     @endif

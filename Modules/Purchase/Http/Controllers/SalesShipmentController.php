@@ -14,6 +14,7 @@ use Modules\Purchase\Services\SalesDoService;
 use Modules\Purchase\Support\FlowPermission;
 use Modules\Purchase\Support\SalesDoRuntime;
 use Modules\Warehouse\Entities\Warehouse;
+use Modules\Warehouse\Entities\WarehouseProductBatch;
 
 class SalesShipmentController extends AccountBaseController
 {
@@ -21,7 +22,7 @@ class SalesShipmentController extends AccountBaseController
     {
         $prefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do';
 
-        return $prefix.'.'.$action;
+        return $prefix . '.' . $action;
     }
 
     private function salesDoTitleKey(): string
@@ -42,7 +43,7 @@ class SalesShipmentController extends AccountBaseController
     public function create(Request $request)
     {
         abort_403(! FlowPermission::allowsAlias('sales_do.create'));
-        $this->pageTitle = __('app.add').' '.__($this->salesDoTitleKey());
+        $this->pageTitle = __('app.add') . ' ' . __($this->salesDoTitleKey());
         $this->warehouses = $this->warehouseList();
         $this->orders = Order::query()
             ->where('company_id', $this->company?->id)
@@ -69,7 +70,7 @@ class SalesShipmentController extends AccountBaseController
     public function edit($id)
     {
         abort_403(! FlowPermission::allowsAlias('sales_do.update'));
-        $this->pageTitle = __('app.edit').' '.__($this->salesDoTitleKey());
+        $this->pageTitle = __('app.edit') . ' ' . __($this->salesDoTitleKey());
         $this->shipment = $this->queryByCompany()->with(['items.orderItem', 'order'])->findOrFail($id);
         abort_if(in_array($this->shipment->status, ['shipped', 'delivered'], true), 403);
 
@@ -95,7 +96,7 @@ class SalesShipmentController extends AccountBaseController
     {
         abort_403(! FlowPermission::allowsAlias('sales_do.view'));
         $this->shipment = $this->queryByCompany()
-            ->with(['items.orderItem', 'order', 'warehouse'])
+            ->with(['items.orderItem', 'items.warehouseBatch', 'order', 'warehouse'])
             ->findOrFail($id);
         $this->pageTitle = $this->shipment->shipment_number;
         $tab = request('tab');
@@ -125,14 +126,15 @@ class SalesShipmentController extends AccountBaseController
         $this->shipment = $shipmentId > 0 ? $this->queryByCompany()->with('items')->find($shipmentId) : null;
         $this->order = $order;
         $this->remainingByItem = $this->remainingQtyByOrderItem($order->id, $shipmentId);
-        $defaultWarehouseId = $this->resolveOrderDefaultWarehouseId($order);
+        $resolvedWarehouseId = $this->resolveItemsWarehouseId($order, (int) $request->get('warehouse_id', 0));
+        $this->batchOptionsByOrderItem = $this->buildBatchOptionsByOrderItem($order, $resolvedWarehouseId, $this->shipment);
 
         $html = view('purchase::sales-shipment.ajax.items', $this->data)->render();
 
         return Reply::dataOnly([
             'status' => 'success',
             'html' => $html,
-            'defaultWarehouseId' => $defaultWarehouseId,
+            'defaultWarehouseId' => $resolvedWarehouseId,
         ]);
     }
 
@@ -240,7 +242,7 @@ class SalesShipmentController extends AccountBaseController
                 'string',
                 'max:64',
                 Rule::unique(SalesDoRuntime::headerTable(), SalesDoRuntime::numberColumn())
-                    ->where(fn ($q) => $q->where('company_id', $this->company?->id))
+                    ->where(fn($q) => $q->where('company_id', $this->company?->id))
                     ->ignore($shipmentId),
             ],
             'shipment_date' => 'required|string',
@@ -258,6 +260,10 @@ class SalesShipmentController extends AccountBaseController
             'quantity_shipped.*' => 'required|numeric|min:0',
             'batch_number' => 'nullable|array',
             'batch_number.*' => 'nullable|string|max:191',
+            'warehouse_batch_id' => 'nullable|array',
+            'warehouse_batch_id.*' => 'nullable|integer|min:1',
+            'expiration_date' => 'nullable|array',
+            'expiration_date.*' => 'nullable|date',
         ]);
 
         $order = Order::query()
@@ -266,6 +272,39 @@ class SalesShipmentController extends AccountBaseController
             ->findOrFail((int) $validated['order_id']);
 
         $remaining = $this->remainingQtyByOrderItem($order->id, $shipmentId);
+
+        $batchIds = collect($validated['warehouse_batch_id'] ?? [])
+            ->filter(fn($id) => ! empty($id))
+            ->map(fn($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        $batchMap = collect();
+        if ($batchIds->isNotEmpty()) {
+            $batchMap = WarehouseProductBatch::query()
+                ->where('company_id', $this->company?->id)
+                ->whereIn('id', $batchIds->all())
+                ->get()
+                ->keyBy('id');
+        }
+
+        $orderProductIds = collect($validated['product_id'] ?? [])
+            ->filter(fn($id) => ! empty($id))
+            ->map(fn($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        $productsWithBatchInWarehouse = collect();
+        if ($orderProductIds->isNotEmpty()) {
+            $productsWithBatchInWarehouse = WarehouseProductBatch::query()
+                ->where('company_id', $this->company?->id)
+                ->where('warehouse_id', (int) $validated['warehouse_id'])
+                ->whereIn('product_id', $orderProductIds->all())
+                ->distinct()
+                ->pluck('product_id')
+                ->map(fn($id) => (int) $id)
+                ->values();
+        }
 
         foreach ($validated['order_item_id'] as $idx => $orderItemId) {
             $orderItem = $order->items->firstWhere('id', (int) $orderItemId);
@@ -276,13 +315,42 @@ class SalesShipmentController extends AccountBaseController
             $requestQty = (float) ($validated['quantity_shipped'][$idx] ?? 0);
             $left = (float) ($remaining[$orderItemId] ?? 0);
             if ($requestQty > $left) {
-                abort(422, __('messages.quantityNumber'));
+                abort(422, 'Ship quantity cannot exceed remaining quantity (remaining: ' . number_format($left, 2, '.', '') . ', requested: ' . number_format($requestQty, 2, '.', '') . ').');
             }
 
             // Shippable line must map to a product so stock movement can be posted correctly.
             $lineProductId = $validated['product_id'][$idx] ?? null;
             if ($requestQty > 0 && empty($lineProductId)) {
                 abort(422, __('messages.invalidRequest'));
+            }
+
+            $batchId = (int) ($validated['warehouse_batch_id'][$idx] ?? 0);
+            $requiresBatch = ! empty($lineProductId) && $productsWithBatchInWarehouse->contains((int) $lineProductId);
+            if ($requestQty > 0 && $requiresBatch && $batchId <= 0) {
+                abort(422, 'Please select a valid batch (batch + expiry) before shipping.');
+            }
+
+            if ($requestQty > 0 && $batchId > 0) {
+                $batch = $batchMap->get($batchId);
+                if (! $batch) {
+                    abort(422, 'Selected batch was not found in current company.');
+                }
+
+                if ((int) $batch->warehouse_id !== (int) $validated['warehouse_id']) {
+                    abort(422, 'Selected batch does not belong to the selected warehouse.');
+                }
+
+                if (! empty($lineProductId) && (int) $batch->product_id !== (int) $lineProductId) {
+                    abort(422, 'Selected batch does not belong to the selected product.');
+                }
+
+                $availableQty = max(0, (float) $batch->quantity - (float) $batch->reserved_quantity);
+                if ($requestQty > $availableQty) {
+                    abort(422, 'Ship quantity cannot exceed selected batch available quantity (available: ' . number_format($availableQty, 4, '.', '') . ', requested: ' . number_format($requestQty, 4, '.', '') . ').');
+                }
+
+                $validated['batch_number'][$idx] = $batch->batch_number;
+                $validated['expiration_date'][$idx] = $batch->expiration_date;
             }
         }
 
@@ -303,7 +371,7 @@ class SalesShipmentController extends AccountBaseController
         $ordered = OrderItems::query()
             ->where('order_id', $orderId)
             ->pluck('quantity', 'id')
-            ->map(fn ($qty) => (float) $qty)
+            ->map(fn($qty) => (float) $qty)
             ->toArray();
 
         $itemModelClass = SalesDoRuntime::itemModelClass();
@@ -312,14 +380,14 @@ class SalesShipmentController extends AccountBaseController
         $itemForeignKey = SalesDoRuntime::itemForeignKey();
 
         $alreadyShipped = $itemModelClass::query()
-            ->selectRaw($itemTable.'.order_item_id, SUM('.$itemTable.'.quantity_shipped) as shipped_qty')
-            ->join($headerTable, $headerTable.'.id', '=', $itemTable.'.'.$itemForeignKey)
-            ->where($headerTable.'.order_id', $orderId)
-            ->whereNotIn($headerTable.'.status', ['cancelled'])
-            ->when($excludeShipmentId, fn ($q) => $q->where($headerTable.'.id', '!=', $excludeShipmentId))
-            ->groupBy($itemTable.'.order_item_id')
+            ->selectRaw($itemTable . '.order_item_id, SUM(' . $itemTable . '.quantity_shipped) as shipped_qty')
+            ->join($headerTable, $headerTable . '.id', '=', $itemTable . '.' . $itemForeignKey)
+            ->where($headerTable . '.order_id', $orderId)
+            ->whereNotIn($headerTable . '.status', ['cancelled'])
+            ->when($excludeShipmentId, fn($q) => $q->where($headerTable . '.id', '!=', $excludeShipmentId))
+            ->groupBy($itemTable . '.order_item_id')
             ->pluck('shipped_qty', 'order_item_id')
-            ->map(fn ($qty) => (float) $qty)
+            ->map(fn($qty) => (float) $qty)
             ->toArray();
 
         $remaining = [];
@@ -337,7 +405,7 @@ class SalesShipmentController extends AccountBaseController
             ->where('company_id', $this->company?->id)
             ->max('id');
 
-        return 'SS-'.str_pad((string) ((int) $lastId + 1), 6, '0', STR_PAD_LEFT);
+        return 'SS-' . str_pad((string) ((int) $lastId + 1), 6, '0', STR_PAD_LEFT);
     }
 
     protected function parseCompanyDate(string $value): string
@@ -383,6 +451,91 @@ class SalesShipmentController extends AccountBaseController
             ->exists();
 
         return $exists ? $candidate : null;
+    }
+
+    protected function resolveItemsWarehouseId(Order $order, int $requestedWarehouseId): ?int
+    {
+        if ($requestedWarehouseId > 0) {
+            $exists = Warehouse::query()
+                ->where('id', $requestedWarehouseId)
+                ->where('company_id', $this->company?->id)
+                ->where('status', 'active')
+                ->exists();
+            if ($exists) {
+                return $requestedWarehouseId;
+            }
+        }
+
+        return $this->resolveOrderDefaultWarehouseId($order);
+    }
+
+    protected function buildBatchOptionsByOrderItem(Order $order, ?int $warehouseId, $shipment = null): array
+    {
+        $orderItemIds = $order->items->pluck('id')->all();
+        $result = array_fill_keys($orderItemIds, []);
+
+        if (! $warehouseId) {
+            return $result;
+        }
+
+        $productIds = $order->items
+            ->pluck('product_id')
+            ->filter()
+            ->map(fn($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        if ($productIds->isEmpty()) {
+            return $result;
+        }
+
+        $selectedBatchIds = collect();
+        if ($shipment && $shipment->relationLoaded('items')) {
+            $selectedBatchIds = $shipment->items
+                ->pluck('warehouse_batch_id')
+                ->filter()
+                ->map(fn($id) => (int) $id)
+                ->unique()
+                ->values();
+        }
+
+        $batches = WarehouseProductBatch::query()
+            ->where('company_id', $this->company?->id)
+            ->where('warehouse_id', $warehouseId)
+            ->whereIn('product_id', $productIds->all())
+            ->where(function ($q) use ($selectedBatchIds) {
+                $q->whereRaw('(quantity - reserved_quantity) > 0');
+                if ($selectedBatchIds->isNotEmpty()) {
+                    $q->orWhereIn('id', $selectedBatchIds->all());
+                }
+            })
+            ->orderByRaw('expiration_date IS NULL, expiration_date ASC')
+            ->orderBy('id')
+            ->get()
+            ->groupBy('product_id');
+
+        foreach ($order->items as $item) {
+            $productId = (int) ($item->product_id ?? 0);
+            if ($productId <= 0) {
+                continue;
+            }
+
+            $rows = $batches->get($productId, collect())->map(function ($batch) {
+                $expiry = $batch->expiration_date ? Carbon::parse($batch->expiration_date)->format('Y-m-d') : null;
+                $available = max(0, (float) $batch->quantity - (float) $batch->reserved_quantity);
+
+                return [
+                    'id' => (int) $batch->id,
+                    'batch_number' => $batch->batch_number,
+                    'expiration_date' => $expiry,
+                    'available_quantity' => $available,
+                ];
+            })->values()->all();
+
+            $result[(int) $item->id] = $rows;
+        }
+
+        return $result;
     }
 
     protected function queryByCompany()

@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Company;
+use App\Models\CustomFieldGroup;
+
 /*
 |--------------------------------------------------------------------------
 | Register Namespaces And Routes
@@ -13,18 +16,12 @@
 */
 
 require __DIR__.'/Routes/web.php';
-\App\Models\CustomFieldGroup::withoutGlobalScope(\App\Scopes\CompanyScope::class);
-if (! \App\Models\CustomFieldGroup::where('name', 'Inventory')->exists()) {
-    $companies = \App\Models\Company::select('id')->get();
-    $groups = [];
+Company::query()->select('id')->orderBy('id')->chunk(500, function ($companies) {
     foreach ($companies as $company) {
-        $groups[] = [
+        CustomFieldGroup::firstOrCreate([
             'name' => 'Inventory',
             'model' => 'Modules\\Purchase\\Entities\\PurchaseInventory',
             'company_id' => $company->id,
-        ];
+        ]);
     }
-    if (! empty($groups)) {
-        \App\Models\CustomFieldGroup::insert($groups);
-    }
-}
+});

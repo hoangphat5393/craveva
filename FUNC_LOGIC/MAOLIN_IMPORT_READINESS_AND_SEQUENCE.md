@@ -2,7 +2,7 @@
 
 Nguon doi chieu:
 
-- `FUNC_LOGIC/B2B_ERP_PO_DO_INVOICE_GUIDE.md`
+- `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
 - `PROJECT MAOLIN New/` (bo CSV/XLSX hien tai)
 
 Muc tieu:
@@ -240,7 +240,7 @@ Nguyen tac: **master & khoa ngoai truoc, snapshot sau**; **vat ly kho (ton/movem
     - Ban chat: transaction history Miaolin/DigiWin, khong thay the file ton (`MAOLIN_MASTER_GUIDE.md`).
 
 7. **PO / DO / Invoice (luong B2B trong app)**
-    - Tao tren UI hoac luong mua hang chuan (`B2B_ERP_PO_DO_INVOICE_GUIDE.md`) **sau** khi master da day du.
+    - Tao tren UI hoac luong mua hang chuan (`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`) **sau** khi master da day du.
     - **Khong** co buoc import file quotation (`報價單匯出`) vao PO/DO/Invoice cho den khi co adapter.
 
 8. **Bao gia / quotation (file `報價單匯出`)**

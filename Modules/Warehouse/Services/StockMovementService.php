@@ -292,12 +292,17 @@ class StockMovementService
             ->where('product_id', $payload['product_id'])
             ->where('quantity', '>', 0);
 
-        if (! empty($payload['batch_number'])) {
-            $query->where('batch_number', $payload['batch_number']);
-        }
+        $batchId = isset($payload['batch_id']) ? (int) $payload['batch_id'] : 0;
+        if ($batchId > 0) {
+            $query->where('id', $batchId);
+        } else {
+            if (! empty($payload['batch_number'])) {
+                $query->where('batch_number', $payload['batch_number']);
+            }
 
-        if (! empty($payload['expiry_date'])) {
-            $query->whereDate('expiration_date', $payload['expiry_date']);
+            if (! empty($payload['expiry_date'])) {
+                $query->whereDate('expiration_date', $payload['expiry_date']);
+            }
         }
 
         return $this->sortForFefo($query->get());

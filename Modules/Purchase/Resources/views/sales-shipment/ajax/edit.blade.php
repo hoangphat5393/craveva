@@ -62,7 +62,7 @@
 </div>
 
 <script>
-    const loadSalesShipmentItemsForEdit = (orderId) => {
+    const loadSalesShipmentItemsForEdit = (orderId, warehouseId = null) => {
         if (!orderId) {
             $('#sales-shipment-items').html('');
             return;
@@ -71,6 +71,7 @@
             params: {
                 order_id: orderId,
                 shipment_id: "{{ $shipment->id }}",
+                warehouse_id: warehouseId || $('#warehouse_id').val() || null,
                 _token: "{{ csrf_token() }}"
             }
         }).then(function(response) {
@@ -92,12 +93,51 @@
             ...datepickerConfig
         });
 
-        loadSalesShipmentItemsForEdit($('#order_id').val());
+        loadSalesShipmentItemsForEdit($('#order_id').val(), $('#warehouse_id').val());
         $('#order_id').on('change', function() {
-            loadSalesShipmentItemsForEdit($(this).val());
+            loadSalesShipmentItemsForEdit($(this).val(), $('#warehouse_id').val());
+        });
+
+        $('#warehouse_id').on('change', function() {
+            const orderId = $('#order_id').val();
+            if (!orderId) {
+                return;
+            }
+            loadSalesShipmentItemsForEdit(orderId, $(this).val());
         });
 
         $('#update-sales-shipment-button').on('click', function() {
+            const warehouseId = String($('#warehouse_id').val() || '').trim();
+            if (!warehouseId) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Please select warehouse before saving.',
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+                return;
+            }
+
+            if (typeof window.validateSalesShipmentRows === 'function') {
+                if (typeof window.syncAllShipmentBatchRows === 'function') {
+                    window.syncAllShipmentBatchRows();
+                }
+                const rowError = window.validateSalesShipmentRows();
+                if (rowError) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: rowError,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+            }
+
             const body = $('#update-sales-shipment-form').serialize() + '&_method=PUT';
             $.easyBlockUI('#update-sales-shipment-form');
             window.apiHttp.postUrlEncoded("{{ route($salesDoRoutePrefix . '.update', $shipment->id) }}", body).then(function(response) {

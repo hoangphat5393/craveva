@@ -99,18 +99,17 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         // 4. Available Quantity (Calculated)
         $datatables->addColumn('available_quantity', function ($row) {
-            $stock = $row->stocks->first();
-            $onHand = (float) (optional($stock)->net_quantity ?? 0);
-            $reserved = (float) (optional($stock)->reserved_quantity ?? 0);
+            $onHand = isset($row->wh_total_qty) ? (float) $row->wh_total_qty : 0;
+            $reserved = isset($row->wh_reserved_qty) ? (float) $row->wh_reserved_qty : 0;
 
             return max(0, $onHand - $reserved);
         });
 
         // 5. Ending inventory = net_quantity on stock line (core; replaces CF)
         $datatables->addColumn('ending_inventory', function ($row) {
-            $stock = $row->stocks->first();
+            $onHand = isset($row->wh_total_qty) ? (float) $row->wh_total_qty : 0;
 
-            return $stock !== null ? rtrim(rtrim(number_format((float) $stock->net_quantity, 4, '.', ''), '0'), '.') : '--';
+            return rtrim(rtrim(number_format($onHand, 4, '.', ''), '0'), '.');
         });
 
         // 6. Unit
@@ -123,8 +122,8 @@ class PurchaseInventoryDataTable extends BaseDataTable
         // 7. Stock Health / Status
         $datatables->editColumn('status', function ($row) {
             $stock = $row->stocks->first();
-            $qty = optional($stock)->net_quantity ?? 0;
-            $expDate = $stock && $stock->expiration_date ? Carbon::parse($stock->expiration_date) : null;
+            $qty = isset($row->wh_total_qty) ? (float) $row->wh_total_qty : 0;
+            $expDate = ! empty($row->wh_nearest_expiration_date) ? Carbon::parse($row->wh_nearest_expiration_date) : null;
 
             $badges = [];
 
@@ -159,9 +158,9 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         // --- Tier 2: Drill-Down / Hidden by Default ---
         $datatables->addColumn('reserved_quantity', function ($row) {
-            $stock = $row->stocks->first();
+            $reserved = isset($row->wh_reserved_qty) ? (float) $row->wh_reserved_qty : 0;
 
-            return $stock !== null ? rtrim(rtrim(number_format((float) ($stock->reserved_quantity ?? 0), 4, '.', ''), '0'), '.') : '0';
+            return rtrim(rtrim(number_format($reserved, 4, '.', ''), '0'), '.');
         });
 
         $datatables->addColumn('near_expiry_status', function ($row) {
@@ -180,7 +179,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         $datatables->addColumn('inventory_value', function ($row) {
             $stock = $row->stocks->first();
-            $qty = optional($stock)->net_quantity ?? 0;
+            $qty = isset($row->wh_total_qty) ? (float) $row->wh_total_qty : 0;
             $price = optional(optional($stock)->product)->purchase_price ?? 0; // Cost Price
 
             return currency_format($qty * $price, $this->company->currency_id);
@@ -203,8 +202,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
         });
 
         $datatables->addColumn('expiration_date', function ($row) {
-            $stock = $row->stocks->first();
-            $date = optional($stock)->expiration_date;
+            $date = $row->wh_nearest_expiration_date ?? null;
 
             return $date ? Carbon::parse($date)->translatedFormat($this->company->date_format) : '--';
         });
@@ -300,9 +298,20 @@ class PurchaseInventoryDataTable extends BaseDataTable
     {
         $request = $this->request();
 
+        $batchAgg = DB::table('warehouse_product_batches')
+            ->selectRaw('warehouse_id, product_id, SUM(quantity) as total_qty, SUM(reserved_quantity) as reserved_qty, MIN(expiration_date) as nearest_expiration_date')
+            ->groupBy('warehouse_id', 'product_id');
+
         $model = $model->select('purchase_inventory_adjustment.*')
             ->join('purchase_stock_adjustments', 'purchase_inventory_adjustment.id', '=', 'purchase_stock_adjustments.inventory_id')
             ->join('products', 'purchase_stock_adjustments.product_id', '=', 'products.id')
+            ->leftJoinSub($batchAgg, 'wb_agg', function ($join) {
+                $join->on('wb_agg.warehouse_id', '=', 'purchase_stock_adjustments.warehouse_id')
+                    ->on('wb_agg.product_id', '=', 'purchase_stock_adjustments.product_id');
+            })
+            ->addSelect(DB::raw('MAX(COALESCE(wb_agg.total_qty, 0)) as wh_total_qty'))
+            ->addSelect(DB::raw('MAX(COALESCE(wb_agg.reserved_qty, 0)) as wh_reserved_qty'))
+            ->addSelect(DB::raw('MIN(wb_agg.nearest_expiration_date) as wh_nearest_expiration_date'))
             ->addSelect(DB::raw('MAX(purchase_stock_adjustments.batch_number) as batch_number_value'));
 
         $maxCustomFieldJoins = (int) (config('purchase.inventory_max_custom_field_joins') ?? 0);
@@ -336,17 +345,17 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         if ($request->inventoryStatus != 'all' && ! is_null($request->inventoryStatus)) {
             if ($request->inventoryStatus == 'critical') {
-                $model->where('purchase_stock_adjustments.net_quantity', '<=', 0);
+                $model->whereRaw('COALESCE(wb_agg.total_qty, 0) <= 0');
             } elseif ($request->inventoryStatus == 'low') {
-                $model->where('purchase_stock_adjustments.net_quantity', '>', 0)
-                    ->where('purchase_stock_adjustments.net_quantity', '<', 10);
+                $model->whereRaw('COALESCE(wb_agg.total_qty, 0) > 0')
+                    ->whereRaw('COALESCE(wb_agg.total_qty, 0) < 10');
             } elseif ($request->inventoryStatus == 'normal') {
-                $model->where('purchase_stock_adjustments.net_quantity', '>=', 10);
+                $model->whereRaw('COALESCE(wb_agg.total_qty, 0) >= 10');
             } elseif ($request->inventoryStatus == 'expired') {
-                $model->whereDate('purchase_stock_adjustments.expiration_date', '<', now());
+                $model->whereDate('wb_agg.nearest_expiration_date', '<', now());
             } elseif ($request->inventoryStatus == 'near_expiry') {
-                $model->whereDate('purchase_stock_adjustments.expiration_date', '>', now())
-                    ->whereDate('purchase_stock_adjustments.expiration_date', '<', now()->addDays(30));
+                $model->whereDate('wb_agg.nearest_expiration_date', '>', now())
+                    ->whereDate('wb_agg.nearest_expiration_date', '<', now()->addDays(30));
             } else {
                 // Fallback to product status if it matches 'active'/'inactive'
                 $model->where('products.status', '=', $request->inventoryStatus);

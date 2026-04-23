@@ -10,6 +10,7 @@
     $canUpdate = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.update');
     $canShip = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.ship');
     $canCancel = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.cancel');
+    $canAddInvoice = in_array(user()->permission('add_invoices'), ['all', 'added']);
     $salesDoRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do';
 @endphp
 
@@ -64,7 +65,7 @@
                                     <td class="text-dark-grey f-12">{{ $overviewSku ?: '—' }}</td>
                                     <td align="right">{{ number_format((float) $item->quantity_ordered, 2) }}</td>
                                     <td align="right">{{ number_format((float) $item->quantity_shipped, 2) }}</td>
-                                    <td>{{ $item->batch_number ?: '—' }}</td>
+                                    <td>{{ $item->batch_display }}</td>
                                 </tr>
                             @endforeach
                         </table>
@@ -115,6 +116,13 @@
                     @endif
                     @if ($canCancel && $shipment->status !== 'cancelled')
                         <li><a class="dropdown-item f-14 text-dark shipment-action" data-action="cancel" href="javascript:;"><i class="fa fa-ban mr-2"></i>@lang('app.cancel')</a></li>
+                    @endif
+                    @if ($canAddInvoice && in_array($shipment->status, ['shipped', 'delivered'], true))
+                        <li>
+                            <a class="dropdown-item f-14 text-dark" href="{{ route('invoices.create', ['sales_do_id' => $shipment->id, 'order_id' => $shipment->order_id]) }}">
+                                <i class="fa fa-receipt mr-2"></i> @lang('modules.invoices.addInvoice')
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>

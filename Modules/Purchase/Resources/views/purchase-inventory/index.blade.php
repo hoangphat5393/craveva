@@ -89,6 +89,10 @@
 
         <!-- Inventory Box Start -->
         <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
+            <div class="alert alert-info border-0 mb-0 rounded-0">
+                <i class="fa fa-info-circle mr-1"></i>
+                Inventory quantity columns on this screen are synced from warehouse batch stock (real on-hand/reserved), so Sales DO ship updates are reflected immediately.
+            </div>
 
             {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
 

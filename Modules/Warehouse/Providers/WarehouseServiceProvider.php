@@ -5,6 +5,8 @@ namespace Modules\Warehouse\Providers;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Modules\Warehouse\Console\WarehouseBatchDedupeCommand;
+use Modules\Warehouse\Console\WarehouseDemoCleanupCommand;
 use Modules\Warehouse\Console\WarehouseReconciliationReportCommand;
 use Modules\Warehouse\Contracts\SalesReturnInboundGateInterface;
 use Modules\Warehouse\Services\AllowAllSalesReturnInboundGate;
@@ -69,6 +71,8 @@ class WarehouseServiceProvider extends ServiceProvider
     protected function registerCommands(): void
     {
         $this->commands([
+            WarehouseBatchDedupeCommand::class,
+            WarehouseDemoCleanupCommand::class,
             WarehouseReconciliationReportCommand::class,
         ]);
     }

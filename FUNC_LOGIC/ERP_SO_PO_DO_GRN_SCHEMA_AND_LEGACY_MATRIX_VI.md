@@ -1,6 +1,6 @@
 # SO · PO · GRN · Sales DO · Warehouse — Master: schema, luồng bán, legacy & drop
 
-**Mục đích:** Một file **master** — (1) **luồng bán/mua hiện tại** đối chiếu code, (2) **bảng canonical vs lịch sử**, (3) **trạng thái bảng legacy đã gỡ** (migration + hậu quả cột/UX), (4) **audit luồng** (đã gộp từ `AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md`).  
+**Mục đích:** Một file **master** — (1) **luồng bán/mua hiện tại** đối chiếu code, (2) **bảng canonical vs lịch sử**, (3) **trạng thái bảng legacy đã gỡ** (migration + hậu quả cột/UX), (4) **audit luồng** đã hợp nhất.  
 **Cập nhật:** 2026-04-10.
 
 **Trạng thái triển khai (đã xác nhận):** Bốn bảng `sales_shipment_items`, `sales_shipments`, `delivery_order_items`, `delivery_orders` **không còn tồn tại** trên **cả ba** môi trường đã rà (local / staging / hub). Schema nghiệp vụ mua·bán dùng **`grns` / `grn_items`** và **`sales_dos` / `sales_do_items`**. Phần dưới vẫn mô tả migration DROP và cột “treo” để audit / UX / restore DB dump cũ.
@@ -185,7 +185,7 @@ Trên **local / staging / hub đã xác nhận**: bốn bảng không còn → c
 
 ## 7) Audit luồng (gộp)
 
-_Nguồn gốc: `AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md` (2026-04-09). Phương pháp: đối chiếu observer, service, config; không thay UAT tay._
+_Nguồn: audit nội bộ 2026-04-09. Phương pháp: đối chiếu observer, service, config; không thay UAT tay._
 
 ### 7.1 Thuật ngữ
 
@@ -243,7 +243,7 @@ Nhiều invoice trên một SO; `default_warehouse_id` khách; job không có `u
 | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | **File này**                                                                                                                  | Master: luồng bán, schema, legacy đã gỡ (3 env), audit gộp |
 | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)                                                                                    | Mục lục — trỏ file này                                     |
-| [`AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md`](AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md)                        | **Stub** → nội dung đã gộp vào mục 7                       |
+| [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)                                                  | Checklist UAT E2E canonical                                |
 | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)                | Bảng issue QA chi tiết                                     |
 | [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                    | Hướng dẫn vận hành                                         |
 | [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                                                            | EN, class-level                                            |

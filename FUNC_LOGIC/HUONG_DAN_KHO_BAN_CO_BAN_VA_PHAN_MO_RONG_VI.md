@@ -120,8 +120,8 @@ Có thể **kiểm tra còn bán được không** trước khi tạo đơn — 
 | Quy trình đầy đủ PO / DO / SO / Invoice / kho           | [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                      |
 | Biến `.env` giải thích từng dòng                        | [`WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)                            |
 | So sánh kỳ vọng vs code (QA, có mục multi-warehouse)    | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)                  |
-| Audit tổng quan ổn định luồng                           | [`AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md`](AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md)                          |
-| Smoke test tự động sau khi đổi cấu hình                 | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md) §E.1             |
+| Audit tổng quan ổn định luồng                           | [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md)                            |
+| Smoke test sau khi đổi cấu hình                         | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)                  |
 | Luồng kho thuần (điều chỉnh, **chuyển kho**, movement)  | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                                                        |
 
 **Mục lục nhanh:** [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) · [`SALES_FULFILLMENT_DOCS_INDEX.md`](SALES_FULFILLMENT_DOCS_INDEX.md)

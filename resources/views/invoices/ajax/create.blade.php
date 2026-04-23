@@ -30,6 +30,9 @@
             @if (isset($type) && $type == 'estimate')
                 <input type="hidden" name="estimate_id" value="{{ $estimateId }}">
             @endif
+            @if (!empty($prefillOrderId))
+                <input type="hidden" name="order_id" value="{{ $prefillOrderId }}">
+            @endif
 
             <input type="hidden" name="do_it_later" id="doItLater" value="direct">
 
@@ -343,6 +346,20 @@
                     </div>
                 @endif
             </div>
+
+            @if (isset($prefillInvoiceLines) && $prefillInvoiceLines->isNotEmpty())
+                <div class="row px-lg-4 px-md-4 px-3 pb-2">
+                    <div class="col-md-12">
+                        <x-alert type="info" icon="info-circle" class="mb-0">
+                            @if ($prefillInvoiceSource === 'sales_do')
+                                @lang('app.invoice') @lang('app.item') auto-fill from Sales DO <strong>{{ $prefillInvoiceSourceNo }}</strong> (shipped quantity).
+                            @elseif($prefillInvoiceSource === 'order')
+                                @lang('app.invoice') @lang('app.item') auto-fill from @lang('app.order') <strong>{{ $prefillInvoiceSourceNo }}</strong>.
+                            @endif
+                        </x-alert>
+                    </div>
+                </div>
+            @endif
 
             <div id="sortable">
                 @if (isset($invoice))
@@ -1254,6 +1271,8 @@
                 $("#add-products").val('').selectpicker("refresh");
             };
 
+            const prefillInvoiceLines = @json($prefillInvoiceLines ?? []);
+
             $('#add-products').on('changed.bs.select', function(e, clickedIndex, isSelected, previousValue) {
                 e.stopImmediatePropagation()
                 var id = $(this).val();
@@ -1288,70 +1307,129 @@
             });
 
             function addProduct(id) {
+                return new Promise(function(resolve, reject) {
 
-                var existingRow = $(`input[name="product_id[]"][value="${id}"]`).closest('.item-row');
+                    var existingRow = $(`input[name="product_id[]"][value="${id}"]`).closest('.item-row');
 
-                if (existingRow.length) {
-                    // Increase quantity
-                    let qtyInput = existingRow.find('input.quantity');
-                    let currentQty = parseFloat(qtyInput.val());
-                    qtyInput.val(currentQty + 1).trigger('change'); // Trigger change to recalculate amount
+                    if (existingRow.length) {
+                        // Increase quantity
+                        let qtyInput = existingRow.find('input.quantity');
+                        let currentQty = parseFloat(qtyInput.val());
+                        qtyInput.val(currentQty + 1).trigger('change'); // Trigger change to recalculate amount
 
-                    let cost = existingRow.find('input.cost_per_item');
-                    let amountHtml = existingRow.find('span.amount-html');
-                    let amount = existingRow.find('input.amount');
-                    let newAmount = (qtyInput.val() * cost.val());
-                    amountHtml.html(newAmount).trigger('change');
-                    amount.val(newAmount).trigger('change');
+                        let cost = existingRow.find('input.cost_per_item');
+                        let amountHtml = existingRow.find('span.amount-html');
+                        let amount = existingRow.find('input.amount');
+                        let newAmount = (qtyInput.val() * cost.val());
+                        amountHtml.html(newAmount).trigger('change');
+                        amount.val(newAmount).trigger('change');
 
-                    calculateTotal();
+                        calculateTotal();
 
-                    return; // Exit the function
-                }
-
-                var currencyId = $('#currency_id').val();
-                var exchangeRate = $('#exchange_rate').val();
-
-                $.easyBlockUI('#saveInvoiceForm');
-                window.apiHttp.get("{{ route('invoices.add_item') }}", {
-                    params: {
-                        id: id,
-                        currencyId: currencyId,
-                        exchangeRate: exchangeRate
+                        resolve(existingRow);
+                        return; // Exit the function
                     }
-                }).then(function(response) {
-                    if ($('input[name="item_name[]"]').val() == '') {
-                        $("#sortable .item-row").remove();
-                    }
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    calculateTotal();
 
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length - 1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                        ') select.type');
-                    itemRow.attr('id', 'multiselect' + i);
-                    itemRow.attr('name', 'taxes[' + i + '][]');
-                    $(document).find('#multiselect' + i).selectpicker();
+                    var currencyId = $('#currency_id').val();
+                    var exchangeRate = $('#exchange_rate').val();
 
-                    $(document).find('#dropify' + i).dropify({
-                        messages: dropifyMessages
-                    });
-                }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
+                    $.easyBlockUI('#saveInvoiceForm');
+                    window.apiHttp.get("{{ route('invoices.add_item') }}", {
+                        params: {
+                            id: id,
+                            currencyId: currencyId,
+                            exchangeRate: exchangeRate
+                        }
+                    }).then(function(response) {
+                        if ($('input[name="item_name[]"]').val() == '') {
+                            $("#sortable .item-row").remove();
+                        }
+                        $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                        calculateTotal();
+
+                        var noOfRows = $(document).find('#sortable .item-row').length;
+                        var i = $(document).find('.item_name').length - 1;
+                        var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                            ') select.type');
+                        itemRow.attr('id', 'multiselect' + i);
+                        itemRow.attr('name', 'taxes[' + i + '][]');
+                        $(document).find('#multiselect' + i).selectpicker();
+
+                        $(document).find('#dropify' + i).dropify({
+                            messages: dropifyMessages
                         });
-                    }
-                }).finally(function() {
-                    $.easyUnblockUI('#saveInvoiceForm');
+
+                        const row = $(`input[name="product_id[]"][value="${id}"]`).closest('.item-row');
+                        resolve(row);
+                    }).catch(function(err) {
+                        reject(err);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#saveInvoiceForm');
+                    });
                 });
             }
+
+            function applyPrefillInvoiceLines(lines) {
+                if (!Array.isArray(lines) || lines.length === 0) {
+                    return;
+                }
+
+                if ($('input[name="item_name[]"]').length === 1 && ($('input[name="item_name[]"]').first().val() || '').trim() === '') {
+                    $("#sortable .item-row").remove();
+                }
+
+                let chain = Promise.resolve();
+                lines.forEach(function(line) {
+                    if (!line || !line.product_id) {
+                        return;
+                    }
+
+                    chain = chain.then(function() {
+                        return addProduct(String(line.product_id)).then(function() {
+                            const row = $(`input[name="product_id[]"][value="${line.product_id}"]`).closest('.item-row');
+                            if (!row.length) {
+                                return;
+                            }
+
+                            if (line.item_name) {
+                                row.find('input.item_name').val(line.item_name);
+                            }
+
+                            if (line.item_summary) {
+                                row.find('textarea.desktop-description, textarea.mobile-description').val(line.item_summary);
+                            }
+
+                            if (line.quantity && Number(line.quantity) > 0) {
+                                row.find('input.quantity').val(Number(line.quantity));
+                            }
+
+                            if (line.unit_price !== null && line.unit_price !== undefined && !Number.isNaN(Number(line.unit_price))) {
+                                row.find('input.cost_per_item').val(Number(line.unit_price));
+                            }
+
+                            row.find('input.quantity').trigger('change');
+                            row.find('input.cost_per_item').trigger('keyup');
+                        });
+                    });
+                });
+
+                chain.finally(function() {
+                    calculateTotal();
+                    resetAddProductButton();
+                });
+            }
+
+            applyPrefillInvoiceLines(prefillInvoiceLines);
 
             $(document).on('click', '#add-item', function() {
 

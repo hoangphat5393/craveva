@@ -49,7 +49,7 @@ Dữ liệu có thể nhóm theo **miền** sau (mỗi miền gồm nhiều bả
 
 Luồng **B2B: Client → PO → nhập kho → DO → Invoice** được mô tả trong:
 
-- [B2B_ERP_PO_DO_INVOICE_GUIDE.md](B2B_ERP_PO_DO_INVOICE_GUIDE.md)
+- [QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)
 
 Luồng **multi-warehouse / lô / hạn**:
 

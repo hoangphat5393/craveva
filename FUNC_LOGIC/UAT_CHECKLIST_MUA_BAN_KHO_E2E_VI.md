@@ -3,7 +3,7 @@
 **Mục đích:** Một chỗ cho QA/PM nghiệm thu luồng ERP (procurement, sales, đa kho, trả hàng) và module Warehouse.  
 **Đồng bộ code/tài liệu:** [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md) · [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md) · [`HUONG_DAN_KHO_BAN_CO_BAN_VA_PHAN_MO_RONG_VI.md`](HUONG_DAN_KHO_BAN_CO_BAN_VA_PHAN_MO_RONG_VI.md) · trả hàng bán [`SALES_RETURN_CREDIT_NOTE_STOCK_VI.md`](SALES_RETURN_CREDIT_NOTE_STOCK_VI.md) · trả hàng mua [`PURCHASE_RETURN_VENDOR_CREDIT_STOCK_VI.md`](PURCHASE_RETURN_VENDOR_CREDIT_STOCK_VI.md).
 
-**Cập nhật:** 2026-04-12 — gộp nội dung từ `WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md` (checklist kho + gap) vào file này; file cũ giữ tên làm stub redirect.
+**Cập nhật:** 2026-04-23 — bản UAT canonical, da loai bo hoan toan file checklist legacy.
 
 ---
 
@@ -223,9 +223,9 @@ Trong **`purchase::sections.sidebar`** (menu **Operations**), khi module **Wareh
 
 ## Liên kết nhanh
 
-| Mục đích                     | File                                                                       |
-| ---------------------------- | -------------------------------------------------------------------------- |
-| Mục lục Warehouse            | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)                                 |
-| Index Sales/Fulfillment      | [`SALES_FULFILLMENT_DOCS_INDEX.md`](SALES_FULFILLMENT_DOCS_INDEX.md)       |
-| Sơ đồ E2E                    | `DIAGRAM/Purchasing - Inventory - Sales End-to-End Current Flow.mmd`       |
-| Tên file checklist cũ (stub) | [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md) |
+| Mục đích                | File                                                                 |
+| ----------------------- | -------------------------------------------------------------------- |
+| Mục lục Warehouse       | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)                           |
+| Index Sales/Fulfillment | [`SALES_FULFILLMENT_DOCS_INDEX.md`](SALES_FULFILLMENT_DOCS_INDEX.md) |
+| Sơ đồ E2E               | `DIAGRAM/Purchasing - Inventory - Sales End-to-End Current Flow.mmd` |
+| Legacy checklist        | Da loai bo; su dung duy nhat file UAT nay                            |

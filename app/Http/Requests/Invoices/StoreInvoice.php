@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Invoices;
 
+use App\Helper\NumberFormat;
 use App\Http\Requests\CoreRequest;
 use App\Traits\CustomFieldsRequestTrait;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class StoreInvoice extends CoreRequest
     {
         if ($this->invoice_number) {
             $this->merge([
-                'invoice_number' => \App\Helper\NumberFormat::invoice($this->invoice_number),
+                'invoice_number' => NumberFormat::invoice($this->invoice_number),
             ]);
         }
     }
@@ -45,6 +46,7 @@ class StoreInvoice extends CoreRequest
                 'required',
                 Rule::unique('invoices')->where('company_id', company()->id),
             ],
+            'order_id' => 'nullable|integer|exists:orders,id',
             'issue_date' => 'required',
             'sub_total' => 'required',
             'total' => 'required',

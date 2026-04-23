@@ -59,7 +59,7 @@ _Nội dung gộp từ bản tóm `MAOLIN_FOCUSED_SCOPE_\*` (đã xóa để tr�
 
 | File                                                                                                                                                                             | Ghi chú                                                 |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| [`B2B_ERP_PO_DO_INVOICE_GUIDE.md`](B2B_ERP_PO_DO_INVOICE_GUIDE.md)                                                                                                               | PO/DO/Invoice B2B (nghiệp vụ).                          |
+| [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                                                                       | PO/DO/Invoice/Warehouse (nghiep vu canonical).          |
 | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) + [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md) + [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md) | Warehouse: mục lục + flow nghiệp vụ + runbook kỹ thuật. |
 | [`CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md`](CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                                                                                           | Import client (kỹ thuật).                               |
 

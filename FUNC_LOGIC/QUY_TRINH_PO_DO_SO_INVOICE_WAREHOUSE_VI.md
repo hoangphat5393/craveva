@@ -11,7 +11,7 @@
 **Chỉ riêng module kho (điều chỉnh, chuyển, ledger):** [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)  
 **URL, quyền, DB:** [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)  
 **Trạng thái triển khai, audit, prompt Cursor:** [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11  
-**Test tay / UAT E2E:** [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md) · _redirect:_ [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)
+**Test tay / UAT E2E:** [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)
 
 ---
 
@@ -43,6 +43,7 @@
 ### 2.3 Purchase Inventory (phiếu tồn / sync tuyệt đối)
 
 - Điều chỉnh tồn theo **số đích** từng kho + sản phẩm → delta → movement.
+- Màn Inventory datatable hien thi KPI ton theo du lieu batch kho thoi gian thuc (tranh nham voi snapshot legacy).
 - Chi tiết bảng ghi: [`FLOW_ADD_INVENTORY.md`](FLOW_ADD_INVENTORY.md).
 
 ### 2.4 Trả hàng mua / Vendor Credit / công nợ NCC
@@ -148,4 +149,4 @@ flowchart TB
 
 ---
 
-_File cũ [`B2B_ERP_PO_DO_INVOICE_GUIDE.md`](B2B_ERP_PO_DO_INVOICE_GUIDE.md) chỉ còn stub trỏ về đây để giữ link cũ._
+_File nay la ban canonical cho quy trinh PO/DO/SO/Invoice/Warehouse._

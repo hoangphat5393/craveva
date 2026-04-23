@@ -22,7 +22,7 @@ class StockReservationService
     ) {}
 
     /**
-     * @param  array<string, mixed>  $payload  company_id, warehouse_id, product_id, quantity, batch_number?, expiry_date?, reference_type, reference_id
+     * @param  array<string, mixed>  $payload  company_id, warehouse_id, product_id, quantity, batch_id?, batch_number?, expiry_date?, reference_type, reference_id
      */
     public function reserve(array $payload): StockReservation
     {
@@ -48,8 +48,8 @@ class StockReservationService
                 'company_id' => $payload['company_id'] ?? null,
                 'warehouse_id' => $payload['warehouse_id'],
                 'product_id' => $payload['product_id'],
-                'batch_number' => $payload['batch_number'] ?? null,
-                'expiration_date' => $payload['expiry_date'] ?? null,
+                'batch_number' => $batch->batch_number,
+                'expiration_date' => $batch->expiration_date,
                 'reserved_quantity' => $qty,
                 'reference_type' => $payload['reference_type'] ?? null,
                 'reference_id' => $payload['reference_id'] ?? null,
@@ -161,7 +161,12 @@ class StockReservationService
             ->lockForUpdate()
             ->where('warehouse_id', $payload['warehouse_id'])
             ->where('product_id', $payload['product_id']);
-        $this->applyBatchIdentityToQuery($query, $payload);
+        $batchId = isset($payload['batch_id']) ? (int) $payload['batch_id'] : 0;
+        if ($batchId > 0) {
+            $query->where('id', $batchId);
+        } else {
+            $this->applyBatchIdentityToQuery($query, $payload);
+        }
 
         $row = $query->first();
         if (! $row) {

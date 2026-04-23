@@ -63,7 +63,7 @@
 </div>
 
 <script>
-    const loadSalesShipmentItems = (orderId, shipmentId = null) => {
+    const loadSalesShipmentItems = (orderId, shipmentId = null, warehouseId = null) => {
         if (!orderId) {
             $('#sales-shipment-items').html('');
             return;
@@ -72,6 +72,7 @@
             params: {
                 order_id: orderId,
                 shipment_id: shipmentId,
+                warehouse_id: warehouseId || $('#warehouse_id').val() || null,
                 _token: "{{ csrf_token() }}"
             }
         }).then(function(response) {
@@ -104,14 +105,53 @@
 
         const prefill = $('#order_id').val();
         if (prefill) {
-            loadSalesShipmentItems(prefill);
+            loadSalesShipmentItems(prefill, null, $('#warehouse_id').val());
         }
 
         $('#order_id').on('change', function() {
-            loadSalesShipmentItems($(this).val());
+            loadSalesShipmentItems($(this).val(), null, $('#warehouse_id').val());
+        });
+
+        $('#warehouse_id').on('change', function() {
+            const orderId = $('#order_id').val();
+            if (!orderId) {
+                return;
+            }
+            loadSalesShipmentItems(orderId, null, $(this).val());
         });
 
         $('#save-sales-shipment-button').on('click', function() {
+            const warehouseId = String($('#warehouse_id').val() || '').trim();
+            if (!warehouseId) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Please select warehouse before saving.',
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+                return;
+            }
+
+            if (typeof window.validateSalesShipmentRows === 'function') {
+                if (typeof window.syncAllShipmentBatchRows === 'function') {
+                    window.syncAllShipmentBatchRows();
+                }
+                const rowError = window.validateSalesShipmentRows();
+                if (rowError) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: rowError,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+            }
+
             const body = $('#save-sales-shipment-form').serialize();
             $.easyBlockUI('#save-sales-shipment-form');
             window.apiHttp.postUrlEncoded("{{ route($salesDoRoutePrefix . '.store') }}", body).then(function(response) {

@@ -8,6 +8,7 @@ use App\Http\Requests\CustomField\UpdateCustomField;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class CustomFieldController extends AccountBaseController
 {
@@ -26,7 +27,7 @@ class CustomFieldController extends AccountBaseController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -42,11 +43,19 @@ class CustomFieldController extends AccountBaseController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
-        $this->customFieldGroups = CustomFieldGroup::all();
+        $canonicalGroupIds = CustomFieldGroup::query()
+            ->selectRaw('MIN(id) as id')
+            ->groupBy('name', 'model')
+            ->pluck('id');
+
+        $this->customFieldGroups = CustomFieldGroup::query()
+            ->whereIn('id', $canonicalGroupIds)
+            ->orderBy('name')
+            ->get();
         $this->types = ['text', 'number', 'password', 'textarea', 'select', 'radio', 'date', 'checkbox', 'file'];
 
         return view('custom-fields.create-custom-field-modal', $this->data);
@@ -57,13 +66,18 @@ class CustomFieldController extends AccountBaseController
      */
     public function store(StoreCustomField $request)
     {
+        $targetGroup = CustomFieldGroup::findOrFail((int) $request->module);
+        $canonicalGroupId = CustomFieldGroup::query()
+            ->where('name', $targetGroup->name)
+            ->where('model', $targetGroup->model)
+            ->min('id') ?: $targetGroup->id;
 
-        $name = CustomField::generateUniqueSlug($request->get('label'), $request->module);
+        $name = CustomField::generateUniqueSlug($request->get('label'), $canonicalGroupId);
         $group = [
             'fields' => [
                 [
                     'name' => $name,
-                    'custom_field_group_id' => $request->module,
+                    'custom_field_group_id' => $canonicalGroupId,
                     'label' => $request->get('label'),
                     'type' => $request->get('type'),
                     'required' => $request->get('required'),
@@ -84,7 +98,7 @@ class CustomFieldController extends AccountBaseController
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -121,13 +135,14 @@ class CustomFieldController extends AccountBaseController
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {
         // Find the custom field
         $field = CustomField::findOrFail($id);
         $module = $field->fieldGroup->name;
+
         // Delete the custom field
         $field->delete();
 

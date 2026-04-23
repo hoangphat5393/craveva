@@ -228,7 +228,7 @@ Vendor
 
 ## 6. Related Internal Docs
 
-- Warehouse UAT (E2E + gap): `FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md` (stub tên cũ: `WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`)
+- Warehouse UAT (E2E + gap): `FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`
 - Warehouse flow (Vietnamese): `FUNC_LOGIC/WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`
 - Master guide: `FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`
 

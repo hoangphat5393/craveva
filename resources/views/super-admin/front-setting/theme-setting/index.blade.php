@@ -32,8 +32,8 @@
 
         .pickr-trigger {
             display: inline-flex;
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1.25rem;
+            height: 1.25rem;
             border-radius: 4px;
             border: 1px solid #d6d6d6;
             cursor: pointer;

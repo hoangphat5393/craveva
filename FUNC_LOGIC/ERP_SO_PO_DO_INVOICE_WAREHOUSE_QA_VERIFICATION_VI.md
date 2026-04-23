@@ -1,3 +1,105 @@
+# ERP QA Verification - SO / PO / Sales DO / Invoice / Warehouse
+
+**Cap nhat:** 2026-04-23  
+**Pham vi:** quy trinh ban (SO -> Sales DO -> Invoice), quy trinh mua (PO/GRN -> Bill), kho da lo (batch/expiry), doi chieu ton kho thuc te.
+
+---
+
+## 1) Nguon su that va quy uoc nghiep vu
+
+- Sales outbound mode `shipment`: ton kho giam khi **Ship Sales DO**, invoice khong tru ton lan 2.
+- Purchase inbound: chi mot su kien canonical (`PO delivered` hoac `GRN received`) de tranh double inbound.
+- Ton kho van hanh de doi chieu:
+    - ledger: `stock_movements`
+    - on-hand batch: `warehouse_product_batches`
+    - aggregate: `warehouse_product_stock`
+- Man Inventory hien tai da dong bo KPI ton tu du lieu warehouse batch (khong con doc theo snapshot legacy de tinh KPI chinh).
+
+---
+
+## 2) Ket qua audit hien tai (post-fix)
+
+### A. Sales DO batch identity
+
+- Da fix theo business rule: Sales DO reserve/ship truyen day du identity lo.
+- Luu tren item:
+    - `warehouse_batch_id` (uu tien)
+    - `batch_number`
+    - `expiration_date`
+- UI bat buoc chon batch theo kho + san pham, hien thi `batch | expiry | available`.
+
+**Ky vong pass:** khong con loi `Batch row not found for reservation` khi batch ton tai va du ton.
+
+### B. Outbound posting
+
+- Ship DO tao `stock_movements` outbound reference `SalesDo`.
+- `outbound_stock_applied` duoc danh dau tren header de dam bao idempotent.
+- Reservation sau ship chuyen `consumed`.
+
+### C. Invoice orchestration
+
+- Mode `shipment`: invoice khong post outbound.
+- Mode `invoice`: invoice post outbound theo cau hinh.
+
+### D. Purchase inbound
+
+- PO delivered / GRN received post inbound theo cau hinh canonical.
+- Bill NCC (`PurchaseBill`) la AP, khong tu dong post movement kho.
+
+---
+
+## 3) Test da chay
+
+- `SalesDoServiceLifecycleTest`
+- `WarehouseUpgradeP0Test`
+- `PurchaseInboundStockFlowTest`
+
+Trang thai lan cap nhat nay: **pass**.
+
+---
+
+## 4) Script demo PM (10 phut)
+
+Tai lieu demo chi tiet:  
+`FUNC_LOGIC/PM_DEMO_SO_DO_PO_INVOICE_3PM_VI.md`
+
+Tom tat:
+
+1. Tao SO
+2. Tao Sales DO, chon batch identity day du
+3. Confirm -> Ship (ton giam)
+4. Tao Invoice tu SO (mode shipment: khong tru ton them)
+5. Tao PO -> inbound theo canonical event
+6. Tao Bill NCC (AP, khong tao movement kho)
+
+---
+
+## 5) Checklist pass/fail truoc go-live
+
+- [ ] Ship DO tao outbound movement dung qty, dung kho, dung batch/expiry.
+- [ ] Reservation consumed sau ship.
+- [ ] Inventory KPI giam/tang dong bo voi movement.
+- [ ] Invoice khong double-deduct trong mode `shipment`.
+- [ ] Inbound mua khong bi nhap doi (chi 1 canonical event).
+- [ ] Bill NCC khong tao movement kho.
+
+---
+
+## 6) Cac loi canh bao nghiep vu (khong phai bug)
+
+- `Ship quantity cannot exceed remaining quantity`: ship qty > remaining qty.
+- `Please select a valid batch`: dong ship > 0 nhung chua chon batch identity hop le.
+- Neu PM thay ton tren man hinh khac movement, uu tien doi chieu theo `stock_movements` va batch tables.
+
+---
+
+## 7) Lien ket chuan
+
+- Quy trinh nghiep vu: `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
+- UAT E2E: `FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`
+- Master schema + migration state: `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`
+- Runbook + env: `FUNC_LOGIC/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`, `FUNC_LOGIC/WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`
+
 # ERP — Kiểm tra SO / PO / DO / Invoice / Multi-Warehouse / Inventory (codebase)
 
 **Ngày cập nhật:** 2026-04-09  

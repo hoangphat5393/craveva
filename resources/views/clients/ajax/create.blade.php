@@ -134,23 +134,27 @@
 
                     <div class="col-md-4">
                         <div class="form-group my-3">
-                            <label class="f-14 text-dark-grey mb-12 w-100 mt-3" for="usr">@lang('modules.client.clientCanLogin')</label>
-                            <div class="d-flex">
-                                <x-forms.radio fieldId="login-yes" :fieldLabel="__('app.yes')" fieldName="login" fieldValue="enable">
-                                </x-forms.radio>
-                                <x-forms.radio fieldId="login-no" :fieldLabel="__('app.no')" fieldValue="disable" fieldName="login" checked="true"></x-forms.radio>
-                            </div>
+                            <fieldset class="border-0 p-0 m-0">
+                                <legend class="f-14 text-dark-grey mb-12 w-100 mt-3">@lang('modules.client.clientCanLogin')</legend>
+                                <div class="d-flex">
+                                    <x-forms.radio fieldId="login-yes" :fieldLabel="__('app.yes')" fieldName="login" fieldValue="enable">
+                                    </x-forms.radio>
+                                    <x-forms.radio fieldId="login-no" :fieldLabel="__('app.no')" fieldValue="disable" fieldName="login" checked="true"></x-forms.radio>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group my-3">
-                            <label class="f-14 text-dark-grey mb-12 w-100 mt-3" for="usr">@lang('modules.emailSettings.emailNotifications')</label>
-                            <div class="d-flex">
-                                <x-forms.radio fieldId="notification-yes" :fieldLabel="__('app.yes')" fieldValue="yes" fieldName="sendMail" checked="true">
-                                </x-forms.radio>
-                                <x-forms.radio fieldId="notification-no" :fieldLabel="__('app.no')" fieldValue="no" fieldName="sendMail">
-                                </x-forms.radio>
-                            </div>
+                            <fieldset class="border-0 p-0 m-0">
+                                <legend class="f-14 text-dark-grey mb-12 w-100 mt-3">@lang('modules.emailSettings.emailNotifications')</legend>
+                                <div class="d-flex">
+                                    <x-forms.radio fieldId="notification-yes" :fieldLabel="__('app.yes')" fieldValue="yes" fieldName="sendMail" checked="true">
+                                    </x-forms.radio>
+                                    <x-forms.radio fieldId="notification-no" :fieldLabel="__('app.no')" fieldValue="no" fieldName="sendMail">
+                                    </x-forms.radio>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
 

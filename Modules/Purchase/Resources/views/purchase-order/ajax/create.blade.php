@@ -363,6 +363,30 @@
 
 <script src="{{ asset('vendor/jquery/dropzone.min.js') }}"></script>
 <script>
+    function getReadableApiError(err) {
+        if (err && err.errors && typeof err.errors === 'object') {
+            var messages = [];
+            Object.keys(err.errors).forEach(function(key) {
+                var val = err.errors[key];
+                if (Array.isArray(val)) {
+                    val.forEach(function(item) {
+                        if (item) {
+                            messages.push(item);
+                        }
+                    });
+                } else if (val) {
+                    messages.push(val);
+                }
+            });
+
+            if (messages.length) {
+                return messages.join('\n');
+            }
+        }
+
+        return (err && err.message) ? err.message : "@lang('messages.somethingWentWrong')";
+    }
+
     $(document).ready(function() {
 
         $('#products').removeClass('d-none');
@@ -399,10 +423,10 @@
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
-                        text: err.message,
+                        text: getReadableApiError(err),
                         toast: true,
                         position: 'top-end',
-                        timer: 4000,
+                        timer: 7000,
                         showConfirmButton: false
                     });
                 }
@@ -548,10 +572,10 @@
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
-                        text: err.message,
+                        text: getReadableApiError(err),
                         toast: true,
                         position: 'top-end',
-                        timer: 4000,
+                        timer: 7000,
                         showConfirmButton: false
                     });
                 }
@@ -708,10 +732,10 @@
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
-                        text: err.message,
+                        text: getReadableApiError(err),
                         toast: true,
                         position: 'top-end',
-                        timer: 4000,
+                        timer: 7000,
                         showConfirmButton: false
                     });
                 }
@@ -804,10 +828,10 @@
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'error',
-                    text: err.message,
+                    text: getReadableApiError(err),
                     toast: true,
                     position: 'top-end',
-                    timer: 4000,
+                    timer: 7000,
                     showConfirmButton: false
                 });
             }
@@ -851,10 +875,10 @@
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'error',
-                    text: err.message,
+                    text: getReadableApiError(err),
                     toast: true,
                     position: 'top-end',
-                    timer: 4000,
+                    timer: 7000,
                     showConfirmButton: false
                 });
             }

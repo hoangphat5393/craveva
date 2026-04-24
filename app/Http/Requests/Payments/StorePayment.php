@@ -35,7 +35,6 @@ class StorePayment extends CoreRequest
 
             if ($invoice->amountDue() == 0) {
                 $rules['amount'] = 'required|numeric';
-
             } else {
                 $rules['amount'] = 'required|numeric|min:1';
             }
@@ -62,6 +61,18 @@ class StorePayment extends CoreRequest
         return [
             'invoice_id' => __('app.invoice'),
             'project_id' => __('app.project'),
+            'offline_methods' => __('modules.payments.offlinePaymentMethod'),
+            'paid_on' => __('modules.payments.paidOn'),
+            'amount' => __('app.amount'),
+            'gateway' => __('modules.payments.paymentGateway'),
+            'transaction_id' => __('modules.payments.transactionId'),
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'offline_methods.required_if' => __('messages.selectOfflineMethod'),
         ];
     }
 }

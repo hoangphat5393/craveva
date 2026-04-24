@@ -31,7 +31,7 @@ class UpdatePayments extends CoreRequest
 
         if ($this->transaction_id) {
             // It need to be unique for all the company
-            $rules['transaction_id'] = 'unique:payments,transaction_id,'.$this->route('payment').',id,company_id,'.company()->id;
+            $rules['transaction_id'] = 'unique:payments,transaction_id,' . $this->route('payment') . ',id,company_id,' . company()->id;
         }
 
         return $rules;
@@ -41,6 +41,18 @@ class UpdatePayments extends CoreRequest
     {
         return [
             'invoice_id.required' => 'Select the invoice you want to add payment for.',
+            'offline_methods.required_if' => __('messages.selectOfflineMethod'),
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'offline_methods' => __('modules.payments.offlinePaymentMethod'),
+            'paid_on' => __('modules.payments.paidOn'),
+            'amount' => __('app.amount'),
+            'gateway' => __('modules.payments.paymentGateway'),
+            'transaction_id' => __('modules.payments.transactionId'),
         ];
     }
 }

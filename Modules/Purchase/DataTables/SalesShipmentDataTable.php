@@ -53,7 +53,7 @@ class SalesShipmentDataTable extends BaseDataTable
     {
         $prefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do';
 
-        return $prefix.'.'.$action;
+        return $prefix . '.' . $action;
     }
 
     public function dataTable($query)
@@ -66,39 +66,43 @@ class SalesShipmentDataTable extends BaseDataTable
                 $canUpdate = FlowPermission::allowsAlias('sales_do.update');
                 $canShip = FlowPermission::allowsAlias('sales_do.ship');
                 $canCancel = FlowPermission::allowsAlias('sales_do.cancel');
+                $canAddInvoice = in_array(user()->permission('add_invoices'), ['all', 'added'], true);
 
                 $action = '<div class="task_view"><div class="dropdown">';
                 $action .= '<a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                    id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="icon-options-vertical icons"></i></a>';
-                $action .= '<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
-                $action .= '<a href="'.route($showRoute, $row->id).'" class="dropdown-item f-14 text-dark"><i class="fa fa-eye mr-2"></i>'.trans('app.view').'</a>';
+                $action .= '<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                $action .= '<a href="' . route($showRoute, $row->id) . '" class="dropdown-item f-14 text-dark"><i class="fa fa-eye mr-2"></i>' . trans('app.view') . '</a>';
 
                 if ($canUpdate && ! in_array($row->status, ['shipped', 'delivered', 'cancelled'], true)) {
-                    $action .= '<a class="dropdown-item f-14 text-dark openRightModal" href="'.route($editRoute, $row->id).'"><i class="fa fa-edit mr-2"></i>'.trans('app.edit').'</a>';
+                    $action .= '<a class="dropdown-item f-14 text-dark openRightModal" href="' . route($editRoute, $row->id) . '"><i class="fa fa-edit mr-2"></i>' . trans('app.edit') . '</a>';
                 }
 
                 if ($canShip && $row->status === 'draft') {
-                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-confirm" data-id="'.$row->id.'" href="javascript:;"><i class="fa fa-check mr-2"></i>'.trans('app.confirm').'</a>';
+                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-confirm" data-id="' . $row->id . '" href="javascript:;"><i class="fa fa-check mr-2"></i>' . trans('app.confirm') . '</a>';
                 }
                 if ($canShip && in_array($row->status, ['draft', 'confirmed'], true)) {
-                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-ship" data-id="'.$row->id.'" href="javascript:;"><i class="fa fa-truck mr-2"></i>'.trans('purchase::app.ship').'</a>';
+                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-ship" data-id="' . $row->id . '" href="javascript:;"><i class="fa fa-truck mr-2"></i>' . trans('purchase::app.ship') . '</a>';
                 }
                 if ($canShip && $row->status === 'shipped') {
-                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-deliver" data-id="'.$row->id.'" href="javascript:;"><i class="fa fa-box mr-2"></i>'.trans('purchase::modules.salesShipment.delivered').'</a>';
+                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-deliver" data-id="' . $row->id . '" href="javascript:;"><i class="fa fa-box mr-2"></i>' . trans('purchase::modules.salesShipment.delivered') . '</a>';
                 }
                 if ($canCancel && in_array($row->status, ['shipped', 'delivered'], true)) {
-                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-reverse" data-id="'.$row->id.'" href="javascript:;"><i class="fa fa-undo mr-2"></i>'.trans('purchase::modules.salesShipment.reverse').'</a>';
+                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-reverse" data-id="' . $row->id . '" href="javascript:;"><i class="fa fa-undo mr-2"></i>' . trans('purchase::modules.salesShipment.reverse') . '</a>';
                 }
                 if ($canCancel && $row->status !== 'cancelled') {
-                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-cancel" data-id="'.$row->id.'" href="javascript:;"><i class="fa fa-ban mr-2"></i>'.trans('app.cancel').'</a>';
+                    $action .= '<a class="dropdown-item f-14 text-dark sales-shipment-cancel" data-id="' . $row->id . '" href="javascript:;"><i class="fa fa-ban mr-2"></i>' . trans('app.cancel') . '</a>';
+                }
+                if ($canAddInvoice && in_array($row->status, ['shipped', 'delivered'], true)) {
+                    $action .= '<a class="dropdown-item f-14 text-dark" href="' . route('invoices.create', ['sales_do_id' => $row->id, 'order_id' => $row->order_id]) . '"><i class="fa fa-receipt mr-2"></i>' . trans('modules.invoices.addInvoice') . '</a>';
                 }
                 $action .= '</div></div></div>';
 
                 return $action;
             })
-            ->editColumn('shipment_number', fn ($row) => '<a href="'.route($this->salesDoRouteName('show'), $row->id).'">'.$row->shipment_number.'</a>')
-            ->editColumn('shipment_date', fn ($row) => Carbon::parse($row->shipment_date)->translatedFormat(company()->date_format))
+            ->editColumn('shipment_number', fn($row) => '<a href="' . route($this->salesDoRouteName('show'), $row->id) . '">' . $row->shipment_number . '</a>')
+            ->editColumn('shipment_date', fn($row) => Carbon::parse($row->shipment_date)->translatedFormat(company()->date_format))
             ->editColumn('warehouse_display', function ($row) {
                 $code = trim((string) ($row->wh_code ?? ''));
                 $name = trim((string) ($row->wh_name ?? ''));
@@ -107,7 +111,7 @@ class SalesShipmentDataTable extends BaseDataTable
                     return '—';
                 }
 
-                return $code !== '' ? $name.' ('.$code.')' : $name;
+                return $code !== '' ? $name . ' (' . $code . ')' : $name;
             })
             ->editColumn('status', function ($row) {
                 $class = match ($row->status) {
@@ -119,7 +123,7 @@ class SalesShipmentDataTable extends BaseDataTable
                     default => 'text-dark border-dark',
                 };
 
-                return '<span class="unpaid rounded f-12 '.$class.'">'.trans('purchase::modules.salesShipment.'.$row->status).'</span>';
+                return '<span class="unpaid rounded f-12 ' . $class . '">' . trans('purchase::modules.salesShipment.' . $row->status) . '</span>';
             })
             ->addIndexColumn()
             ->rawColumns(['shipment_number', 'status', 'action']);
@@ -136,34 +140,34 @@ class SalesShipmentDataTable extends BaseDataTable
         $model = new $headerModelClass;
         $request = $this->request();
         $query = $model->newQuery()
-            ->select($headerTable.'.*', 'orders.order_number')
-            ->selectRaw($headerTable.'.'.$numberColumn.' as shipment_number')
-            ->selectRaw($headerTable.'.'.$dateColumn.' as shipment_date')
+            ->select($headerTable . '.*', 'orders.order_number')
+            ->selectRaw($headerTable . '.' . $numberColumn . ' as shipment_number')
+            ->selectRaw($headerTable . '.' . $dateColumn . ' as shipment_date')
             ->selectRaw('warehouses.code as wh_code')
             ->selectRaw('warehouses.name as wh_name')
-            ->leftJoin('orders', 'orders.id', '=', $headerTable.'.order_id')
-            ->leftJoin('warehouses', 'warehouses.id', '=', $headerTable.'.warehouse_id');
+            ->leftJoin('orders', 'orders.id', '=', $headerTable . '.order_id')
+            ->leftJoin('warehouses', 'warehouses.id', '=', $headerTable . '.warehouse_id');
 
         $company = company();
         if ($company instanceof Company) {
-            $query->where($headerTable.'.company_id', $company->id);
+            $query->where($headerTable . '.company_id', $company->id);
         }
 
         if ($request->searchText != '') {
             $search = $request->searchText;
             $query->where(function ($q) use ($search) {
-                $q->where(SalesDoRuntime::headerTable().'.'.SalesDoRuntime::numberColumn(), 'like', '%'.$search.'%')
-                    ->orWhere('orders.order_number', 'like', '%'.$search.'%')
-                    ->orWhere('warehouses.name', 'like', '%'.$search.'%')
-                    ->orWhere('warehouses.code', 'like', '%'.$search.'%');
+                $q->where(SalesDoRuntime::headerTable() . '.' . SalesDoRuntime::numberColumn(), 'like', '%' . $search . '%')
+                    ->orWhere('orders.order_number', 'like', '%' . $search . '%')
+                    ->orWhere('warehouses.name', 'like', '%' . $search . '%')
+                    ->orWhere('warehouses.code', 'like', '%' . $search . '%');
             });
         }
 
         if ($request->startDate) {
-            $query->where(DB::raw('DATE('.$headerTable.'.'.$dateColumn.')'), '>=', Carbon::createFromFormat(company()->date_format, $request->startDate)->toDateString());
+            $query->where(DB::raw('DATE(' . $headerTable . '.' . $dateColumn . ')'), '>=', Carbon::createFromFormat(company()->date_format, $request->startDate)->toDateString());
         }
         if ($request->endDate) {
-            $query->where(DB::raw('DATE('.$headerTable.'.'.$dateColumn.')'), '<=', Carbon::createFromFormat(company()->date_format, $request->endDate)->toDateString());
+            $query->where(DB::raw('DATE(' . $headerTable . '.' . $dateColumn . ')'), '<=', Carbon::createFromFormat(company()->date_format, $request->endDate)->toDateString());
         }
 
         return $query;
@@ -177,7 +181,7 @@ class SalesShipmentDataTable extends BaseDataTable
                     window.LaravelDataTables["sales-shipment-table"].buttons().container().appendTo("#table-actions")
                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
     }
 
     protected function getColumns()
@@ -191,12 +195,12 @@ class SalesShipmentDataTable extends BaseDataTable
 
         return [
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false],
-            __('app.id') => ['data' => 'id', 'name' => $headerTable.'.id', 'visible' => false],
+            __('app.id') => ['data' => 'id', 'name' => $headerTable . '.id', 'visible' => false],
             $salesDoColumnLabel => ['data' => 'shipment_number', 'name' => 'shipment_number'],
             __('app.orderNumber') => ['data' => 'order_number', 'name' => 'orders.order_number'],
             __('purchase::modules.deliveryOrder.warehouse') => ['data' => 'warehouse_display', 'name' => 'warehouses.name'],
             __('app.date') => ['data' => 'shipment_date', 'name' => 'shipment_date'],
-            __('app.status') => ['data' => 'status', 'name' => $headerTable.'.status'],
+            __('app.status') => ['data' => 'status', 'name' => $headerTable . '.status'],
             Column::computed('action', __('app.action'))->exportable(false)->printable(false)->orderable(false)->searchable(false)->addClass('text-right pr-20'),
         ];
     }

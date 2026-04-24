@@ -35,7 +35,7 @@
                     }
                     $missingBatchOptions = $batchOptions->isEmpty();
                 @endphp
-                <tr>
+                <tr data-requires-batch="{{ $batchOptions->isNotEmpty() ? '1' : '0' }}">
                     <td>
                         {{ $item->item_name }}
                         <input type="hidden" name="order_item_id[]" value="{{ $item->id }}">
@@ -110,21 +110,21 @@
             const selectedBatchId = String($batchSelect.val() || '').trim();
             const $selectedOption = $batchSelect.find('option:selected');
             const availableQty = parseFloat($selectedOption.data('available-quantity') || '0');
-            const hasBatchChoices = $batchSelect.find('option[value!=""]').length > 0;
+            const requiresBatch = String($row.attr('data-requires-batch') || '0') === '1';
             const $err = $row.find('.shipment-batch-error');
 
             if (qty <= 0) {
                 return;
             }
 
-            if (hasBatchChoices && !selectedBatchId) {
+            if (requiresBatch && !selectedBatchId) {
                 const msg = `Please select batch for "${itemName}" before shipping.`;
                 $err.text(msg).removeClass('d-none');
                 firstError = firstError || msg;
                 return;
             }
 
-            if (hasBatchChoices && selectedBatchId && Number.isFinite(availableQty) && qty > availableQty) {
+            if (requiresBatch && selectedBatchId && Number.isFinite(availableQty) && qty > availableQty) {
                 const msg = `Ship qty for "${itemName}" exceeds selected batch available (${availableQty.toFixed(4)}).`;
                 $err.text(msg).removeClass('d-none');
                 firstError = firstError || msg;

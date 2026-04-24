@@ -27,10 +27,17 @@
 | Luồng code SO/Invoice/PO (English, deep)                                        | [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                                                                                        |
 | Audit đa kho (lịch sử + note Scope B)                                           | [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md)                                                                                      |
 | Refactor **Sales DO / GRN** (quyết định + kế hoạch + tracker)                   | [`SO_DO_PO_GRN_REFACTOR_VI.md`](SO_DO_PO_GRN_REFACTOR_VI.md)                                                                                              |
+| Demo nhanh inventory trigger (PO/GRN/Bill, SO/DO/Invoice)                       | [`../FUNC_IMPORT/SO_PO_INVENTORY_IMPLEMENTATION_TRACKER.md`](../FUNC_IMPORT/SO_PO_INVENTORY_IMPLEMENTATION_TRACKER.md)                                    |
+| Định hướng nghiệp vụ inventory + batch                                          | [`../FUNC_IMPROVE/INVENTORY_BUSINESS_IMPROVE.md`](../FUNC_IMPROVE/INVENTORY_BUSINESS_IMPROVE.md)                                                          |
 
 **Menu Operations (Warehouse):** Warehouses, Adjust stock, Transfer stock, Stock movements — chi tiết & chỗ vào Import / Cài đặt luồng kho: [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md) **Phụ lục C** · **Kế hoạch giai đoạn UAT:** **§6**.
 
 **Legacy docs đã loại bỏ khỏi repo:** dùng trực tiếp các file canonical ở bảng trên.
+
+**Legacy theo chu de inventory:** gom theo 2 file canonical:
+
+- Tracker/ket qua test staging: `../FUNC_IMPORT/SO_PO_INVENTORY_IMPLEMENTATION_TRACKER.md`
+- Huong nghiep vu + UX/UI: `../FUNC_IMPROVE/INVENTORY_BUSINESS_IMPROVE.md`
 
 ---
 

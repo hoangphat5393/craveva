@@ -140,7 +140,7 @@ Chuẩn hóa nghiệp vụ kho theo 2 lớp dữ liệu:
 - [x] Thêm test command dedupe để regression-safe.
 - [x] Cứng hóa UX/UI ở màn Sales DO (batch selection):
     - chặn bấm Save khi chưa chọn warehouse,
-    - validate theo từng dòng: chỉ bắt batch khi dòng có batch khả dụng,
+    - validate theo từng dòng: chỉ bắt batch khi server render `data-requires-batch=1` (đồng bộ với dropdown batch),
     - cảnh báo sớm nếu `ship qty` vượt `available` của batch đã chọn,
     - với dòng không có batch khả dụng: cho phép ship như non-batch, chỉ hiện cảnh báo hướng dẫn.
 - [x] Cứng hóa backend validation cho Sales DO:
@@ -208,6 +208,34 @@ Chuẩn hóa nghiệp vụ kho theo 2 lớp dữ liệu:
     - guard ở UI,
     - guard ở backend,
     - unique index ở DB để chống trùng identity.
+
+---
+
+## Stock Trigger Matrix (staging chot 2026-04-24)
+
+### PO / GRN / Bill
+
+- `PO` tao xong: **chua cong kho** neu `delivery_status` cua PO van `not_started`.
+- `GRN` khi status = `received`: **cong kho (+)** vao `stock_movements` (inbound).
+- `Bill` (`draft/open/paid`): **khong cong/tru kho**; chi tac dong tai chinh.
+
+### SO / DO / Invoice
+
+- `Sales DO` khi status = `shipped`: **tru kho (-)** (apply outbound).
+- `Sales DO` status `delivered`: khong tru them lan nua (chi danh dau giao xong).
+- `Invoice` (`unpaid/paid`): **khong cong/tru kho** trong flow hien tai.
+
+### Chung tu test xac nhan
+
+- `PO#002` (SKU `COM123`) -> `GRN 003` (`received`) -> tao movement inbound `+2` (`product_id=8449`, `warehouse=78`), sau do tao `BL#002` khong phat sinh movement moi.
+- `ODR#004` -> `SS-000013` (`shipped`) -> tao movement outbound `-1`.
+
+---
+
+## Tai lieu canonical cho demo nhanh
+
+- Tai lieu theo doi implementation + test moi nhat: `FUNC_IMPORT/SO_PO_INVENTORY_IMPLEMENTATION_TRACKER.md`.
+- File nay giu vai tro business direction va quyet dinh UI/UX; khi can ket qua test staging thi uu tien tracker ben tren.
 
 ---
 

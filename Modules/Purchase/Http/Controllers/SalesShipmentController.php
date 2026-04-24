@@ -6,6 +6,7 @@ use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Order;
 use App\Models\OrderItems;
+use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -288,23 +289,25 @@ class SalesShipmentController extends AccountBaseController
                 ->keyBy('id');
         }
 
-        $orderProductIds = collect($validated['product_id'] ?? [])
-            ->filter(fn($id) => ! empty($id))
-            ->map(fn($id) => (int) $id)
-            ->unique()
-            ->values();
-
-        $productsWithBatchInWarehouse = collect();
-        if ($orderProductIds->isNotEmpty()) {
-            $productsWithBatchInWarehouse = WarehouseProductBatch::query()
-                ->where('company_id', $this->company?->id)
-                ->where('warehouse_id', (int) $validated['warehouse_id'])
-                ->whereIn('product_id', $orderProductIds->all())
-                ->distinct()
-                ->pluck('product_id')
-                ->map(fn($id) => (int) $id)
-                ->values();
+        $selectedBatchIdsForValidation = collect();
+        if ($shipmentId) {
+            $existingShipment = $this->queryByCompany()->with('items')->find($shipmentId);
+            if ($existingShipment && $existingShipment->relationLoaded('items')) {
+                $selectedBatchIdsForValidation = $existingShipment->items
+                    ->pluck('warehouse_batch_id')
+                    ->filter()
+                    ->map(fn($id) => (int) $id)
+                    ->unique()
+                    ->values();
+            }
         }
+
+        $trackedProductIds = Product::query()
+            ->whereIn('id', collect($validated['product_id'] ?? [])->filter()->map(fn($id) => (int) $id)->unique()->values()->all())
+            ->where('track_inventory', 1)
+            ->pluck('id')
+            ->map(fn($id) => (int) $id)
+            ->values();
 
         foreach ($validated['order_item_id'] as $idx => $orderItemId) {
             $orderItem = $order->items->firstWhere('id', (int) $orderItemId);
@@ -325,7 +328,13 @@ class SalesShipmentController extends AccountBaseController
             }
 
             $batchId = (int) ($validated['warehouse_batch_id'][$idx] ?? 0);
-            $requiresBatch = ! empty($lineProductId) && $productsWithBatchInWarehouse->contains((int) $lineProductId);
+            $requiresBatch = ! empty($lineProductId)
+                && $trackedProductIds->contains((int) $lineProductId)
+                && $this->productHasSelectableBatches(
+                    (int) $validated['warehouse_id'],
+                    (int) $lineProductId,
+                    $selectedBatchIdsForValidation
+                );
             if ($requestQty > 0 && $requiresBatch && $batchId <= 0) {
                 abort(422, 'Please select a valid batch (batch + expiry) before shipping.');
             }
@@ -489,6 +498,17 @@ class SalesShipmentController extends AccountBaseController
             return $result;
         }
 
+        $trackedProductIds = Product::query()
+            ->whereIn('id', $productIds->all())
+            ->where('track_inventory', 1)
+            ->pluck('id')
+            ->map(fn($id) => (int) $id)
+            ->values();
+
+        if ($trackedProductIds->isEmpty()) {
+            return $result;
+        }
+
         $selectedBatchIds = collect();
         if ($shipment && $shipment->relationLoaded('items')) {
             $selectedBatchIds = $shipment->items
@@ -502,7 +522,7 @@ class SalesShipmentController extends AccountBaseController
         $batches = WarehouseProductBatch::query()
             ->where('company_id', $this->company?->id)
             ->where('warehouse_id', $warehouseId)
-            ->whereIn('product_id', $productIds->all())
+            ->whereIn('product_id', $trackedProductIds->all())
             ->where(function ($q) use ($selectedBatchIds) {
                 $q->whereRaw('(quantity - reserved_quantity) > 0');
                 if ($selectedBatchIds->isNotEmpty()) {
@@ -536,6 +556,35 @@ class SalesShipmentController extends AccountBaseController
         }
 
         return $result;
+    }
+
+    /**
+     * Matches batch dropdown logic: a line needs batch selection only when at least one
+     * warehouse batch row exists with available qty, or (when editing) the DO already references a batch row.
+     */
+    protected function productHasSelectableBatches(int $warehouseId, int $productId, $selectedBatchIds): bool
+    {
+        if ($warehouseId <= 0 || $productId <= 0) {
+            return false;
+        }
+
+        $selected = collect($selectedBatchIds)
+            ->filter()
+            ->map(fn($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        return WarehouseProductBatch::query()
+            ->where('company_id', $this->company?->id)
+            ->where('warehouse_id', $warehouseId)
+            ->where('product_id', $productId)
+            ->where(function ($q) use ($selected) {
+                $q->whereRaw('(quantity - reserved_quantity) > 0');
+                if ($selected->isNotEmpty()) {
+                    $q->orWhereIn('id', $selected->all());
+                }
+            })
+            ->exists();
     }
 
     protected function queryByCompany()

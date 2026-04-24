@@ -44,4 +44,28 @@ class StoreRequest extends FormRequest
     {
         return true;
     }
+
+    public function messages(): array
+    {
+        return [
+            'vendor_id.required' => __('validation.required', ['attribute' => __('purchase::app.menu.vendor')]),
+            'purchase_order_number.required' => __('validation.required', ['attribute' => __('purchase::modules.order.orderNumber')]),
+            'purchase_date.required' => __('validation.required', ['attribute' => __('purchase::modules.order.purchaseDate')]),
+            'expected_date.required' => __('validation.required', ['attribute' => __('purchase::modules.order.expectedDate')]),
+            'exchange_rate.required' => __('validation.required', ['attribute' => __('purchase::modules.order.exchangeRate')]),
+            'warehouse_id.exists' => __('validation.exists', ['attribute' => __('purchase::app.warehouse')]),
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'vendor_id' => __('purchase::app.menu.vendor'),
+            'purchase_order_number' => __('purchase::modules.order.orderNumber'),
+            'purchase_date' => __('purchase::modules.order.purchaseDate'),
+            'expected_date' => __('purchase::modules.order.expectedDate'),
+            'exchange_rate' => __('purchase::modules.order.exchangeRate'),
+            'warehouse_id' => __('purchase::app.warehouse'),
+        ];
+    }
 }

@@ -70,7 +70,7 @@ class WarehouseController extends AccountBaseController
         }
 
         if ($request->filled('search')) {
-            $term = '%'.$request->search.'%';
+            $term = '%' . $request->search . '%';
             $query->where(function ($q) use ($term) {
                 $q->where('name', 'like', $term)
                     ->orWhere('code', 'like', $term)
@@ -181,7 +181,7 @@ class WarehouseController extends AccountBaseController
         $addPermission = user()->permission('add_warehouses');
         abort_if(! in_array($addPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
 
-        $this->pageTitle = __('app.importExcel').' '.__('warehouse::app.warehouse');
+        $this->pageTitle = __('app.importExcel') . ' ' . __('warehouse::app.warehouse');
         $this->view = 'warehouse::ajax.import';
 
         if (request()->ajax()) {
@@ -229,7 +229,7 @@ class WarehouseController extends AccountBaseController
         $batch = $this->importJobProcessChunked($request, WarehouseImport::class, ImportWarehouseChunkJob::class, $chunkSize);
         $batchId = data_get($batch, 'id');
         if ($batchId) {
-            Cache::put('import_metrics_'.$batchId, [
+            Cache::put('import_metrics_' . $batchId, [
                 'created' => 0,
                 'updated' => 0,
                 'skipped' => 0,
@@ -255,6 +255,21 @@ class WarehouseController extends AccountBaseController
             'warehouse_type' => 'nullable|in:normal,locked,scrap,transit',
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
+        ], [
+            'name.required' => __('The warehouse name field is required.'),
+            'name.max' => __('The warehouse name may not be greater than :max characters.'),
+            'code.max' => __('The warehouse code may not be greater than :max characters.'),
+            'code.unique' => __('The warehouse code has already been taken.'),
+            'warehouse_type.in' => __('The selected warehouse type is invalid.'),
+            'address.max' => __('The address may not be greater than :max characters.'),
+            'status.required' => __('The status field is required.'),
+            'status.in' => __('The selected status is invalid.'),
+        ], [
+            'name' => __('warehouse name'),
+            'code' => __('warehouse code'),
+            'warehouse_type' => __('warehouse type'),
+            'address' => __('address'),
+            'status' => __('status'),
         ]);
 
         $companyId = $this->warehouseCompanyId();
@@ -355,10 +370,25 @@ class WarehouseController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50|unique:warehouses,code,'.$id,
+            'code' => 'nullable|string|max:50|unique:warehouses,code,' . $id,
             'warehouse_type' => 'nullable|in:normal,locked,scrap,transit',
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
+        ], [
+            'name.required' => __('The warehouse name field is required.'),
+            'name.max' => __('The warehouse name may not be greater than :max characters.'),
+            'code.max' => __('The warehouse code may not be greater than :max characters.'),
+            'code.unique' => __('The warehouse code has already been taken.'),
+            'warehouse_type.in' => __('The selected warehouse type is invalid.'),
+            'address.max' => __('The address may not be greater than :max characters.'),
+            'status.required' => __('The status field is required.'),
+            'status.in' => __('The selected status is invalid.'),
+        ], [
+            'name' => __('warehouse name'),
+            'code' => __('warehouse code'),
+            'warehouse_type' => __('warehouse type'),
+            'address' => __('address'),
+            'status' => __('status'),
         ]);
 
         try {
@@ -467,7 +497,7 @@ class WarehouseController extends AccountBaseController
         foreach ($warehouses as $warehouse) {
             $blockMessage = $this->deleteBlockedMessage($warehouse);
             if ($blockMessage !== null) {
-                return response()->json(Reply::error($warehouse->name.': '.$blockMessage), 422);
+                return response()->json(Reply::error($warehouse->name . ': ' . $blockMessage), 422);
             }
         }
 

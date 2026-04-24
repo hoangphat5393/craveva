@@ -102,18 +102,18 @@
                         <tr>
                             <td>{{ $loop->iteration + ($stocks->currentPage() - 1) * $stocks->perPage() }}</td>
                             <td>
-                                <span class="font-weight-semibold">{{ $stock->product->name }}</span>
-                                <br><small class="text-lightest">{{ $stock->product->sku }}</small>
+                                <span class="font-weight-semibold">{{ $stock->product?->name ?? 'Unknown product' }}</span>
+                                <br><small class="text-lightest">{{ $stock->product?->sku ?? '--' }}</small>
                             </td>
                             <td>
-                                {{ $stock->warehouse->name }}{{ $stock->warehouse->code ? ' (' . $stock->warehouse->code . ')' : '' }}
-                                @if ($stock->warehouse->is_default)
+                                {{ $stock->warehouse?->name ?? 'Unknown warehouse' }}{{ $stock->warehouse?->code ? ' (' . $stock->warehouse->code . ')' : '' }}
+                                @if ($stock->warehouse?->is_default)
                                     <span class="badge badge-light ml-1">@lang('warehouse::app.isDefault')</span>
                                 @endif
                             </td>
                             <td>
                                 <span class="badge badge-light">
-                                    @include('warehouse::partials.warehouse-type-label', ['type' => $stock->warehouse_type ?? ($stock->warehouse->warehouse_type ?? 'normal')])
+                                    @include('warehouse::partials.warehouse-type-label', ['type' => $stock->warehouse_type ?? ($stock->warehouse?->warehouse_type ?? 'normal')])
                                 </span>
                             </td>
                             <td>

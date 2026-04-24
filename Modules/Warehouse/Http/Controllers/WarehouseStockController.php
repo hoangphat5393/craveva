@@ -57,6 +57,8 @@ class WarehouseStockController extends AccountBaseController
             ->get();
 
         $stocks = WarehouseProductStock::with(['product', 'warehouse'])
+            ->whereHas('product')
+            ->whereHas('warehouse')
             ->when($warehouseId, function ($query) use ($warehouseId) {
                 return $query->where('warehouse_id', $warehouseId);
             })
@@ -136,6 +138,25 @@ class WarehouseStockController extends AccountBaseController
             'quantity' => 'required|numeric|min:0.01',
             'action' => 'nullable|in:add,remove',
             'reason' => 'nullable|string|max:255',
+        ], [
+            'warehouse_id.required' => __('The warehouse field is required.'),
+            'warehouse_id.exists' => __('The selected warehouse is invalid for this company.'),
+            'product_id.required' => __('The product field is required.'),
+            'product_id.exists' => __('The selected product is invalid for this company.'),
+            'type.required' => __('The stock movement type field is required.'),
+            'type.in' => __('The selected stock movement type is invalid.'),
+            'quantity.required' => __('The quantity field is required.'),
+            'quantity.numeric' => __('The quantity must be a number.'),
+            'quantity.min' => __('The quantity must be greater than 0.'),
+            'action.in' => __('The selected stock action is invalid.'),
+            'reason.max' => __('The reason may not be greater than :max characters.'),
+        ], [
+            'warehouse_id' => __('warehouse'),
+            'product_id' => __('product'),
+            'type' => __('stock movement type'),
+            'quantity' => __('quantity'),
+            'action' => __('stock action'),
+            'reason' => __('reason'),
         ]);
 
         try {

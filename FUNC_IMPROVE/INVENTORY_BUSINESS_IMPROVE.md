@@ -229,6 +229,10 @@ Chuẩn hóa nghiệp vụ kho theo 2 lớp dữ liệu:
 
 - `PO#002` (SKU `COM123`) -> `GRN 003` (`received`) -> tao movement inbound `+2` (`product_id=8449`, `warehouse=78`), sau do tao `BL#002` khong phat sinh movement moi.
 - `ODR#004` -> `SS-000013` (`shipped`) -> tao movement outbound `-1`.
+- Multi-warehouse sample:
+    - `PO#004` -> `GRN 005` (`received`, `warehouse=79/WHA`) -> movement inbound `id=7105`, qty `+1` (`warehouse_to_id=79`).
+    - `ODR#005` -> `SS-000015` (`shipped`, `warehouse=79/WHA`) -> movement outbound `id=7106`, qty `-1` (`warehouse_from_id=79`).
+    - Net bien dong SKU `COM123` tai `WHA` trong demo = `+1 - 1 = 0` (dung theo quy trinh).
 
 ---
 
@@ -287,3 +291,34 @@ Chuẩn hóa nghiệp vụ kho theo 2 lớp dữ liệu:
 
 - Cleanup apply:
     - `powershell -ExecutionPolicy Bypass -File .\scripts\demo-so-do-invoice.ps1 -Mode cleanup-apply`
+
+---
+
+## Ghi chu nghiep vu: Transfer Stock / Adjust Stock / Stock Movements
+
+### Muc dich tung man
+
+- `Transfer Stock`:
+    - Chuyen hang noi bo giua 2 kho (khong phai mua/ban).
+    - Tao 2 movement: `outbound` tai kho nguon + `inbound` tai kho dich.
+
+- `Adjust Stock`:
+    - Dieu chinh ton kho thu cong (kiem kho lech, hu hong, mat hang, nhap bu...).
+    - Day la thao tac manual, nguoi dung chu dong tao.
+
+- `Stock Movements`:
+    - So cai lich su bien dong kho de audit.
+    - Tap trung tat ca inbound/outbound tu ca luong tu dong va thao tac manual.
+
+### Trong flow SO/PO: cai nao tu dong, cai nao manual
+
+- Tu dong phat sinh:
+    - `PO -> GRN (status received)`: he thong cong kho (`inbound`).
+    - `SO -> Sales DO (status shipped)`: he thong tru kho (`outbound`).
+
+- Manual (nguoi dung tu tao):
+    - `Transfer Stock`
+    - `Adjust Stock`
+
+- Luu y:
+    - Bill/Invoice chu yeu la chung tu tai chinh, khong phai diem trigger chinh de cong/tru ton vat ly trong flow hien tai.

@@ -79,12 +79,13 @@
 
 ## 5) Test execution log (staging)
 
-| Time             | Test ID | Step                          | Result | Evidence URL                                            | Note                                                                                                                                                                                          |
-| ---------------- | ------- | ----------------------------- | ------ | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-04-24 14:14 | T1      | PO -> GRN -> Inventory +      | PASS   | /account/grn, /account/sales-do/13                      | GRN `002` chuyen `Received`; tao movement inbound id `7099`, qty `+10`, product `8448`, warehouse `78`.                                                                                       |
-| 2026-04-24 14:12 | T2      | SO -> Delivery -> Inventory - | PASS   | /account/orders/13, /account/sales-do/13                | SO `ODR#004` tao DO `SS-000013`, confirm + ship (Delivered); tao movement outbound id `7098`, qty `-1`, product `8448`, warehouse `78`.                                                       |
-| 2026-04-24 14:14 | T3      | Reconcile + / -               | PASS   | DB `stock_movements`                                    | Cung product `8448` va warehouse `78`: net bien dong moi = `+10 - 1 = +9`, dung logic PO inbound / SO outbound.                                                                               |
-| 2026-04-24 14:50 | T4      | PO(COM123) -> GRN -> Bill     | PASS   | /account/purchase-order/8, /account/grn, /account/bills | PO `PO#002` co SKU `COM123` qty `2`; GRN `003` doi `Received`; stock movement inbound id `7102` qty `+2` product `8449` kho `78`; Bill `BL#002` tao thanh cong (khong tao them movement kho). |
+| Time             | Test ID | Step                          | Result | Evidence URL                                                     | Note                                                                                                                                                                                                              |
+| ---------------- | ------- | ----------------------------- | ------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-04-24 14:14 | T1      | PO -> GRN -> Inventory +      | PASS   | /account/grn, /account/sales-do/13                               | GRN `002` chuyen `Received`; tao movement inbound id `7099`, qty `+10`, product `8448`, warehouse `78`.                                                                                                           |
+| 2026-04-24 14:12 | T2      | SO -> Delivery -> Inventory - | PASS   | /account/orders/13, /account/sales-do/13                         | SO `ODR#004` tao DO `SS-000013`, confirm + ship (Delivered); tao movement outbound id `7098`, qty `-1`, product `8448`, warehouse `78`.                                                                           |
+| 2026-04-24 14:14 | T3      | Reconcile + / -               | PASS   | DB `stock_movements`                                             | Cung product `8448` va warehouse `78`: net bien dong moi = `+10 - 1 = +9`, dung logic PO inbound / SO outbound.                                                                                                   |
+| 2026-04-24 14:50 | T4      | PO(COM123) -> GRN -> Bill     | PASS   | /account/purchase-order/8, /account/grn, /account/bills          | PO `PO#002` co SKU `COM123` qty `2`; GRN `003` doi `Received`; stock movement inbound id `7102` qty `+2` product `8449` kho `78`; Bill `BL#002` tao thanh cong (khong tao them movement kho).                     |
+| 2026-04-24 16:05 | T5      | Multi-warehouse WHA (COM123)  | PASS   | /account/purchase-order/10, /account/grn/5, /account/sales-do/15 | `PO#004` + `GRN 005` tai `WAREHOUSE A (79)` tao inbound movement `id=7105`, qty `+1`; `ODR#005` + `SS-000015` ship tai cung kho tao outbound movement `id=7106`, qty `-1`; net tai kho `79` = `0` dung nghiep vu. |
 
 ## 6) Acceptance criteria
 
@@ -101,3 +102,10 @@
 | PO -> GRN -> Bill   | Bill     | `open/draft/paid` | khong doi    | Bill la chung tu tai chinh, khong post stock movement.    |
 | SO -> DO -> Invoice | Sales DO | `shipped`         | `-` outbound | Tru kho tai buoc Ship DO (status `shipped`).              |
 | SO -> DO -> Invoice | Invoice  | `unpaid/paid`     | khong doi    | Invoice khong truc tiep tru/cong kho trong flow hien tai. |
+
+## 8) Multi-warehouse demo note (staging)
+
+- Luong demo da chay tren `WAREHOUSE A (id=79)` voi SKU `COM123`:
+    - Inbound: `GRN 005` (`received`) -> `stock_movements.id=7105` (`inbound`, `warehouse_to_id=79`, qty `+1`).
+    - Outbound: `SS-000015` (`shipped`) -> `stock_movements.id=7106` (`outbound`, `warehouse_from_id=79`, qty `-1`).
+- Ket luan: movement duoc ghi dung kho nguon/dich, khong bi doi sang kho mac dinh (`78`) trong demo nay.

@@ -83,7 +83,23 @@ class WarehouseTransferController extends AccountBaseController
             'quantity' => 'required|numeric|min:0.01',
             'description' => 'nullable|string|max:255',
         ], [
+            'warehouse_from_id.required' => __('The source warehouse field is required.'),
+            'warehouse_from_id.exists' => __('The selected source warehouse is invalid for this company.'),
             'warehouse_from_id.different' => __('warehouse::app.err_transfer_same_warehouse'),
+            'warehouse_to_id.required' => __('The destination warehouse field is required.'),
+            'warehouse_to_id.exists' => __('The selected destination warehouse is invalid for this company.'),
+            'product_id.required' => __('The product field is required.'),
+            'product_id.exists' => __('The selected product is invalid for this company.'),
+            'quantity.required' => __('The quantity field is required.'),
+            'quantity.numeric' => __('The quantity must be a number.'),
+            'quantity.min' => __('The quantity must be greater than 0.'),
+            'description.max' => __('The description may not be greater than :max characters.'),
+        ], [
+            'warehouse_from_id' => __('source warehouse'),
+            'warehouse_to_id' => __('destination warehouse'),
+            'product_id' => __('product'),
+            'quantity' => __('quantity'),
+            'description' => __('description'),
         ]);
 
         try {

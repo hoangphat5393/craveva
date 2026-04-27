@@ -23,13 +23,28 @@ class GrnService
     public function create(array $payload, ?int $companyId): Model
     {
         return DB::transaction(function () use ($payload, $companyId) {
+            $requestedStatus = (string) ($payload['status'] ?? 'draft');
+            $initialPayload = $payload;
+
+            // When GRN is created directly as "received", the header "saved" observer
+            // can run before item rows exist and skip inbound posting.
+            // Persist as inbound first, sync items, then finalize to received.
+            if ($requestedStatus === 'received') {
+                $initialPayload['status'] = 'inbound';
+            }
+
             $headerModelClass = GrnRuntime::headerModelClass();
             $delivery = new $headerModelClass;
             $delivery->company_id = $companyId;
-            $this->fillDelivery($delivery, $payload);
+            $this->fillDelivery($delivery, $initialPayload);
             $delivery->save();
 
             $this->syncItems($delivery, $payload);
+
+            if ($delivery->status !== $requestedStatus) {
+                $delivery->status = $requestedStatus;
+                $delivery->save();
+            }
 
             return $delivery;
         });

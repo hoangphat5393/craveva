@@ -114,16 +114,17 @@ class SalesShipmentDataTable extends BaseDataTable
                 return $code !== '' ? $name . ' (' . $code . ')' : $name;
             })
             ->editColumn('status', function ($row) {
-                $class = match ($row->status) {
-                    'draft' => 'text-dark border-dark',
-                    'confirmed' => 'text-info border-info',
-                    'shipped' => 'text-primary border-primary',
-                    'delivered' => 'text-success border-success',
-                    'cancelled' => 'text-danger border-danger',
-                    default => 'text-dark border-dark',
+                $statusText = trans('purchase::modules.salesShipment.' . $row->status);
+                $statusHtml = match ($row->status) {
+                    'cancelled' => '<i class="fa fa-circle mr-1 text-red f-10"></i>' . $statusText,
+                    'delivered' => '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . $statusText,
+                    'shipped' => '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . $statusText,
+                    'confirmed' => '<i class="fa fa-circle mr-1 text-blue f-10"></i>' . $statusText,
+                    'draft' => '<i class="fa fa-circle mr-1 text-blue f-10"></i>' . $statusText,
+                    default => '<i class="fa fa-circle mr-1 text-blue f-10"></i>' . $statusText,
                 };
 
-                return '<span class="unpaid rounded f-12 ' . $class . '">' . trans('purchase::modules.salesShipment.' . $row->status) . '</span>';
+                return '<div class="status-cell text-darkest-grey">' . $statusHtml . '</div>';
             })
             ->addIndexColumn()
             ->rawColumns(['shipment_number', 'status', 'action']);

@@ -118,3 +118,26 @@ it('updates grn and replaces items via service', function () {
     expect(DB::table('grn_items')->where('grn_id', $updated->id)->count())->toBe(2);
     expect(DB::table('grn_items')->where('grn_id', $updated->id)->where('batch_number', 'OLD')->count())->toBe(0);
 });
+
+it('keeps received status when creating grn directly as received', function () {
+    $service = app(GrnService::class);
+    $delivery = $service->create([
+        'purchase_order_id' => 7003,
+        'warehouse_id' => 9,
+        'type' => 'inbound',
+        'delivery_number' => 'GRN-0003',
+        'delivery_date' => now()->toDateString(),
+        'status' => 'received',
+        'delivery_fee' => null,
+        'item_id' => [501],
+        'product_id' => [906],
+        'quantity_ordered' => [5],
+        'quantity_received' => [5],
+        'batch_number' => ['RX-1'],
+        'expiry_date' => [null],
+        'picking_rule_applied' => ['FIFO'],
+    ], 10);
+
+    expect($delivery->fresh()->status)->toBe('received');
+    expect(DB::table('grn_items')->where('grn_id', $delivery->id)->count())->toBe(1);
+});

@@ -1,5 +1,6 @@
 # Git-based deploy for Staging. SSH Host must exist in ~/.ssh/config.
-# This script pulls code from Git on the server and runs post-deploy maintenance.
+# Luồng mặc định: trên máy local -> git add -A -> commit (nếu có thay đổi) -> push origin/<Branch>,
+# sau đó SSH vào server -> pull + migrate/optimize. Dùng -SkipLocalGit để chỉ deploy pull trên server.
 #
 # Nếu trên server `git pull` báo "could not read Password" (HTTPS + không có TTY):
 # - Khuyến nghị lâu dài: đổi origin sang SSH + deploy key trên server.
@@ -9,7 +10,9 @@
 param(
     [switch]$GitPull = $true, # Mặc định là pull code
     [string]$Branch = "main",
-    [string]$GitHubToken = "" # Tùy chọn; nếu rỗng dùng env CRAVEVA_GITHUB_DEPLOY_TOKEN
+    [string]$GitHubToken = "", # Tùy chọn; nếu rỗng dùng env CRAVEVA_GITHUB_DEPLOY_TOKEN
+    [string]$CommitMessage = "", # Nếu rỗng và có commit: dùng message mặc định có timestamp
+    [switch]$SkipLocalGit = $false # Bật: bỏ qua add/commit/push local, chỉ SSH pull như cũ
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,6 +30,37 @@ if (-not $resolvedToken) {
 }
 
 Write-Host "Starting Git-based deploy on Staging..."
+
+if (-not $SkipLocalGit) {
+    $repoRoot = Split-Path -Parent $PSScriptRoot
+    Push-Location $repoRoot
+    try {
+        git rev-parse --is-inside-work-tree *> $null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Not a git repository: $repoRoot"
+        }
+        Write-Host "Local repo: $repoRoot"
+        git fetch origin $Branch
+        git checkout $Branch
+        Write-Host "git add -A"
+        git add -A
+        $porcelain = git status --porcelain
+        if ($porcelain) {
+            $msg = $CommitMessage
+            if (-not $msg) {
+                $msg = "deploy(staging): $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+            }
+            Write-Host "git commit -m ..."
+            git commit -m $msg
+        } else {
+            Write-Host "No local changes to commit (clean after git add -A)."
+        }
+        Write-Host "git push origin $Branch"
+        git push origin $Branch
+    } finally {
+        Pop-Location
+    }
+}
 
 $RemoteCommand = "cd $StagingPath"
 if ($GitPull) {

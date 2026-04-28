@@ -539,7 +539,9 @@ class InvoiceController extends AccountBaseController
             ->exists();
 
         if (! $orderExistsInCompany) {
-            return __('messages.invalidRequest');
+            return request()->filled('sales_do_id')
+                ? __('messages.salesDoHeaderOrderNotFoundForCompany')
+                : __('messages.invalidRequest');
         }
 
         $salesDoHeaderModelClass = SalesDoRuntime::headerModelClass();

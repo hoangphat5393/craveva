@@ -1,0 +1,100 @@
+# =========================
+# 🔴 Vendor & dependencies
+# =========================
+vendor/
+node_modules/
+
+# =========================
+# 🔴 Storage & cache
+# =========================
+storage/
+bootstrap/cache/
+
+# =========================
+# 🔴 Logs
+# =========================
+*.log
+
+# =========================
+# 🔴 Environment & config nhạy cảm
+# =========================
+.env
+.env.*
+*.key
+
+# =========================
+# 🔴 Build / frontend output
+# =========================
+public/build/
+public/hot
+public/storage
+
+# =========================
+# 🔴 Test / debug (tuỳ bạn)
+# =========================
+tests/
+*.feature
+
+# =========================
+# 🔴 Database dump / backup
+# =========================
+*.sql
+*.dump
+
+# =========================
+# 🔴 Excel / CSV (rất nên ignore)
+# =========================
+*.xlsx
+*.xls
+*.csv
+
+# =========================
+# 🔴 Images / media
+# =========================
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.webp
+
+# =========================
+# 🔴 Docs không cần thiết
+# =========================
+*.pdf
+*.doc
+*.docx
+
+# =========================
+# 🔴 IDE / system
+# =========================
+.vscode/
+.idea/
+.DS_Store
+
+
+
+# =========================
+# 🟡 OPTIONAL (tuỳ project)
+# =========================
+
+# Nếu bạn không cần đọc Blade
+# resources/views/
+
+# Nếu JS quá nhiều
+# resources/js/
+# resources/css/
+
+# Local backups (e.g. hub .env); do not commit
+/backup/
+
+composer.lock
+package-lock.json
+pnpm-lock.yaml
+/.composer-cache
+
+/lang/*
+/resources/lang/*
+/Modules/*/Resources/lang/*
+
+public/css/custom-css/theme-custom.css

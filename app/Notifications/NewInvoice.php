@@ -2,10 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Models\EmailNotificationSetting;
 use App\Models\GlobalSetting;
 use App\Models\Invoice;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;
 use NotificationChannels\OneSignal\OneSignalChannel;
 
@@ -46,7 +48,7 @@ class NewInvoice extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController;
+            $pushNotification = new DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.invoice.subject'), $this->invoice->invoice_number);
         }
@@ -58,38 +60,105 @@ class NewInvoice extends BaseNotification
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage|void
+     * @return MailMessage|void
      */
     public function toMail($notifiable)
     {
+        // #region agent log
+        @file_put_contents(
+            base_path('debug-0fea0f.log'),
+            json_encode([
+                'sessionId' => '0fea0f',
+                'runId' => 'initial',
+                'hypothesisId' => 'H3',
+                'location' => 'NewInvoice.php:toMail:entry',
+                'message' => 'NewInvoice mail rendering started',
+                'data' => [
+                    'invoiceId' => (int) ($this->invoice->id ?? 0),
+                    'invoiceNumber' => (string) ($this->invoice->invoice_number ?? ''),
+                    'notifiableId' => (int) ($notifiable->id ?? 0),
+                ],
+                'timestamp' => (int) round(microtime(true) * 1000),
+            ], JSON_UNESCAPED_UNICODE).PHP_EOL,
+            FILE_APPEND
+        );
+        // #endregion
+
         $newInvoice = parent::build($notifiable);
 
         if (($this->invoice->project && ! is_null($this->invoice->project->client)) || ! is_null($this->invoice->client_id)) {
-            // For Sending pdf to email
+            // For sending invoice PDF attachment when dompdf is healthy.
             $invoiceController = new InvoiceController;
+            $pdfOption = null;
 
-            if ($pdfOption = $invoiceController->domPdfObjectForDownload($this->invoice->id)) {
+            try {
+                $pdfOption = $invoiceController->domPdfObjectForDownload($this->invoice->id);
+            } catch (\Throwable $e) {
+                // #region agent log
+                @file_put_contents(
+                    base_path('debug-0fea0f.log'),
+                    json_encode([
+                        'sessionId' => '0fea0f',
+                        'runId' => 'post-fix',
+                        'hypothesisId' => 'H4',
+                        'location' => 'NewInvoice.php:toMail:dompdf-exception',
+                        'message' => 'dompdf failed, fallback to email without attachment',
+                        'data' => [
+                            'invoiceId' => (int) ($this->invoice->id ?? 0),
+                            'exceptionClass' => get_class($e),
+                            'exceptionMessage' => (string) $e->getMessage(),
+                        ],
+                        'timestamp' => (int) round(microtime(true) * 1000),
+                    ], JSON_UNESCAPED_UNICODE).PHP_EOL,
+                    FILE_APPEND
+                );
+                // #endregion
+            }
+
+            if ($pdfOption) {
                 $pdf = $pdfOption['pdf'];
                 $filename = $pdfOption['fileName'];
-                $newInvoice->attachData($pdf->output(), $filename.'.pdf');
-
-                App::setLocale($notifiable->locale ?? $this->company->locale ?? 'en');
-
-                $url = url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $this->invoice->hash);
-                $url = getDomainSpecificUrl($url, $this->company);
-                $content = __('email.invoice.text').'<br>'.__('app.invoiceNumber').': '.$this->invoice->invoice_number;
-
-                $newInvoice->subject(__('email.invoice.subject').' ('.$this->invoice->invoice_number.') - '.config('app.name').'.')
-                    ->markdown('mail.email', [
-                        'url' => $url,
-                        'content' => $content,
-                        'themeColor' => $this->company->header_color,
-                        'actionText' => __('email.viewInvoice'),
-                        'notifiableName' => $notifiable->name,
-                    ]);
-
-                return $newInvoice;
+                try {
+                    $newInvoice->attachData($pdf->output(), $filename.'.pdf');
+                } catch (\Throwable $e) {
+                    // #region agent log
+                    @file_put_contents(
+                        base_path('debug-0fea0f.log'),
+                        json_encode([
+                            'sessionId' => '0fea0f',
+                            'runId' => 'post-fix-3',
+                            'hypothesisId' => 'H8',
+                            'location' => 'NewInvoice.php:toMail:pdf-output-exception',
+                            'message' => 'dompdf output failed in NewInvoice, attachment skipped',
+                            'data' => [
+                                'invoiceId' => (int) ($this->invoice->id ?? 0),
+                                'exceptionClass' => get_class($e),
+                                'exceptionMessage' => (string) $e->getMessage(),
+                            ],
+                            'timestamp' => (int) round(microtime(true) * 1000),
+                        ], JSON_UNESCAPED_UNICODE).PHP_EOL,
+                        FILE_APPEND
+                    );
+                    // #endregion
+                }
             }
+
+            App::setLocale($notifiable->locale ?? $this->company->locale ?? 'en');
+
+            $url = url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $this->invoice->hash);
+            $url = getDomainSpecificUrl($url, $this->company);
+            $content = __('email.invoice.text').'<br>'.__('app.invoiceNumber').': '.$this->invoice->invoice_number;
+
+            $newInvoice->subject(__('email.invoice.subject').' ('.$this->invoice->invoice_number.') - '.config('app.name').'.')
+                ->markdown('mail.email', [
+                    'url' => $url,
+                    'content' => $content,
+                    'themeColor' => $this->company->header_color,
+                    'actionText' => __('email.viewInvoice'),
+                    'notifiableName' => $notifiable->name,
+                ]);
+
+            return $newInvoice;
         }
     }
 
@@ -112,6 +181,5 @@ class NewInvoice extends BaseNotification
     {
         return $this->slackBuild($notifiable)
             ->content(__('email.hello').' '.$notifiable->name.' '.__('email.invoice.subject'));
-
     }
 }

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craveva Agent Test - Customer Testing</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .header h1 { color: #333; font-size: 32px; margin-bottom: 10px; }
+        .header p { color: #666; font-size: 16px; }
+        .content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        .card h2 { color: #333; margin-bottom: 20px; }
+        .log-area {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .log-entry { margin-bottom: 10px; padding: 8px; border-left: 3px solid #667eea; }
+        .log-entry.request { border-left-color: #48bb78; }
+        .log-entry.response { border-left-color: #4299e1; }
+        .log-entry.error { border-left-color: #f56565; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        button:hover { background: #5568d3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Craveva AI Agent Test Page</h1>
+            <p>This page tests the widget integration and logs all API calls for debugging.</p>
+        </div>
+        <div class="content">
+            <div class="card">
+                <h2>API Call Log</h2>
+                <button onclick="clearLog()">Clear Log</button>
+                <button onclick="exportLog()">Export Log</button>
+                <div id="log-area" class="log-area"></div>
+            </div>
+            <div class="card">
+                <h2>Test Information</h2>
+                <p><strong>Agent ID:</strong> 69ccc35e7d0ece6ff702487b</p>
+                <p><strong>API Base:</strong> https://ai.craveva.com</p>
+                <p><strong>Widget URL:</strong> https://ai.craveva.com/api/v1/agents/69ccc35e7d0ece6ff702487b/widget.js</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const agentId = '69ccc35e7d0ece6ff702487b';
+        const apiBase = 'https://ai.craveva.com';
+        const logs = [];
+        
+        function addLog(type, message, data = null) {
+            const timestamp = new Date().toISOString();
+            const entry = { type, message, data, timestamp };
+            logs.push(entry);
+            const logArea = document.getElementById('log-area');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `<strong>[${timestamp}] ${type.toUpperCase()}:</strong> ${message}${data ? '<pre>' + JSON.stringify(data, null, 2) + '</pre>' : ''}`;
+            logArea.appendChild(logEntry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('log-area').innerHTML = '';
+            logs.length = 0;
+        }
+        
+        function exportLog() {
+            const dataStr = JSON.stringify(logs, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `craveva-api-logs-${Date.now()}.json`;
+            link.click();
+        }
+        
+        // Intercept fetch calls
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            addLog('request', `Fetch: ${args[0]}`, args[1]);
+            return originalFetch.apply(this, args)
+                .then(response => {
+                    response.clone().json().then(data => {
+                        addLog('response', `Response: ${response.status}`, data);
+                    }).catch(() => {
+                        addLog('response', `Response: ${response.status}`);
+                    });
+                    return response;
+                })
+                .catch(error => {
+                    addLog('error', `Error: ${error.message}`);
+                    throw error;
+                });
+        };
+        
+        addLog('info', 'Test page loaded. Widget will load automatically.');
+    </script>
+    <script src="https://ai.craveva.com/api/v1/agents/69ccc35e7d0ece6ff702487b/widget.js"></script>
+</body>
+</html>

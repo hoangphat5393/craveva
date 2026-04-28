@@ -668,6 +668,24 @@ class InvoiceController extends AccountBaseController
 
     public function domPdfObjectForDownload($id)
     {
+        // #region agent log
+        @file_put_contents(
+            base_path('debug-0fea0f.log'),
+            json_encode([
+                'sessionId' => '0fea0f',
+                'runId' => 'initial',
+                'hypothesisId' => 'H5',
+                'location' => 'InvoiceController.php:domPdfObjectForDownload:entry',
+                'message' => 'Invoice PDF generation started',
+                'data' => [
+                    'invoiceId' => (int) $id,
+                ],
+                'timestamp' => (int) round(microtime(true) * 1000),
+            ], JSON_UNESCAPED_UNICODE).PHP_EOL,
+            FILE_APPEND
+        );
+        // #endregion
+
         $this->invoice = Invoice::with('items', 'items', 'items.unit')->findOrFail($id)->withCustomFields();
         $this->invoiceSetting = InvoiceSetting::withoutGlobalScopes()->where('company_id', $this->invoice->company_id)->first();
         App::setLocale($this->invoiceSetting->locale ?? 'en');
@@ -742,6 +760,25 @@ class InvoiceController extends AccountBaseController
             </style>';
 
         $pdf->loadHTML($customCss.view('invoices.pdf.'.$this->invoiceSetting->template, $this->data)->render());
+
+        // #region agent log
+        @file_put_contents(
+            base_path('debug-0fea0f.log'),
+            json_encode([
+                'sessionId' => '0fea0f',
+                'runId' => 'initial',
+                'hypothesisId' => 'H5',
+                'location' => 'InvoiceController.php:domPdfObjectForDownload:after-loadHTML',
+                'message' => 'Invoice PDF HTML loaded into dompdf',
+                'data' => [
+                    'invoiceId' => (int) $id,
+                    'template' => (string) ($this->invoiceSetting->template ?? ''),
+                ],
+                'timestamp' => (int) round(microtime(true) * 1000),
+            ], JSON_UNESCAPED_UNICODE).PHP_EOL,
+            FILE_APPEND
+        );
+        // #endregion
 
         $filename = $this->invoice->invoice_number;
 

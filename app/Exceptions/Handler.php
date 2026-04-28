@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Froiden\RestAPI\Exceptions\ApiException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
@@ -47,7 +49,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (\Exception $e) {
-            if ($e->getPrevious() instanceof \Illuminate\Session\TokenMismatchException) {
+            if ($e->getPrevious() instanceof TokenMismatchException) {
                 return redirect()->route('login');
             }
         });
@@ -59,6 +61,30 @@ class Handler extends ExceptionHandler
 
     public function report(Throwable $exception)
     {
+        // #region agent log
+        @file_put_contents(
+            base_path('debug-0fea0f.log'),
+            json_encode([
+                'sessionId' => '0fea0f',
+                'runId' => 'initial',
+                'hypothesisId' => 'H6',
+                'location' => 'Handler.php:report',
+                'message' => 'Exception reported by Laravel handler',
+                'data' => [
+                    'exceptionClass' => get_class($exception),
+                    'exceptionMessage' => (string) $exception->getMessage(),
+                    'exceptionFile' => (string) $exception->getFile(),
+                    'exceptionLine' => (int) $exception->getLine(),
+                    'traceTop' => array_slice(explode("\n", (string) $exception->getTraceAsString()), 0, 4),
+                    'requestPath' => request()?->path(),
+                    'requestMethod' => request()?->method(),
+                ],
+                'timestamp' => (int) round(microtime(true) * 1000),
+            ], JSON_UNESCAPED_UNICODE).PHP_EOL,
+            FILE_APPEND
+        );
+        // #endregion
+
         if (app()->bound('sentry') && $this->shouldReport($exception) && config('services.sentry.enabled')) {
             app('sentry')->captureException($exception);
         }
@@ -69,8 +95,8 @@ class Handler extends ExceptionHandler
     /**
      * Convert a validation exception into a JSON response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param  Request  $request
+     * @return JsonResponse
      */
     protected function invalidJson($request, ValidationException $exception)
     {

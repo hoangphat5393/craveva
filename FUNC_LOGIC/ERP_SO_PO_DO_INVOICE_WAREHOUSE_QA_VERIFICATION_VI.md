@@ -8,6 +8,7 @@
 ## 1) Nguon su that va quy uoc nghiep vu
 
 - Sales outbound mode `shipment`: ton kho giam khi **Ship Sales DO**, invoice khong tru ton lan 2.
+- **Confirm Sales DO** chi tao reservation (giu cho): `reserved_quantity` tang, `available` giam; `on_hand` chua giam cho den khi **Ship**.
 - Purchase inbound: chi mot su kien canonical (`PO delivered` hoac `GRN received`) de tranh double inbound.
 - Ton kho van hanh de doi chieu:
     - ledger: `stock_movements`
@@ -67,7 +68,7 @@ Tom tat:
 
 1. Tao SO
 2. Tao Sales DO, chon batch identity day du
-3. Confirm -> Ship (ton giam)
+3. Confirm (giu cho: available giam, on_hand chua giam) -> Ship (ton giam)
 4. Tao Invoice tu SO (mode shipment: khong tru ton them)
 5. Tao PO -> inbound theo canonical event
 6. Tao Bill NCC (AP, khong tao movement kho)

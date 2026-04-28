@@ -275,4 +275,10 @@ return [
         'cancelled' => 'Cancelled',
         'reverse' => 'Reverse shipment',
     ],
+    'order' => [
+        'orderNumber' => 'Order Number',
+        'purchaseDate' => 'Purchase Date',
+        'expectedDate' => 'Expected Date',
+        'exchangeRate' => 'Exchange Rate',
+    ],
 ];

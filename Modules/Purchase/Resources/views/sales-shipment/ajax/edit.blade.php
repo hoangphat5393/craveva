@@ -62,103 +62,138 @@
 </div>
 
 <script>
-    const loadSalesShipmentItemsForEdit = (orderId, warehouseId = null) => {
-        if (!orderId) {
-            $('#sales-shipment-items').html('');
-            return;
-        }
-        window.apiHttp.get("{{ route($salesDoRoutePrefix . '.get-items') }}", {
-            params: {
-                order_id: orderId,
-                shipment_id: "{{ $shipment->id }}",
-                warehouse_id: warehouseId || $('#warehouse_id').val() || null,
-                _token: "{{ csrf_token() }}"
-            }
-        }).then(function(response) {
-            $('#sales-shipment-items').html(response.html || '');
-            const defaultWarehouseId = response.defaultWarehouseId || null;
-            const selectedWarehouse = $('#warehouse_id').val();
-            if ((!selectedWarehouse || selectedWarehouse === '') && defaultWarehouseId) {
-                $('#warehouse_id').val(String(defaultWarehouseId));
-                if (typeof $.fn.selectpicker !== 'undefined') {
-                    $('#warehouse_id').selectpicker('refresh');
-                }
-            }
-        });
-    };
-
-    $(document).ready(function() {
-        datepicker('#shipment_date', {
-            position: 'bl',
-            ...datepickerConfig
-        });
-
-        loadSalesShipmentItemsForEdit($('#order_id').val(), $('#warehouse_id').val());
-        $('#order_id').on('change', function() {
-            loadSalesShipmentItemsForEdit($(this).val(), $('#warehouse_id').val());
-        });
-
-        $('#warehouse_id').on('change', function() {
-            const orderId = $('#order_id').val();
+    (function() {
+        const loadSalesShipmentItemsForEdit = (orderId, warehouseId = null) => {
             if (!orderId) {
+                $('#sales-shipment-items').html('');
                 return;
             }
-            loadSalesShipmentItemsForEdit(orderId, $(this).val());
-        });
-
-        $('#update-sales-shipment-button').on('click', function() {
-            const warehouseId = String($('#warehouse_id').val() || '').trim();
-            if (!warehouseId) {
-                Swal.fire({
-                    icon: 'error',
-                    text: 'Please select warehouse before saving.',
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-                return;
-            }
-
-            if (typeof window.validateSalesShipmentRows === 'function') {
-                if (typeof window.syncAllShipmentBatchRows === 'function') {
-                    window.syncAllShipmentBatchRows();
+            window.apiHttp.get("{{ route($salesDoRoutePrefix . '.get-items') }}", {
+                params: {
+                    order_id: orderId,
+                    shipment_id: "{{ $shipment->id }}",
+                    warehouse_id: warehouseId || $('#warehouse_id').val() || null,
+                    _token: "{{ csrf_token() }}"
                 }
-                const rowError = window.validateSalesShipmentRows();
-                if (rowError) {
+            }).then(function(response) {
+                $('#sales-shipment-items').html(response.html || '');
+                const defaultWarehouseId = response.defaultWarehouseId || null;
+                const selectedWarehouse = $('#warehouse_id').val();
+                if ((!selectedWarehouse || selectedWarehouse === '') && defaultWarehouseId) {
+                    $('#warehouse_id').val(String(defaultWarehouseId));
+                    if (typeof $.fn.selectpicker !== 'undefined') {
+                        $('#warehouse_id').selectpicker('refresh');
+                    }
+                }
+            });
+        };
+
+        $(document).ready(function() {
+            datepicker('#shipment_date', {
+                position: 'bl',
+                ...datepickerConfig
+            });
+
+            loadSalesShipmentItemsForEdit($('#order_id').val(), $('#warehouse_id').val());
+            $('#order_id').on('change', function() {
+                loadSalesShipmentItemsForEdit($(this).val(), $('#warehouse_id').val());
+            });
+
+            $('#warehouse_id').on('change', function() {
+                const orderId = $('#order_id').val();
+                if (!orderId) {
+                    return;
+                }
+                loadSalesShipmentItemsForEdit(orderId, $(this).val());
+            });
+
+            $('#update-sales-shipment-button').on('click', function() {
+                const orderId = String($('#order_id').val() || '').trim();
+                if (!orderId) {
                     Swal.fire({
                         icon: 'error',
-                        text: rowError,
+                        text: @json(__('messages.salesDoSaveRequiresOrder')),
                         toast: true,
                         position: 'top-end',
-                        timer: 4500,
+                        timer: 5000,
                         showConfirmButton: false
                     });
                     return;
                 }
-            }
 
-            const body = $('#update-sales-shipment-form').serialize() + '&_method=PUT';
-            $.easyBlockUI('#update-sales-shipment-form');
-            window.apiHttp.postUrlEncoded("{{ route($salesDoRoutePrefix . '.update', $shipment->id) }}", body).then(function(response) {
-                const dest = response.redirectUrl || (response.action === 'redirect' ? response.url : null);
-                if (dest) {
-                    window.location.href = dest;
+                const warehouseId = String($('#warehouse_id').val() || '').trim();
+                if (!warehouseId) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Please select warehouse before saving.',
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                    return;
                 }
-            }).catch(function(err) {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }).finally(function() {
-                $.easyUnblockUI('#update-sales-shipment-form');
-            });
-        });
 
-        init(RIGHT_MODAL);
-    });
+                if (!$('#update-sales-shipment-form').find('input[name="order_item_id[]"]').length) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: @json(__('messages.salesDoSaveRequiresShipmentLines')),
+                        toast: true,
+                        position: 'top-end',
+                        timer: 5500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                if (typeof window.validateSalesShipmentRows === 'function') {
+                    if (typeof window.syncAllShipmentBatchRows === 'function') {
+                        window.syncAllShipmentBatchRows();
+                    }
+                    const rowError = window.validateSalesShipmentRows();
+                    if (rowError) {
+                        Swal.fire({
+                            icon: 'error',
+                            text: rowError,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4500,
+                            showConfirmButton: false
+                        });
+                        return;
+                    }
+                }
+
+                const body = $('#update-sales-shipment-form').serialize() + '&_method=PUT';
+                $.easyBlockUI('#update-sales-shipment-form');
+                window.apiHttp.postUrlEncoded("{{ route($salesDoRoutePrefix . '.update', $shipment->id) }}", body).then(function(response) {
+                    const dest = response.redirectUrl || (response.action === 'redirect' ? response.url : null);
+                    if (dest) {
+                        window.location.href = dest;
+                    }
+                }).catch(function(err) {
+                    let text = err.message || 'Request failed';
+                    if (err.errors && typeof err.errors === 'object') {
+                        const firstKey = Object.keys(err.errors)[0];
+                        const firstVal = firstKey ? err.errors[firstKey] : null;
+                        if (Array.isArray(firstVal) && firstVal[0]) {
+                            text = firstVal[0];
+                        }
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        text: text,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 5500,
+                        showConfirmButton: false
+                    });
+                }).finally(function() {
+                    $.easyUnblockUI('#update-sales-shipment-form');
+                });
+            });
+
+            init(RIGHT_MODAL);
+        });
+    })();
 </script>

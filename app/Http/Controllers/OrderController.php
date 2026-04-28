@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Modules\Warehouse\Services\OrderCompletionShippedSalesDoGate;
 use Stripe\Customer;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
@@ -510,6 +511,7 @@ class OrderController extends AccountBaseController
         }
 
         $order = Order::findOrFail($id);
+        $priorStatus = $order->status;
 
         if ($order->status == 'completed') {
             return Reply::error(__('messages.invalidRequest'));
@@ -581,6 +583,17 @@ class OrderController extends AccountBaseController
             }
         }
 
+        if ($request->has('status') && $request->status == 'completed') {
+            $order->refresh()->loadMissing(['items.product']);
+            $gateMessage = app(OrderCompletionShippedSalesDoGate::class)->blockingMessage($order);
+            if ($gateMessage !== null) {
+                $order->status = $priorStatus;
+                $order->saveQuietly();
+
+                return Reply::error($gateMessage);
+            }
+        }
+
         if ($request->has('status') && $request->status == 'completed' && ! $order->invoice) {
             $invoice = $this->makeOrderInvoice($order, $request);
             $this->makePayment($order->total, $invoice, 'complete');
@@ -649,6 +662,18 @@ class OrderController extends AccountBaseController
         $this->credentials = PaymentGatewayCredentials::first();
         $this->methods = OfflinePaymentMethod::activeMethod();
         $this->payment = Payment::where('order_id', $id)->first();
+
+        $this->orderCompleteShipmentGateBlocked = false;
+        $this->orderCompleteShipmentGateMessage = '';
+        if (in_array($this->order->status, ['pending', 'on-hold', 'failed', 'processing'], true)) {
+            $gateMessage = app(OrderCompletionShippedSalesDoGate::class)->blockingMessage(
+                $this->order->loadMissing(['items.product'])
+            );
+            if ($gateMessage !== null) {
+                $this->orderCompleteShipmentGateBlocked = true;
+                $this->orderCompleteShipmentGateMessage = $gateMessage;
+            }
+        }
 
         $this->viewBankAccountPermission = user()->permission('view_bankaccount');
         $this->bankDetails = null;
@@ -796,7 +821,12 @@ class OrderController extends AccountBaseController
     public function makeInvoice($orderId)
     {
         /* Step1 -  Set order status paid */
-        $order = Order::findOrFail($orderId);
+        $order = Order::with('items.product')->findOrFail($orderId);
+        $gateMessage = app(OrderCompletionShippedSalesDoGate::class)->blockingMessage($order);
+        if ($gateMessage !== null) {
+            return Reply::error($gateMessage);
+        }
+
         $order->status = 'completed';
         $order->save();
 
@@ -865,9 +895,14 @@ class OrderController extends AccountBaseController
 
     public function changeStatus(Request $request)
     {
-        $order = Order::findOrFail($request->orderId);
+        $order = Order::with('items.product')->findOrFail($request->orderId);
 
         if ($request->status == 'completed') {
+            $gateMessage = app(OrderCompletionShippedSalesDoGate::class)->blockingMessage($order);
+            if ($gateMessage !== null) {
+                return Reply::error($gateMessage);
+            }
+
             $invoice = $this->makeOrderInvoice($order, $request);
             $this->makePayment($order->total, $invoice, 'complete');
             Invoice::where('order_id', $request->orderId)->update(['status' => 'paid']);

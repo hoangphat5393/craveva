@@ -16,6 +16,29 @@ beforeEach(function () {
 
     session(['user' => (object) ['id' => 999]]);
 
+    Schema::create('orders', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->timestamps();
+    });
+
+    DB::table('orders')->insert([
+        ['id' => 1, 'company_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 2, 'company_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 3, 'company_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
+    Schema::create('warehouses', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->string('name')->nullable();
+        $table->timestamps();
+    });
+
+    DB::table('warehouses')->insert([
+        ['id' => 1, 'company_id' => 10, 'name' => 'WH-1', 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
     Schema::create('sales_shipments', function ($table) {
         $table->id();
         $table->unsignedInteger('company_id')->nullable();
@@ -48,6 +71,8 @@ afterEach(function () {
     Mockery::close();
     Schema::dropIfExists('sales_shipment_items');
     Schema::dropIfExists('sales_shipments');
+    Schema::dropIfExists('warehouses');
+    Schema::dropIfExists('orders');
 });
 
 it('confirms shipment only when draft with items', function () {
@@ -166,4 +191,89 @@ it('delivers, reverses and cancels shipment with expected guards', function () {
     $shipment->update(['status' => 'cancelled', 'outbound_stock_applied' => true]);
     expect($service->cancel($shipment->fresh()))->toBeNull();
     // already cancelled path should not trigger reverse again
+});
+
+it('blocks confirm when sales order or warehouse link is missing on the header', function () {
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
+    $service = new SalesDoService($mockStock);
+
+    $shipment = SalesShipment::create([
+        'company_id' => 10,
+        'order_id' => 1,
+        'warehouse_id' => 1,
+        'shipment_number' => 'SS-BAD-ORDER',
+        'shipment_date' => now()->toDateString(),
+        'status' => 'draft',
+    ]);
+
+    SalesShipmentItem::create([
+        'sales_shipment_id' => $shipment->id,
+        'order_item_id' => 100,
+        'product_id' => 200,
+        'quantity_ordered' => 10,
+        'quantity_shipped' => 2,
+    ]);
+
+    $shipment->forceFill(['order_id' => 0])->saveQuietly();
+
+    $mockStock->shouldNotReceive('ensureReservationsForShipment');
+
+    expect($service->confirm($shipment->fresh('items')))->toBe('messages.salesDoHeaderRequiresOrderAndWarehouse');
+});
+
+it('blocks ship when warehouse id is missing on the header', function () {
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
+    $service = new SalesDoService($mockStock);
+
+    $shipment = SalesShipment::create([
+        'company_id' => 10,
+        'order_id' => 1,
+        'warehouse_id' => 1,
+        'shipment_number' => 'SS-BAD-WH',
+        'shipment_date' => now()->toDateString(),
+        'status' => 'confirmed',
+    ]);
+
+    SalesShipmentItem::create([
+        'sales_shipment_id' => $shipment->id,
+        'order_item_id' => 100,
+        'product_id' => 200,
+        'quantity_ordered' => 10,
+        'quantity_shipped' => 3,
+    ]);
+
+    $shipment->forceFill(['warehouse_id' => 0])->saveQuietly();
+
+    $mockStock->shouldNotReceive('ensureReservationsForShipment');
+    $mockStock->shouldNotReceive('applyOutboundForShipment');
+
+    expect($service->ship($shipment->fresh('items')))->toBe('messages.salesDoHeaderRequiresOrderAndWarehouse');
+});
+
+it('blocks confirm when linked order does not exist for the shipment company', function () {
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
+    $service = new SalesDoService($mockStock);
+
+    $shipment = SalesShipment::create([
+        'company_id' => 10,
+        'order_id' => 1,
+        'warehouse_id' => 1,
+        'shipment_number' => 'SS-ORPHAN-ORDER',
+        'shipment_date' => now()->toDateString(),
+        'status' => 'draft',
+    ]);
+
+    SalesShipmentItem::create([
+        'sales_shipment_id' => $shipment->id,
+        'order_item_id' => 100,
+        'product_id' => 200,
+        'quantity_ordered' => 10,
+        'quantity_shipped' => 1,
+    ]);
+
+    $shipment->forceFill(['order_id' => 99999])->saveQuietly();
+
+    $mockStock->shouldNotReceive('ensureReservationsForShipment');
+
+    expect($service->confirm($shipment->fresh('items')))->toBe('messages.salesDoHeaderOrderNotFoundForCompany');
 });

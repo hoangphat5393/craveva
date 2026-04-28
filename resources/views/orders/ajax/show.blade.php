@@ -17,6 +17,8 @@
     $flowNamingMode = config('purchase.flow_naming_mode', 'compat_v2');
     $salesDoRouteName = $flowNamingMode === 'legacy' ? 'sales-shipments.create' : 'sales-do.create';
     $salesDoLabelKey = $flowNamingMode === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.saleDeliveryOrder';
+    $orderCompleteShipmentGateBlocked = $orderCompleteShipmentGateBlocked ?? false;
+    $orderCompleteShipmentGateMessage = $orderCompleteShipmentGateMessage ?? '';
 @endphp
 
 <div class="card border-0 invoice">
@@ -37,6 +39,18 @@
                 {!! $message !!}
             </div>
             <?php Session::forget('error'); ?>
+        @endif
+
+        @if (!empty($orderCompleteShipmentGateBlocked))
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <i class="fa fa-info-circle mr-1"></i> {{ $orderCompleteShipmentGateMessage }}
+                @if ($canCreateSalesDo && in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()))
+                    <a class="alert-link openRightModal" href="{{ route($salesDoRouteName, ['order_id' => $order->id]) }}">@lang('app.add') @lang($salesDoLabelKey)</a>
+                @endif
+            </div>
         @endif
 
         <div class="invoice-table-wrapper">
@@ -392,9 +406,15 @@
 
                         @if (($editOrderPermission == 'all' || (in_array($editOrderPermission, ['added', 'both']) && $order->added_by == user()->id)) && in_array($order->status, ['pending', 'on-hold', 'failed', 'processing']))
                             <li>
-                                <a class="dropdown-item f-14 text-dark orderStatus" data-status="completed" href="javascript:;">
-                                    <i class="fa fa-check f-w-500 mr-2 f-11"></i> @lang('app.orderMarkAsComplete')
-                                </a>
+                                @if (!empty($orderCompleteShipmentGateBlocked))
+                                    <span class="dropdown-item f-14 text-muted disabled-item" tabindex="-1" title="{{ $orderCompleteShipmentGateMessage }}" style="cursor: not-allowed;">
+                                        <i class="fa fa-check f-w-500 mr-2 f-11"></i> @lang('app.orderMarkAsComplete')
+                                    </span>
+                                @else
+                                    <a class="dropdown-item f-14 text-dark orderStatus" data-status="completed" href="javascript:;">
+                                        <i class="fa fa-check f-w-500 mr-2 f-11"></i> @lang('app.orderMarkAsComplete')
+                                    </a>
+                                @endif
                             </li>
                         @endif
 

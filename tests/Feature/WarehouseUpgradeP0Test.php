@@ -97,6 +97,19 @@ beforeEach(function () {
         $table->timestamps();
     });
 
+    Schema::create('orders', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->timestamps();
+    });
+
+    DB::table('orders')->insert([
+        'id' => 1,
+        'company_id' => 1,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
     Schema::create('sales_dos', function ($table) {
         $table->id();
         $table->unsignedInteger('company_id')->nullable();
@@ -138,6 +151,7 @@ beforeEach(function () {
 afterEach(function () {
     Schema::dropIfExists('sales_do_items');
     Schema::dropIfExists('sales_dos');
+    Schema::dropIfExists('orders');
     Schema::dropIfExists('stock_movements');
     Schema::dropIfExists('stock_reservations');
     Schema::dropIfExists('warehouse_product_stock');
@@ -170,7 +184,7 @@ it('blocks outbound from locked or scrap warehouse types', function () {
 
     $service = app(StockMovementService::class);
 
-    expect(fn() => $service->recordOutbound([
+    expect(fn () => $service->recordOutbound([
         'company_id' => 1,
         'warehouse_id' => 10,
         'product_id' => 100,
@@ -204,6 +218,7 @@ it('prevents oversell when 2 orders reserve nearly at the same time', function (
 
     $shipmentId1 = DB::table('sales_dos')->insertGetId([
         'company_id' => 1,
+        'order_id' => 1,
         'warehouse_id' => 11,
         'status' => 'draft',
         'do_number' => 'DO-001',
@@ -213,6 +228,7 @@ it('prevents oversell when 2 orders reserve nearly at the same time', function (
     ]);
     $shipmentId2 = DB::table('sales_dos')->insertGetId([
         'company_id' => 1,
+        'order_id' => 1,
         'warehouse_id' => 11,
         'status' => 'draft',
         'do_number' => 'DO-002',
@@ -243,7 +259,7 @@ it('prevents oversell when 2 orders reserve nearly at the same time', function (
     $shipment2 = SalesDo::with('items')->findOrFail($shipmentId2);
 
     expect($service->confirm($shipment1))->toBeNull();
-    expect(fn() => $service->confirm($shipment2))->toThrow(RuntimeException::class);
+    expect(fn () => $service->confirm($shipment2))->toThrow(RuntimeException::class);
 });
 
 it('guards double inbound config to avoid duplicate posting', function () {
@@ -271,7 +287,7 @@ it('guards double inbound config to avoid duplicate posting', function () {
     $method = (new ReflectionClass(PurchaseOrderObserver::class))->getMethod('recordPurchaseOrderInbound');
     $method->setAccessible(true);
 
-    expect(fn() => $method->invoke($observer, $po, 100, 5.0))
+    expect(fn () => $method->invoke($observer, $po, 100, 5.0))
         ->toThrow(WarehouseBusinessException::class);
     expect(DB::table('stock_movements')->count())->toBe(0);
 });
@@ -300,6 +316,7 @@ it('releases reservations when shipment is cancelled', function () {
 
     $shipmentId = DB::table('sales_dos')->insertGetId([
         'company_id' => 1,
+        'order_id' => 1,
         'warehouse_id' => 13,
         'status' => 'draft',
         'do_number' => 'DO-013',
@@ -407,7 +424,7 @@ it('validates AI webhook order lines against sellable stock', function () {
         ['product_id' => 100, 'quantity' => 9],
     ], []);
 
-    expect(fn() => $service->validateAiOrderWebhookItems(1, [
+    expect(fn () => $service->validateAiOrderWebhookItems(1, [
         ['product_id' => 100, 'quantity' => 11],
     ], []))->toThrow(WarehouseBusinessException::class);
 });
@@ -415,7 +432,7 @@ it('validates AI webhook order lines against sellable stock', function () {
 it('guards invalid outbound mode to prevent ambiguous double deduction flows', function () {
     Config::set('warehouse.sales_outbound_mode', 'both');
 
-    expect(fn() => app(InvoiceWarehouseStockService::class)->shouldPostOutboundFromInvoice())
+    expect(fn () => app(InvoiceWarehouseStockService::class)->shouldPostOutboundFromInvoice())
         ->toThrow(WarehouseBusinessException::class);
 });
 
@@ -443,6 +460,7 @@ it('QA smoke: ship posts outbound stock_movement referencing SalesDo; shipment m
 
     $shipmentId = DB::table('sales_dos')->insertGetId([
         'company_id' => 1,
+        'order_id' => 1,
         'warehouse_id' => 16,
         'status' => 'draft',
         'do_number' => 'DO-QA-16',

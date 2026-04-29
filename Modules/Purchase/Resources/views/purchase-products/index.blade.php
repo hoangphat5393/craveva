@@ -403,40 +403,66 @@
             });
         });
 
-        $('body').on('change', '.change-purchase-allow', function() {
-            var id = $(this).data('product-id');
-            var url = "{{ route('purchase_products.change_purchase_allow') }}";
-
-            var token = "{{ csrf_token() }}";
-            var status = $(this).val();
-
-            if (typeof id !== 'undefined') {
-                window.apiHttp.postUrlEncoded(url, {
-                        _token: token,
-                        productId: id,
-                        status: status
-                    })
-                    .then(function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                            resetActionButtons();
-                            deSelectAll();
-                        }
-                    })
-                    .catch(function(err) {
-                        $.handleApiFormError(err);
-                    });
-            }
+        $('body').on('focus', '.change-purchase-allow, .change-product-status', function() {
+            $(this).data('prev', $(this).val());
         });
 
-        $('body').on('change', '.change-product-status', function() {
-            var id = $(this).data('product-id');
-            var url = "{{ route('purchase_products.change_status') }}";
+        function revertSelectValue($select, fallbackValue) {
+            $select.data('skip-confirm', 1);
+            $select.val(fallbackValue);
+            if (typeof $select.selectpicker === 'function') {
+                $select.selectpicker('refresh');
+            }
+        }
 
+        $('body').on('change changed.bs.select', '.change-purchase-allow', function() {
+            var $this = $(this);
+            if ($this.data('confirm-open') === 1) {
+                return;
+            }
+            if ($this.data('skip-confirm') === 1) {
+                $this.removeData('skip-confirm');
+                return;
+            }
+
+            var id = $this.data('product-id');
+            var url = "{{ route('purchase_products.change_purchase_allow') }}";
             var token = "{{ csrf_token() }}";
-            var status = $(this).val();
+            var status = $this.val();
+            var previous = $this.data('prev');
+            if (typeof previous === 'undefined') {
+                previous = $this.find('option:selected').val();
+            }
 
-            if (typeof id !== 'undefined') {
+            if (typeof id === 'undefined') {
+                return;
+            }
+
+            $this.data('confirm-open', 1);
+            Swal.fire({
+                title: "@lang('messages.sweetAlertTitle')",
+                text: "@lang('messages.changeAddedStatus')",
+                icon: 'warning',
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText: "@lang('app.yes')",
+                cancelButtonText: "@lang('app.no')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                showClass: {
+                    popup: 'swal2-noanimation',
+                    backdrop: 'swal2-noanimation'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    revertSelectValue($this, previous);
+                    $this.removeData('confirm-open');
+                    return;
+                }
+
                 window.apiHttp.postUrlEncoded(url, {
                         _token: token,
                         productId: id,
@@ -448,11 +474,83 @@
                             resetActionButtons();
                             deSelectAll();
                         }
+                        $this.removeData('confirm-open');
                     })
                     .catch(function(err) {
+                        revertSelectValue($this, previous);
                         $.handleApiFormError(err);
+                        $this.removeData('confirm-open');
                     });
+            });
+        });
+
+        $('body').on('change changed.bs.select', '.change-product-status', function() {
+            var $this = $(this);
+            if ($this.data('confirm-open') === 1) {
+                return;
             }
+            if ($this.data('skip-confirm') === 1) {
+                $this.removeData('skip-confirm');
+                return;
+            }
+
+            var id = $this.data('product-id');
+            var url = "{{ route('purchase_products.change_status') }}";
+            var token = "{{ csrf_token() }}";
+            var status = $this.val();
+            var previous = $this.data('prev');
+            if (typeof previous === 'undefined') {
+                previous = $this.find('option:selected').val();
+            }
+
+            if (typeof id === 'undefined') {
+                return;
+            }
+
+            $this.data('confirm-open', 1);
+            Swal.fire({
+                title: "@lang('messages.sweetAlertTitle')",
+                text: "@lang('messages.changeAddedStatus')",
+                icon: 'warning',
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText: "@lang('app.yes')",
+                cancelButtonText: "@lang('app.no')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                showClass: {
+                    popup: 'swal2-noanimation',
+                    backdrop: 'swal2-noanimation'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    revertSelectValue($this, previous);
+                    $this.removeData('confirm-open');
+                    return;
+                }
+
+                window.apiHttp.postUrlEncoded(url, {
+                        _token: token,
+                        productId: id,
+                        status: status
+                    })
+                    .then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
+                            resetActionButtons();
+                            deSelectAll();
+                        }
+                        $this.removeData('confirm-open');
+                    })
+                    .catch(function(err) {
+                        revertSelectValue($this, previous);
+                        $.handleApiFormError(err);
+                        $this.removeData('confirm-open');
+                    });
+            });
         });
 
         $('body').on('click', '.add-product', function() {

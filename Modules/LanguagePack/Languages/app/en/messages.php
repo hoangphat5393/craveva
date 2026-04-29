@@ -130,6 +130,7 @@ return [
     'notificationRead' => 'Notification marked as read.',
     'amountIsZero' => 'Amount should be more than ZERO for the payment',
     'invalidRequest' => 'Invalid Request',
+    'changeAddedStatus' => 'Do you want to apply this status change?',
     'orderStatusChanged' => 'Order status changed successfully.',
     'orderCompleteRequiresShippedDo' => 'Mark as complete is blocked until every stocked product line on this order has been shipped on a Sale Delivery Order (status Shipped or Delivered). Create and ship a DO first, then complete the order.',
     'invoicePaymentExceedError' => 'Payment amount cannot be more than invoice due amount.',

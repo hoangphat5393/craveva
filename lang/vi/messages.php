@@ -423,6 +423,7 @@ return [
     'employeeNotFound' => 'Không tìm thấy nhân viên',
     'dragDropScreenInfo' => 'Kéo và thả sẽ chỉ hoạt động trên các thiết bị máy tính để bàn.',
     'timerPausedSuccessfully' => 'Bộ hẹn giờ đã tạm dừng thành công.',
+    'changeAddedStatus' => 'Bạn có muốn áp dụng thay đổi trạng thái này không?',
     'orderStatusChanged' => 'Trạng thái đơn hàng đã được thay đổi thành công.',
     'orderCompleteRequiresShippedDo' => 'Không thể đánh dấu hoàn thành đơn hàng cho đến khi mọi dòng hàng có tồn kho trên đơn đã được xuất đủ số lượng qua Phiếu giao hàng bán (Sale DO) ở trạng thái Đã giao hàng (Shipped) hoặc Đã giao (Delivered). Hãy tạo DO và thực hiện Ship đủ số lượng, sau đó mới hoàn tất đơn.',
     'orderStatus' => [

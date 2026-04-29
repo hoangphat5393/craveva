@@ -38,6 +38,7 @@ return [
     'amountNumber' => 'Jumlah harus berupa angka.',
     'itemBlank' => 'Nama item tidak boleh kosong.',
     'invalidRequest' => 'Permintaan Tidak Valid',
+    'orderCompleteRequiresShippedDo' => 'Pesanan belum bisa diselesaikan karena barang belum terkirim penuh. Mohon selesaikan Delivery Order (DO) terlebih dahulu.',
     'fileUploadedSuccessfully' => 'Berkas berhasil diunggah.',
     'fileUploadIssue' => 'File tidak diunggah. Silakan hubungi administrator',
     'issueStatusChanged' => 'Status masalah berhasil diubah.',

@@ -34,8 +34,11 @@
                         $selectedBatchId = $matched['id'] ?? null;
                     }
                     $missingBatchOptions = $batchOptions->isEmpty();
+                    $requiresBatchSelection = $batchOptions->contains(function ($opt) {
+                        return filled($opt['batch_number'] ?? null) || filled($opt['expiration_date'] ?? null);
+                    });
                 @endphp
-                <tr data-requires-batch="{{ $batchOptions->isNotEmpty() ? '1' : '0' }}">
+                <tr data-requires-batch="{{ $requiresBatchSelection ? '1' : '0' }}">
                     <td>
                         {{ $item->item_name }}
                         <input type="hidden" name="order_item_id[]" value="{{ $item->id }}">
@@ -69,7 +72,7 @@
                             @endforeach
                         </select>
                         <small class="text-danger d-none shipment-batch-error mt-1"></small>
-                        @if ($missingBatchOptions && !$lineDisabled)
+                        @if ($requiresBatchSelection && $missingBatchOptions && !$lineDisabled)
                             <small class="text-warning d-block mt-1">No batch found for selected warehouse. If this item is batch-tracked, create inbound batch first.</small>
                         @endif
                     </td>

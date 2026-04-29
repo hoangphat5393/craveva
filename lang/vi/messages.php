@@ -425,7 +425,7 @@ return [
     'timerPausedSuccessfully' => 'Bộ hẹn giờ đã tạm dừng thành công.',
     'changeAddedStatus' => 'Bạn có muốn áp dụng thay đổi trạng thái này không?',
     'orderStatusChanged' => 'Trạng thái đơn hàng đã được thay đổi thành công.',
-    'orderCompleteRequiresShippedDo' => 'Không thể đánh dấu hoàn thành đơn hàng cho đến khi mọi dòng hàng có tồn kho trên đơn đã được xuất đủ số lượng qua Phiếu giao hàng bán (Sale DO) ở trạng thái Đã giao hàng (Shipped) hoặc Đã giao (Delivered). Hãy tạo DO và thực hiện Ship đủ số lượng, sau đó mới hoàn tất đơn.',
+    'orderCompleteRequiresShippedDo' => 'Không thể hoàn tất đơn vì chưa giao đủ hàng. Vui lòng hoàn tất Delivery Order (DO) trước.',
     'orderStatus' => [
         'pending' => 'Lệnh chờ đã sẵn sàng để thu tiền thanh toán.',
         'onHold' => 'Lệnh tạm dừng đang chờ thanh toán hoặc thanh toán đang chờ xử lý.',

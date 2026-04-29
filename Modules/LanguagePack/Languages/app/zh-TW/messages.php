@@ -38,6 +38,7 @@ return [
     'amountNumber' => '金額應該是一個數字。',
     'itemBlank' => '項目名稱不能為空。',
     'invalidRequest' => '無效的請求',
+    'orderCompleteRequiresShippedDo' => '訂單尚未完成出貨，無法完成。請先完成交貨單（DO）。',
     'fileUploadedSuccessfully' => '文件上傳成功。',
     'fileUploadIssue' => '文件未上傳。請聯絡管理員',
     'issueStatusChanged' => '問題狀態變更成功。',

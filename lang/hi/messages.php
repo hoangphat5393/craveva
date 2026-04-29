@@ -38,6 +38,7 @@ return [
     'amountNumber' => 'राशि एक संख्या होनी चाहिए.',
     'itemBlank' => 'आइटम का नाम रिक्त नहीं हो सकता.',
     'invalidRequest' => 'अमान्य अनुरोध',
+    'orderCompleteRequiresShippedDo' => 'ऑर्डर पूरा नहीं किया जा सकता क्योंकि सामान पूरी तरह शिप नहीं हुआ है। कृपया पहले Delivery Order (DO) पूरा करें।',
     'fileUploadedSuccessfully' => 'फ़ाइल सफलतापूर्वक अपलोड की गई।',
     'fileUploadIssue' => 'फ़ाइल अपलोड नहीं की गई है. कृपया व्यवस्थापक से संपर्क करें',
     'issueStatusChanged' => 'समस्या की स्थिति सफलतापूर्वक बदल दी गई.',

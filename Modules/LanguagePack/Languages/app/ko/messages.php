@@ -38,6 +38,7 @@ return [
     'amountNumber' => '금액은 숫자여야 합니다.',
     'itemBlank' => '항목 이름은 비워둘 수 없습니다.',
     'invalidRequest' => '잘못된 요청',
+    'orderCompleteRequiresShippedDo' => '아직 출고가 완료되지 않아 주문을 완료할 수 없습니다. 먼저 Delivery Order(DO)를 완료해 주세요.',
     'fileUploadedSuccessfully' => '파일이 성공적으로 업로드되었습니다.',
     'fileUploadIssue' => '파일이 업로드되지 않았습니다. 관리자에게 문의해주세요',
     'issueStatusChanged' => '문제 상태가 성공적으로 변경되었습니다.',

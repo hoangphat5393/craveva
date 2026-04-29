@@ -38,6 +38,7 @@ return [
     'amountNumber' => 'จำนวนเงินควรเป็นตัวเลข',
     'itemBlank' => 'ชื่อรายการไม่สามารถเว้นว่างได้',
     'invalidRequest' => 'คำขอไม่ถูกต้อง',
+    'orderCompleteRequiresShippedDo' => 'ไม่สามารถปิดคำสั่งซื้อได้เพราะยังจัดส่งสินค้าไม่ครบ กรุณาดำเนินการ Delivery Order (DO) ให้เสร็จก่อน',
     'fileUploadedSuccessfully' => 'อัปโหลดไฟล์เรียบร้อยแล้ว',
     'fileUploadIssue' => 'ไม่ได้อัปโหลดไฟล์ กรุณาติดต่อผู้ดูแลระบบ',
     'issueStatusChanged' => 'เปลี่ยนสถานะปัญหาเรียบร้อยแล้ว',

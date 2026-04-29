@@ -38,6 +38,7 @@ return [
     'amountNumber' => '金額は数値である必要があります。',
     'itemBlank' => '項目名を空白にすることはできません。',
     'invalidRequest' => '無効なリクエスト',
+    'orderCompleteRequiresShippedDo' => '出荷が完了していないため、この注文は完了にできません。先に配送指示（DO）を完了してください。',
     'fileUploadedSuccessfully' => 'ファイルが正常にアップロードされました。',
     'fileUploadIssue' => 'ファイルがアップロードされていません。管理者に連絡してください',
     'issueStatusChanged' => '問題のステータスが正常に変更されました。',

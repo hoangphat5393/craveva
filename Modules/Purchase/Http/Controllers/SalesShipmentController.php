@@ -23,7 +23,7 @@ class SalesShipmentController extends AccountBaseController
     {
         $prefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do';
 
-        return $prefix . '.' . $action;
+        return $prefix.'.'.$action;
     }
 
     private function salesDoTitleKey(): string
@@ -44,7 +44,7 @@ class SalesShipmentController extends AccountBaseController
     public function create(Request $request)
     {
         abort_403(! FlowPermission::allowsAlias('sales_do.create'));
-        $this->pageTitle = __('app.add') . ' ' . __($this->salesDoTitleKey());
+        $this->pageTitle = __('app.add').' '.__($this->salesDoTitleKey());
         $this->warehouses = $this->warehouseList();
         $this->orders = Order::query()
             ->where('company_id', $this->company?->id)
@@ -71,7 +71,7 @@ class SalesShipmentController extends AccountBaseController
     public function edit($id)
     {
         abort_403(! FlowPermission::allowsAlias('sales_do.update'));
-        $this->pageTitle = __('app.edit') . ' ' . __($this->salesDoTitleKey());
+        $this->pageTitle = __('app.edit').' '.__($this->salesDoTitleKey());
         $this->shipment = $this->queryByCompany()->with(['items.orderItem', 'order'])->findOrFail($id);
         abort_if(in_array($this->shipment->status, ['shipped', 'delivered'], true), 403);
 
@@ -243,7 +243,7 @@ class SalesShipmentController extends AccountBaseController
                 'string',
                 'max:64',
                 Rule::unique(SalesDoRuntime::headerTable(), SalesDoRuntime::numberColumn())
-                    ->where(fn($q) => $q->where('company_id', $this->company?->id))
+                    ->where(fn ($q) => $q->where('company_id', $this->company?->id))
                     ->ignore($shipmentId),
             ],
             'shipment_date' => 'required|string',
@@ -275,8 +275,8 @@ class SalesShipmentController extends AccountBaseController
         $remaining = $this->remainingQtyByOrderItem($order->id, $shipmentId);
 
         $batchIds = collect($validated['warehouse_batch_id'] ?? [])
-            ->filter(fn($id) => ! empty($id))
-            ->map(fn($id) => (int) $id)
+            ->filter(fn ($id) => ! empty($id))
+            ->map(fn ($id) => (int) $id)
             ->unique()
             ->values();
 
@@ -296,17 +296,17 @@ class SalesShipmentController extends AccountBaseController
                 $selectedBatchIdsForValidation = $existingShipment->items
                     ->pluck('warehouse_batch_id')
                     ->filter()
-                    ->map(fn($id) => (int) $id)
+                    ->map(fn ($id) => (int) $id)
                     ->unique()
                     ->values();
             }
         }
 
         $trackedProductIds = Product::query()
-            ->whereIn('id', collect($validated['product_id'] ?? [])->filter()->map(fn($id) => (int) $id)->unique()->values()->all())
+            ->whereIn('id', collect($validated['product_id'] ?? [])->filter()->map(fn ($id) => (int) $id)->unique()->values()->all())
             ->where('track_inventory', 1)
             ->pluck('id')
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->values();
 
         foreach ($validated['order_item_id'] as $idx => $orderItemId) {
@@ -318,7 +318,7 @@ class SalesShipmentController extends AccountBaseController
             $requestQty = (float) ($validated['quantity_shipped'][$idx] ?? 0);
             $left = (float) ($remaining[$orderItemId] ?? 0);
             if ($requestQty > $left) {
-                abort(422, 'Ship quantity cannot exceed remaining quantity (remaining: ' . number_format($left, 2, '.', '') . ', requested: ' . number_format($requestQty, 2, '.', '') . ').');
+                abort(422, 'Ship quantity cannot exceed remaining quantity (remaining: '.number_format($left, 2, '.', '').', requested: '.number_format($requestQty, 2, '.', '').').');
             }
 
             // Shippable line must map to a product so stock movement can be posted correctly.
@@ -355,7 +355,7 @@ class SalesShipmentController extends AccountBaseController
 
                 $availableQty = max(0, (float) $batch->quantity - (float) $batch->reserved_quantity);
                 if ($requestQty > $availableQty) {
-                    abort(422, 'Ship quantity cannot exceed selected batch available quantity (available: ' . number_format($availableQty, 4, '.', '') . ', requested: ' . number_format($requestQty, 4, '.', '') . ').');
+                    abort(422, 'Ship quantity cannot exceed selected batch available quantity (available: '.number_format($availableQty, 4, '.', '').', requested: '.number_format($requestQty, 4, '.', '').').');
                 }
 
                 $validated['batch_number'][$idx] = $batch->batch_number;
@@ -380,7 +380,7 @@ class SalesShipmentController extends AccountBaseController
         $ordered = OrderItems::query()
             ->where('order_id', $orderId)
             ->pluck('quantity', 'id')
-            ->map(fn($qty) => (float) $qty)
+            ->map(fn ($qty) => (float) $qty)
             ->toArray();
 
         $itemModelClass = SalesDoRuntime::itemModelClass();
@@ -389,14 +389,14 @@ class SalesShipmentController extends AccountBaseController
         $itemForeignKey = SalesDoRuntime::itemForeignKey();
 
         $alreadyShipped = $itemModelClass::query()
-            ->selectRaw($itemTable . '.order_item_id, SUM(' . $itemTable . '.quantity_shipped) as shipped_qty')
-            ->join($headerTable, $headerTable . '.id', '=', $itemTable . '.' . $itemForeignKey)
-            ->where($headerTable . '.order_id', $orderId)
-            ->whereNotIn($headerTable . '.status', ['cancelled'])
-            ->when($excludeShipmentId, fn($q) => $q->where($headerTable . '.id', '!=', $excludeShipmentId))
-            ->groupBy($itemTable . '.order_item_id')
+            ->selectRaw($itemTable.'.order_item_id, SUM('.$itemTable.'.quantity_shipped) as shipped_qty')
+            ->join($headerTable, $headerTable.'.id', '=', $itemTable.'.'.$itemForeignKey)
+            ->where($headerTable.'.order_id', $orderId)
+            ->whereNotIn($headerTable.'.status', ['cancelled'])
+            ->when($excludeShipmentId, fn ($q) => $q->where($headerTable.'.id', '!=', $excludeShipmentId))
+            ->groupBy($itemTable.'.order_item_id')
             ->pluck('shipped_qty', 'order_item_id')
-            ->map(fn($qty) => (float) $qty)
+            ->map(fn ($qty) => (float) $qty)
             ->toArray();
 
         $remaining = [];
@@ -414,7 +414,7 @@ class SalesShipmentController extends AccountBaseController
             ->where('company_id', $this->company?->id)
             ->max('id');
 
-        return 'SS-' . str_pad((string) ((int) $lastId + 1), 6, '0', STR_PAD_LEFT);
+        return 'SS-'.str_pad((string) ((int) $lastId + 1), 6, '0', STR_PAD_LEFT);
     }
 
     protected function parseCompanyDate(string $value): string
@@ -490,7 +490,7 @@ class SalesShipmentController extends AccountBaseController
         $productIds = $order->items
             ->pluck('product_id')
             ->filter()
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->unique()
             ->values();
 
@@ -502,7 +502,7 @@ class SalesShipmentController extends AccountBaseController
             ->whereIn('id', $productIds->all())
             ->where('track_inventory', 1)
             ->pluck('id')
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->values();
 
         if ($trackedProductIds->isEmpty()) {
@@ -514,7 +514,7 @@ class SalesShipmentController extends AccountBaseController
             $selectedBatchIds = $shipment->items
                 ->pluck('warehouse_batch_id')
                 ->filter()
-                ->map(fn($id) => (int) $id)
+                ->map(fn ($id) => (int) $id)
                 ->unique()
                 ->values();
         }
@@ -523,6 +523,11 @@ class SalesShipmentController extends AccountBaseController
             ->where('company_id', $this->company?->id)
             ->where('warehouse_id', $warehouseId)
             ->whereIn('product_id', $trackedProductIds->all())
+            // Only expose selectable "real" batches (has batch no. or expiry identity).
+            ->where(function ($q) {
+                $q->whereNotNull('batch_number')
+                    ->orWhereNotNull('expiration_date');
+            })
             ->where(function ($q) use ($selectedBatchIds) {
                 $q->whereRaw('(quantity - reserved_quantity) > 0');
                 if ($selectedBatchIds->isNotEmpty()) {
@@ -570,7 +575,7 @@ class SalesShipmentController extends AccountBaseController
 
         $selected = collect($selectedBatchIds)
             ->filter()
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->unique()
             ->values();
 
@@ -578,6 +583,10 @@ class SalesShipmentController extends AccountBaseController
             ->where('company_id', $this->company?->id)
             ->where('warehouse_id', $warehouseId)
             ->where('product_id', $productId)
+            ->where(function ($q) {
+                $q->whereNotNull('batch_number')
+                    ->orWhereNotNull('expiration_date');
+            })
             ->where(function ($q) use ($selected) {
                 $q->whereRaw('(quantity - reserved_quantity) > 0');
                 if ($selected->isNotEmpty()) {

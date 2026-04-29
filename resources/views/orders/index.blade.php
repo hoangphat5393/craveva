@@ -328,7 +328,18 @@
             window.LaravelDataTables["orders-table"].draw(true);
         }
 
-        function changeOrderStatus(orderID, status) {
+        function revertOrderStatusSelection($select, fallbackValue) {
+            if (!$select || !$select.length || typeof fallbackValue === 'undefined' || fallbackValue === null || fallbackValue === '') {
+                return;
+            }
+
+            $select.val(fallbackValue);
+            if (typeof $select.selectpicker === 'function') {
+                $select.selectpicker('refresh');
+            }
+        }
+
+        function changeOrderStatus(orderID, status, $sourceSelect = null, previousStatus = null) {
             var url = "{{ route('orders.change_status') }}";
             var token = "{{ csrf_token() }}";
             var id = orderID;
@@ -407,6 +418,7 @@
                                     window.apiHttp.postUrlEncoded(url, bodyBank).then(function() {
                                         showTable();
                                     }).catch(function(err) {
+                                        revertOrderStatusSelection($sourceSelect, previousStatus);
                                         if (typeof Swal !== 'undefined') {
                                             Swal.fire({
                                                 icon: 'error',
@@ -420,6 +432,8 @@
                                     }).finally(function() {
                                         $.easyUnblockUI('.content-wrapper');
                                     });
+                                } else {
+                                    revertOrderStatusSelection($sourceSelect, previousStatus);
                                 }
                             });
                         } else {
@@ -430,6 +444,7 @@
                             window.apiHttp.postUrlEncoded(url, bodyNoBank).then(function() {
                                 showTable();
                             }).catch(function(err) {
+                                revertOrderStatusSelection($sourceSelect, previousStatus);
                                 if (typeof Swal !== 'undefined') {
                                     Swal.fire({
                                         icon: 'error',
@@ -445,6 +460,7 @@
                             });
                         }
                     } else {
+                        revertOrderStatusSelection($sourceSelect, previousStatus);
                         showTable();
                     }
                 });
@@ -453,11 +469,20 @@
         }
 
 
-        $('#orders-table').on('change', '.order-status', function() {
-            var id = $(this).data('order-id');
-            var status = $(this).val();
+        $('#orders-table').on('focus', '.order-status', function() {
+            $(this).data('prev', $(this).val());
+        });
 
-            changeOrderStatus(id, status);
+        $('#orders-table').on('change', '.order-status', function() {
+            var $this = $(this);
+            var id = $this.data('order-id');
+            var status = $this.val();
+            var previous = $this.data('prev');
+            if (typeof previous === 'undefined' || previous === null || previous === '') {
+                previous = $this.find('option[selected]').val() || '';
+            }
+
+            changeOrderStatus(id, status, $this, previous);
         });
 
         $('#orders-table').on('click', '.orderStatusChange', function() {

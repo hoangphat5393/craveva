@@ -38,6 +38,7 @@ return [
     'amountNumber' => '金额应该是一个数字。',
     'itemBlank' => '项目名称不能为空。',
     'invalidRequest' => '无效的请求',
+    'orderCompleteRequiresShippedDo' => '订单尚未完成发货，无法完成。请先完成送货单（DO）。',
     'fileUploadedSuccessfully' => '文件上传成功。',
     'fileUploadIssue' => '文件未上传。请联系管理员',
     'issueStatusChanged' => '问题状态更改成功。',

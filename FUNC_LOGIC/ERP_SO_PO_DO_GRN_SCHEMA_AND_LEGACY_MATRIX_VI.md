@@ -8,7 +8,7 @@
 **Quy trình vận hành (PO/SO/invoice):** [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)  
 **Biến `.env`:** [`WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)  
 **Danh sách issue QA chi tiết (bảng A–O):** [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)  
-**Lịch sử refactor / tracker:** [`SO_DO_PO_GRN_REFACTOR_VI.md`](SO_DO_PO_GRN_REFACTOR_VI.md)
+**Lịch sử refactor / tracker:** [`SO_DO_PO_GRN_REFACTOR_VI.md`](../FUNC_IMPROVE/SO_DO_PO_GRN_REFACTOR_VI.md)
 
 ---
 
@@ -225,7 +225,7 @@ Tạo/sửa **Order** không gọi xuất kho trực tiếp trong luồng đã r
 
 ### 7.6 WUP (tóm tắt)
 
-WUP-01…07: `warehouse_type`, availability, reserve/outbound, canonical inbound/outbound, unit conversion, idempotency — chi tiết [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md) §6.
+WUP-01…07: `warehouse_type`, availability, reserve/outbound, canonical inbound/outbound, unit conversion, idempotency — chi tiết [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](../FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md) §6.
 
 ### 7.7 Rủi ro mở rộng
 
@@ -247,7 +247,7 @@ Nhiều invoice trên một SO; `default_warehouse_id` khách; job không có `u
 | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)                | Bảng issue QA chi tiết                                     |
 | [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                    | Hướng dẫn vận hành                                         |
 | [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                                                            | EN, class-level                                            |
-| [`SO_DO_PO_GRN_REFACTOR_VI.md`](SO_DO_PO_GRN_REFACTOR_VI.md)                                                                  | Lịch sử quyết định refactor                                |
+| [`SO_DO_PO_GRN_REFACTOR_VI.md`](../FUNC_IMPROVE/SO_DO_PO_GRN_REFACTOR_VI.md)                                                  | Lịch sử quyết định refactor                                |
 | [`docs/PHAN_TICH_MODULE_WAREHOUSE_SO_PO_DO_INVOICE_GRN_VI.md`](../docs/PHAN_TICH_MODULE_WAREHOUSE_SO_PO_DO_INVOICE_GRN_VI.md) | Stub trỏ FUNC_LOGIC                                        |
 
 ---

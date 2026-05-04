@@ -17,7 +17,7 @@
 | **Audit E2E / QA hiện tại**                                                     | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)                                            |
 | **Audit riêng Sales DO** (remaining, confirm, đổi kho)                          | [`AUDIT_SALES_DO_FUNCTIONAL_VI.md`](AUDIT_SALES_DO_FUNCTIONAL_VI.md)                                                                                      |
 | Luồng chi tiết **chỉ module kho** (điều chỉnh, chuyển, ledger…)                 | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                                                                                  |
-| **Runbook vận hành + kế hoạch nâng cấp (WUP)**                                  | [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md)                                                                    |
+| **Runbook vận hành + kế hoạch nâng cấp (WUP)**                                  | [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](../FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md)                                                    |
 | **Biến `.env` / kho + PO·GRN·Sales DO·webhook AI**                              | [`WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)                                                      |
 | Kiến trúc, DB, URL, permission                                                  | [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)                                                                                                  |
 | Audit **code** (route web/API, config, rủi ro API)                              | [`AUDIT_WAREHOUSE_MODULE_VI.md`](AUDIT_WAREHOUSE_MODULE_VI.md)                                                                                            |
@@ -26,7 +26,7 @@
 | **Checklist UAT E2E (Mua · Bán · Kho)**                                         | **[`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)**                                                                          |
 | Luồng code SO/Invoice/PO (English, deep)                                        | [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                                                                                        |
 | Audit đa kho (lịch sử + note Scope B)                                           | [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md)                                                                                      |
-| Refactor **Sales DO / GRN** (quyết định + kế hoạch + tracker)                   | [`SO_DO_PO_GRN_REFACTOR_VI.md`](SO_DO_PO_GRN_REFACTOR_VI.md)                                                                                              |
+| Refactor **Sales DO / GRN** (quyết định + kế hoạch + tracker)                   | [`SO_DO_PO_GRN_REFACTOR_VI.md`](../FUNC_IMPROVE/SO_DO_PO_GRN_REFACTOR_VI.md)                                                                              |
 | Demo nhanh inventory trigger (PO/GRN/Bill, SO/DO/Invoice)                       | [`../FUNC_IMPORT/SO_PO_INVENTORY_IMPLEMENTATION_TRACKER.md`](../FUNC_IMPORT/SO_PO_INVENTORY_IMPLEMENTATION_TRACKER.md)                                    |
 | Định hướng nghiệp vụ inventory + batch                                          | [`../FUNC_IMPROVE/INVENTORY_BUSINESS_IMPROVE.md`](../FUNC_IMPROVE/INVENTORY_BUSINESS_IMPROVE.md)                                                          |
 
@@ -57,8 +57,8 @@ Nội dung đã chuyển vào **`WAREHOUSE_TOM_TAT_NOI_BO.md`** (§10–11):
 
 **Gộp 2026-04-06:**
 
-- `WAREHOUSE_OPERATION_RUNBOOK_VI.md` + `WAREHOUSE_UPGRADE_PLANE.MD` → [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md)
-- `REFACTOR_SO_DO_PO_GRN_IMPLEMENTATION_PLAN_VI.md` + `REFACTOR_SO_DO_PO_GRN_TRACKER_VI.md` + `REFATOR_SO_DO_PO_GRN_DECISION_VI.md` → [`SO_DO_PO_GRN_REFACTOR_VI.md`](SO_DO_PO_GRN_REFACTOR_VI.md)
+- `WAREHOUSE_OPERATION_RUNBOOK_VI.md` + `WAREHOUSE_UPGRADE_PLANE.MD` → [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](../FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md)
+- `REFACTOR_SO_DO_PO_GRN_IMPLEMENTATION_PLAN_VI.md` + `REFACTOR_SO_DO_PO_GRN_TRACKER_VI.md` + `REFATOR_SO_DO_PO_GRN_DECISION_VI.md` → [`SO_DO_PO_GRN_REFACTOR_VI.md`](../FUNC_IMPROVE/SO_DO_PO_GRN_REFACTOR_VI.md)
 - `WEBHOOK_INBOUND_OUTBOUND_NOTE_VI.md` → mục [Thuật ngữ Inbound/Outbound](#thuật-ngữ-inboundoutbound-api--webhook) bên dưới
 
 Các tên cũ khác (Scope B log, Go-No-Go, Dingxin explained…) đã gộp trước đó — xem danh sách trong commit lịch sử.

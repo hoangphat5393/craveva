@@ -16,7 +16,7 @@
         "production": "mix --production"
     },
     "devDependencies": {
-        "axios": "^1.15.2",
+        "axios": "^1.16.0",
         "cross-env": "^5.2.1",
         "inputmask": "^5.0.9",
         "laravel-mix": "^6.0.49",

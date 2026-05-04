@@ -48,14 +48,15 @@
 
 ### 2.1 SO → Confirm DO (giữ chỗ) → Ship DO → Invoice (mode shipment mặc định)
 
-| #     | Bước thực hiện                                   | Kết quả mong đợi                       | Tác động tồn kho                                             | Giá vốn / costing             |
-| ----- | ------------------------------------------------ | -------------------------------------- | ------------------------------------------------------------ | ----------------------------- |
-| 2.1.1 | Tạo SO + dòng hàng.                              | Lưu đúng khách, SP, SL.                | Chưa trừ tồn.                                                |                               |
-| 2.1.2 | Tạo Sales DO có `warehouse_id`, dòng có SL ship. | DO ở trạng thái cho phép Confirm.      |                                                              |                               |
-| 2.1.3 | **Confirm DO**.                                  | Đặt chỗ active.                        | `reserved_quantity` ↑; available ↓; on_hand không đổi.       | COGS khi nào ghi — theo GL.   |
-| 2.1.4 | **Ship DO**.                                     | Trạng thái shipped.                    | **Outbound** ref Sales DO; tồn giảm; release reservation.    | COGS thường gắn xuất/invoice. |
-| 2.1.5 | Lập Invoice.                                     | AR đúng.                               | **Không** trừ tồn thêm khi `sales_outbound_mode = shipment`. |                               |
-| 2.1.6 | (Tuỳ cấu hình) Mode `invoice`.                   | Outbound từ Invoice; không chồng ship. | Một nguồn xuất.                                              |                               |
+| #     | Bước thực hiện                                         | Kết quả mong đợi                                      | Tác động tồn kho                                             | Giá vốn / costing             |
+| ----- | ------------------------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------ | ----------------------------- |
+| 2.1.1 | Tạo SO + dòng hàng.                                    | Lưu đúng khách, SP, SL.                               | Chưa trừ tồn.                                                |                               |
+| 2.1.2 | Tạo Sales DO có `warehouse_id`, dòng có SL ship.       | DO ở trạng thái cho phép Confirm.                     |                                                              |                               |
+| 2.1.3 | **Confirm DO**.                                        | Đặt chỗ active.                                       | `reserved_quantity` ↑; available ↓; on_hand không đổi.       | COGS khi nào ghi — theo GL.   |
+| 2.1.4 | **Ship DO**.                                           | Trạng thái shipped.                                   | **Outbound** ref Sales DO; tồn giảm; release reservation.    | COGS thường gắn xuất/invoice. |
+| 2.1.5 | Lập Invoice.                                           | AR đúng.                                              | **Không** trừ tồn thêm khi `sales_outbound_mode = shipment`. |                               |
+| 2.1.6 | (Tuỳ cấu hình) Mode `invoice`.                         | Outbound từ Invoice; không chồng ship.                | Một nguồn xuất.                                              |                               |
+| 2.1.7 | Thử tạo invoice lần 2 cho cùng SO/DO (trùng line/qty). | Hệ thống phải chặn hoặc cảnh báo rõ ràng theo policy. | Không phát sinh double bill ngoài chủ đích.                  | AR không bị ghi nhận trùng.   |
 
 ### 2.2 Trả hàng bán (Credit Note + nhập kho)
 
@@ -215,6 +216,7 @@ Trong **`purchase::sections.sidebar`** (menu **Operations**), khi module **Wareh
 
 - **Inbound đôi:** hai flag PO delivered + DO received cùng bật → tồn phình.
 - **Sales outbound:** đã có shipment/invoice mode — vẫn audit idempotency, reversal, đúng kho.
+- **Invoice trùng SO/DO:** nếu không chặn theo policy sẽ gây **double bill** (AR/doanh thu đội lên sai).
 - **Legacy PaymentObserver / PurchaseStockAdjustment:** khi warehouse sales outbound bật có nhánh skip — vẫn rà chỗ khác dùng adjustment không warehouse.
 - **UI batch/expiry** trên điều chỉnh/chuyển có thể hạn chế — FEFO chỉ phát huy khi có dữ liệu lô.
 - **Ledger:** reference có thể chưa deep-link sang chứng từ nguồn.

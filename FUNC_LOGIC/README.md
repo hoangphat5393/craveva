@@ -2,6 +2,12 @@
 
 Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**, không thay cho code.
 
+## AI context (đọc nhanh kiến trúc hệ thống)
+
+- `ai-context/core/SYSTEM_OVERVIEW.md` (tổng quan hệ thống, routes, risk signals)
+- `ai-context/core/MODULE_INDEX.md` (mục lục module → context theo module)
+- `ai-context/audit/SECURITY_REPORT.md`, `ai-context/audit/TECH_DEBT_REPORT.md` (audit heuristic)
+
 ## Có nên gộp nhiều file thành một?
 
 | Cách làm                                                  | Ưu                             | Nhược                                                                           |
@@ -25,7 +31,7 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 | [DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md](DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md)                                 | Developer Tools: gateway DB, quyền UI, AI/SQL, `developertools:audit`      |
 | [FLOW_Modules_Package_LanguagePack_CustomFields_VI.md](FLOW_Modules_Package_LanguagePack_CustomFields_VI.md) | **Gộp:** `packages:modules` (nwidart), LanguagePack, custom fields + audit |
 | [Libraries_And_Module_Names.md](Libraries_And_Module_Names.md)                                               | Composer / tên module trong app                                            |
-| [Login_Flow.md](Login_Flow.md)                                                                               | Đăng nhập (Fortify, session, …)                                            |
+| [FLOW_USERS_CLIENT.md](FLOW_USERS_CLIENT.md)                                                                 | Đăng nhập (Fortify/session) + quan hệ users/client (có sequence)           |
 
 ### Flow nghiệp vụ (FLOW\_\*)
 
@@ -54,31 +60,31 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 | [ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md) | QA verification hiện tại cho SO/PO/DO/Invoice/Warehouse                                 |
 | [MAOLIN_MASTER_GUIDE.md](MAOLIN_MASTER_GUIDE.md)                                                             | **Bản gộp MAOLIN** (đọc 1 file là đủ)                                                   |
 | [MAOLIN_IMPORT_MAPPING.md](MAOLIN_IMPORT_MAPPING.md)                                                         | Map cột import MAOLIN (ready to use)                                                    |
-| [CUSTOM_FIELDS_GO_BO_TRUNG_COT_PO_DO_SO_CLIENT_VI.md](CUSTOM_FIELDS_GO_BO_TRUNG_COT_PO_DO_SO_CLIENT_VI.md)   | CF nên gỡ (trùng cột chuẩn): PO, DO, SO, Client + link migration                        |
+| (đã gộp)                                                                                                     | CF trùng PO/DO/SO/Client → xem `CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md`             |
 | [CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md](CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md)                     | **Bảng CF toàn hệ** — slug seed vs nghiệp vụ vs core + SQL xuất DB thực tế              |
 | [PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)                                 | Phân tích chi tiết file `PROJECT MAOLIN New`                                            |
 | [ERP_TECH_REVIEW_REPORT_VI.md](ERP_TECH_REVIEW_REPORT_VI.md)                                                 | Tech review (VI)                                                                        |
 
 ### Import / client / DB
 
-| File                                                                                                                     | Nội dung                                                        |
-| ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
-| [CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md](CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                                     | Review import client                                            |
-| [CLIENT_IMPORT_LOG_UX_PROPOSAL.md](CLIENT_IMPORT_LOG_UX_PROPOSAL.md)                                                     | UX log import                                                   |
-| [IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md](IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md)                                     | Chunk & bulk insert                                             |
-| [PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md](PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md)                                               | Import chậm                                                     |
-| (đã gộp)                                                                                                                 | MAOLIN/Miaolin legacy + contract → xem `MAOLIN_MASTER_GUIDE.md` |
-| [SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md](SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md)                                           | Báo cáo tổng quan DB (MySQL, miền nghiệp vụ, SQL gợi ý)         |
-| [DATABASE_REPORT_USERS_CLIENT_TABLES_RELATIONSHIPS.md](DATABASE_REPORT_USERS_CLIENT_TABLES_RELATIONSHIPS.md)             | Quan hệ users / client                                          |
-| [SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md](SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md) | Layer users–client_details                                      |
+| File                                                                                                                     | Nội dung                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| [CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md](../FUNC_IMPROVE/CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                     | Review import client (archived — ưu tiên `FLOW_ADD_CLIENT.md`)                      |
+| [ORDER_HISTORY_IMPROVE_PLAN.MD](../FUNC_IMPROVE/ORDER_HISTORY_IMPROVE_PLAN.MD)                                           | Import Sales History — cải tiện / vận hành queue                                    |
+| (import log)                                                                                                             | Import log hiện đang mô tả trong `FLOW_ADD_CLIENT.md` + các view/progress liên quan |
+| [IMPORT_CHUNK_AND_BULK_INSERT.md](IMPORT_CHUNK_AND_BULK_INSERT.md)                                                       | Chunk & bulk insert                                                                 |
+| [PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md](PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md)                                               | Import chậm                                                                         |
+| (đã gộp)                                                                                                                 | MAOLIN/Miaolin legacy + contract → xem `MAOLIN_MASTER_GUIDE.md`                     |
+| [SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md](SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md)                                           | Báo cáo tổng quan DB (MySQL, miền nghiệp vụ, SQL gợi ý)                             |
+| [FLOW_USERS_CLIENT.md](FLOW_USERS_CLIENT.md)                                                                             | Quan hệ users / client (gộp: mapping + sơ đồ + ghi chú schema)                      |
+| [SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md](SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md) | Layer users–client_details                                                          |
 
 ### Pricing / dev tools
 
-| File                                                                       | Nội dung                        |
-| -------------------------------------------------------------------------- | ------------------------------- |
-| [PRICING_MODULE_DEV_TASKS.md](PRICING_MODULE_DEV_TASKS.md)                 | Task dev Pricing                |
-| [DEVELOPER_TOOLS_LOGGING_EXT_PLAN.md](DEVELOPER_TOOLS_LOGGING_EXT_PLAN.md) | Mở rộng logging Developer Tools |
-| [DeveloperTools_FullAccess_Demo.md](DeveloperTools_FullAccess_Demo.md)     | Demo full access                |
+| File                                                                       | Nội dung                       |
+| -------------------------------------------------------------------------- | ------------------------------ |
+| [PRICING_MODULE_DEV_TASKS.md](../FUNC_IMPROVE/PRICING_MODULE_DEV_TASKS.md) | Task dev Pricing               |
+| [DEVELOPER_TOOLS_EXT_PLAN.md](DEVELOPER_TOOLS_EXT_PLAN.md)                 | Mở rộng Developer Tools (plan) |
 
 ---
 

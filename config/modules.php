@@ -93,6 +93,19 @@ return [
         */
 
         'migration' => base_path('database/migrations'),
+
+        /*
+        |--------------------------------------------------------------------------
+        | The app path (inside each module)
+        |--------------------------------------------------------------------------
+        |
+        | Required by nwidart module:make when generating module composer.json
+        | (ModuleGenerator::getAppFolderNameReplacement). Omitting this key caused
+        | "Return value must be of type string, null returned" on PHP 8.3.
+        |
+        */
+        'app_folder' => 'app/',
+
         /*
         |--------------------------------------------------------------------------
         | Generator path

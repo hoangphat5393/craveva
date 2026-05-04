@@ -1,0 +1,28 @@
+%% Craveva: LINE / WhatsApp → AI (ai.craveva.com) → Hub (hub.craveva.com)
+%% Xem: line_whatsapp_ai_hub_architecture.html
+
+flowchart TB
+    subgraph channels["Kênh chat"]
+        U["Người dùng"]
+        LINE["LINE Official Account"]
+        WA["WhatsApp Business"]
+    end
+
+    subgraph ai_layer["Nền tảng AI"]
+        AI["Craveva AI\nhttps://ai.craveva.com\nWebhook + Agent / LLM"]
+    end
+
+    subgraph hub_layer["Craveva Hub"]
+        HUB["hub.craveva.com\n(ứng dụng Hub)"]
+        DB[("Database Hub\nsản phẩm, giá, …")]
+        HUB --> DB
+    end
+
+    U --> LINE
+    U --> WA
+    LINE -->|"HTTPS Webhook"| AI
+    WA -->|"HTTPS Webhook"| AI
+    AI -->|"Truy vấn (API Hub / theo triển khai)"| HUB
+    AI -.->|"Tuỳ cấu hình:\nđọc DB trực tiếp"| DB
+    AI -->|"Phản hồi qua API nền tảng"| LINE
+    AI --> WA

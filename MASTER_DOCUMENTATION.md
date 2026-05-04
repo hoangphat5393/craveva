@@ -452,6 +452,9 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 
 | Resource                                                          | Description                                                                                    |
 | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `ai-context/core/SYSTEM_OVERVIEW.md`                               | AI context: tổng quan hệ thống (routes, scan coverage, risk signals).                           |
+| `ai-context/core/MODULE_INDEX.md`                                  | AI context: mục lục module → context theo module.                                               |
+| `ai-context/core/FUNC_DOCS_INDEX.md`                               | AI context: map tài liệu `FUNC_*` vào kiến trúc retrieval.                                      |
 | `FUNC_LOGIC/README.md`                                            | Logic & flow docs index (login, package/module commands, flows).                               |
 | `FUNC_LOGIC/FLOW_ADD_CLIENT.md`                                   | Flow: add client (form + import), DB writes, role/permissions.                                 |
 | `FUNC_LOGIC/FLOW_ADD_PRODUCT.md`                                  | Flow: add product.                                                                             |

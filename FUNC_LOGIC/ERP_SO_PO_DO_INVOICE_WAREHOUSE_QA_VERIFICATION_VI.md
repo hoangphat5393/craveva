@@ -99,13 +99,13 @@ Tom tat:
 - Quy trinh nghiep vu: `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
 - UAT E2E: `FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`
 - Master schema + migration state: `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`
-- Runbook + env: `FUNC_LOGIC/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`, `FUNC_LOGIC/WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`
+- Runbook + env: `FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`, `FUNC_LOGIC/WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`
 
 # ERP — Kiểm tra SO / PO / DO / Invoice / Multi-Warehouse / Inventory (codebase)
 
 **Ngày cập nhật:** 2026-04-09  
 **Master (luồng bán, schema, bảng legacy đã gỡ trên env đã xác nhận, audit gộp):** [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md) — file **này** giữ **danh sách issue QA theo bảng A–O**; đừng trùng lặp bằng cách copy audit ngắn sang đây.  
-**Bổ sung 2026-04:** Đã có **`WarehouseFlowPolicyService`** — nếu bật đồng thời inbound PO + DO (`WAREHOUSE_INBOUND_FROM_PO_DELIVERED` và `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`), hệ thống **fail fast** (exception) thay vì chỉ “guard nhẹ” ở một observer. Tiến độ WUP và runbook: `FUNC_LOGIC/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`.  
+**Bổ sung 2026-04:** Đã có **`WarehouseFlowPolicyService`** — nếu bật đồng thời inbound PO + DO (`WAREHOUSE_INBOUND_FROM_PO_DELIVERED` và `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`), hệ thống **fail fast** (exception) thay vì chỉ “guard nhẹ” ở một observer. Tiến độ WUP và runbook: `FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`.  
 **Phương pháp:** Phân tích luồng thực tế trong code (Laravel + `Modules/Purchase`, `Modules/Warehouse`), **không** chạy UAT tự động trên DB staging.  
 **Chốt flow bán (mặc định code):** `WAREHOUSE_SALES_OUTBOUND_MODE=shipment` → xuất kho khi **ship phiếu giao bán** (entity **`SalesDo`**, bảng **`sales_dos`**); invoice không post outbound (trừ khi đặt mode `invoice`). Tên class/service vẫn có “Shipment” ở một số chỗ — xem master.  
 **Tham chiếu:** `FUNC_LOGIC/SALES_PURCHASE_FLOW.md`, `Modules/Warehouse/Config/config.php`, `SalesShipmentStockService`, `InvoiceWarehouseStockService`, `PurchaseOrderObserver`, `DeliveryOrderObserver`.
@@ -352,7 +352,7 @@ Pham vi Option B MVP khong sua pha flow PO/DO inbound cu.
 ### E. 🛠 Suggested Fix Plan
 
 - **Step 1:** Chốt config tenant (`WAREHOUSE_SALES_OUTBOUND_MODE`, inbound flags, negative stock), lưu trong runbook triển khai.
-- **Step 2:** QA chạy checklist theo `FUNC_LOGIC/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md` và ký nhận kết quả từng TC.
+- **Step 2:** QA chạy checklist theo `FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md` và ký nhận kết quả từng TC.
 - **Step 3:** Cập nhật tài liệu đào tạo user: thay toàn bộ “DO bán” thành “Sales Shipment” và hướng dẫn đối soát tồn theo mode đã chốt.
 
 ---
@@ -450,7 +450,7 @@ Repo **chưa** có (hoặc chưa thấy trong `tests/`) các suite kiểu:
 - **InvoiceController** tạo/sửa invoice qua request thật + đối chiếu `stock_movements`.
 - Module **Inventory** (màn hình tồn, điều chỉnh) nếu tách khác `StockMovementService`.
 
-**Kết luận cho PM/QA:** lần chạy này **không phát hiện regression** trong phạm vi test đã có; **luồng ERP đầy đủ trên UI** vẫn nên chạy theo `FUNC_LOGIC/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md` và checklist PO/DO/inbound trong tài liệu quy trình.
+**Kết luận cho PM/QA:** lần chạy này **không phát hiện regression** trong phạm vi test đã có; **luồng ERP đầy đủ trên UI** vẫn nên chạy theo `FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md` và checklist PO/DO/inbound trong tài liệu quy trình.
 
 ---
 
@@ -499,7 +499,7 @@ WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true
 ## O. Backlog de xuat (luu de can nhac sau) — Chuan hoa ten nghiep vu: `SO -> DO`, `PO -> GRN`
 
 **Nguon de xuat:** trao doi voi user ngay 2026-03-30.
-**Tài liệu quyết định + tracker:** `FUNC_LOGIC/SO_DO_PO_GRN_REFACTOR_VI.md`.
+**Tài liệu quyết định + tracker:** `FUNC_IMPROVE/SO_DO_PO_GRN_REFACTOR_VI.md`.
 
 ### Muc tieu nghiep vu mong muon
 

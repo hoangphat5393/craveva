@@ -1,5 +1,17 @@
 # Inventory Business Direction
 
+## Trạng thái rà soát (2026-04-30)
+
+- Đã có trong hệ thống:
+    - Snapshot tồn kho đồng bộ từ `warehouse_product_batches` (on-hand/reserved/available).
+    - Guard batch ở Sales DO theo điều kiện thực tế (không bắt batch cứng cho mọi sản phẩm).
+    - Trigger tồn kho chuẩn theo DO ship / GRN received trong flow hiện tại.
+- Đang còn backlog:
+    - Tách màn/luồng hiển thị “Inventory On-hand” vs “Movement History” rõ hơn ở UI.
+    - Chuẩn hóa sâu policy theo cờ sản phẩm (`is_batch_tracked`, `is_expiry_tracked`, `is_serial_tracked`) trên toàn bộ inbound paths.
+    - Dashboard aging/near-expiry theo batch nâng cao.
+- Kết luận: file này vẫn còn giá trị **định hướng improve**, chưa thể xóa.
+
 ## Mục tiêu
 
 Chuẩn hóa nghiệp vụ kho theo 2 lớp dữ liệu:

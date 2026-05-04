@@ -87,4 +87,4 @@ Hai thứ **bổ sung** nhau, không thay thế.
 
 ---
 
-**Tham chiếu:** `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` (kiến trúc module Production), `BIOMIXING_FLOW_CRACEVA_GAP.md` (flow khách hàng).
+**Tham chiếu:** `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` (kiến trúc module Production), `BIOMIXING_FLOW_CRACEVA_GAP.md` (flow khách hàng), **`BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`** (nền SO/PO/DO/kho 2026), `BIOMIXING_DOC_STALE_AUDIT_AND_REPLACEMENTS_2026_VI.md`, `FUNC_LOGIC/WAREHOUSE_INDEX.md`.

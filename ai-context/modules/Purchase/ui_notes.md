@@ -1,0 +1,46 @@
+# UI_NOTES
+
+- Generated at: 2026-05-04T05:35:06+00:00
+
+- Views count: 132
+
+- Modules/Purchase/Resources/views/bills/ajax/add_item.blade.php
+- Modules/Purchase/Resources/views/bills/ajax/create.blade.php
+- Modules/Purchase/Resources/views/bills/ajax/edit.blade.php
+- Modules/Purchase/Resources/views/bills/ajax/history.blade.php
+- Modules/Purchase/Resources/views/bills/ajax/overview.blade.php
+- Modules/Purchase/Resources/views/bills/create.blade.php
+- Modules/Purchase/Resources/views/bills/index.blade.php
+- Modules/Purchase/Resources/views/bills/pdf/invoice-1.blade.php
+- Modules/Purchase/Resources/views/bills/pdf/invoice-2.blade.php
+- Modules/Purchase/Resources/views/bills/pdf/invoice-3.blade.php
+- Modules/Purchase/Resources/views/bills/pdf/invoice-4.blade.php
+- Modules/Purchase/Resources/views/bills/pdf/invoice-5.blade.php
+- Modules/Purchase/Resources/views/bills/pdf/invoice_pdf_css.blade.php
+- Modules/Purchase/Resources/views/bills/show.blade.php
+- Modules/Purchase/Resources/views/components/purchase-tab.blade.php
+- Modules/Purchase/Resources/views/delivery-order/ajax/create.blade.php
+- Modules/Purchase/Resources/views/delivery-order/ajax/edit.blade.php
+- Modules/Purchase/Resources/views/delivery-order/ajax/items.blade.php
+- Modules/Purchase/Resources/views/delivery-order/ajax/overview.blade.php
+- Modules/Purchase/Resources/views/delivery-order/create.blade.php
+- Modules/Purchase/Resources/views/delivery-order/index.blade.php
+- Modules/Purchase/Resources/views/delivery-order/pdf/delivery-order-1.blade.php
+- Modules/Purchase/Resources/views/delivery-order/show.blade.php
+- Modules/Purchase/Resources/views/layouts/master.blade.php
+- Modules/Purchase/Resources/views/notifications/admin_new_vendor_payment.blade.php
+- Modules/Purchase/Resources/views/notifications/admin_update_vendor_payment.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/ajax/add_quantity.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/ajax/add_value.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/ajax/create.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/ajax/files.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/ajax/history.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/ajax/import.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/ajax/import_progress.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/ajax/overview.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/create.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/index.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/inventory-files/ajax-list.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/inventory-files/create.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/inventory-files/thumbnail-list.blade.php
+- Modules/Purchase/Resources/views/purchase-inventory/pdf/invoice-1.blade.php

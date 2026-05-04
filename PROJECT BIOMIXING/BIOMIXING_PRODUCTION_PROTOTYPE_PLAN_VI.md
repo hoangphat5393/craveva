@@ -4,7 +4,7 @@
 
 **Trạng thái:** Kế hoạch nội bộ — chỉnh lại khi chốt scope với khách và sau spike kỹ thuật.
 
-**Tham chiếu:** `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md`, `2-4-2026_BIOMIXIN_DEMO_PREP_CHECKLIST.md` (demo = dữ liệu + kịch bản; **không** thay cho build module).
+**Tham chiếu:** `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md`, **`BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`** (nền kho/DO 2026), `2-4-2026_BIOMIXIN_DEMO_PREP_CHECKLIST.md` (demo = dữ liệu + kịch bản; **không** thay cho build module), `FUNC_LOGIC/WAREHOUSE_INDEX.md`.
 
 ---
 

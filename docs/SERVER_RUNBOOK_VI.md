@@ -257,7 +257,7 @@ Sau đó: `php artisan migrate`. **Production/hub:** chỉ làm sau backup + tro
 
 Nếu DB đã bỏ bảng legacy, hai lệnh trên **không chạy được** — đó là bình thường; tạo chứng từ mới trên UI.
 
-**Tài liệu nghiệp vụ:** `FUNC_LOGIC/SO_DO_PO_GRN_REFACTOR_VI.md`, `docs/PHAN_TICH_MODULE_WAREHOUSE_SO_PO_DO_INVOICE_GRN_VI.md`.
+**Tài liệu nghiệp vụ:** `FUNC_IMPROVE/SO_DO_PO_GRN_REFACTOR_VI.md`, `docs/PHAN_TICH_MODULE_WAREHOUSE_SO_PO_DO_INVOICE_GRN_VI.md`.
 
 ---
 

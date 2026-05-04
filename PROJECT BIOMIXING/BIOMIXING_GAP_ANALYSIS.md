@@ -1,5 +1,7 @@
 # Biomixing System Analysis & Gap Report
 
+> **2026-04 notice:** This **2026-02-13** draft predates the current Hub SO/PO/DO/Warehouse stack. The **Extension → Warehouse** row and **Critical → Batch Tracking** row were **refreshed 2026-04** (`warehouse_product_batches`, Sales DO); other tables/sections may still read like an older snapshot — cross-check **`BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`** and **`FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`**. Biomixing **process gaps** (BOM, CCP, Production domain) below remain relevant.
+
 **Client:** Biomixing (Agri-tech/Biotech)
 **Platform:** Craveva ERP + Craveva AI
 **Date:** 2026-02-13
@@ -52,12 +54,12 @@ _Foundational logic located in `app/Http/Controllers/`._
 
 _Located in `Modules/` directory._
 
-| Module        | Functionality               | Key Entities              | Integration Status                                    |
-| :------------ | :-------------------------- | :------------------------ | :---------------------------------------------------- |
-| **Purchase**  | Vendor Management, POs.     | `PurchaseOrder`, `Vendor` | **Ready.** Essential for raw material sourcing.       |
-| **Warehouse** | Stock Tracking, Transfers.  | `Warehouse`, `Stock`      | **Partial.** Needs Batch/Expiry tracking for biotech. |
-| **Pricing**   | Complex pricing structures. | `Pricing`                 | **Optional.** May support margin simulation.          |
-| **Asset**     | Equipment tracking.         | `Asset`                   | **Optional.** Can track mixing machines.              |
+| Module        | Functionality                                                                                                                 | Key Entities                    | Integration Status                                                                                                                                                      |
+| :------------ | :---------------------------------------------------------------------------------------------------------------------------- | :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Purchase**  | Vendor Management, POs.                                                                                                       | `PurchaseOrder`, `Vendor`       | **Ready.** Essential for raw material sourcing.                                                                                                                         |
+| **Warehouse** | Stock, transfers, **multi-warehouse**, **batch/expiry** (`warehouse_product_batches`), Sales DO reservation/ship integration. | `Warehouse`, batches, movements | **Ready (ops layer).** Still missing **Production-linked** RM→work order→FG batch chain + HACCP receiving QC — see `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`. |
+| **Pricing**   | Complex pricing structures.                                                                                                   | `Pricing`                       | **Optional.** May support margin simulation.                                                                                                                            |
+| **Asset**     | Equipment tracking.                                                                                                           | `Asset`                         | **Optional.** Can track mixing machines.                                                                                                                                |
 
 ---
 
@@ -69,11 +71,11 @@ The following components must be developed or configured to meet the proposal's 
 
 _Must be addressed before the Pilot._
 
-| Feature                  | Description                        | Technical Requirement                                                                                                                           |
-| :----------------------- | :--------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **AI Integration Layer** | APIs for Agents to query ERP data. | **New Endpoints:** `GET /api/v1/ai/estimates/history` (Sales Agent), `GET /api/v1/ai/inventory/check` (Analytic Agent).                         |
-| **Batch Tracking**       | Traceability for biotech safety.   | **Schema Update:** Add `batch_number` (string) and `expiry_date` (date) to `warehouse_product_stock` table.                                     |
-| **Recipe Management**    | Defining the "Formula".            | **New Feature:** Extend `Product` entity to support `hasMany` relationship with `Product` (Ingredients) → a simple **Bill of Materials (BOM)**. |
+| Feature                  | Description                        | Technical Requirement                                                                                                                                                                                                                                                                                             |
+| :----------------------- | :--------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **AI Integration Layer** | APIs for Agents to query ERP data. | **New Endpoints:** `GET /api/v1/ai/estimates/history` (Sales Agent), `GET /api/v1/ai/inventory/check` (Analytic Agent).                                                                                                                                                                                           |
+| **Batch Tracking**       | Traceability for biotech safety.   | **2026 update:** Batch/expiry on hand is implemented via **`warehouse_product_batches`** and Sales DO line batch identity (see `FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`). **Remaining gap:** tie **production consumption / FG output** to those batches end-to-end (Production module). |
+| **Recipe Management**    | Defining the "Formula".            | **New Feature:** Extend `Product` entity to support `hasMany` relationship with `Product` (Ingredients) → a simple **Bill of Materials (BOM)**.                                                                                                                                                                   |
 
 ### High Priorities
 

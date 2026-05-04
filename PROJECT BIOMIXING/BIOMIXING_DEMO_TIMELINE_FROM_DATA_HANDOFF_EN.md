@@ -2,6 +2,8 @@
 
 **What this covers:** Working **business days** from receipt of a **complete data package** to a **scripted Hub/staging demo** (import + mapping + rehearsal). **Not** Production/MES build — see `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` / `BIOMIXING_PRODUCTION_PROTOTYPE_PLAN_VI.md`.
 
+**Hub behaviour while rehearsing (2026):** `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md` §2–3 and `FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md` (SO / Sales DO / batch on lines).
+
 **File list:** `2-4-2026_BIOMIXIN_DEMO_PREP_CHECKLIST.md` (**A1–A6** CORE; **B** / flowchart optional).
 
 **Updated:** 2026-04 · Planning estimate only, not a contractual SLA.

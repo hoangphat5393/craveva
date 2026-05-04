@@ -1,7 +1,7 @@
 # Craveva ERP — Production Module: Timeline Summary (for PM)
 
 **Context:** Laravel/PHP multi-tenant ERP; multi-warehouse already available.  
-**Reference:** `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` (full Vietnamese report).
+**Reference:** `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` (full Vietnamese report). **Platform baseline (2026):** `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`, `FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`.
 
 **Assumptions:** 1–2 backend developers (FT) + ~0.5 QA + PM; Hub go-live after UAT on staging; no parallel major projects.
 

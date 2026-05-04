@@ -1,0 +1,46 @@
+# UI_NOTES
+
+- Generated at: 2026-05-04T05:35:06+00:00
+
+- Views count: 150
+
+- Modules/Recruit/Resources/views/candidate-database/ajax/show.blade.php
+- Modules/Recruit/Resources/views/candidate-database/index.blade.php
+- Modules/Recruit/Resources/views/candidate-database/show.blade.php
+- Modules/Recruit/Resources/views/components/cards/custom-question-field.blade.php
+- Modules/Recruit/Resources/views/components/cards/job-card.blade.php
+- Modules/Recruit/Resources/views/dashboard/index.blade.php
+- Modules/Recruit/Resources/views/front/custom-page.blade.php
+- Modules/Recruit/Resources/views/front/fetch-first-job.blade.php
+- Modules/Recruit/Resources/views/front/fetch-job.blade.php
+- Modules/Recruit/Resources/views/front/index.blade.php
+- Modules/Recruit/Resources/views/front/job-alert.blade.php
+- Modules/Recruit/Resources/views/front/job-apply.blade.php
+- Modules/Recruit/Resources/views/front/job-detail-page.blade.php
+- Modules/Recruit/Resources/views/front/job-detail.blade.php
+- Modules/Recruit/Resources/views/front/job-details-modal.blade.php
+- Modules/Recruit/Resources/views/front/job-openings.blade.php
+- Modules/Recruit/Resources/views/front/jobOffer.blade.php
+- Modules/Recruit/Resources/views/front/thankyou-page.blade.php
+- Modules/Recruit/Resources/views/import/import_exception.blade.php
+- Modules/Recruit/Resources/views/import/process-form.blade.php
+- Modules/Recruit/Resources/views/index.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/ajax/activity-detail.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/ajax/create.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/ajax/details.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/ajax/edit.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/ajax/evaluation.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/ajax/file.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/ajax/history.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/ajax/show.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/create.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/evaluation/create.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/evaluation/edit.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/index.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/recommendation-status/create.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/reschedule/create.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/show.blade.php
+- Modules/Recruit/Resources/views/interview-schedule/table.blade.php
+- Modules/Recruit/Resources/views/job-applications/add_rejection_remark.blade.php
+- Modules/Recruit/Resources/views/job-applications/add_remark.blade.php
+- Modules/Recruit/Resources/views/job-applications/ajax/create.blade.php

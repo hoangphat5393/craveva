@@ -1,7 +1,7 @@
 # Craveva ERP — Production Module: Delivery Timeline (Customer-facing)
 
 **Subject:** Estimated calendar from project kickoff to **Hub production go-live** (UAT completed).  
-**Reference (internal):** `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md`
+**Reference (internal):** `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md`. **Platform baseline (2026):** `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`.
 
 This document contains **no internal tooling details** — suitable to share with the customer under NDA as agreed.
 

@@ -59,6 +59,10 @@ class SalesDoService
 
             $this->syncItems($shipment, $payload);
 
+            if ($payload['status'] === 'confirmed') {
+                $this->stockService->ensureReservationsForShipment($shipment->fresh(['items']));
+            }
+
             return $shipment;
         });
     }
@@ -66,6 +70,8 @@ class SalesDoService
     public function update(Model $shipment, array $payload, int $userId): Model
     {
         return DB::transaction(function () use ($shipment, $payload, $userId) {
+            $priorStatus = $shipment->status;
+
             $shipment->order_id = (int) $payload['order_id'];
             $shipment->warehouse_id = (int) $payload['warehouse_id'];
             $shipment->shipment_number = $payload['shipment_number'];
@@ -76,6 +82,10 @@ class SalesDoService
             $shipment->save();
 
             $this->syncItems($shipment, $payload);
+
+            if ($priorStatus === 'draft' && $payload['status'] === 'confirmed') {
+                $this->stockService->ensureReservationsForShipment($shipment->fresh(['items']));
+            }
 
             return $shipment;
         });

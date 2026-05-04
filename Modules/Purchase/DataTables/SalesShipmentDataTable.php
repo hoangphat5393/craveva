@@ -176,6 +176,11 @@ class SalesShipmentDataTable extends BaseDataTable
             $query->where(DB::raw('DATE('.$headerTable.'.'.$dateColumn.')'), '<=', Carbon::createFromFormat(company()->date_format, $request->endDate)->toDateString());
         }
 
+        // Default listing: newest DO first.
+        if (! is_array($request->input('order')) || empty($request->input('order'))) {
+            $query->orderByDesc($headerTable.'.id');
+        }
+
         return $query;
     }
 

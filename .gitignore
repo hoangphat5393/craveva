@@ -66,3 +66,5 @@ GEMINI.md
 
 # Deploy: GitHub PAT for upload_*.ps1 (never commit)
 /scripts/deploy-secrets.local.ps1
+
+graphify-out/

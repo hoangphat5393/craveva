@@ -74,9 +74,11 @@ Chi tiết schema & legacy: `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRI
 
 1. **File này** (baseline).
 2. `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` (roadmap + phase).
-3. `BIOMIXING_FLOW_CRACEVA_GAP.md` (bước xưởng — đọi kèm §3 baseline).
-4. `FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md` + `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`.
-5. `BIOMIXING_PRODUCTION_PROTOTYPE_PLAN_VI.md` nếu làm POC trước.
+3. **`BIOMIXING_PRODUCTION_FLOW_CONCEPTS_VI.md`** — luồng nghiệp vụ RM/FG, tồn kho, PO dùng chung, DO chung B2B (tránh nhầm scope).
+4. **`BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md`** — chia nhỏ Phase 0–1 (migration, spike kho, test, milestone) trước khi sprint.
+5. `BIOMIXING_FLOW_CRACEVA_GAP.md` (bước xưởng — đọc kèm §3 baseline).
+6. `FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md` + `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`.
+7. `BIOMIXING_PRODUCTION_PROTOTYPE_PLAN_VI.md` nếu làm POC trước.
 
 ---
 

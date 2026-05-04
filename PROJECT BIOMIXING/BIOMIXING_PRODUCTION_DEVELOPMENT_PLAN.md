@@ -1,12 +1,12 @@
 # Báo cáo Kế hoạch Phát triển Chức năng Production — Craveva ERP (Laravel/PHP)
 
-| Thuộc tính            | Giá trị                                                                                                                                                                                                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Vai trò**           | Senior ERP Architect & Project Manager                                                                                                                                                                                                                                   |
-| **Tham chiếu**        | `BIOMIXING_FLOW_CRACEVA_GAP.md`, `BIOMIXING_GAP_ANALYSIS.md`; **baseline nền 2026:** `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`; rà soát tài liệu cũ: `BIOMIXING_DOC_STALE_AUDIT_AND_REPLACEMENTS_2026_VI.md`; POC: `BIOMIXING_PRODUCTION_PROTOTYPE_PLAN_VI.md` |
-| **Phạm vi**           | Dự án ERP đa tenant, module `Modules/*`, core `app/`                                                                                                                                                                                                                     |
-| **Trạng thái**        | Bản kế hoạch — cập nhật khi scope khách hàng thay đổi                                                                                                                                                                                                                    |
-| **Cập nhật gần nhất** | 2026-04 — đối chiếu repo; multi-warehouse & batch warehouse đã có trên codebase (khác bản nháp đầu khi nền kho chưa hoàn thiện).                                                                                                                                         |
+| Thuộc tính            | Giá trị                                                                                                                                                                                                                                                                                                                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vai trò**           | Senior ERP Architect & Project Manager                                                                                                                                                                                                                                                                                                                                       |
+| **Tham chiếu**        | `BIOMIXING_FLOW_CRACEVA_GAP.md`, `BIOMIXING_GAP_ANALYSIS.md`; **baseline nền 2026:** `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`; **luồng & khái niệm:** `BIOMIXING_PRODUCTION_FLOW_CONCEPTS_VI.md`; playbook kỹ thuật Phase 0–1 MVP: **`BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md`**; rà soát tài liệu cũ: `BIOMIXING_DOC_STALE_AUDIT_AND_REPLACEMENTS_2026_VI.md`; POC: `BIOMIXING_PRODUCTION_PROTOTYPE_PLAN_VI.md` |
+| **Phạm vi**           | Dự án ERP đa tenant, module `Modules/*`, core `app/`                                                                                                                                                                                                                                                                                                                         |
+| **Trạng thái**        | Bản kế hoạch — cập nhật khi scope khách hàng thay đổi                                                                                                                                                                                                                                                                                                                        |
+| **Cập nhật gần nhất** | 2026-04 — đối chiếu repo; multi-warehouse & batch warehouse đã có trên codebase (khác bản nháp đầu khi nền kho chưa hoàn thiện).                                                                                                                                                                                                                                             |
 
 ---
 
@@ -29,7 +29,7 @@
 | **Projects**                            | `app/Models/Project.php`, Task…       | Không nhầm với `Modules/ProjectRoadmap`                                                            |
 | **Product**                             | `app/Models/Product.php` (`products`) | Chưa có BOM chuẩn — không phải `Modules/Product`                                                   |
 
-**Module `Production`:** **chưa tồn tại** — có thể tạo mới theo cùng pattern `Modules/<Name>` (đề xuất §3).
+**Module `Production`:** Đã có **scaffold** trong `Modules/Production/` (`module.json`, providers, routes trống); **chưa có** domain BOM/lệnh SX/tích hợp kho — triển khai theo playbook Phase 0–1 và §3 dưới đây.
 
 ### 1.2 Module hiện có và mức hỗ trợ quy trình sản xuất
 
@@ -209,4 +209,4 @@
 
 ---
 
-_Tài liệu này bổ sung cho `BIOMIXING_GAP_ANALYSIS.md` và `BIOMIXING_FLOW_CRACEVA_GAP.md` — **đọc kèm** `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md` (nền SO/PO/DO/Warehouse 2026) và `BIOMIXING_DOC_STALE_AUDIT_AND_REPLACEMENTS_2026_VI.md`. Runbook nâng cấp kho: `FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`. Cập nhật khi chốt scope với khách._
+_Tài liệu này bổ sung cho `BIOMIXING_GAP_ANALYSIS.md` và `BIOMIXING_FLOW_CRACEVA_GAP.md` — **đọc kèm** `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md` (nền SO/PO/DO/Warehouse 2026), **`BIOMIXING_PRODUCTION_FLOW_CONCEPTS_VI.md`** (khái niệm luồng & tồn kho), **`BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md`** (chi tiết triển khai Phase 0–1 trước khi code), và `BIOMIXING_DOC_STALE_AUDIT_AND_REPLACEMENTS_2026_VI.md`. Runbook nâng cấp kho: `FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`. Cập nhật khi chốt scope với khách._

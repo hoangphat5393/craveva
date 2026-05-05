@@ -23,6 +23,7 @@
     $transferPerm = user()->permission('manage_warehouse_transfer');
     $grnRouteName = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders.index' : 'grn.index';
     $warehousePerPage = in_array((int) ($warehousePerPage ?? request('per_page', 25)), [10, 25, 50, 100], true) ? (int) ($warehousePerPage ?? request('per_page', 25)) : 25;
+    $formatQuantity = static fn($value): string => rtrim(rtrim(number_format((float) $value, 4, '.', ''), '0'), '.');
 @endphp
 
 @section('filter-section')
@@ -117,13 +118,13 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="font-weight-semibold {{ $stock->quantity > 0 ? 'text-success' : 'text-danger' }}">{{ $stock->quantity }}</span>
+                                <span class="font-weight-semibold {{ $stock->quantity > 0 ? 'text-success' : 'text-danger' }}">{{ $formatQuantity($stock->quantity) }}</span>
                             </td>
-                            <td>{{ number_format((float) ($stock->reserved_quantity ?? 0), 4, '.', '') }}</td>
-                            <td>{{ number_format((float) ($stock->available_quantity ?? 0), 4, '.', '') }}</td>
+                            <td>{{ $formatQuantity($stock->reserved_quantity ?? 0) }}</td>
+                            <td>{{ $formatQuantity($stock->available_quantity ?? 0) }}</td>
                             <td>
                                 <span class="font-weight-semibold {{ (float) ($stock->sellable_quantity ?? 0) > 0 ? 'text-success' : 'text-danger' }}">
-                                    {{ number_format((float) ($stock->sellable_quantity ?? 0), 4, '.', '') }}
+                                    {{ $formatQuantity($stock->sellable_quantity ?? 0) }}
                                 </span>
                             </td>
                             <td class="text-nowrap">{{ $stock->updated_at->timezone(company()->timezone)->format(company()->date_format . ' H:i') }}</td>

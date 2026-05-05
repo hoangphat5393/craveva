@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@php
+    $componentProductNames = $componentProducts->pluck('name', 'id');
+    $formatQuantity = static fn($value): string => rtrim(rtrim(number_format((float) $value, 4, '.', ''), '0'), '.');
+@endphp
+
 @section('content')
     <div class="content-wrapper">
         <div class="d-flex justify-content-between action-bar flex-wrap">
@@ -55,7 +60,7 @@
                                     ({{ $line->warehouseProductBatch->batch_number ?? '—' }})
                                 @endif
                             </td>
-                            <td>{{ $line->actual_quantity ?? $line->planned_quantity }}</td>
+                            <td>{{ $formatQuantity($line->actual_quantity ?? $line->planned_quantity) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -78,8 +83,10 @@
                     <div class="form-group col-md-4">
                         <x-forms.label fieldId="warehouse_product_batch_id" :fieldLabel="__('production::app.warehouseBatchId')" fieldRequired="true" />
                         <select name="warehouse_product_batch_id" id="warehouse_product_batch_id" class="form-control select-picker" data-size="8" data-container="body" required>
+                            <option value="">@lang('app.select') @lang('production::app.warehouseBatchId')</option>
                             @foreach ($rmBatches as $wb)
-                                <option value="{{ $wb->id }}">#{{ $wb->id }} — {{ $wb->product_id }} qty {{ $wb->quantity }} @if ($wb->batch_number)
+                                <option value="{{ $wb->id }}" data-product-id="{{ $wb->product_id }}">
+                                    #{{ $wb->id }} — {{ $componentProductNames[$wb->product_id] ?? $wb->product_id }} qty {{ $formatQuantity($wb->quantity) }} @if ($wb->batch_number)
                                         ({{ $wb->batch_number }})
                                     @endif
                                 </option>
@@ -122,7 +129,7 @@
                     @foreach ($batch->outputs as $out)
                         <tr>
                             <td>{{ $out->batch_number }}</td>
-                            <td>{{ $out->quantity }}</td>
+                            <td>{{ $formatQuantity($out->quantity) }}</td>
                             <td>{{ $out->posted_at ?? '—' }}</td>
                             <td class="text-right">
                                 @if ($out->posted_at === null && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at !== null)
@@ -163,11 +170,11 @@
                     </div>
                     <div class="form-group col-md-2">
                         <x-forms.label fieldId="expiration_date" :fieldLabel="__('production::app.expiry')" fieldRequired="false" />
-                        <input type="date" name="expiration_date" id="expiration_date" class="form-control height-35 f-14">
+                        <input type="text" name="expiration_date" id="expiration_date" class="form-control date-picker height-35 f-14" placeholder="@lang('placeholders.date')">
                     </div>
                     <div class="form-group col-md-2">
                         <x-forms.label fieldId="manufacturing_date" :fieldLabel="__('production::app.mfgDate')" fieldRequired="false" />
-                        <input type="date" name="manufacturing_date" id="manufacturing_date" class="form-control height-35 f-14">
+                        <input type="text" name="manufacturing_date" id="manufacturing_date" class="form-control date-picker height-35 f-14" placeholder="@lang('placeholders.date')">
                     </div>
                     <div class="form-group col-12">
                         <button type="submit" class="btn btn-primary rounded f-14 p-2">
@@ -179,3 +186,60 @@
         @endif
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        (() => {
+            const $component = $('#component_product_id');
+            const $warehouseBatch = $('#warehouse_product_batch_id');
+
+            if ($component.length && $warehouseBatch.length) {
+                const filterWarehouseBatchByComponent = () => {
+                    const selectedProductId = String($component.val() || '');
+                    let hasEnabledOption = false;
+
+                    $warehouseBatch.find('option').each(function() {
+                        const $option = $(this);
+                        const optionValue = String($option.val() || '');
+                        const optionProductId = String($option.data('product-id') || '');
+
+                        if (optionValue === '') {
+                            $option.prop('disabled', false);
+                            return;
+                        }
+
+                        const shouldEnable = selectedProductId !== '' && optionProductId === selectedProductId;
+                        $option.prop('disabled', !shouldEnable);
+                        hasEnabledOption = hasEnabledOption || shouldEnable;
+                    });
+
+                    const currentOptionDisabled = $warehouseBatch.find(`option[value="${$warehouseBatch.val()}"]`).prop('disabled');
+                    if (!hasEnabledOption || currentOptionDisabled) {
+                        $warehouseBatch.val('');
+                    }
+
+                    if (typeof $.fn.selectpicker === 'function') {
+                        $warehouseBatch.selectpicker('refresh');
+                    }
+                };
+
+                $component.on('changed.bs.select change', filterWarehouseBatchByComponent);
+                filterWarehouseBatchByComponent();
+            }
+
+            if ($('#expiration_date').length) {
+                datepicker('#expiration_date', {
+                    position: 'bl',
+                    ...datepickerConfig
+                });
+            }
+
+            if ($('#manufacturing_date').length) {
+                datepicker('#manufacturing_date', {
+                    position: 'bl',
+                    ...datepickerConfig
+                });
+            }
+        })();
+    </script>
+@endpush

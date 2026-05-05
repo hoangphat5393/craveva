@@ -2,6 +2,7 @@
 
 namespace Modules\Production\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Production\Entities\ProductionBatch;
@@ -10,6 +11,14 @@ use Modules\Production\Support\ProductionTenantAccess;
 
 class StoreProductionBatchOutputRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'expiration_date' => $this->normalizeDateInput($this->input('expiration_date')),
+            'manufacturing_date' => $this->normalizeDateInput($this->input('manufacturing_date')),
+        ]);
+    }
+
     public function authorize(): bool
     {
         return ProductionTenantAccess::tenantMayUseProduction()
@@ -58,5 +67,43 @@ class StoreProductionBatchOutputRequest extends FormRequest
                 $validator->errors()->add('order', __('production::app.fgOrderAlreadyCompleted'));
             }
         });
+    }
+
+    protected function normalizeDateInput(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $dateValue = trim((string) $value);
+        if ($dateValue === '') {
+            return null;
+        }
+
+        $formats = [
+            'Y-m-d',
+            (string) (company()?->date_format ?? ''),
+            'd/m/Y',
+            'm/d/Y',
+            'd-m-Y',
+            'm-d-Y',
+        ];
+
+        foreach ($formats as $format) {
+            if ($format === '') {
+                continue;
+            }
+
+            try {
+                $parsed = Carbon::createFromFormat($format, $dateValue);
+                if ($parsed !== false) {
+                    return $parsed->format('Y-m-d');
+                }
+            } catch (\Throwable) {
+                continue;
+            }
+        }
+
+        return $dateValue;
     }
 }

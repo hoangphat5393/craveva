@@ -49,12 +49,17 @@
                 </thead>
                 <tbody>
                     @forelse ($outboundMovements as $m)
+                        @php
+                            $ref = $m->reference_type;
+                            $refRaw = $ref ? (str_contains($ref, '\\') ? class_basename($ref) : $ref) : '';
+                            $refLabel = $refRaw ? \Illuminate\Support\Str::headline(str_replace('_', ' ', $refRaw)) : '—';
+                        @endphp
                         <tr>
                             <td>{{ $m->id }}</td>
                             <td>{{ $m->product_id }}</td>
                             <td>{{ $m->quantity }}</td>
                             <td>{{ $m->batch_number }}</td>
-                            <td><code class="small">{{ $m->reference_type }}</code></td>
+                            <td>{{ $refLabel }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -81,12 +86,17 @@
                 </thead>
                 <tbody>
                     @forelse ($inboundMovements as $m)
+                        @php
+                            $ref = $m->reference_type;
+                            $refRaw = $ref ? (str_contains($ref, '\\') ? class_basename($ref) : $ref) : '';
+                            $refLabel = $refRaw ? \Illuminate\Support\Str::headline(str_replace('_', ' ', $refRaw)) : '—';
+                        @endphp
                         <tr>
                             <td>{{ $m->id }}</td>
                             <td>{{ $m->product_id }}</td>
                             <td>{{ $m->quantity }}</td>
                             <td>{{ $m->batch_number }}</td>
-                            <td><code class="small">{{ $m->reference_type }}</code></td>
+                            <td>{{ $refLabel }}</td>
                         </tr>
                     @empty
                         <tr>

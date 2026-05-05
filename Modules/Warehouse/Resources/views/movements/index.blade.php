@@ -33,6 +33,7 @@
 
 @php
     $warehousePerPage = in_array((int) ($warehousePerPage ?? request('per_page', 25)), [10, 25, 50, 100], true) ? (int) ($warehousePerPage ?? request('per_page', 25)) : 25;
+    $formatQuantity = static fn($value): string => rtrim(rtrim(number_format((float) $value, 4, '.', ''), '0'), '.');
 @endphp
 
 @section('filter-section')
@@ -143,7 +144,7 @@
                                     —
                                 @endif
                             </td>
-                            <td class="text-right font-weight-semibold">{{ $movement->quantity }}</td>
+                            <td class="text-right font-weight-semibold">{{ $formatQuantity($movement->quantity) }}</td>
                             <td><span class="text-dark-grey">{{ $movement->batch_number ?: '—' }}</span></td>
                             <td class="movement-ref-cell">
                                 <small class="text-dark-grey movement-ref-line" title="{{ $refLabel }}">{{ $refLabel }}</small>

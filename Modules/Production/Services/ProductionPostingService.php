@@ -143,7 +143,7 @@ class ProductionPostingService
             'manufacturing_date' => $output->manufacturing_date?->format('Y-m-d'),
             'reference_type' => ProductionBatch::class,
             'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-fg-receipt:'.$output->id,
+            'idempotency_key' => 'production-fg-receipt:' . $output->id,
         ];
 
         DB::transaction(function () use ($payload, $output, $batch, $order): void {
@@ -155,6 +155,22 @@ class ProductionPostingService
             $batch->posted_receipt_at = now();
             $batch->completed_at = now();
             $batch->save();
+
+            $hasPendingBatches = $order->batches()
+                ->where(function ($query): void {
+                    $query->whereNull('posted_receipt_at')
+                        ->orWhereNull('completed_at');
+                })
+                ->exists();
+
+            if ($hasPendingBatches) {
+                if ($order->status !== ProductionOrder::STATUS_IN_PROGRESS) {
+                    $order->status = ProductionOrder::STATUS_IN_PROGRESS;
+                    $order->save();
+                }
+
+                return;
+            }
 
             $order->status = ProductionOrder::STATUS_COMPLETED;
             $order->completed_at = now();
@@ -181,7 +197,7 @@ class ProductionPostingService
             'batch_id' => (int) $consumption->warehouse_product_batch_id,
             'reference_type' => ProductionBatch::class,
             'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-consume:'.$consumption->id,
+            'idempotency_key' => 'production-consume:' . $consumption->id,
         ];
 
         $this->stockMovementService->recordOutbound($payload);

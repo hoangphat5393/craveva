@@ -289,27 +289,26 @@ sudo nginx -t && sudo systemctl reload nginx
 ### Các bước đã xử lý
 
 1. Xác nhận account và project:
-   - `gcloud auth list`
-   - `gcloud config set project craveva-org-55934-project`
+    - `gcloud auth list`
+    - `gcloud config set project craveva-org-55934-project`
 2. Bật lại VM staging và xác nhận IP hiện tại:
-   - `gcloud compute instances start craveva-staging --zone=asia-southeast1-a`
+    - `gcloud compute instances start craveva-staging --zone=asia-southeast1-a`
 3. Chuẩn hóa SSH local (`~/.ssh/config`) cho `craveva-staging`:
-   - `HostName 35.240.198.61`
-   - `User Admin`
-   - `IdentityFile` trỏ key đang dùng (`id_rsa_gcp` hoặc `google_compute_engine`)
-   - `IdentitiesOnly yes`
+    - `HostName 35.240.198.61`
+    - `User Admin`
+    - `IdentityFile` trỏ key đang dùng (`id_rsa_gcp` hoặc `google_compute_engine`)
+    - `IdentitiesOnly yes`
 4. Thêm public key vào metadata VM:
-   - thêm `Admin:<public-key>` cho instance `craveva-staging`.
+    - thêm `Admin:<public-key>` cho instance `craveva-staging`.
 5. Cập nhật Cloud SQL allowlist cho IP staging mới:
-   - thêm `35.240.198.61/32` vào `craveva-staging-db` (`authorized networks`).
+    - thêm `35.240.198.61/32` vào `craveva-staging-db` (`authorized networks`).
 6. Khi SSH bị treo (banner exchange), reset VM:
-   - `gcloud compute instances reset craveva-staging --zone=asia-southeast1-a`
+    - `gcloud compute instances reset craveva-staging --zone=asia-southeast1-a`
 7. Test lại SSH:
-   - `ssh craveva-staging "whoami && hostname"` trả về `Admin` và `craveva-staging`.
+    - `ssh craveva-staging "whoami && hostname"` trả về `Admin` và `craveva-staging`.
 
 ### Kết quả
 
 - SSH alias `ssh craveva-staging` hoạt động lại.
 - VM staging chạy ở zone `asia-southeast1-a`, IP `35.240.198.61`.
 - Cloud SQL đã có whitelist IP mới của staging.
-

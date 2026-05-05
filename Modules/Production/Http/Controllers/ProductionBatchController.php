@@ -57,6 +57,7 @@ class ProductionBatchController extends AccountBaseController
 
         $order = $batch->order;
         $this->rmBatches = WarehouseProductBatch::query()
+            ->where('company_id', $companyId)
             ->where('warehouse_id', $order->rm_warehouse_id)
             ->where('quantity', '>', 0)
             ->orderByDesc('id')

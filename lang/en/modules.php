@@ -1881,6 +1881,7 @@ return [
         'biometric' => 'Biometric',
         'pricing' => 'Tier Pricing',
         'warehouse' => 'Warehouse',
+        'production' => 'Production',
         'developertools' => 'Developer Tools',
         'languagepack' => 'Language Pack',
         'lineintegration' => 'Line Integration',

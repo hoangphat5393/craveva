@@ -1955,6 +1955,7 @@ return [
         'biometric' => 'Sinh trắc học',
         'pricing' => 'Định giá theo bậc',
         'warehouse' => 'Kho',
+        'production' => 'Sản xuất',
         'languagepack' => 'Gói ngôn ngữ',
         'lineintegration' => 'Tích hợp LINE',
         'onboarding' => 'Hướng dẫn ban đầu',

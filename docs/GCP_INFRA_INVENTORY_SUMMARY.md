@@ -1,6 +1,7 @@
-# GCP Infrastructure Inventory Summary
+﻿# GCP Infrastructure Inventory Summary
 
 **Generated at:** 2026-03-31  
+**Updated at:** 2026-05-05 (after staging zone migration)  
 **Project:** `craveva-org-55934-project`  
 **Scope:** Active `gcloud` account/project context on this machine
 
@@ -19,7 +20,7 @@
 | -------------------- | ------------------- | --------- | ------------------- | ------------- | ---------------- |
 | `craveva-ai`         | `asia-southeast1-a` | `RUNNING` | `e2-custom-8-16384` | `10.148.0.7`  | `136.110.35.154` |
 | `craveva-hub-server` | `asia-southeast1-a` | `RUNNING` | `e2-highcpu-4`      | `10.1.0.5`    | `34.126.124.196` |
-| `craveva-staging`    | `asia-southeast1-b` | `RUNNING` | `e2-medium`         | `10.148.0.13` | `35.240.234.226` |
+| `craveva-staging`    | `asia-southeast1-a` | `RUNNING` | `n2-standard-2`     | `10.148.0.16` | `35.240.198.61`  |
 
 ---
 

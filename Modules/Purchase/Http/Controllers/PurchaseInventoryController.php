@@ -60,6 +60,18 @@ class PurchaseInventoryController extends AccountBaseController
 
         // DataTable loads via AJAX - avoid loading all records for initial page render
         $this->inventory = collect();
+        $this->warehouses = collect();
+
+        if (class_exists(Warehouse::class) && Schema::hasTable('warehouses')) {
+            $warehouseTable = (new Warehouse)->getTable();
+            $this->warehouses = Warehouse::where('status', 'active')
+                ->when(Schema::hasColumn($warehouseTable, 'sort_order'), function ($query) {
+                    $query->orderBy('sort_order')->orderBy('name');
+                }, function ($query) {
+                    $query->orderBy('name');
+                })
+                ->get();
+        }
 
         try {
             return $dataTable->render('purchase::purchase-inventory.index', $this->data);
@@ -235,6 +247,7 @@ class PurchaseInventoryController extends AccountBaseController
                 $addStock->inventory_id = $inventory->id;
                 $addStock->reason_id = $request->reason_id ?: null;
                 $addStock->reference_number = $request->reference_number ?: null;
+                $targetNetQuantity = null;
                 // product_id is already set if new, or existing.
                 // warehouse_id is already set if new, or existing.
 

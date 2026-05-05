@@ -27,6 +27,22 @@
         </div>
         <!-- ACCOUNT TYPE END -->
 
+        <!-- WAREHOUSE START -->
+        <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('warehouse::app.warehouse')</p>
+            <div class="select-status d-flex">
+                <select class="form-control select-picker" name="warehouse_id" id="warehouse_id">
+                    <option value="all">@lang('warehouse::app.allWarehouses')</option>
+                    @foreach ($warehouses as $warehouse)
+                        <option value="{{ $warehouse->id }}">
+                            {{ $warehouse->name }}{{ $warehouse->code ? ' (' . $warehouse->code . ')' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <!-- WAREHOUSE END -->
+
         <!-- SEARCH BY TASK START -->
         <div class="task-search d-flex  py-1 px-lg-3 px-0 border-right-grey align-items-center">
             <form class="w-100 mr-1 mr-lg-0 mr-md-1 ml-md-1 ml-0 ml-lg-0">
@@ -197,34 +213,43 @@
 
             var searchText = $('#search-text-field').val();
             var inventoryStatus = $('#inventory_status').val();
+            var warehouseId = $('#warehouse_id').val();
 
             data['searchText'] = searchText;
             data['inventoryStatus'] = inventoryStatus;
             data['startDate'] = startDate;
             data['endDate'] = endDate;
+            data['warehouseId'] = warehouseId;
         });
         const showTable = () => {
             window.LaravelDataTables["inventory-table-v5"].draw(true);
         }
 
-        $('#search-text-field').on('keyup', function() {
-            if ($('#search-text-field').val() != "") {
+        const toggleResetFilters = () => {
+            const hasSearch = $('#search-text-field').val() !== '';
+            const hasStatus = $('#inventory_status').val() !== 'all';
+            const hasWarehouse = $('#warehouse_id').val() !== 'all';
+
+            if (hasSearch || hasStatus || hasWarehouse) {
                 $('#reset-filters').removeClass('d-none');
-                showTable();
             } else {
                 $('#reset-filters').addClass('d-none');
-                showTable();
             }
+        };
+
+        $('#search-text-field').on('keyup', function() {
+            toggleResetFilters();
+            showTable();
         });
 
         $('#inventory_status').on('change', function() {
-            if ($('#inventory_status').val() != "all") {
-                $('#reset-filters').removeClass('d-none');
-                showTable();
-            } else {
-                $('#reset-filters').addClass('d-none');
-                showTable();
-            }
+            toggleResetFilters();
+            showTable();
+        });
+
+        $('#warehouse_id').on('change', function() {
+            toggleResetFilters();
+            showTable();
         });
 
         $('#reset-filters').click(function() {
@@ -232,7 +257,7 @@
             $('.select-picker').val('all');
 
             $('.select-picker').selectpicker("refresh");
-            $('#reset-filters').addClass('d-none');
+            toggleResetFilters();
 
             showTable();
         });

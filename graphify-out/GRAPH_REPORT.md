@@ -1,11 +1,11 @@
 # Graph Report - craveva-staging  (2026-05-05)
 
 ## Corpus Check
-- 8084 files · ~3,312,436 words
+- 8086 files · ~3,313,205 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 25141 nodes · 56235 edges · 1069 communities detected
+- 25143 nodes · 56235 edges · 1069 communities detected
 - Extraction: 39% EXTRACTED · 61% INFERRED · 0% AMBIGUOUS · INFERRED: 34208 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -7396,11 +7396,11 @@ Nodes (1): super-admin.front-setting.footer-setting.footer-data
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `belongsTo()` connect `Community 2` to `Community 0`, `Community 1`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 16`, `Community 18`, `Community 19`, `Community 20`, `Community 21`, `Community 25`, `Community 26`, `Community 27`, `Community 28`, `Community 29`, `Community 30`, `Community 38`, `Community 39`?**
-  _High betweenness centrality (0.037) - this node is a cross-community bridge._
-- **Why does `get()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 518`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 654`, `Community 14`, `Community 16`, `Community 18`, `Community 19`, `Community 20`, `Community 21`, `Community 148`, `Community 23`, `Community 22`, `Community 25`, `Community 26`, `Community 28`, `Community 30`, `Community 37`, `Community 39`, `Community 296`, `Community 177`, `Community 53`, `Community 69`, `Community 377`, `Community 378`, `Community 126`?**
-  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Why does `hasMany()` connect `Community 2` to `Community 0`, `Community 1`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 39`, `Community 10`, `Community 9`, `Community 12`, `Community 38`, `Community 14`, `Community 13`, `Community 18`, `Community 19`, `Community 20`, `Community 23`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `get()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 518`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 654`, `Community 14`, `Community 16`, `Community 18`, `Community 19`, `Community 20`, `Community 21`, `Community 148`, `Community 23`, `Community 22`, `Community 25`, `Community 26`, `Community 28`, `Community 30`, `Community 37`, `Community 39`, `Community 296`, `Community 177`, `Community 53`, `Community 69`, `Community 377`, `Community 378`, `Community 126`?**
+  _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **Are the 1302 inferred relationships involving `abort_403()` (e.g. with `.__construct()` and `.adminSpecific()`) actually correct?**
   _`abort_403()` has 1302 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 1204 inferred relationships involving `get()` (e.g. with `.handle()` and `.handle()`) actually correct?**

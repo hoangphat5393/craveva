@@ -23,7 +23,7 @@ class ProductionPostingService
     public function releaseOrder(ProductionOrder $order): void
     {
         if ($order->status !== ProductionOrder::STATUS_DRAFT) {
-            throw new InvalidArgumentException('Only draft production orders can be released.');
+            throw new InvalidArgumentException(__('production::app.onlyDraftReleasable'));
         }
 
         $order->status = ProductionOrder::STATUS_RELEASED;
@@ -41,18 +41,18 @@ class ProductionPostingService
         }
 
         if ($order->status === ProductionOrder::STATUS_COMPLETED) {
-            throw new InvalidArgumentException('Completed production orders cannot be cancelled.');
+            throw new InvalidArgumentException(__('production::app.completedCannotCancel'));
         }
 
         if ($order->status === ProductionOrder::STATUS_IN_PROGRESS) {
-            throw new InvalidArgumentException('Cannot cancel an order that has posted RM consumption.');
+            throw new InvalidArgumentException(__('production::app.cannotCancelInProgress'));
         }
 
         if ($order->status === ProductionOrder::STATUS_RELEASED) {
             $batchIds = $order->batches()->pluck('id');
             $hasPostedConsumptions = $order->batches()->whereNotNull('posted_consumptions_at')->exists();
             if ($hasPostedConsumptions) {
-                throw new InvalidArgumentException('Cannot cancel: RM consumption has already been posted.');
+                throw new InvalidArgumentException(__('production::app.cannotCancelRmPosted'));
             }
 
             if ($batchIds->isNotEmpty()) {
@@ -61,7 +61,7 @@ class ProductionPostingService
                     ->whereNotNull('posted_at')
                     ->exists();
                 if ($hasPostedFg) {
-                    throw new InvalidArgumentException('Cannot cancel: FG receipt has already been posted.');
+                    throw new InvalidArgumentException(__('production::app.cannotCancelFgPosted'));
                 }
             }
         }
@@ -83,7 +83,7 @@ class ProductionPostingService
 
         $order = $batch->order;
         if (! in_array($order->status, [ProductionOrder::STATUS_RELEASED, ProductionOrder::STATUS_IN_PROGRESS], true)) {
-            throw new InvalidArgumentException('Production order must be released before posting consumptions.');
+            throw new InvalidArgumentException(__('production::app.orderMustBeReleasedForConsumptions'));
         }
 
         $batch->loadMissing(['consumptions.warehouseProductBatch']);
@@ -120,17 +120,17 @@ class ProductionPostingService
 
         $batch = $output->batch()->with('order')->first();
         if ($batch === null || $batch->posted_consumptions_at === null) {
-            throw new InvalidArgumentException('Post RM consumptions before FG receipt.');
+            throw new InvalidArgumentException(__('production::app.postRmBeforeFgReceipt'));
         }
 
         $order = $batch->order;
         if ($order === null) {
-            throw new InvalidArgumentException('Missing production order on batch.');
+            throw new InvalidArgumentException(__('production::app.missingOrderOnBatch'));
         }
 
         $companyId = (int) $order->company_id;
         if ($companyId <= 0) {
-            throw new InvalidArgumentException('company_id is required on production order.');
+            throw new InvalidArgumentException(__('production::app.missingCompanyOnOrder'));
         }
 
         $payload = [
@@ -181,12 +181,12 @@ class ProductionPostingService
     protected function postSingleConsumption(ProductionBatch $batch, ProductionBatchConsumption $consumption, int $companyId, int $rmWarehouseId): void
     {
         if ($consumption->warehouse_product_batch_id === null) {
-            throw new InvalidArgumentException('Each consumption line must select a warehouse_product_batch_id for MVP.');
+            throw new InvalidArgumentException(__('production::app.consumptionRequiresWarehouseBatch'));
         }
 
         $qty = $consumption->actual_quantity ?? $consumption->planned_quantity;
         if ($qty <= 0) {
-            throw new InvalidArgumentException('Consumption quantity must be positive.');
+            throw new InvalidArgumentException(__('production::app.consumptionQtyMustBePositive'));
         }
 
         $payload = [

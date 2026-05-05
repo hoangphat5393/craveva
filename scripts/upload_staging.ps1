@@ -18,6 +18,8 @@ param(
 $ErrorActionPreference = "Stop"
 $StagingHost = "craveva-staging"
 $StagingPath = "/var/www/craveva-staging/current/craveva"
+# Unix user that owns repo + .git on server (cron/deploy). SSH may be Admin; git must still run as this user.
+$RemoteGitUser = "hoangphat5393"
 
 $secretsFile = Join-Path $PSScriptRoot "deploy-secrets.local.ps1"
 if (Test-Path $secretsFile) {
@@ -62,22 +64,33 @@ if (-not $SkipLocalGit) {
     }
 }
 
-$RemoteCommand = "cd $StagingPath"
+# Run git inside sudo -u $RemoteGitUser so it works when SSH user is Admin (no write to hoangphat5393-owned .git/).
+$GitAs = "sudo -u $RemoteGitUser /bin/bash -c"
+$RemoteCommand = ""
 if ($GitPull) {
-    $stashBeforePull = " && git status --porcelain | grep -q . && git stash push -u -m 'auto-stash-before-deploy' || true"
+    $stashBeforePull = "( git status --porcelain | grep -q . && git stash push -u -m stash-auto-deploy || true ) && "
     if ($resolvedToken) {
         $escaped = $resolvedToken.Replace("'", "'\''")
-        $RemoteCommand += " && export GIT_TERMINAL_PROMPT=0"
-        $RemoteCommand += " && export GITHUB_DEPLOY_TOKEN='$escaped'"
-        $RemoteCommand += " && git -c http.extraHeader=`"AUTHORIZATION: bearer `$GITHUB_DEPLOY_TOKEN`" fetch origin"
-        $RemoteCommand += $stashBeforePull
-        $RemoteCommand += " && git checkout $Branch"
-        $RemoteCommand += " && git -c http.extraHeader=`"AUTHORIZATION: bearer `$GITHUB_DEPLOY_TOKEN`" pull origin $Branch"
-    } else {
-        $RemoteCommand += " && git fetch origin"
-        $RemoteCommand += $stashBeforePull
-        $RemoteCommand += " && git checkout $Branch && git pull origin $Branch"
+        $repoOps = (
+            "export GIT_TERMINAL_PROMPT=0 && export GITHUB_DEPLOY_TOKEN='$escaped' && " `
+            + "git -c http.extraHeader=\`"AUTHORIZATION: bearer `$GITHUB_DEPLOY_TOKEN\`" fetch origin && $stashBeforePull" `
+            + "git checkout $Branch && git -c http.extraHeader=\`"AUTHORIZATION: bearer `$GITHUB_DEPLOY_TOKEN\`" pull origin $Branch"
+        )
+        $RemoteCommand += "$GitAs `"cd `"$StagingPath`" && $repoOps`""
     }
+    else {
+        $repoOps = (
+            "git fetch origin $Branch && $stashBeforePull" `
+            + "git checkout $Branch && git pull origin $Branch"
+        )
+        $RemoteCommand += "$GitAs `"cd `"$StagingPath`" && $repoOps`""
+    }
+}
+
+if (-not $GitPull -or ($RemoteCommand -eq "")) {
+    $RemoteCommand = "cd `"$StagingPath`""
+} else {
+    $RemoteCommand += " && cd `"$StagingPath`""
 }
 
 # Lệnh bảo trì (Permissions, Migration, Optimize)

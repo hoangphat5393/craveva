@@ -44,7 +44,7 @@ Dùng **gcloud compute ssh** (không dùng `ssh craveva-staging` trực tiếp) 
 
 ```powershell
 gcloud config set project craveva-org-55934-project
-gcloud compute ssh craveva-staging --zone=asia-southeast1-b --project=craveva-org-55934-project
+gcloud compute ssh craveva-staging --zone=asia-southeast1-a --project=craveva-org-55934-project
 ```
 
 Lần đầu có thể hỏi "Store key in cache? (y/n)" → gõ **y** rồi Enter.
@@ -56,6 +56,29 @@ gcloud compute config-ssh
 ```
 
 Sau đó trong file `~/.ssh/config` sẽ có entry cho các VM GCP; lệnh `ssh craveva-staging` sẽ dùng gcloud làm proxy và vào được.
+
+### Gõ ngắn `ssh craveva-staging` (Windows / OpenSSH)
+
+1. Chạy một lần (đúng project):
+
+    ```powershell
+    gcloud compute config-ssh --project=craveva-org-55934-project
+    ```
+
+2. Mở `%USERPROFILE%\.ssh\config`, tìm block do gcloud tạo cho instance staging (dòng `Host` dạng `craveva-staging.asia-southeast1-a.craveva-org-55934-project` — có `ProxyCommand` / `IdentityFile` trỏ tới `google_compute_engine`).
+
+3. **Cách ổn định:** thêm **cùng tên ngắn** vào dòng `Host` đầu block đó (giữ nguyên toàn bộ dòng còn lại), ví dụ:
+
+    ```sshconfig
+    Host craveva-staging craveva-staging.asia-southeast1-a.craveva-org-55934-project
+      ...
+    ```
+
+    Sau đó `ssh craveva-staging` dùng **đúng** proxy + key như gcloud (không bị `Permission denied` như khi `ssh` thẳng tới IP).
+
+4. **User đăng nhập:** trên server chạy `whoami` (trong phiên gcloud đang mở). Nếu ra `Admin` mà vẫn lỗi key, thêm vào block đó: `User Admin` (một số máy dùng user Windows / tài khoản OS khác `hoangphat5393`).
+
+**Không nên** chỉ sửa `HostName` trong `Host craveva-staging` thành IP public (`35.240...`) nếu không kèm **đúng** `IdentityFile` (thường `%USERPROFILE%\.ssh\google_compute_engine`) và **đúng** `User` — vì vậy `ssh craveva-staging` trước đó báo `Permission denied (publickey)`.
 
 Nếu VM dùng user khác (không phải user Google):
 
@@ -139,7 +162,7 @@ Sau khi VM staging chuyển zone, **External IP** đổi thành **35.240.234.226
 3. Đổi **Value / Points to / Answer** thành **35.240.234.226**.
 4. Lưu. Đợi vài phút rồi kiểm tra bằng `nslookup staging.craveva.com`.
 
-Sau khi đổi xong, `staging.craveva.com` sẽ trỏ về VM staging mới (zone asia-southeast1-b).
+Sau khi đổi xong, `staging.craveva.com` sẽ trỏ về VM staging mới (zone `asia-southeast1-a` sau migrate 2026-05).
 
 ---
 
@@ -166,8 +189,8 @@ Nếu vẫn lỗi: xem `sudo tail -50 /var/log/nginx/error.log` và `sudo system
 **GCP Firewall:** Rule `default-allow-http` / `default-allow-https` chỉ áp dụng cho VM có **tag** `http-server` và `https-server`. VM mới tạo (sau khi migrate) có thể chưa có tag → bị chặn 80/443. Cách sửa (chạy trên máy có gcloud):
 
 ```powershell
-gcloud compute instances add-tags craveva-staging --zone=asia-southeast1-b --project=craveva-org-55934-project --tags=http-server
-gcloud compute instances add-tags craveva-staging --zone=asia-southeast1-b --project=craveva-org-55934-project --tags=https-server
+gcloud compute instances add-tags craveva-staging --zone=asia-southeast1-a --project=craveva-org-55934-project --tags=http-server
+gcloud compute instances add-tags craveva-staging --zone=asia-southeast1-a --project=craveva-org-55934-project --tags=https-server
 ```
 
 Sau khi thêm tag, đợi vài giây rồi thử lại https://staging.craveva.com/

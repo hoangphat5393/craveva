@@ -23,7 +23,9 @@
     $canViewOperationsProducts = in_array('client', user_roles())
         ? in_array('orders', user_modules()) && user()->permission('add_order') == 'all' && isset($sidebarUserPermissions['view_product']) && !in_array($sidebarUserPermissions['view_product'], [5, 'none'])
         : in_array('products', user_modules()) && isset($sidebarUserPermissions['view_product']) && !in_array($sidebarUserPermissions['view_product'], [5, 'none']);
-    $operationsMenuActive = request()->routeIs('orders.*', 'vendors.*', 'purchase-products.*', 'purchase_products.*', 'purchase-order.*', 'delivery-orders.*', 'sales-shipments.*', 'bills.*', 'vendor-payments.*', 'vendor-credits.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*', 'grn.*', 'sales-do.*', 'sales-history.*');
+    $viewProductionOrders = user()->permission('view_production_orders');
+    $canViewProductionOrders = \Modules\Production\Support\ProductionTenantAccess::tenantMayUseProduction() && isset($viewProductionOrders) && $viewProductionOrders != 'none' && $viewProductionOrders != '';
+    $operationsMenuActive = request()->routeIs('orders.*', 'vendors.*', 'purchase-products.*', 'purchase_products.*', 'purchase-order.*', 'delivery-orders.*', 'sales-shipments.*', 'bills.*', 'vendor-payments.*', 'vendor-credits.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*', 'grn.*', 'sales-do.*', 'sales-history.*', 'production.*');
 @endphp
 @if (in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()) &&
         ($purchaseViewVendorPermission != 'none' ||
@@ -37,7 +39,8 @@
             $canViewGrn ||
             $canViewOperationsProducts ||
             (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 'none') ||
-            (in_array('orders', user_modules()) && isset($sidebarUserPermissions['view_sales_history']) && $sidebarUserPermissions['view_sales_history'] != 'none')))
+            (in_array('orders', user_modules()) && isset($sidebarUserPermissions['view_sales_history']) && $sidebarUserPermissions['view_sales_history'] != 'none') ||
+            $canViewProductionOrders))
 
     <x-menu-item icon="wallet" :text="__('app.menu.operations')" :addon="App::environment('demo')" :active="$operationsMenuActive">
         <x-slot name="iconPath">
@@ -92,6 +95,10 @@
             @endif
             @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
                 <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" :active="request()->routeIs('warehouse.movements.*')" />
+            @endif
+
+            @if ($canViewProductionOrders)
+                <x-sub-menu-item :link="route('production.orders.index')" :text="__('production::app.menuProductionOrders')" :permission="true" :active="request()->routeIs('production.*')" />
             @endif
 
             <x-sub-menu-item :link="route('reports.index')" :text="__('purchase::app.menu.reports')" :permission="$purchaseViewOrderReportPermission != 'none' && $purchaseViewOrderReportPermission != '' && false" />

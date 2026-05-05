@@ -4,7 +4,7 @@
 $ErrorActionPreference = "Stop"
 $Project = "craveva-org-55934-project"
 # Khớp scripts/ssh_staging.ps1 và docs/GCP_INFRA_INVENTORY_SUMMARY.md (staging ở b sau migrate)
-$Zone = "asia-southeast1-b"
+$Zone = "asia-southeast1-a"
 $Instance = "craveva-staging"
 
 # e2-medium ~4 GiB -> e2-standard-2 = 2 vCPU, 8 GiB RAM (GCP)
@@ -43,18 +43,13 @@ Write-Host "[5/5] Starting $Instance..." -ForegroundColor Yellow
 $startResult = gcloud compute instances start $Instance --zone=$Zone --project=$Project 2>&1
 if ($LASTEXITCODE -ne 0) {
     if ($startResult -match "ZONE_RESOURCE_POOL_EXHAUSTED|does not have enough resources") {
-        $ZoneAlt = "asia-southeast1-a"
-        Write-Host "  Zone $Zone het tai nguyen. Dang chuyen VM sang $ZoneAlt..." -ForegroundColor Yellow
-        gcloud compute instances move $Instance --zone=$Zone --destination-zone=$ZoneAlt --project=$Project
-        if ($LASTEXITCODE -ne 0) { throw "Failed to move instance to $ZoneAlt" }
-        $Zone = $ZoneAlt
-        gcloud compute instances start $Instance --zone=$Zone --project=$Project
-        if ($LASTEXITCODE -ne 0) { throw "Failed to start instance in $Zone" }
-        Write-Host "  Instance da chuyen sang $Zone va da start." -ForegroundColor Gray
-        Write-Host "  Luu y: VM hien o zone $Zone (IP co the thay doi, kiem tra lai trong Console)." -ForegroundColor Cyan
-    } else {
-        throw "Failed to start instance: $startResult"
+        throw @"
+Zone $Zone het tai nguyen cho machine type hien tai. Google da go lenh 'gcloud compute instances move'.
+Cach xu ly: doi machine type nho hon / thu lai sau, hoac migrate bang snapshot disk sang zone khac (xem Google doc moving-instance-across-zones).
+Chi tiet loi: $startResult
+"@
     }
+    throw "Failed to start instance: $startResult"
 } else {
     Write-Host "  Instance started." -ForegroundColor Gray
 }

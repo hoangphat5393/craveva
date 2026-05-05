@@ -69,7 +69,9 @@ trait CustomFieldsTrait
         $customFieldGroup = CustomFieldGroup::where('model', $this->getModelName());
 
         $customFieldGroup = $customFieldGroup->when(method_exists($this, 'company'), function ($query) {
-            return $query->where('company_id', $this->company_id ?: company()->id);
+            $companyId = $this->company_id ?? company()?->id;
+
+            return $query->where('company_id', $companyId);
         })->first();
 
         if ($fields && $customFieldGroup) {
@@ -101,7 +103,7 @@ trait CustomFieldsTrait
             ->where('custom_field_groups.model', $this->getModelName());
 
         if (method_exists($this, 'company')) {
-            $companyId = $this->company_id ?: company()->id;
+            $companyId = $this->company_id ?? company()?->id;
             if ($companyId) {
                 $query->where('custom_field_groups.company_id', $companyId);
             }

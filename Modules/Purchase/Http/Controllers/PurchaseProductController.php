@@ -89,7 +89,8 @@ class PurchaseProductController extends AccountBaseController
         $this->taxes = Tax::all();
         $this->categories = ProductCategory::all();
         $this->subCategories = ProductSubCategory::all();
-        $productId = request()['duplicate_product'];
+        $duplicateId = request()->input('duplicate_product');
+        $productId = is_numeric($duplicateId) ? (int) $duplicateId : null;
 
         $this->product = $productId ? PurchaseProduct::findOrFail($productId) : null;
         $this->subCategories = ($this->product && ! is_null($this->product->sub_category_id)) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];

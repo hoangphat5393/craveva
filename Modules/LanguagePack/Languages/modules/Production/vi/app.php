@@ -116,4 +116,8 @@ return [
     'rmBatchAssignment' => 'Lo RM kho',
     'noRmWarehouseBatchForComponent' => 'Khong co lo kho RM san cho san pham nay tai kho RM cua lenh.',
     'rmBatchAssignPermission' => 'Can quyen sua lenh SX de gan lo kho.',
+    'inventoryFlowHintTitle' => 'Phat hanh lenh chua lam tang ton kho',
+    'inventoryFlowHintBody' => 'Phat hanh chi dong bang ke hoach/BOM. De tang ton kho thanh pham, can hoan tat lo: hach toan xuat RM, them dong FG output, roi hach toan nhap FG.',
+    'inventoryAggregationHintTitle' => 'Inventory co the tang so luong thay vi them dong moi',
+    'inventoryAggregationHintBody' => 'Inventory duoc gom theo product + warehouse (+ quy tac batch/SKU). Khi hach toan nhap tu production, he thong co the cong vao dong ton hien co thay vi tao dong moi hoan toan.',
 ];

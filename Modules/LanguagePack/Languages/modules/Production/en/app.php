@@ -116,4 +116,8 @@ return [
     'rmBatchAssignment' => 'RM warehouse batch',
     'noRmWarehouseBatchForComponent' => 'No inbound RM batch available for this product in the order\'s RM warehouse.',
     'rmBatchAssignPermission' => 'Warehouse batch assignment requires edit permission.',
+    'inventoryFlowHintTitle' => 'Release does not increase inventory yet',
+    'inventoryFlowHintBody' => 'Release only locks plan/BOM. To increase finished-good inventory, complete the batch flow: post RM consumption, register FG output, then post FG receipt.',
+    'inventoryAggregationHintTitle' => 'Inventory may update quantity instead of adding a new row',
+    'inventoryAggregationHintBody' => 'Inventory is aggregated by product + warehouse (+ batch/SKU rules). When production receipt is posted, quantity may increase on an existing row instead of creating a brand-new line.',
 ];

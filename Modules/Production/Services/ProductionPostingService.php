@@ -10,6 +10,7 @@ use Modules\Production\Entities\ProductionBatchOutput;
 use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
+use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Services\StockMovementService;
 
 /**
@@ -232,13 +233,28 @@ class ProductionPostingService
 
     protected function postSingleConsumption(ProductionBatch $batch, ProductionBatchConsumption $consumption, int $companyId, int $rmWarehouseId): void
     {
-        if ($consumption->warehouse_product_batch_id === null) {
-            throw new InvalidArgumentException(__('production::app.consumptionRequiresWarehouseBatch'));
-        }
+        $warehouseProductBatchId = $consumption->warehouse_product_batch_id;
 
         $qty = $consumption->actual_quantity ?? $consumption->planned_quantity;
         if ($qty <= 0) {
             throw new InvalidArgumentException(__('production::app.consumptionQtyMustBePositive'));
+        }
+
+        $warehouseProductBatchId = $this->resolveWarehouseBatchIdForConsumption(
+            $consumption,
+            $companyId,
+            $rmWarehouseId,
+            (float) $qty,
+            $warehouseProductBatchId !== null ? (int) $warehouseProductBatchId : null,
+        );
+
+        if ($warehouseProductBatchId === null) {
+            throw new InvalidArgumentException(__('production::app.consumptionRequiresWarehouseBatch'));
+        }
+
+        if ((int) $consumption->warehouse_product_batch_id !== (int) $warehouseProductBatchId) {
+            $consumption->warehouse_product_batch_id = (int) $warehouseProductBatchId;
+            $consumption->save();
         }
 
         $payload = [
@@ -246,12 +262,47 @@ class ProductionPostingService
             'warehouse_id' => $rmWarehouseId,
             'product_id' => (int) $consumption->component_product_id,
             'quantity' => (float) $qty,
-            'batch_id' => (int) $consumption->warehouse_product_batch_id,
+            'batch_id' => (int) $warehouseProductBatchId,
             'reference_type' => ProductionBatch::class,
             'reference_id' => (int) $batch->id,
             'idempotency_key' => 'production-consume:' . $consumption->id,
         ];
 
         $this->stockMovementService->recordOutbound($payload);
+    }
+
+    protected function resolveWarehouseBatchIdForConsumption(
+        ProductionBatchConsumption $consumption,
+        int $companyId,
+        int $rmWarehouseId,
+        float $requiredQty,
+        ?int $preferredBatchId = null
+    ): ?int {
+        if ($preferredBatchId !== null) {
+            $preferred = WarehouseProductBatch::query()
+                ->whereKey($preferredBatchId)
+                ->where('company_id', $companyId)
+                ->where('warehouse_id', $rmWarehouseId)
+                ->where('product_id', (int) $consumption->component_product_id)
+                ->first(['id', 'quantity', 'reserved_quantity']);
+
+            if ($preferred !== null) {
+                $preferredAvailable = (float) $preferred->quantity - (float) $preferred->reserved_quantity;
+                if ($preferredAvailable >= $requiredQty) {
+                    return (int) $preferred->id;
+                }
+            }
+        }
+
+        $candidate = WarehouseProductBatch::query()
+            ->where('company_id', $companyId)
+            ->where('warehouse_id', $rmWarehouseId)
+            ->where('product_id', (int) $consumption->component_product_id)
+            ->where('quantity', '>=', $requiredQty)
+            ->orderByDesc('quantity')
+            ->orderBy('id')
+            ->first(['id']);
+
+        return $candidate?->id;
     }
 }

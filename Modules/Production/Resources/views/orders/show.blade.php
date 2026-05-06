@@ -141,6 +141,20 @@
             @endif
         </div>
 
+        @if (in_array($order->status, [\Modules\Production\Entities\ProductionOrder::STATUS_RELEASED, \Modules\Production\Entities\ProductionOrder::STATUS_IN_PROGRESS], true) && $registeredFgTotal <= 0)
+            <div class="alert alert-info mt-3 mb-4 f-14">
+                <strong>@lang('production::app.inventoryFlowHintTitle')</strong><br>
+                @lang('production::app.inventoryFlowHintBody')
+            </div>
+        @endif
+
+        @if ($registeredFgTotal > 0)
+            <div class="alert alert-success mt-3 mb-4 f-14">
+                <strong>@lang('production::app.inventoryAggregationHintTitle')</strong><br>
+                @lang('production::app.inventoryAggregationHintBody')
+            </div>
+        @endif
+
         <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.batchCode')</h5>
         <div class="d-flex flex-column w-tables rounded bg-white table-responsive">
             <table class="table table-hover border-0 w-100 mb-0">

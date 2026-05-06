@@ -523,3 +523,94 @@ it('rejects snapshot planned consumption when order has multiple batches', funct
     $apply = app(ProductionPlannedConsumptionFromSnapshotService::class);
     $apply->applySnapshotToBatch($batchB->fresh(['order']));
 })->throws(InvalidArgumentException::class);
+
+it('auto-assigns RM warehouse batch when consumption line has no assigned batch', function (): void {
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_RELEASED,
+        'output_product_id' => 2,
+        'production_bom_id' => null,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-AUTO-RM-BATCH',
+    ]);
+
+    $consumption = ProductionBatchConsumption::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'component_product_id' => 1,
+        'warehouse_product_batch_id' => null,
+        'planned_quantity' => 25,
+        'actual_quantity' => null,
+        'line_order' => 0,
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->postConsumptionsForBatch($batch->fresh());
+
+    $consumption->refresh();
+    expect($consumption->warehouse_product_batch_id)->not->toBeNull()
+        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('quantity'))->toBe(975.0)
+        ->and($batch->fresh()->posted_consumptions_at)->not->toBeNull();
+});
+
+it('falls back to another RM batch when selected batch lacks quantity', function (): void {
+    DB::table('warehouse_product_batches')->where('id', 1)->update([
+        'quantity' => 6,
+        'updated_at' => now(),
+    ]);
+
+    $otherBatchId = DB::table('warehouse_product_batches')->insertGetId([
+        'company_id' => 1,
+        'warehouse_id' => 1,
+        'product_id' => 1,
+        'batch_number' => 'RM-02',
+        'expiration_date' => null,
+        'manufacturing_date' => null,
+        'quantity' => 194,
+        'reserved_quantity' => 0,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_RELEASED,
+        'output_product_id' => 2,
+        'production_bom_id' => null,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-FALLBACK-RM-BATCH',
+    ]);
+
+    $consumption = ProductionBatchConsumption::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'component_product_id' => 1,
+        'warehouse_product_batch_id' => 1,
+        'planned_quantity' => 30,
+        'actual_quantity' => null,
+        'line_order' => 0,
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->postConsumptionsForBatch($batch->fresh());
+
+    $consumption->refresh();
+    expect($consumption->warehouse_product_batch_id)->toBe((int) $otherBatchId)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('quantity'))->toBe(6.0)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', $otherBatchId)->value('quantity'))->toBe(164.0)
+        ->and($batch->fresh()->posted_consumptions_at)->not->toBeNull();
+});

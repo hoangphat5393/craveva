@@ -51,7 +51,7 @@ class ProductionBatchController extends AccountBaseController
             'outputs',
         ]);
 
-        $this->pageTitle = __('production::app.batchDetail') . ' ' . $batch->batch_code;
+        $this->pageTitle = __('production::app.batchDetail').' '.$batch->batch_code;
         $this->batch = $batch;
         $companyId = (int) company()->id;
 
@@ -181,7 +181,7 @@ class ProductionBatchController extends AccountBaseController
         $projected = $existingTotal + $incoming;
         $snapshot = $fgPolicy->varianceSnapshot($planned, $projected);
 
-        ProductionBatchOutput::query()->create([
+        $output = ProductionBatchOutput::query()->create([
             'company_id' => company()->id,
             'production_batch_id' => $batch->id,
             'output_product_id' => $order->output_product_id,
@@ -193,6 +193,16 @@ class ProductionBatchController extends AccountBaseController
             'variance_reason' => $validated['variance_reason'] ?? null,
             ...$snapshot,
         ]);
+
+        if ($batch->posted_consumptions_at !== null) {
+            try {
+                $this->posting->postFinishedGoodsReceipt($output->fresh());
+            } catch (\Throwable $e) {
+                return $this->handleProductionThrowable($request, 'production_auto_post_fg_receipt_after_output_save', $e);
+            }
+
+            return back()->with('success', __('messages.updateSuccess'));
+        }
 
         return back()->with('success', __('messages.recordSaved'));
     }

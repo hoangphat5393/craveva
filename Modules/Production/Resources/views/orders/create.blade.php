@@ -34,7 +34,7 @@
                     <x-forms.select fieldId="production_bom_id" :fieldLabel="__('production::app.bom') . ' (' . __('app.optional') . ')'" fieldName="production_bom_id" :fieldRequired="false">
                         <option value="">—</option>
                         @foreach ($boms as $bom)
-                            <option value="{{ $bom->id }}" @selected(old('production_bom_id') == $bom->id)>
+                            <option value="{{ $bom->id }}" data-output-product-id="{{ $bom->output_product_id }}" @selected(old('production_bom_id') == $bom->id)>
                                 #{{ $bom->id }} {{ $bom->version }} @if ($bom->code)
                                     ({{ $bom->code }})
                                 @endif
@@ -92,3 +92,7 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    @include('production::orders.partials.bom-fg-sync-script')
+@endpush

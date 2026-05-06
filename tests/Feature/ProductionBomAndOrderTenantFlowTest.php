@@ -171,10 +171,10 @@ function productionTenantFlowFixtures(): ?array
     }
 
     foreach ($permissionNames as $permissionName) {
-        Cache::forget('permission-' . $permissionName . '-' . $user->id);
+        Cache::forget('permission-'.$permissionName.'-'.$user->id);
     }
 
-    Cache::forget('user_modules_' . $user->id);
+    Cache::forget('user_modules_'.$user->id);
 
     return [
         'company' => $company,
@@ -193,7 +193,7 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         return;
     }
 
-    $version = 't-http-' . uniqid('', true);
+    $version = 't-http-'.uniqid('', true);
 
     $this->actingAs($fix['userAuth'], 'web')
         ->withSession([
@@ -233,7 +233,8 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
 
     $orderResponse = $this->post(route('production.orders.store'), [
         '_token' => csrf_token(),
-        'output_product_id' => (int) $fix['fg']->id,
+        // UI locks FG to BOM output; backend also normalizes when a BOM is selected.
+        'output_product_id' => (int) $fix['rm']->id,
         'production_bom_id' => (int) $bom->id,
         'rm_warehouse_id' => (int) $fix['rmWarehouse']->id,
         'fg_warehouse_id' => (int) $fix['fgWarehouse']->id,
@@ -247,11 +248,11 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
     /** @var ProductionOrder|null $order */
     $order = ProductionOrder::query()
         ->where('company_id', (int) $fix['company']->id)
-        ->where('output_product_id', (int) $fix['fg']->id)
         ->where('planned_quantity', 100)
         ->orderByDesc('id')
         ->first();
 
     expect($order)->not->toBeNull();
+    expect((int) $order->output_product_id)->toBe((int) $fix['fg']->id);
     expect($order->status)->toBe(ProductionOrder::STATUS_DRAFT);
 });

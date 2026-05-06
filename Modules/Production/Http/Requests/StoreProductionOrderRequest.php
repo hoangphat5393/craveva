@@ -9,6 +9,23 @@ use Modules\Production\Support\ProductionTenantAccess;
 
 class StoreProductionOrderRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $bomId = $this->input('production_bom_id');
+        if ($bomId === null || $bomId === '') {
+            return;
+        }
+
+        $bom = ProductionBom::query()->find((int) $bomId);
+        if ($bom === null) {
+            return;
+        }
+
+        $this->merge([
+            'output_product_id' => (int) $bom->output_product_id,
+        ]);
+    }
+
     public function authorize(): bool
     {
         return ProductionTenantAccess::tenantMayUseProduction()

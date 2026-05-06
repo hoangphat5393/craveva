@@ -1,0 +1,12 @@
+{
+    "masterGuideRules": [
+        {
+            "masterGuide": "FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md",
+            "includePatterns": ["*WAREHOUSE*", "*PO_DO*", "*GRN*", "*STOCK*", "*INVENTORY*", "*SALES_RETURN*", "*PURCHASE_RETURN*"]
+        },
+        {
+            "masterGuide": "FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md",
+            "includePatterns": ["*MAOLIN*", "*MIAOLIN*", "*IMPORT*", "*SKU*", "*PRICING*", "*CLIENT*"]
+        }
+    ]
+}

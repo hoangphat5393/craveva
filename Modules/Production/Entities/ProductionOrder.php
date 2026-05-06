@@ -3,7 +3,9 @@
 namespace Modules\Production\Entities;
 
 use App\Models\BaseModel;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\Project;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -39,6 +41,8 @@ class ProductionOrder extends BaseModel
         'updated_by',
         'released_at',
         'completed_at',
+        'bom_snapshot_at',
+        'bom_snapshot_planned_quantity',
     ];
 
     protected function casts(): array
@@ -47,6 +51,8 @@ class ProductionOrder extends BaseModel
             'planned_quantity' => 'float',
             'released_at' => 'datetime',
             'completed_at' => 'datetime',
+            'bom_snapshot_at' => 'datetime',
+            'bom_snapshot_planned_quantity' => 'float',
         ];
     }
 
@@ -76,5 +82,23 @@ class ProductionOrder extends BaseModel
     public function batches(): HasMany
     {
         return $this->hasMany(ProductionBatch::class, 'production_order_id');
+    }
+
+    public function salesOrder(): BelongsTo
+    {
+        return $this->belongsTo(Order::class, 'sales_order_id');
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
+
+    /**
+     * @return HasMany<ProductionOrderBomSnapshotItem, $this>
+     */
+    public function bomSnapshotItems(): HasMany
+    {
+        return $this->hasMany(ProductionOrderBomSnapshotItem::class, 'production_order_id')->orderBy('sort_order')->orderBy('id');
     }
 }

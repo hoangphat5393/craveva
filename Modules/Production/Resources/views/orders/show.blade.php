@@ -22,6 +22,19 @@
             <div class="alert alert-danger mt-3 mb-0">{{ session('error') }}</div>
         @endif
 
+        @if ($order->production_bom_id === null)
+            <div class="alert alert-warning mt-3 mb-0 f-14">
+                @lang('production::app.bomMissingHint')
+            </div>
+        @endif
+
+        @php
+            $plannedQty = (float) $order->planned_quantity;
+            $registeredFgTotal = $order->batches->sum(static fn($b) => $b->outputs->sum(static fn($o) => (float) $o->quantity));
+            $varianceQty = round($registeredFgTotal - $plannedQty, 4);
+            $variancePct = $plannedQty > 0.0000001 ? round((($registeredFgTotal - $plannedQty) / $plannedQty) * 100, 2) : null;
+        @endphp
+
         <div class="bg-white rounded p-4 mt-3 mb-4">
             <div class="row f-14">
                 <div class="col-md-6 mb-3">
@@ -37,6 +50,19 @@
                     <span class="font-weight-normal">{{ $order->planned_quantity }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.fgRegisteredTotal')</span>
+                    <span class="font-weight-normal">{{ rtrim(rtrim(number_format($registeredFgTotal, 4, '.', ''), '0'), '.') }}</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.fgVarianceVsPlanned')</span>
+                    <span class="font-weight-normal">
+                        {{ rtrim(rtrim(number_format($varianceQty, 4, '.', ''), '0'), '.') }}
+                        @if ($variancePct !== null)
+                            ({{ rtrim(rtrim(number_format((float) $variancePct, 2, '.', ''), '0'), '.') }}%)
+                        @endif
+                    </span>
+                </div>
+                <div class="col-md-6 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.rmWarehouse')</span>
                     <span class="font-weight-normal">{{ $order->rmWarehouse?->name ?? '#' . $order->rm_warehouse_id }}</span>
                 </div>
@@ -44,6 +70,53 @@
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.fgWarehouse')</span>
                     <span class="font-weight-normal">{{ $order->fgWarehouse?->name ?? '#' . $order->fg_warehouse_id }}</span>
                 </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.linkedSalesOrder')</span>
+                    <span class="font-weight-normal">
+                        @if ($order->sales_order_id)
+                            #{{ $order->sales_order_id }} @if ($order->salesOrder)
+                                ({{ $order->salesOrder->order_number }})
+                            @endif
+                        @else
+                            —
+                        @endif
+                    </span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.linkedProject')</span>
+                    <span class="font-weight-normal">
+                        @if ($order->project_id)
+                            {{ $order->project?->project_name ?? '#' . $order->project_id }}
+                        @else
+                            —
+                        @endif
+                    </span>
+                </div>
+                @if ($order->bom_snapshot_at)
+                    <div class="col-12 mb-2">
+                        <span class="text-dark-grey d-block mb-1">@lang('production::app.bomSnapshotTitle')</span>
+                        <p class="f-13 text-muted mb-1">
+                            @lang('production::app.bomSnapshotCapturedAt'): {{ $order->bom_snapshot_at }}
+                            · @lang('production::app.bomSnapshotPlannedFgQty'): {{ $order->bom_snapshot_planned_quantity }}
+                        </p>
+                        <table class="table table-sm border f-13 mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@lang('production::app.componentProduct')</th>
+                                    <th>@lang('production::app.bomComponentQtyFrozen')</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($order->bomSnapshotItems as $snap)
+                                    <tr>
+                                        <td>{{ $snap->componentProduct?->name ?? $snap->component_product_id }}</td>
+                                        <td>{{ $snap->quantity_per_fg_unit }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
 
             @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true))

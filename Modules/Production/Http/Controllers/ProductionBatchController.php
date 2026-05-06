@@ -11,9 +11,13 @@ use Illuminate\View\View;
 use Modules\Production\Entities\ProductionBatch;
 use Modules\Production\Entities\ProductionBatchConsumption;
 use Modules\Production\Entities\ProductionBatchOutput;
+use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Http\Concerns\HandlesProductionErrors;
+use Modules\Production\Http\Requests\AssignWarehouseBatchToConsumptionRequest;
 use Modules\Production\Http\Requests\StoreProductionBatchConsumptionRequest;
 use Modules\Production\Http\Requests\StoreProductionBatchOutputRequest;
+use Modules\Production\Services\ProductionFgQuantityPolicyService;
+use Modules\Production\Services\ProductionPlannedConsumptionFromSnapshotService;
 use Modules\Production\Services\ProductionPostingService;
 use Modules\Production\Support\ProductionTenantAccess;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
@@ -23,7 +27,8 @@ class ProductionBatchController extends AccountBaseController
     use HandlesProductionErrors;
 
     public function __construct(
-        protected ProductionPostingService $posting
+        protected ProductionPostingService $posting,
+        protected ProductionPlannedConsumptionFromSnapshotService $plannedFromSnapshot,
     ) {
         parent::__construct();
         $this->middleware(function ($request, $next) {
@@ -40,12 +45,13 @@ class ProductionBatchController extends AccountBaseController
 
         $batch->load([
             'order.outputProduct',
+            'order.bomSnapshotItems.componentProduct',
             'consumptions.componentProduct',
             'consumptions.warehouseProductBatch',
             'outputs',
         ]);
 
-        $this->pageTitle = __('production::app.batchDetail').' '.$batch->batch_code;
+        $this->pageTitle = __('production::app.batchDetail') . ' ' . $batch->batch_code;
         $this->batch = $batch;
         $companyId = (int) company()->id;
 
@@ -64,7 +70,41 @@ class ProductionBatchController extends AccountBaseController
             ->limit(300)
             ->get();
 
+        $this->canApplyBomSnapshotPlanned = $order->bom_snapshot_at !== null
+            && $order->batches()->count() === 1
+            && $batch->posted_consumptions_at === null
+            && $batch->consumptions->isEmpty()
+            && in_array($order->status, [ProductionOrder::STATUS_RELEASED, ProductionOrder::STATUS_IN_PROGRESS], true);
+
         return view('production::batches.show', $this->data);
+    }
+
+    public function applyPlannedFromBomSnapshot(Request $request, ProductionBatch $batch): RedirectResponse
+    {
+        $this->assertEditProductionOrders();
+        $this->assertBatchInCompany($batch);
+
+        try {
+            $this->plannedFromSnapshot->applySnapshotToBatch($batch->fresh(['order']));
+        } catch (\Throwable $e) {
+            return $this->handleProductionThrowable($request, 'production_apply_bom_snapshot_planned', $e);
+        }
+
+        return back()->with('success', __('messages.updateSuccess'));
+    }
+
+    public function assignConsumptionWarehouseBatch(AssignWarehouseBatchToConsumptionRequest $request, ProductionBatch $batch, ProductionBatchConsumption $consumption): RedirectResponse
+    {
+        $this->assertEditProductionOrders();
+        $this->assertBatchInCompany($batch);
+
+        abort_if((int) $consumption->production_batch_id !== (int) $batch->id, 404);
+        abort_if($batch->posted_consumptions_at !== null, 403);
+
+        $consumption->warehouse_product_batch_id = (int) $request->validated()['warehouse_product_batch_id'];
+        $consumption->save();
+
+        return back()->with('success', __('messages.updateSuccess'));
     }
 
     public function trace(ProductionBatch $batch): View
@@ -130,11 +170,29 @@ class ProductionBatchController extends AccountBaseController
         $this->assertBatchInCompany($batch);
 
         $order = $batch->order;
-        ProductionBatchOutput::query()->create(array_merge($request->validated(), [
+
+        $validated = $request->validated();
+        $planned = (float) $order->planned_quantity;
+        $incoming = (float) $validated['quantity'];
+
+        /** @var ProductionFgQuantityPolicyService $fgPolicy */
+        $fgPolicy = app(ProductionFgQuantityPolicyService::class);
+        $existingTotal = $fgPolicy->registeredFgTotalForOrder($order);
+        $projected = $existingTotal + $incoming;
+        $snapshot = $fgPolicy->varianceSnapshot($planned, $projected);
+
+        ProductionBatchOutput::query()->create([
             'company_id' => company()->id,
             'production_batch_id' => $batch->id,
             'output_product_id' => $order->output_product_id,
-        ]));
+            'quantity' => $incoming,
+            'batch_number' => (string) $validated['batch_number'],
+            'expiration_date' => $validated['expiration_date'] ?? null,
+            'manufacturing_date' => $validated['manufacturing_date'] ?? null,
+            'warehouse_id' => (int) $validated['warehouse_id'],
+            'variance_reason' => $validated['variance_reason'] ?? null,
+            ...$snapshot,
+        ]);
 
         return back()->with('success', __('messages.recordSaved'));
     }

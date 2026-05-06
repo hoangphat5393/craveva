@@ -255,3 +255,9 @@ Chi tiết thao tác: `WAREHOUSE_MASTER_GUIDE.md`.
 - Import mapping (ready-to-use): `MAOLIN_IMPORT_MAPPING.md`
 - File-by-file analysis: `PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`
 - Warehouse docs (UI + CF + runbook): `WAREHOUSE_MASTER_GUIDE.md`
+
+## Auto-added links by md_master_sync.ps1
+
+- `IMPORT_CHUNK_AND_BULK_INSERT.md`
+- `MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md`
+- `PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md`

@@ -41,6 +41,10 @@
                             </option>
                         @endforeach
                     </x-forms.select>
+                    <p class="f-12 text-muted mt-12 mb-0">
+                        @lang('production::app.bomManageFromSettingsHint')
+                        <a href="{{ route('production.boms.index') }}">@lang('production::app.menuProductionBoms')</a>
+                    </p>
 
                     <x-forms.select fieldId="rm_warehouse_id" :fieldLabel="__('production::app.rmWarehouse')" fieldName="rm_warehouse_id" fieldRequired="true">
                         @foreach ($warehouses as $w)
@@ -58,6 +62,24 @@
                         <x-forms.label fieldId="planned_quantity" :fieldLabel="__('production::app.plannedQty')" fieldRequired="true" />
                         <input type="number" step="0.0001" min="0.0001" name="planned_quantity" id="planned_quantity" class="form-control height-35 f-14" value="{{ old('planned_quantity', 1) }}" required>
                     </div>
+
+                    <x-forms.select fieldId="sales_order_id" :fieldLabel="__('production::app.linkedSalesOrder')" fieldName="sales_order_id" :fieldRequired="false">
+                        <option value="">—</option>
+                        @foreach ($recentSalesOrders as $so)
+                            <option value="{{ $so->id }}" @selected(old('sales_order_id') == $so->id)>
+                                #{{ $so->id }} — {{ $so->order_number }}
+                            </option>
+                        @endforeach
+                    </x-forms.select>
+
+                    <x-forms.select fieldId="project_id" :fieldLabel="__('production::app.linkedProject')" fieldName="project_id" :fieldRequired="false">
+                        <option value="">—</option>
+                        @foreach ($projects as $proj)
+                            <option value="{{ $proj->id }}" @selected(old('project_id') == $proj->id)>
+                                #{{ $proj->id }} — {{ $proj->project_name }}
+                            </option>
+                        @endforeach
+                    </x-forms.select>
 
                     <div class="w-100 border-top-grey pt-3 mt-2 d-flex flex-wrap">
                         <button type="submit" class="btn btn-primary rounded f-14 p-2 mr-3">

@@ -1,12 +1,33 @@
 # Playbook triển khai kỹ thuật — Module Production (Phase 0 + Phase 1 / MVP)
 
-| Thuộc tính           | Giá trị                                                                                                                                                                    |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Đối tượng**        | BA, Tech Lead, dev backend trước khi mở sprint code                                                                                                                        |
-| **Phạm vi**          | **Phase 0 + Phase 1** theo `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` §4 — không thay roadmap; đây là **chi tiết hóa** migration, luồng, điểm chạm code, test và milestone |
-| **Out of scope MVP** | CCP cứng, rework workflow, receiving QC, sampling/COA, Quality Lock đầy đủ (thuộc Phase 2–4)                                                                               |
-| **Repo**             | Đã có scaffold `Modules/Production/` (`module.json`, providers, routes rỗng). Logic nghiệp vụ **chưa có**.                                                                 |
-| **Cập nhật**         | 2026-05 — bổ sung §2.3 (tích hợp PO/DO); sửa bảng milestone §10                                                                                                            |
+| Thuộc tính           | Giá trị                                                                                                                                                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Đối tượng**        | BA, Tech Lead, dev backend trước khi mở sprint code                                                                                                                                                                 |
+| **Phạm vi**          | **Phase 0 + Phase 1** theo `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` §4 — không thay roadmap; đây là **chi tiết hóa** migration, luồng, điểm chạm code, test và milestone                                          |
+| **Out of scope MVP** | CCP cứng, rework workflow, receiving QC, sampling/COA, Quality Lock đầy đủ (thuộc Phase 2–4)                                                                                                                        |
+| **Repo**             | `Modules/Production/` — MVP: orders/batches, BOM CRUD, **snapshot BOM khi release**, sinh RM planned từ snapshot (1 batch/đơn), gán SO/Project trên form, post RM/FG, trace, FG policy. Phase 2+ (CCP, QC…) — §1.3. |
+| **Cập nhật**         | 2026-05-06 — §1.3 cập nhật sau snapshot + planned + SO/project                                                                                                                                                      |
+
+---
+
+## 1.3 Trạng thái triển khai (đối chiếu §1.1 Acceptance) — **ngắn gọn**
+
+| Tiêu chí §1.1             | Trạng thái   | Ghi chú ngắn                                                                                                                                |
+| ------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A** BOM FG + version    | **Đủ**       | CRUD BOM + items; FK BOM trên lệnh + **snapshot dòng BOM** (`production_order_bom_snapshot_items`) + qty kế hoạch TP đóng băng khi release. |
+| **B** Order + Batch       | **Đủ MVP**   | Draft/release/cancel/completed; batch code; RM/FG warehouses.                                                                               |
+| **C** Tiêu thụ RM post    | **Đủ MVP**   | Outbound theo `warehouse_product_batch_id`; idempotency key.                                                                                |
+| **D** Nhận FG             | **Đủ MVP**   | Inbound FG + batch_number/expiry/mfg.                                                                                                       |
+| **E** Truy xuất tối thiểu | **Đủ MVP**   | Trang `batches/{id}/trace` + movements ref `ProductionBatch`.                                                                               |
+| **F** Idempotency / hủy   | **Một phần** | Post idempotent (skip lần 2). **Không** reverse movement sau post; cancel order chỉ khi chưa posted RM/FG (đúng hướng MVP).                 |
+
+### Còn thiếu so với playbook / “full” quy trình nội bộ (làm tiếp trong Phase 1 mỏng hoặc Phase 2)
+
+1. ~~**Snapshot BOM trên lệnh**~~ — **Đã có:** chụp khi release (có BOM + ít nhất 1 dòng BOM).
+2. ~~**Nổ BOM → dòng tiêu hao đề xuất**~~ — **Một phần:** nút “Create planned RM lines from BOM snapshot” trên batch khi đơn hàng chỉ có **đúng 1 batch** và chưa có dòng RM; sau đó user **gán lô RM** trước khi post. Chưa auto multi-batch chia tổng.
+3. ~~**Gắn `sales_order_id` / `project_id`**~~ — **Đã có:** chọn nullable trên form tạo/sửa lệnh nháp; hiển thị trên order detail (_chưa_ auto từ SO/Observer — vẫn thủ công).
+4. **Cân bằng “complete” cứng** — order `completed` khi mọi batch post FG; không chặn partial theo policy nâng cao.
+5. **Phase 2+ (ngoài file này):** CCP, receiving QC, rework, quality lock DO, sampling/COA, API read cho AI — playbook **chưa viết** chi tiết Phase 2 → tách file `..._PHASE2_VI.md` khi kickoff.
 
 ---
 
@@ -163,7 +184,7 @@ Draft Order → Release → Allocate RM batches (manual) → Post consumption (o
 ### 6.4 Product BOM
 
 - Mở rộng **`products`** chỉ là foreign keys từ `production_boms`/`production_bom_items` — không nhân đôi bảng product.
-- Ước chừ **`Product`** model và admin UI (DataTable / CRUD chỗ chỉnh product) có thể cần tab “BOM” — task UI riêng.
+- **Hiện trạng repo:** BOM quản lý qua menu **Production BOMs** (`production.boms.*`), không nhét tab trong Product CRUD — chấp nhận được cho MVP; tab Product là tùy chọn UX sau.
 
 ---
 
@@ -218,7 +239,7 @@ Tham chiếu pattern test có sẵn: tests đề cập Warehouse/Sales DO upgrad
 | ------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | **M1** | Spike kho end-to-end — outbound RM + inbound FG với `reference_type` chốt; policy OK              | Memo kỹ thuật 1–2 trang (wiki hoặc `FUNC_LOGIC`) |
 | **M2** | Migrations BOM + Orders + Batch + consumption/output — `migrate` sạch; models + factory tối thiểu | PR 1                                             |
-| **M3** | UI draft/release + BOM snapshot                                                                   | PR 2 — list/detail có thể click                  |
+| **M3** | UI draft/release + (**snapshot BOM** nếu đã spec — xem §1.3 gap #1)                               | PR 2 — list/detail có thể click                  |
 | **M4** | Post consumption wired tới `StockMovementService`                                                 | PR 3 — tồn RM đổi đúng lô                        |
 | **M5** | Post FG inbound + Completed                                                                       | PR 4 — FG batch trong kho, sẵn sàng gắn Sales DO |
 | **M6** | Báo cáo truy xuất + test suite + checklist UAT                                                    | PR 5 — bàn giao MVP pilot                        |

@@ -1,0 +1,48 @@
+# FUNC_BUG Index
+
+Navigation index for bug, incident, and troubleshooting documents.
+
+## Primary Entry
+
+- Group overview: `FUNC_BUG/README.md`
+- Product import bug hub: `FUNC_BUG/PRODUCT_IMPORT_MASTER.md`
+- Client import bug hub: `FUNC_BUG/CLIENT_IMPORT_MASTER.md`
+
+## Environment and Infrastructure Issues
+
+- `FUNC_BUG/STAGING_ACCESS_VIA_GOOGLE_CLOUD.md`
+- `FUNC_BUG/STAGING_CHECK_WHY_SERVER_DOWN.md`
+- `FUNC_BUG/STAGING_DB_COPY_TO_LOCAL_MYSQL.md`
+- `FUNC_BUG/STAGING_IMPORT_SERVER_SHUTDOWN.md`
+- `FUNC_BUG/STAGING_INCIDENT_CHECK_COMMANDS.md`
+- `FUNC_BUG/STAGING_NGINX_TIMEOUT_IMPORT.md`
+- `FUNC_BUG/STAGING_PHP_UPLOAD_LIMIT.md`
+- `FUNC_BUG/STAGING_PRODUCTION_MODULE_MISSING_AFTER_PULL_VI.md`
+
+## Import and Data Issues
+
+- `FUNC_BUG/CLIENT_IMPORT_ERRORS.md`
+- `FUNC_BUG/CLIENT_IMPORT_FILE_NOT_FOUND_STAGING.md`
+- `FUNC_BUG/PRODUCT_IMPORT_1000_SLOW_CAUSES_AND_SOLUTIONS.md`
+- `FUNC_BUG/PRODUCT_IMPORT_CUSTOM_FIELDS_AND_SLOW_ANALYSIS.md`
+
+## Module, Permissions, and Behavior Issues
+
+- `FUNC_BUG/AFFILIATE_MODULE_ACTIVE_BUT_NOT_VISIBLE_IN_COMPANIES.md`
+- `FUNC_BUG/DEVELOPER_TOOLS_MISSING_COMPANY_SETTINGS_DESPITE_PACKAGE.md`
+- `FUNC_BUG/DEVELOPER_TOOLS_MODULE_REVIEW.md`
+- `FUNC_BUG/PRICING_VISIBLE_STAGING_NOT_LOCAL.md`
+- `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md`
+
+## QA, Performance, and Data Quality
+
+- `FUNC_BUG/CLIENT_DATATABLE_PERFORMANCE.md`
+- `FUNC_BUG/FULL_TEST_SUITE_FAILURES_SNAPSHOT.md`
+- `FUNC_BUG/ENG_TO_EN_STANDARDIZATION.md`
+- `FUNC_BUG/RECRUIT_SOURCE_SETTING_ARRAY_TO_STRING_VI.md`
+
+## Maintenance Notes
+
+- Keep this file as navigation only; avoid duplicating full analysis.
+- For every new bug document, add one line under the right section.
+- If superseded, keep old doc and mark it as deprecated with replacement link.

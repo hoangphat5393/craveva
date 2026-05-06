@@ -9,6 +9,8 @@ use Modules\Production\Entities\ProductionBatchOutput;
 use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionBomItem;
 use Modules\Production\Entities\ProductionOrder;
+use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
+use Modules\Production\Services\ProductionPlannedConsumptionFromSnapshotService;
 use Modules\Production\Services\ProductionPostingService;
 
 beforeEach(function (): void {
@@ -85,6 +87,12 @@ beforeEach(function (): void {
     $migration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
     $migration->up();
 
+    $productionFgQuantityPolicyMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
+    $productionFgQuantityPolicyMigration->up();
+
+    $bomSnapshotMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
+    $bomSnapshotMigration->up();
+
     DB::table('companies')->insert([
         'company_name' => 'Acme',
         'created_at' => now(),
@@ -121,9 +129,11 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
+    Schema::dropIfExists('production_company_fg_policies');
     Schema::dropIfExists('production_batch_outputs');
     Schema::dropIfExists('production_batch_consumptions');
     Schema::dropIfExists('production_batches');
+    Schema::dropIfExists('production_order_bom_snapshot_items');
     Schema::dropIfExists('production_orders');
     Schema::dropIfExists('production_bom_items');
     Schema::dropIfExists('production_boms');
@@ -182,7 +192,10 @@ it('posts RM consumption then FG receipt via warehouse stock movements', functio
 
     $service->releaseOrder($order);
     expect($order->fresh()->status)->toBe(ProductionOrder::STATUS_RELEASED)
-        ->and($order->fresh()->released_at)->not->toBeNull();
+        ->and($order->fresh()->released_at)->not->toBeNull()
+        ->and(ProductionOrderBomSnapshotItem::query()->where('production_order_id', $order->id)->count())->toBe(1)
+        ->and((float) ProductionOrderBomSnapshotItem::query()->where('production_order_id', $order->id)->value('quantity_per_fg_unit'))->toBe(0.5)
+        ->and($order->fresh()->bom_snapshot_planned_quantity)->toBe(100.0);
 
     $service->postConsumptionsForBatch($batch->fresh());
 
@@ -400,3 +413,113 @@ it('keeps order in progress when other batches are not completed yet', function 
     expect($order->fresh()->status)->toBe(ProductionOrder::STATUS_IN_PROGRESS)
         ->and($order->fresh()->completed_at)->toBeNull();
 });
+
+it('does not create BOM snapshot when releasing without BOM', function (): void {
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => null,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->releaseOrder($order);
+
+    expect(ProductionOrderBomSnapshotItem::query()->where('production_order_id', $order->id)->count())->toBe(0)
+        ->and($order->fresh()->bom_snapshot_at)->toBeNull();
+});
+
+it('creates planned consumption lines from snapshot for a single-batch order', function (): void {
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v1',
+        'code' => 'BOM-FG2',
+        'is_default' => true,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 0.5,
+        'sort_order' => 0,
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 100,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-SNAPSHOT',
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->releaseOrder($order);
+
+    $apply = app(ProductionPlannedConsumptionFromSnapshotService::class);
+    $apply->applySnapshotToBatch($batch->fresh(['order']));
+
+    $consumption = ProductionBatchConsumption::query()->where('production_batch_id', $batch->id)->first();
+
+    expect(ProductionBatchConsumption::query()->where('production_batch_id', $batch->id)->count())->toBe(1)
+        ->and((float) $consumption->planned_quantity)->toBe(50.0)
+        ->and($consumption->warehouse_product_batch_id)->toBeNull();
+});
+
+it('rejects snapshot planned consumption when order has multiple batches', function (): void {
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v1',
+        'code' => 'BOM-FG2',
+        'is_default' => true,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 0.5,
+        'sort_order' => 0,
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 100,
+    ]);
+
+    ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-A',
+    ]);
+
+    $batchB = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-B',
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->releaseOrder($order);
+
+    $apply = app(ProductionPlannedConsumptionFromSnapshotService::class);
+    $apply->applySnapshotToBatch($batchB->fresh(['order']));
+})->throws(InvalidArgumentException::class);

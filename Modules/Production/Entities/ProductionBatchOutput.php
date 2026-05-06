@@ -24,6 +24,11 @@ class ProductionBatchOutput extends BaseModel
         'manufacturing_date',
         'warehouse_id',
         'posted_at',
+        'variance_reason',
+        'variance_from_planned_total',
+        'variance_from_planned_percent',
+        'approved_by',
+        'approved_at',
     ];
 
     protected function casts(): array
@@ -33,6 +38,9 @@ class ProductionBatchOutput extends BaseModel
             'expiration_date' => 'date',
             'manufacturing_date' => 'date',
             'posted_at' => 'datetime',
+            'variance_from_planned_total' => 'float',
+            'variance_from_planned_percent' => 'float',
+            'approved_at' => 'datetime',
         ];
     }
 

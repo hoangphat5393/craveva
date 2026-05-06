@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Production\Entities\ProductionBatch;
 use Modules\Production\Entities\ProductionOrder;
+use Modules\Production\Services\ProductionFgQuantityPolicyService;
 use Modules\Production\Support\ProductionTenantAccess;
 
 class StoreProductionBatchOutputRequest extends FormRequest
@@ -38,6 +39,7 @@ class StoreProductionBatchOutputRequest extends FormRequest
             'warehouse_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
             'expiration_date' => ['nullable', 'date'],
             'manufacturing_date' => ['nullable', 'date'],
+            'variance_reason' => ['nullable', 'string', 'max:5000'],
         ];
     }
 
@@ -65,6 +67,27 @@ class StoreProductionBatchOutputRequest extends FormRequest
 
             if ($order->status === ProductionOrder::STATUS_COMPLETED) {
                 $validator->errors()->add('order', __('production::app.fgOrderAlreadyCompleted'));
+            }
+
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $incomingQty = (float) ($this->input('quantity') ?? 0);
+
+            /** @var ProductionFgQuantityPolicyService $fgPolicy */
+            $fgPolicy = app(ProductionFgQuantityPolicyService::class);
+
+            try {
+                $existingTotal = $fgPolicy->registeredFgTotalForOrder($order);
+
+                $fgPolicy->assertProjectedTotalsAllowedForOrder(
+                    $order,
+                    $existingTotal + $incomingQty,
+                    trim((string) $this->input('variance_reason', '')),
+                );
+            } catch (\InvalidArgumentException $e) {
+                $validator->errors()->add('quantity', $e->getMessage());
             }
         });
     }

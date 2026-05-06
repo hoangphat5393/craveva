@@ -48,4 +48,12 @@ class ProductionBom extends BaseModel
     {
         return $this->hasMany(ProductionBomItem::class, 'production_bom_id')->orderBy('sort_order');
     }
+
+    /**
+     * @return HasMany<ProductionOrder, $this>
+     */
+    public function productionOrders(): HasMany
+    {
+        return $this->hasMany(ProductionOrder::class, 'production_bom_id');
+    }
 }

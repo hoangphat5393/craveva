@@ -3,6 +3,7 @@
 namespace Modules\Production\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\Production\Services\ProductionFgQuantityPolicyService;
 use Modules\Production\Services\ProductionPostingService;
 
 class ProductionServiceProvider extends ServiceProvider
@@ -22,6 +23,7 @@ class ProductionServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ProductionPostingService::class);
+        $this->app->singleton(ProductionFgQuantityPolicyService::class);
         $this->app->register(RouteServiceProvider::class);
     }
 

@@ -3,7 +3,9 @@
 namespace Modules\Production\Http\Controllers;
 
 use App\Http\Controllers\AccountBaseController;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -77,7 +79,17 @@ class ProductionOrderController extends AccountBaseController
         $this->assertOrderInCompany($order);
 
         $this->pageTitle = __('production::app.orderDetail');
-        $order->load(['batches.consumptions.warehouseProductBatch', 'batches.outputs', 'outputProduct', 'bom', 'rmWarehouse', 'fgWarehouse']);
+        $order->load([
+            'batches.consumptions.warehouseProductBatch',
+            'batches.outputs',
+            'outputProduct',
+            'bom',
+            'rmWarehouse',
+            'fgWarehouse',
+            'salesOrder',
+            'project',
+            'bomSnapshotItems.componentProduct',
+        ]);
         $this->order = $order;
 
         return view('production::orders.show', $this->data);
@@ -126,7 +138,7 @@ class ProductionOrderController extends AccountBaseController
                 ProductionBatch::query()->create([
                     'company_id' => $order->company_id,
                     'production_order_id' => $order->id,
-                    'batch_code' => 'PB-'.$order->id.'-'.strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
+                    'batch_code' => 'PB-' . $order->id . '-' . strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
                 ]);
             }
         } catch (\Throwable $e) {
@@ -172,6 +184,18 @@ class ProductionOrderController extends AccountBaseController
             ->where('status', 'active')
             ->orderBy('name')
             ->get();
+
+        $this->recentSalesOrders = Order::query()
+            ->where('company_id', $companyId)
+            ->orderByDesc('id')
+            ->limit(250)
+            ->get(['id', 'order_number']);
+
+        $this->projects = Project::query()
+            ->where('company_id', $companyId)
+            ->orderByDesc('id')
+            ->limit(250)
+            ->get(['id', 'project_name']);
     }
 
     protected function assertViewProductionOrders(): void

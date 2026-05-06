@@ -35,6 +35,16 @@ class UpdateProductionOrderRequest extends FormRequest
             'rm_warehouse_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
             'fg_warehouse_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
             'planned_quantity' => ['required', 'numeric', 'min:0.0001'],
+            'sales_order_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('orders', 'id')->where('company_id', $companyId),
+            ],
+            'project_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('projects', 'id')->where('company_id', $companyId),
+            ],
         ];
     }
 

@@ -7,7 +7,9 @@ use InvalidArgumentException;
 use Modules\Production\Entities\ProductionBatch;
 use Modules\Production\Entities\ProductionBatchConsumption;
 use Modules\Production\Entities\ProductionBatchOutput;
+use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionOrder;
+use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
 use Modules\Warehouse\Services\StockMovementService;
 
 /**
@@ -17,7 +19,8 @@ use Modules\Warehouse\Services\StockMovementService;
 class ProductionPostingService
 {
     public function __construct(
-        protected StockMovementService $stockMovementService
+        protected StockMovementService $stockMovementService,
+        protected ProductionFgQuantityPolicyService $fgQuantityPolicy,
     ) {}
 
     public function releaseOrder(ProductionOrder $order): void
@@ -26,9 +29,50 @@ class ProductionPostingService
             throw new InvalidArgumentException(__('production::app.onlyDraftReleasable'));
         }
 
-        $order->status = ProductionOrder::STATUS_RELEASED;
-        $order->released_at = now();
-        $order->save();
+        DB::transaction(function () use ($order): void {
+            $this->syncBomSnapshotForReleasedOrder($order);
+            $order->status = ProductionOrder::STATUS_RELEASED;
+            $order->released_at = now();
+            $order->save();
+        });
+    }
+
+    /**
+     * Freezes BOM component quantities against the {@see ProductionOrder::planned_quantity} at release when a BOM exists.
+     */
+    protected function syncBomSnapshotForReleasedOrder(ProductionOrder $order): void
+    {
+        $order->bomSnapshotItems()->delete();
+
+        if ($order->production_bom_id === null) {
+            $order->bom_snapshot_at = null;
+            $order->bom_snapshot_planned_quantity = null;
+
+            return;
+        }
+
+        $bom = ProductionBom::with('items')->find((int) $order->production_bom_id);
+        if ($bom === null || $bom->items->isEmpty()) {
+            $order->bom_snapshot_at = null;
+            $order->bom_snapshot_planned_quantity = null;
+
+            return;
+        }
+
+        $plannedQty = (float) $order->planned_quantity;
+
+        foreach ($bom->items as $index => $item) {
+            ProductionOrderBomSnapshotItem::query()->create([
+                'company_id' => $order->company_id,
+                'production_order_id' => $order->id,
+                'component_product_id' => (int) $item->component_product_id,
+                'quantity_per_fg_unit' => (float) $item->quantity,
+                'sort_order' => (int) ($item->sort_order ?? $index),
+            ]);
+        }
+
+        $order->bom_snapshot_at = now();
+        $order->bom_snapshot_planned_quantity = $plannedQty;
     }
 
     /**
@@ -132,6 +176,14 @@ class ProductionPostingService
         if ($companyId <= 0) {
             throw new InvalidArgumentException(__('production::app.missingCompanyOnOrder'));
         }
+
+        $registeredFgTotal = $this->fgQuantityPolicy->registeredFgTotalForOrder($order);
+
+        $this->fgQuantityPolicy->assertProjectedTotalsAllowedForOrder(
+            $order,
+            $registeredFgTotal,
+            $output->variance_reason,
+        );
 
         $payload = [
             'company_id' => $companyId,

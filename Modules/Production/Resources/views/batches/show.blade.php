@@ -43,6 +43,17 @@
         </div>
 
         <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.consumptions')</h5>
+        @if (!empty($canApplyBomSnapshotPlanned) && $canApplyBomSnapshotPlanned)
+            <div class="bg-white rounded p-3 mb-3 f-14">
+                <form method="post" action="{{ route('production.batches.apply-planned-from-bom-snapshot', $batch) }}" class="mb-2">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-primary rounded f-14 p-2">
+                        <i class="fa fa-magic mr-1"></i>@lang('production::app.applyPlannedFromBomSnapshot')
+                    </button>
+                </form>
+                <p class="text-muted f-12 mb-0">@lang('production::app.applyPlannedFromBomSnapshotHelp')</p>
+            </div>
+        @endif
         <div class="d-flex flex-column w-tables rounded mb-4 bg-white table-responsive">
             <table class="table table-hover border-0 w-100 mb-0">
                 <thead>
@@ -50,6 +61,7 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.componentProduct')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.warehouseBatchId')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.plannedConsumption')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.rmBatchAssignment')</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,6 +73,34 @@
                                 @endif
                             </td>
                             <td>{{ $formatQuantity($line->actual_quantity ?? $line->planned_quantity) }}</td>
+                            <td>
+                                @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at === null && $line->warehouse_product_batch_id === null)
+                                    @php
+                                        $wbForComponent = $rmBatches->where('product_id', $line->component_product_id)->values();
+                                    @endphp
+                                    @if ($wbForComponent->isEmpty())
+                                        <span class="text-muted f-12">@lang('production::app.noRmWarehouseBatchForComponent')</span>
+                                    @else
+                                        <form method="post" action="{{ route('production.batches.consumptions.assign-warehouse-batch', [$batch, $line]) }}" class="form-inline d-flex flex-wrap align-items-end">
+                                            @csrf
+                                            <select name="warehouse_product_batch_id" class="form-control form-control-sm f-14 mr-2" style="max-width: 220px;">
+                                                @foreach ($wbForComponent as $wb)
+                                                    <option value="{{ $wb->id }}">
+                                                        #{{ $wb->id }} @if ($wb->batch_number)
+                                                            ({{ $wb->batch_number }})
+                                                        @endif — @lang('app.quantity'): {{ $formatQuantity($wb->quantity) }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-secondary rounded f-13">@lang('production::app.assignRmBatch')</button>
+                                        </form>
+                                    @endif
+                                @elseif ($line->warehouse_product_batch_id === null)
+                                    <span class="text-muted f-12">@lang('production::app.rmBatchAssignPermission')</span>
+                                @else
+                                    —
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -121,6 +161,8 @@
                     <tr>
                         <th class="f-14 text-dark-grey">@lang('production::app.fgBatchNumber')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.fgQty')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.fgVarianceVsPlanned')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.fgVarianceReason')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.postedAt')</th>
                         <th class="f-14 text-dark-grey text-right">@lang('app.action')</th>
                     </tr>
@@ -130,6 +172,17 @@
                         <tr>
                             <td>{{ $out->batch_number }}</td>
                             <td>{{ $formatQuantity($out->quantity) }}</td>
+                            <td>
+                                @if ($out->variance_from_planned_total !== null)
+                                    {{ $formatQuantity($out->variance_from_planned_total) }}
+                                    @if ($out->variance_from_planned_percent !== null)
+                                        ({{ $formatQuantity($out->variance_from_planned_percent) }}%)
+                                    @endif
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td class="text-break">{{ $out->variance_reason ? \Illuminate\Support\Str::limit($out->variance_reason, 120) : '—' }}</td>
                             <td>{{ $out->posted_at ?? '—' }}</td>
                             <td class="text-right">
                                 @if ($out->posted_at === null && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at !== null)
@@ -175,6 +228,10 @@
                     <div class="form-group col-md-2">
                         <x-forms.label fieldId="manufacturing_date" :fieldLabel="__('production::app.mfgDate')" fieldRequired="false" />
                         <input type="text" name="manufacturing_date" id="manufacturing_date" class="form-control date-picker height-35 f-14" placeholder="@lang('placeholders.date')">
+                    </div>
+                    <div class="form-group col-12">
+                        <x-forms.label fieldId="variance_reason" :fieldLabel="__('production::app.fgVarianceReason')" fieldRequired="false" />
+                        <textarea name="variance_reason" id="variance_reason" class="form-control f-14" rows="2" maxlength="5000" placeholder="@lang('production::app.fgVarianceReasonHelp')"></textarea>
                     </div>
                     <div class="form-group col-12">
                         <button type="submit" class="btn btn-primary rounded f-14 p-2">

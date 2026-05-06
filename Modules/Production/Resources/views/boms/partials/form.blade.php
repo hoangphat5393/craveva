@@ -17,7 +17,7 @@
             )
             ->all();
     }
-    $rowCount = max(count($lines), 12);
+    $rowCount = max(count($lines), 1);
 @endphp
 
 <div class="form-group my-3">
@@ -65,18 +65,19 @@
             <tr class="f-14 text-dark-grey">
                 <th>@lang('production::app.componentProduct')</th>
                 <th style="width: 160px;">@lang('production::app.bomComponentQty')</th>
+                <th style="width: 80px;">@lang('app.action')</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="bom-lines-body">
             @for ($i = 0; $i < $rowCount; $i++)
                 @php
                     $line = $lines[$i] ?? [];
                     $cid = old("items.$i.component_product_id", $line['component_product_id'] ?? '');
                     $qty = old("items.$i.quantity", $line['quantity'] ?? '');
                 @endphp
-                <tr>
+                <tr class="bom-line-row" data-row-index="{{ $i }}">
                     <td>
-                        <select name="items[{{ $i }}][component_product_id]" class="form-control select-picker f-14" data-container="body" data-size="8">
+                        <select name="items[{{ $i }}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8">
                             <option value="">—</option>
                             @foreach ($componentProducts as $p)
                                 <option value="{{ $p->id }}" @selected((string) $cid === (string) $p->id)>{{ $p->name }}</option>
@@ -86,8 +87,211 @@
                     <td>
                         <input type="number" step="0.0001" min="0.0001" name="items[{{ $i }}][quantity]" class="form-control height-35 f-14" value="{{ $qty }}">
                     </td>
+                    <td class="text-right">
+                        <button type="button" class="btn btn-outline-danger btn-sm bom-remove-row" title="@lang('app.delete')">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
                 </tr>
             @endfor
         </tbody>
     </table>
 </div>
+<div class="mt-3">
+    <button type="button" id="bom-add-row" class="btn btn-outline-primary btn-sm">
+        <i class="fa fa-plus mr-1"></i>@lang('app.add')
+    </button>
+</div>
+
+@push('scripts')
+    <script>
+        (() => {
+            const body = document.getElementById('bom-lines-body');
+            const addBtn = document.getElementById('bom-add-row');
+            const fgSelect = document.getElementById('output_product_id');
+            const bomForm = body ? body.closest('form') : null;
+            if (!body || !addBtn || !fgSelect) {
+                return;
+            }
+
+            const componentOptionsHtml = `
+                <option value="">—</option>
+                @foreach ($componentProducts as $p)
+                    <option value="{{ $p->id }}">{{ $p->name }}</option>
+                @endforeach
+            `;
+
+            const refreshPicker = (selectEl) => {
+                if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
+                    window.jQuery(selectEl).selectpicker('refresh');
+                }
+            };
+
+            const applyFgRestrictionForRow = (row) => {
+                const fgId = String(fgSelect.value || '');
+                const componentSelect = row.querySelector('.bom-component-select');
+                if (!componentSelect) {
+                    return;
+                }
+
+                Array.from(componentSelect.options).forEach((opt) => {
+                    if (!opt.value) {
+                        opt.disabled = false;
+                        opt.hidden = false;
+                        return;
+                    }
+                    const isFgOption = fgId !== '' && String(opt.value) === fgId;
+                    opt.disabled = isFgOption;
+                    opt.hidden = isFgOption;
+                });
+
+                if (fgId !== '' && String(componentSelect.value) === fgId) {
+                    componentSelect.value = '';
+                }
+
+                refreshPicker(componentSelect);
+            };
+
+            const applyFgRestrictionAllRows = () => {
+                body.querySelectorAll('.bom-line-row').forEach((row) => applyFgRestrictionForRow(row));
+            };
+
+            const enforceComponentNotEqualFg = (componentSelect) => {
+                if (!componentSelect) {
+                    return;
+                }
+                const fgId = String(fgSelect.value || '');
+                if (fgId !== '' && String(componentSelect.value || '') === fgId) {
+                    componentSelect.value = '';
+                    refreshPicker(componentSelect);
+                }
+            };
+
+            const reindexRows = () => {
+                body.querySelectorAll('.bom-line-row').forEach((row, index) => {
+                    row.dataset.rowIndex = String(index);
+                    row.querySelectorAll('select,input').forEach((field) => {
+                        const name = field.getAttribute('name');
+                        if (!name) {
+                            return;
+                        }
+                        field.setAttribute('name', name.replace(/items\[\d+\]/, `items[${index}]`));
+                    });
+                });
+            };
+
+            addBtn.addEventListener('click', () => {
+                const newIndex = body.querySelectorAll('.bom-line-row').length;
+                const tr = document.createElement('tr');
+                tr.className = 'bom-line-row';
+                tr.dataset.rowIndex = String(newIndex);
+                tr.innerHTML = `
+                    <td>
+                        <select name="items[${newIndex}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8">
+                            ${componentOptionsHtml}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14" value="">
+                    </td>
+                    <td class="text-right">
+                        <button type="button" class="btn btn-outline-danger btn-sm bom-remove-row" title="@lang('app.delete')">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                body.appendChild(tr);
+                const newComponentSelect = tr.querySelector('.bom-component-select');
+                if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
+                    window.jQuery(tr).find('.select-picker').selectpicker();
+                }
+                applyFgRestrictionForRow(tr);
+
+                if (newComponentSelect) {
+                    if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
+                        const pickerButton = window.jQuery(newComponentSelect).siblings('button.dropdown-toggle');
+                        if (pickerButton.length > 0) {
+                            pickerButton.trigger('focus');
+                        }
+                    } else {
+                        newComponentSelect.focus();
+                    }
+                }
+            });
+
+            body.addEventListener('change', (event) => {
+                const target = event.target;
+                if (!(target instanceof HTMLSelectElement)) {
+                    return;
+                }
+                if (!target.classList.contains('bom-component-select')) {
+                    return;
+                }
+                enforceComponentNotEqualFg(target);
+            });
+
+            if (window.jQuery) {
+                window.jQuery(body).on('changed.bs.select', '.bom-component-select', function() {
+                    enforceComponentNotEqualFg(this);
+                });
+            }
+
+            body.addEventListener('click', (event) => {
+                const target = event.target instanceof Element ? event.target.closest('.bom-remove-row') : null;
+                if (!target) {
+                    return;
+                }
+
+                const rows = body.querySelectorAll('.bom-line-row');
+                if (rows.length <= 1) {
+                    const onlyRow = rows[0];
+                    onlyRow.querySelectorAll('input').forEach((input) => {
+                        input.value = '';
+                    });
+                    onlyRow.querySelectorAll('select').forEach((select) => {
+                        select.value = '';
+                        refreshPicker(select);
+                    });
+                    return;
+                }
+
+                target.closest('.bom-line-row')?.remove();
+                reindexRows();
+                applyFgRestrictionAllRows();
+            });
+
+            fgSelect.addEventListener('change', applyFgRestrictionAllRows);
+            if (window.jQuery) {
+                window.jQuery(fgSelect).on('changed.bs.select', applyFgRestrictionAllRows);
+            }
+
+            if (bomForm) {
+                bomForm.addEventListener('submit', (event) => {
+                    const fgId = String(fgSelect.value || '');
+                    if (fgId === '') {
+                        return;
+                    }
+                    const hasInvalid = Array.from(body.querySelectorAll('.bom-component-select'))
+                        .some((select) => String(select.value || '') === fgId);
+                    if (hasInvalid) {
+                        event.preventDefault();
+                        applyFgRestrictionAllRows();
+                        if (window.Swal && typeof window.Swal.fire === 'function') {
+                            window.Swal.fire({
+                                icon: 'error',
+                                title: @json(__('app.error')),
+                                text: @json(__('production::app.bomComponentMustDifferFromOutput')),
+                            });
+                        } else {
+                            alert(@json(__('production::app.bomComponentMustDifferFromOutput')));
+                        }
+                    }
+                });
+            }
+
+            applyFgRestrictionAllRows();
+            window.setTimeout(applyFgRestrictionAllRows, 150);
+            window.setTimeout(applyFgRestrictionAllRows, 500);
+        })();
+    </script>
+@endpush

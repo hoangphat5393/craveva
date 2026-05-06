@@ -4,6 +4,7 @@ namespace Modules\Purchase\Services;
 
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\Support\SalesDoRuntime;
@@ -100,6 +101,9 @@ class SalesDoService
         if ($message = $this->blockingMessageForInvalidShipmentHeader($shipment)) {
             return $message;
         }
+        if ($message = $this->blockingMessageForProductionQualityLock($shipment)) {
+            return $message;
+        }
 
         if ($shipment->items->sum('quantity_shipped') <= 0) {
             return 'messages.salesDoShipQuantityRequired';
@@ -114,6 +118,47 @@ class SalesDoService
 
             $this->stockService->applyOutboundForShipment($shipment);
         });
+
+        return null;
+    }
+
+    /**
+     * @return string|null Translation key when linked production orders are not completed yet.
+     */
+    protected function blockingMessageForProductionQualityLock(Model $shipment): ?string
+    {
+        if (! (bool) Config::get('production.phase2.enforce_quality_lock_sales_do', false)) {
+            return null;
+        }
+
+        if (! Schema::hasTable('production_orders')) {
+            return null;
+        }
+
+        $companyId = (int) ($shipment->company_id ?? 0);
+        $salesOrderId = (int) ($shipment->order_id ?? 0);
+        if ($companyId <= 0 || $salesOrderId <= 0) {
+            return null;
+        }
+
+        $hasLinkedProductionOrders = DB::table('production_orders')
+            ->where('company_id', $companyId)
+            ->where('sales_order_id', $salesOrderId)
+            ->exists();
+
+        if (! $hasLinkedProductionOrders) {
+            return null;
+        }
+
+        $hasUnfinishedProductionOrders = DB::table('production_orders')
+            ->where('company_id', $companyId)
+            ->where('sales_order_id', $salesOrderId)
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->exists();
+
+        if ($hasUnfinishedProductionOrders) {
+            return 'production::app.salesDoBlockedByProductionQualityLock';
+        }
 
         return null;
     }

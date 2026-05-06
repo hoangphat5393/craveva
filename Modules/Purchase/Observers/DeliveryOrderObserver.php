@@ -82,7 +82,16 @@ class DeliveryOrderObserver
         $deliveryOrder->loadMissing('items.purchaseItem');
 
         $payloads = [];
+        $qcEnforced = (bool) config('purchase.receiving_qc_enforced', true);
         foreach ($deliveryOrder->items as $item) {
+            $qcStatus = strtolower(trim((string) ($item->qc_status ?? 'accepted')));
+            if ($qcStatus === '') {
+                $qcStatus = 'accepted';
+            }
+            if ($qcEnforced && $qcStatus !== 'accepted') {
+                continue;
+            }
+
             $qty = (float) ($item->quantity_received ?? 0);
             if ($qty <= 0 || ! $item->product_id) {
                 continue;

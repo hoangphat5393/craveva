@@ -34,6 +34,8 @@ class StoreProductionBomRequest extends FormRequest
             'items' => ['required', 'array', 'min:1'],
             'items.*.component_product_id' => ['required', 'integer', Rule::exists('products', 'id')->where('company_id', $companyId)],
             'items.*.quantity' => ['required', 'numeric', 'min:0.0001'],
+            'items.*.unit_id' => ['nullable', 'integer', Rule::exists('unit_types', 'id')],
+            'items.*.yield_factor' => ['nullable', 'numeric', 'min:0.0001'],
         ];
     }
 

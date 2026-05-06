@@ -12,6 +12,7 @@ use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Services\StockMovementService;
+use Modules\Warehouse\Services\WarehouseUnitConversionService;
 
 /**
  * Orchestrates RM consumption and FG receipt for Production MVP (Phase 1).
@@ -22,6 +23,7 @@ class ProductionPostingService
     public function __construct(
         protected StockMovementService $stockMovementService,
         protected ProductionFgQuantityPolicyService $fgQuantityPolicy,
+        protected WarehouseUnitConversionService $unitConversionService,
     ) {}
 
     public function releaseOrder(ProductionOrder $order): void
@@ -63,17 +65,41 @@ class ProductionPostingService
         $plannedQty = (float) $order->planned_quantity;
 
         foreach ($bom->items as $index => $item) {
+            $yieldFactor = $this->normalizeYieldFactor($item->yield_factor);
+            $quantityPerFgUnit = (float) $item->quantity;
+            $baseQuantityRaw = $this->unitConversionService->convertToBase(
+                (int) $order->company_id,
+                (int) $item->component_product_id,
+                $quantityPerFgUnit,
+                $item->unit_id !== null ? (int) $item->unit_id : null,
+            );
+            $baseQuantityAdjustedByYield = $baseQuantityRaw / $yieldFactor;
+
             ProductionOrderBomSnapshotItem::query()->create([
                 'company_id' => $order->company_id,
                 'production_order_id' => $order->id,
                 'component_product_id' => (int) $item->component_product_id,
-                'quantity_per_fg_unit' => (float) $item->quantity,
+                'quantity_per_fg_unit' => $quantityPerFgUnit,
+                'unit_id' => $item->unit_id !== null ? (int) $item->unit_id : null,
+                'yield_factor' => $yieldFactor,
+                'quantity_per_fg_unit_base_shadow' => $baseQuantityAdjustedByYield,
                 'sort_order' => (int) ($item->sort_order ?? $index),
             ]);
         }
 
         $order->bom_snapshot_at = now();
         $order->bom_snapshot_planned_quantity = $plannedQty;
+    }
+
+    protected function normalizeYieldFactor(mixed $value): float
+    {
+        $yieldFactor = (float) ($value ?? 1.0);
+
+        if ($yieldFactor <= 0) {
+            return 1.0;
+        }
+
+        return $yieldFactor;
     }
 
     /**
@@ -186,6 +212,13 @@ class ProductionPostingService
             $output->variance_reason,
         );
 
+        if (
+            $this->fgQuantityPolicy->outputRequiresVarianceApproval($order, $output)
+            && ($output->approved_by === null || $output->approved_at === null)
+        ) {
+            throw new InvalidArgumentException(__('production::app.fgVarianceApprovalRequired'));
+        }
+
         $payload = [
             'company_id' => $companyId,
             'warehouse_id' => (int) $output->warehouse_id,
@@ -196,7 +229,7 @@ class ProductionPostingService
             'manufacturing_date' => $output->manufacturing_date?->format('Y-m-d'),
             'reference_type' => ProductionBatch::class,
             'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-fg-receipt:' . $output->id,
+            'idempotency_key' => 'production-fg-receipt:'.$output->id,
         ];
 
         DB::transaction(function () use ($payload, $output, $batch, $order): void {
@@ -233,51 +266,57 @@ class ProductionPostingService
 
     protected function postSingleConsumption(ProductionBatch $batch, ProductionBatchConsumption $consumption, int $companyId, int $rmWarehouseId): void
     {
-        $warehouseProductBatchId = $consumption->warehouse_product_batch_id;
-
         $qty = $consumption->actual_quantity ?? $consumption->planned_quantity;
         if ($qty <= 0) {
             throw new InvalidArgumentException(__('production::app.consumptionQtyMustBePositive'));
         }
 
-        $warehouseProductBatchId = $this->resolveWarehouseBatchIdForConsumption(
+        $allocations = $this->resolveWarehouseBatchAllocationsForConsumption(
             $consumption,
             $companyId,
             $rmWarehouseId,
             (float) $qty,
-            $warehouseProductBatchId !== null ? (int) $warehouseProductBatchId : null,
+            $consumption->warehouse_product_batch_id !== null ? (int) $consumption->warehouse_product_batch_id : null,
         );
 
-        if ($warehouseProductBatchId === null) {
+        if ($allocations === []) {
             throw new InvalidArgumentException(__('production::app.consumptionRequiresWarehouseBatch'));
         }
 
-        if ((int) $consumption->warehouse_product_batch_id !== (int) $warehouseProductBatchId) {
-            $consumption->warehouse_product_batch_id = (int) $warehouseProductBatchId;
+        if ((int) $consumption->warehouse_product_batch_id !== (int) $allocations[0]['batch_id']) {
+            $consumption->warehouse_product_batch_id = (int) $allocations[0]['batch_id'];
             $consumption->save();
         }
 
-        $payload = [
-            'company_id' => $companyId,
-            'warehouse_id' => $rmWarehouseId,
-            'product_id' => (int) $consumption->component_product_id,
-            'quantity' => (float) $qty,
-            'batch_id' => (int) $warehouseProductBatchId,
-            'reference_type' => ProductionBatch::class,
-            'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-consume:' . $consumption->id,
-        ];
+        foreach ($allocations as $index => $allocation) {
+            $payload = [
+                'company_id' => $companyId,
+                'warehouse_id' => $rmWarehouseId,
+                'product_id' => (int) $consumption->component_product_id,
+                'quantity' => (float) $allocation['quantity'],
+                'batch_id' => (int) $allocation['batch_id'],
+                'reference_type' => ProductionBatch::class,
+                'reference_id' => (int) $batch->id,
+                'idempotency_key' => 'production-consume:'.$consumption->id.':'.$index,
+            ];
 
-        $this->stockMovementService->recordOutbound($payload);
+            $this->stockMovementService->recordOutbound($payload);
+        }
     }
 
-    protected function resolveWarehouseBatchIdForConsumption(
+    /**
+     * @return array<int, array{batch_id:int, quantity:float}>
+     */
+    protected function resolveWarehouseBatchAllocationsForConsumption(
         ProductionBatchConsumption $consumption,
         int $companyId,
         int $rmWarehouseId,
         float $requiredQty,
         ?int $preferredBatchId = null
-    ): ?int {
+    ): array {
+        $allocations = [];
+        $remaining = $requiredQty;
+
         if ($preferredBatchId !== null) {
             $preferred = WarehouseProductBatch::query()
                 ->whereKey($preferredBatchId)
@@ -286,23 +325,55 @@ class ProductionPostingService
                 ->where('product_id', (int) $consumption->component_product_id)
                 ->first(['id', 'quantity', 'reserved_quantity']);
 
-            if ($preferred !== null) {
-                $preferredAvailable = (float) $preferred->quantity - (float) $preferred->reserved_quantity;
-                if ($preferredAvailable >= $requiredQty) {
-                    return (int) $preferred->id;
+            if ($preferred !== null && $remaining > 0) {
+                $preferredAvailable = max(0.0, (float) $preferred->quantity - (float) $preferred->reserved_quantity);
+                if ($preferredAvailable > 0) {
+                    $take = min($remaining, $preferredAvailable);
+                    $allocations[] = [
+                        'batch_id' => (int) $preferred->id,
+                        'quantity' => (float) $take,
+                    ];
+                    $remaining -= $take;
                 }
             }
         }
 
-        $candidate = WarehouseProductBatch::query()
+        if ($remaining <= 0.0000001) {
+            return $allocations;
+        }
+
+        $candidates = WarehouseProductBatch::query()
             ->where('company_id', $companyId)
             ->where('warehouse_id', $rmWarehouseId)
             ->where('product_id', (int) $consumption->component_product_id)
-            ->where('quantity', '>=', $requiredQty)
+            ->where('quantity', '>', 0)
+            ->when($preferredBatchId !== null, fn ($query) => $query->where('id', '!=', (int) $preferredBatchId))
             ->orderByDesc('quantity')
             ->orderBy('id')
-            ->first(['id']);
+            ->get(['id', 'quantity', 'reserved_quantity']);
 
-        return $candidate?->id;
+        foreach ($candidates as $candidate) {
+            if ($remaining <= 0.0000001) {
+                break;
+            }
+
+            $available = max(0.0, (float) $candidate->quantity - (float) $candidate->reserved_quantity);
+            if ($available <= 0) {
+                continue;
+            }
+
+            $take = min($remaining, $available);
+            $allocations[] = [
+                'batch_id' => (int) $candidate->id,
+                'quantity' => (float) $take,
+            ];
+            $remaining -= $take;
+        }
+
+        if ($remaining > 0.0000001) {
+            return [];
+        }
+
+        return $allocations;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Modules\Purchase\Entities\PurchaseManagementSetting;
+
 $addOnOf = 'craveva';
 
 return [
@@ -13,6 +15,9 @@ return [
     // - legacy: keep old labels (Sales Shipments / Delivery Orders)
     // - compat_v2: show business labels (Sales DO / GRN) while technical routes/tables stay unchanged
     'flow_naming_mode' => env('PURCHASE_FLOW_NAMING_MODE', 'compat_v2'),
+    // Phase 2 (Receiving QC): when true, only GRN item rows with qc_status=accepted
+    // are posted to warehouse inbound stock from GRN observer.
+    'receiving_qc_enforced' => env('PURCHASE_RECEIVING_QC_ENFORCED', true),
 
     // Phase-2+ cutover switch framework (reserved):
     // false: keep technical flow on current artifacts
@@ -39,7 +44,7 @@ return [
     ],
     'verification_required' => true,
     'parent_min_version' => '5.3.3',
-    'script_name' => $addOnOf . '-purchase-module',
+    'script_name' => $addOnOf.'-purchase-module',
     'parent_product_name' => $addOnOf,
-    'setting' => \Modules\Purchase\Entities\PurchaseManagementSetting::class,
+    'setting' => PurchaseManagementSetting::class,
 ];

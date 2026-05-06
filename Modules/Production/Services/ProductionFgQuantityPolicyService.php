@@ -142,6 +142,43 @@ class ProductionFgQuantityPolicyService
         ];
     }
 
+    public function outputRequiresVarianceApproval(ProductionOrder $order, ProductionBatchOutput $output): bool
+    {
+        if (! (bool) Config::get('production.phase2.enforce_variance_approval', false)) {
+            return false;
+        }
+
+        $companyId = (int) ($order->company_id ?? 0);
+        $settings = $companyId > 0
+            ? $this->resolveForCompany($companyId)
+            : $this->fallbackSettingsFromConfig();
+
+        $variance = (float) ($output->variance_from_planned_total ?? 0);
+        $planned = max(0.0, self::quantizeQty((float) $order->planned_quantity));
+        $projected = self::quantizeQty($planned + $variance);
+
+        if ($settings->policyMode === self::MODE_STRICT) {
+            return false;
+        }
+
+        if ($settings->policyMode === self::MODE_CONTROLLED) {
+            if ($projected <= $planned) {
+                return false;
+            }
+
+            $ceiling = self::quantizeQty(
+                $planned + max(
+                    $planned * ($settings->tolerancePercent / 100.0),
+                    self::quantizeQty((float) $settings->toleranceAbsolute),
+                ),
+            );
+
+            return $projected > $ceiling;
+        }
+
+        return $projected > $planned;
+    }
+
     /**
      * @return array<string, mixed>
      */

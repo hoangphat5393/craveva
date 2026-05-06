@@ -17,11 +17,11 @@ Route::middleware('web')->group(function (): void {
     Route::get('production/{path?}', function (Request $request, ?string $path = null) {
         $target = '/account/production/orders';
         if ($path !== null && $path !== '') {
-            $target = '/account/production/' . $path;
+            $target = '/account/production/'.$path;
         }
         $query = $request->getQueryString();
 
-        return redirect($target . ($query !== null && $query !== '' ? '?' . $query : ''), 301);
+        return redirect($target.($query !== null && $query !== '' ? '?'.$query : ''), 301);
     })->where('path', '.*');
 });
 
@@ -47,5 +47,10 @@ Route::group([
     Route::post('batches/{batch}/consumptions/{consumption}/assign-warehouse-batch', [ProductionBatchController::class, 'assignConsumptionWarehouseBatch'])->name('batches.consumptions.assign-warehouse-batch');
     Route::post('batches/{batch}/post-consumptions', [ProductionBatchController::class, 'postConsumptions'])->name('batches.post-consumptions');
     Route::post('batches/{batch}/outputs', [ProductionBatchController::class, 'storeOutput'])->name('batches.outputs.store');
+    Route::post('batches/{batch}/rework-orders', [ProductionBatchController::class, 'storeReworkOrder'])->name('batches.rework-orders.store');
+    Route::post('batches/{batch}/rework-orders/{rework}/approve', [ProductionBatchController::class, 'approveReworkOrder'])->name('batches.rework-orders.approve');
+    Route::post('batches/{batch}/rework-orders/{rework}/reject', [ProductionBatchController::class, 'rejectReworkOrder'])->name('batches.rework-orders.reject');
+    Route::post('batches/{batch}/rework-orders/{rework}/complete', [ProductionBatchController::class, 'completeReworkOrder'])->name('batches.rework-orders.complete');
+    Route::post('outputs/{output}/approve-variance', [ProductionBatchController::class, 'approveOutputVariance'])->name('outputs.approve-variance');
     Route::post('outputs/{output}/post-fg-receipt', [ProductionBatchController::class, 'postFgReceipt'])->name('outputs.post-fg-receipt');
 });

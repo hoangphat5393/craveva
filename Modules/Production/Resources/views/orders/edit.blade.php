@@ -43,16 +43,16 @@
                     </x-forms.select>
                     <p class="f-12 text-muted mt-12 mb-0">
                         @lang('production::app.bomManageFromSettingsHint')
-                        <a href="{{ route('production.boms.index') }}">@lang('production::app.menuProductionBoms')</a>
+                        <a href="{{ route('production.boms.index') }}">@lang('production::app.menuBillOfMaterials')</a>
                     </p>
 
-                    <x-forms.select fieldId="rm_warehouse_id" :fieldLabel="__('production::app.rmWarehouse')" fieldName="rm_warehouse_id" fieldRequired="true">
+                    <x-forms.select fieldId="rm_warehouse_id" :fieldLabel="__('production::app.rawMaterialWarehouse')" fieldName="rm_warehouse_id" fieldRequired="true">
                         @foreach ($warehouses as $w)
                             <option value="{{ $w->id }}" @selected(old('rm_warehouse_id', $order->rm_warehouse_id) == $w->id)>{{ $w->name }}</option>
                         @endforeach
                     </x-forms.select>
 
-                    <x-forms.select fieldId="fg_warehouse_id" :fieldLabel="__('production::app.fgWarehouse')" fieldName="fg_warehouse_id" fieldRequired="true">
+                    <x-forms.select fieldId="fg_warehouse_id" :fieldLabel="__('production::app.finishedGoodsWarehouse')" fieldName="fg_warehouse_id" fieldRequired="true">
                         @foreach ($warehouses as $w)
                             <option value="{{ $w->id }}" @selected(old('fg_warehouse_id', $order->fg_warehouse_id) == $w->id)>{{ $w->name }}</option>
                         @endforeach

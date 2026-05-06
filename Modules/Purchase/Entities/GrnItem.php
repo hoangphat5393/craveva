@@ -18,13 +18,20 @@ class GrnItem extends BaseModel
         'batch_number',
         'expiry_date',
         'picking_rule_applied',
+        'qc_status',
+        'qc_reviewed_by',
+        'qc_reviewed_at',
         'quantity_ordered',
         'quantity_received',
     ];
 
-    protected $casts = [
-        'expiry_date' => 'date',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'expiry_date' => 'date',
+            'qc_reviewed_at' => 'datetime',
+        ];
+    }
 
     public function deliveryOrder(): BelongsTo
     {

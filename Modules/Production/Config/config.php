@@ -2,6 +2,24 @@
 
 return [
     'name' => 'Production',
+    'phase2' => [
+        /*
+         * When enabled, FG outputs that exceed policy tolerances require explicit approval
+         * (approved_by / approved_at) before posting FG receipt.
+         */
+        'enforce_variance_approval' => true,
+        /*
+         * When enabled, Sales DO shipping is blocked if the linked sales order has
+         * production orders that are not completed yet.
+         */
+        'enforce_quality_lock_sales_do' => true,
+        /*
+         * Shadow mode for Phase 2/3 yield + UOM conversion:
+         * - Keep current planned_quantity behavior unchanged.
+         * - Also compute planned_quantity_shadow using unit conversion + yield factor.
+         */
+        'yield_uom_shadow_enabled' => true,
+    ],
 
     'fg_quantity_policy' => [
         'defaults' => [

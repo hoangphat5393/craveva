@@ -83,13 +83,14 @@ class GrnService
 
         $itemModelClass = GrnRuntime::itemModelClass();
         $itemForeignKey = GrnRuntime::itemForeignKey();
+        $hasQcColumns = DB::getSchemaBuilder()->hasColumn(GrnRuntime::itemTable(), 'qc_status');
 
         if ($replace) {
             $itemModelClass::where($itemForeignKey, $delivery->id)->delete();
         }
 
         foreach ($payload['item_id'] as $key => $itemId) {
-            $itemModelClass::create([
+            $itemData = [
                 $itemForeignKey => $delivery->id,
                 'purchase_item_id' => $itemId,
                 'product_id' => $payload['product_id'][$key] ?? null,
@@ -98,7 +99,26 @@ class GrnService
                 'batch_number' => $payload['batch_number'][$key] ?? null,
                 'expiry_date' => $payload['expiry_date'][$key] ?? null,
                 'picking_rule_applied' => $payload['picking_rule_applied'][$key] ?? null,
-            ]);
+            ];
+
+            if ($hasQcColumns) {
+                $itemData['qc_status'] = $this->normalizeQcStatus($payload['qc_status'][$key] ?? null);
+                $itemData['qc_reviewed_by'] = $payload['qc_reviewed_by'][$key] ?? null;
+                $itemData['qc_reviewed_at'] = $payload['qc_reviewed_at'][$key] ?? null;
+            }
+
+            $itemModelClass::create($itemData);
         }
+    }
+
+    protected function normalizeQcStatus(mixed $value): string
+    {
+        $status = strtolower(trim((string) ($value ?? '')));
+
+        if (! in_array($status, ['pending', 'accepted', 'rejected'], true)) {
+            return 'accepted';
+        }
+
+        return $status;
     }
 }

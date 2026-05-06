@@ -63,11 +63,11 @@
                     </span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.rmWarehouse')</span>
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.rawMaterialWarehouse')</span>
                     <span class="font-weight-normal">{{ $order->rmWarehouse?->name ?? '#' . $order->rm_warehouse_id }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.fgWarehouse')</span>
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.finishedGoodsWarehouse')</span>
                     <span class="font-weight-normal">{{ $order->fgWarehouse?->name ?? '#' . $order->fg_warehouse_id }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -104,6 +104,7 @@
                                 <tr>
                                     <th>@lang('production::app.componentProduct')</th>
                                     <th>@lang('production::app.bomComponentQtyFrozen')</th>
+                                    <th>@lang('production::app.bomComponentQtyShadow')</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -111,6 +112,14 @@
                                     <tr>
                                         <td>{{ $snap->componentProduct?->name ?? $snap->component_product_id }}</td>
                                         <td>{{ $snap->quantity_per_fg_unit }}</td>
+                                        <td>
+                                            @if ($snap->quantity_per_fg_unit_base_shadow !== null)
+                                                {{ rtrim(rtrim(number_format((float) $snap->quantity_per_fg_unit_base_shadow, 6, '.', ''), '0'), '.') }}
+                                                <span class="text-muted">(@lang('production::app.shadowModeLabel'))</span>
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

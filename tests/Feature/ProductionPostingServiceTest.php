@@ -32,6 +32,16 @@ beforeEach(function (): void {
         $table->unsignedInteger('company_id');
         $table->string('name')->nullable();
         $table->string('type')->default('goods');
+        $table->unsignedBigInteger('unit_id')->nullable();
+        $table->timestamps();
+    });
+
+    Schema::create('product_unit_conversions', function ($table): void {
+        $table->id();
+        $table->unsignedInteger('company_id');
+        $table->unsignedBigInteger('product_id');
+        $table->unsignedBigInteger('unit_id');
+        $table->decimal('factor_to_base', 20, 6);
         $table->timestamps();
     });
 
@@ -84,14 +94,16 @@ beforeEach(function (): void {
         $table->timestamps();
     });
 
-    $migration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
+    $migration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
     $migration->up();
 
-    $productionFgQuantityPolicyMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
+    $productionFgQuantityPolicyMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
     $productionFgQuantityPolicyMigration->up();
 
-    $bomSnapshotMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
+    $bomSnapshotMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
     $bomSnapshotMigration->up();
+    $yieldUomShadowMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
+    $yieldUomShadowMigration->up();
 
     DB::table('companies')->insert([
         'company_name' => 'Acme',
@@ -138,6 +150,7 @@ afterEach(function (): void {
     Schema::dropIfExists('production_bom_items');
     Schema::dropIfExists('production_boms');
     Schema::dropIfExists('stock_movements');
+    Schema::dropIfExists('product_unit_conversions');
     Schema::dropIfExists('warehouse_product_stock');
     Schema::dropIfExists('warehouse_product_batches');
     Schema::dropIfExists('warehouses');
@@ -475,7 +488,73 @@ it('creates planned consumption lines from snapshot for a single-batch order', f
 
     expect(ProductionBatchConsumption::query()->where('production_batch_id', $batch->id)->count())->toBe(1)
         ->and((float) $consumption->planned_quantity)->toBe(50.0)
+        ->and((float) $consumption->planned_quantity_shadow)->toBe(50.0)
         ->and($consumption->warehouse_product_batch_id)->toBeNull();
+});
+
+it('computes planned_quantity_shadow using UOM conversion and yield factor in shadow mode', function (): void {
+    Config::set('production.phase2.yield_uom_shadow_enabled', true);
+
+    DB::table('products')->where('id', 1)->update([
+        'unit_id' => 99,
+        'updated_at' => now(),
+    ]);
+
+    DB::table('product_unit_conversions')->insert([
+        'company_id' => 1,
+        'product_id' => 1,
+        'unit_id' => 10,
+        'factor_to_base' => 2.5,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v-uom-yield',
+        'code' => 'BOM-UOM-YIELD',
+        'is_default' => true,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 4.0,
+        'unit_id' => 10,
+        'yield_factor' => 0.8,
+        'sort_order' => 0,
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-UOM-YIELD',
+    ]);
+
+    $posting = app(ProductionPostingService::class);
+    $posting->releaseOrder($order);
+
+    $apply = app(ProductionPlannedConsumptionFromSnapshotService::class);
+    $apply->applySnapshotToBatch($batch->fresh(['order']));
+
+    $consumption = ProductionBatchConsumption::query()->where('production_batch_id', $batch->id)->firstOrFail();
+
+    expect((float) $consumption->planned_quantity)->toBe(40.0)
+        ->and((float) $consumption->planned_quantity_shadow)->toBe(125.0)
+        ->and((float) data_get($consumption->shadow_basis, 'quantity_per_fg_unit_base'))->toBe(12.5)
+        ->and((float) data_get($consumption->shadow_basis, 'yield_factor'))->toBe(0.8);
 });
 
 it('rejects snapshot planned consumption when order has multiple batches', function (): void {
@@ -609,8 +688,149 @@ it('falls back to another RM batch when selected batch lacks quantity', function
     $service->postConsumptionsForBatch($batch->fresh());
 
     $consumption->refresh();
-    expect($consumption->warehouse_product_batch_id)->toBe((int) $otherBatchId)
-        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('quantity'))->toBe(6.0)
-        ->and((float) DB::table('warehouse_product_batches')->where('id', $otherBatchId)->value('quantity'))->toBe(164.0)
+    expect($consumption->warehouse_product_batch_id)->toBe(1)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('quantity'))->toBe(0.0)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', $otherBatchId)->value('quantity'))->toBe(170.0)
         ->and($batch->fresh()->posted_consumptions_at)->not->toBeNull();
+});
+
+it('splits RM consumption across multiple warehouse batches when needed', function (): void {
+    DB::table('warehouse_product_batches')->where('id', 1)->update([
+        'quantity' => 6,
+        'updated_at' => now(),
+    ]);
+
+    $otherBatchId = DB::table('warehouse_product_batches')->insertGetId([
+        'company_id' => 1,
+        'warehouse_id' => 1,
+        'product_id' => 1,
+        'batch_number' => 'RM-03',
+        'expiration_date' => null,
+        'manufacturing_date' => null,
+        'quantity' => 20,
+        'reserved_quantity' => 0,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_RELEASED,
+        'output_product_id' => 2,
+        'production_bom_id' => null,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-SPLIT-RM-BATCH',
+    ]);
+
+    $consumption = ProductionBatchConsumption::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'component_product_id' => 1,
+        'warehouse_product_batch_id' => 1,
+        'planned_quantity' => 25,
+        'actual_quantity' => null,
+        'line_order' => 0,
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->postConsumptionsForBatch($batch->fresh());
+
+    $consumption->refresh();
+    expect($consumption->warehouse_product_batch_id)->toBe(1)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('quantity'))->toBe(0.0)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', $otherBatchId)->value('quantity'))->toBe(1.0)
+        ->and($batch->fresh()->posted_consumptions_at)->not->toBeNull();
+
+    $movementCount = DB::table('stock_movements')
+        ->where('reference_type', ProductionBatch::class)
+        ->where('reference_id', $batch->id)
+        ->where('movement_type', 'outbound')
+        ->count();
+
+    expect($movementCount)->toBe(2);
+});
+
+it('requires variance approval before posting FG receipt when phase2 flag is enabled', function (): void {
+    Config::set('production.phase2.enforce_variance_approval', true);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_RELEASED,
+        'output_product_id' => 2,
+        'production_bom_id' => null,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 100,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-APPROVAL',
+        'posted_consumptions_at' => now(),
+    ]);
+
+    $service = app(ProductionPostingService::class);
+
+    $output = ProductionBatchOutput::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'output_product_id' => 2,
+        'quantity' => 120,
+        'batch_number' => 'FG-APPROVAL',
+        'warehouse_id' => 1,
+        'variance_reason' => 'Pilot overrun',
+        'variance_from_planned_total' => 20,
+        'variance_from_planned_percent' => 20,
+    ]);
+
+    $service->postFinishedGoodsReceipt($output->fresh());
+})->throws(InvalidArgumentException::class);
+
+it('posts FG receipt after variance is approved', function (): void {
+    Config::set('production.phase2.enforce_variance_approval', true);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_RELEASED,
+        'output_product_id' => 2,
+        'production_bom_id' => null,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 100,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-APPROVED',
+        'posted_consumptions_at' => now(),
+    ]);
+
+    $output = ProductionBatchOutput::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'output_product_id' => 2,
+        'quantity' => 120,
+        'batch_number' => 'FG-APPROVED',
+        'warehouse_id' => 1,
+        'variance_reason' => 'Pilot overrun',
+        'variance_from_planned_total' => 20,
+        'variance_from_planned_percent' => 20,
+        'approved_by' => 99,
+        'approved_at' => now(),
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->postFinishedGoodsReceipt($output->fresh());
+
+    expect($output->fresh()->posted_at)->not->toBeNull()
+        ->and($order->fresh()->status)->toBe(ProductionOrder::STATUS_COMPLETED);
 });

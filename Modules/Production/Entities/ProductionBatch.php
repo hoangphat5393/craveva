@@ -52,4 +52,12 @@ class ProductionBatch extends BaseModel
     {
         return $this->hasMany(ProductionBatchOutput::class, 'production_batch_id');
     }
+
+    /**
+     * @return HasMany<ProductionReworkOrder, $this>
+     */
+    public function reworkOrders(): HasMany
+    {
+        return $this->hasMany(ProductionReworkOrder::class, 'source_production_batch_id')->orderByDesc('id');
+    }
 }

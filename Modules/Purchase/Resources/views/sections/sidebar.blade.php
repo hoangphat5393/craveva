@@ -99,7 +99,7 @@
 
             @if ($canViewProductionOrders)
                 <x-sub-menu-item :link="route('production.orders.index')" :text="__('production::app.menuProductionOrders')" :permission="true" :active="request()->routeIs('production.orders.*', 'production.batches.*', 'production.outputs.post-fg-receipt')" />
-                <x-sub-menu-item :link="route('production.boms.index')" :text="__('production::app.menuProductionBoms')" :permission="true" :active="request()->routeIs('production.boms.*')" />
+                <x-sub-menu-item :link="route('production.boms.index')" :text="__('production::app.menuBillOfMaterials')" :permission="true" :active="request()->routeIs('production.boms.*')" />
             @endif
 
             <x-sub-menu-item :link="route('reports.index')" :text="__('purchase::app.menu.reports')" :permission="$purchaseViewOrderReportPermission != 'none' && $purchaseViewOrderReportPermission != '' && false" />

@@ -12,10 +12,13 @@ use Modules\Production\Entities\ProductionBatch;
 use Modules\Production\Entities\ProductionBatchConsumption;
 use Modules\Production\Entities\ProductionBatchOutput;
 use Modules\Production\Entities\ProductionOrder;
+use Modules\Production\Entities\ProductionReworkOrder;
 use Modules\Production\Http\Concerns\HandlesProductionErrors;
 use Modules\Production\Http\Requests\AssignWarehouseBatchToConsumptionRequest;
+use Modules\Production\Http\Requests\DecideProductionReworkOrderRequest;
 use Modules\Production\Http\Requests\StoreProductionBatchConsumptionRequest;
 use Modules\Production\Http\Requests\StoreProductionBatchOutputRequest;
+use Modules\Production\Http\Requests\StoreProductionReworkOrderRequest;
 use Modules\Production\Services\ProductionFgQuantityPolicyService;
 use Modules\Production\Services\ProductionPlannedConsumptionFromSnapshotService;
 use Modules\Production\Services\ProductionPostingService;
@@ -49,6 +52,7 @@ class ProductionBatchController extends AccountBaseController
             'consumptions.componentProduct',
             'consumptions.warehouseProductBatch',
             'outputs',
+            'reworkOrders',
         ]);
 
         $this->pageTitle = __('production::app.batchDetail').' '.$batch->batch_code;
@@ -228,6 +232,94 @@ class ProductionBatchController extends AccountBaseController
             ->with('success', __('messages.updateSuccess'));
     }
 
+    public function approveOutputVariance(Request $request, ProductionBatchOutput $output): RedirectResponse
+    {
+        $this->assertEditProductionOrders();
+        $output->load('batch.order');
+        $batch = $output->batch;
+        if ($batch === null) {
+            abort(404);
+        }
+        $this->assertBatchInCompany($batch);
+
+        if ($output->posted_at !== null) {
+            return back()->with('error', __('production::app.fgVarianceAlreadyPosted'));
+        }
+
+        $output->approved_by = user()->id;
+        $output->approved_at = now();
+        $output->save();
+
+        return back()->with('success', __('messages.updateSuccess'));
+    }
+
+    public function storeReworkOrder(StoreProductionReworkOrderRequest $request, ProductionBatch $batch): RedirectResponse
+    {
+        $this->assertEditProductionOrders();
+        $this->assertBatchInCompany($batch);
+
+        ProductionReworkOrder::query()->create([
+            'company_id' => (int) company()->id,
+            'source_production_batch_id' => (int) $batch->id,
+            'requested_quantity' => (float) $request->validated()['requested_quantity'],
+            'reason' => trim((string) $request->validated('reason', '')) ?: null,
+            'status' => ProductionReworkOrder::STATUS_REQUESTED,
+            'requested_by' => (int) user()->id,
+        ]);
+
+        return back()->with('success', __('messages.recordSaved'));
+    }
+
+    public function approveReworkOrder(DecideProductionReworkOrderRequest $request, ProductionBatch $batch, ProductionReworkOrder $rework): RedirectResponse
+    {
+        $this->assertEditProductionOrders();
+        $this->assertBatchInCompany($batch);
+        $this->assertReworkInBatch($batch, $rework);
+        abort_if($rework->status !== ProductionReworkOrder::STATUS_REQUESTED, 403);
+
+        $validated = $request->validated();
+        $rework->status = ProductionReworkOrder::STATUS_APPROVED;
+        $rework->approved_quantity = isset($validated['approved_quantity'])
+            ? (float) $validated['approved_quantity']
+            : (float) $rework->requested_quantity;
+        $rework->decision_note = trim((string) ($validated['decision_note'] ?? '')) ?: null;
+        $rework->approved_by = (int) user()->id;
+        $rework->approved_at = now();
+        $rework->save();
+
+        return back()->with('success', __('messages.updateSuccess'));
+    }
+
+    public function rejectReworkOrder(DecideProductionReworkOrderRequest $request, ProductionBatch $batch, ProductionReworkOrder $rework): RedirectResponse
+    {
+        $this->assertEditProductionOrders();
+        $this->assertBatchInCompany($batch);
+        $this->assertReworkInBatch($batch, $rework);
+        abort_if($rework->status !== ProductionReworkOrder::STATUS_REQUESTED, 403);
+
+        $rework->status = ProductionReworkOrder::STATUS_REJECTED;
+        $rework->decision_note = trim((string) $request->validated('decision_note', '')) ?: null;
+        $rework->approved_by = (int) user()->id;
+        $rework->approved_at = now();
+        $rework->save();
+
+        return back()->with('success', __('messages.updateSuccess'));
+    }
+
+    public function completeReworkOrder(Request $request, ProductionBatch $batch, ProductionReworkOrder $rework): RedirectResponse
+    {
+        $this->assertEditProductionOrders();
+        $this->assertBatchInCompany($batch);
+        $this->assertReworkInBatch($batch, $rework);
+        abort_if($rework->status !== ProductionReworkOrder::STATUS_APPROVED, 403);
+
+        $rework->status = ProductionReworkOrder::STATUS_COMPLETED;
+        $rework->completed_at = now();
+        $rework->save();
+
+        return back()->with('success', __('messages.updateSuccess'));
+    }
+
     protected function assertViewProductionOrders(): void
     {
         $p = user()->permission('view_production_orders');
@@ -245,5 +337,11 @@ class ProductionBatchController extends AccountBaseController
         $batch->loadMissing('order');
         $order = $batch->order;
         abort_if($order === null || (int) $order->company_id !== (int) company()->id, 403);
+    }
+
+    protected function assertReworkInBatch(ProductionBatch $batch, ProductionReworkOrder $rework): void
+    {
+        abort_if((int) $rework->source_production_batch_id !== (int) $batch->id, 404);
+        abort_if((int) $rework->company_id !== (int) company()->id, 403);
     }
 }

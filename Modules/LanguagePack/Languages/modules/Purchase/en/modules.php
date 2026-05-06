@@ -266,6 +266,10 @@ return [
         'batchLot' => 'Batch / lot',
         'expiryDate' => 'Expiry date',
         'pickingRule' => 'Picking rule (FIFO / FEFO)',
+        'qcStatus' => 'Receiving QC status',
+        'qcAccepted' => 'Accepted',
+        'qcPending' => 'Pending',
+        'qcRejected' => 'Rejected',
     ],
     'salesShipment' => [
         'draft' => 'Draft',

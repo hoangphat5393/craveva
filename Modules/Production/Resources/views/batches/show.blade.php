@@ -61,6 +61,7 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.componentProduct')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.warehouseBatchId')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.plannedConsumption')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.plannedConsumptionShadow')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.rmBatchAssignment')</th>
                     </tr>
                 </thead>
@@ -73,6 +74,14 @@
                                 @endif
                             </td>
                             <td>{{ $formatQuantity($line->actual_quantity ?? $line->planned_quantity) }}</td>
+                            <td>
+                                @if ($line->planned_quantity_shadow !== null)
+                                    {{ $formatQuantity($line->planned_quantity_shadow) }}
+                                    <div class="text-muted f-12 mt-1">@lang('production::app.shadowModeLabel')</div>
+                                @else
+                                    —
+                                @endif
+                            </td>
                             <td>
                                 @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at === null && $line->warehouse_product_batch_id === null)
                                     @php
@@ -163,6 +172,7 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.fgQty')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.fgVarianceVsPlanned')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.fgVarianceReason')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.fgVarianceApproval')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.postedAt')</th>
                         <th class="f-14 text-dark-grey text-right">@lang('app.action')</th>
                     </tr>
@@ -183,8 +193,24 @@
                                 @endif
                             </td>
                             <td class="text-break">{{ $out->variance_reason ? \Illuminate\Support\Str::limit($out->variance_reason, 120) : '—' }}</td>
+                            <td>
+                                @if ($out->approved_at)
+                                    <span class="badge badge-success">@lang('production::app.fgVarianceApproved')</span>
+                                    <div class="text-muted f-12 mt-1">{{ $out->approved_at }}</div>
+                                @else
+                                    <span class="badge badge-warning">@lang('production::app.fgVariancePendingApproval')</span>
+                                @endif
+                            </td>
                             <td>{{ $out->posted_at ?? '—' }}</td>
                             <td class="text-right">
+                                @if ($out->posted_at === null && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true))
+                                    <form method="post" action="{{ route('production.outputs.approve-variance', $out) }}" class="d-inline mr-1" onsubmit="return confirm(@json(__('app.areYouSure')));">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-primary rounded f-14 btn-sm">
+                                            <i class="fa fa-check-circle mr-1"></i>@lang('production::app.approveVariance')
+                                        </button>
+                                    </form>
+                                @endif
                                 @if ($out->posted_at === null && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at !== null)
                                     <form method="post" action="{{ route('production.outputs.post-fg-receipt', $out) }}" class="d-inline" onsubmit="return confirm(@json(__('app.areYouSure')));">
                                         @csrf
@@ -236,6 +262,87 @@
                     <div class="form-group col-12">
                         <button type="submit" class="btn btn-primary rounded f-14 p-2">
                             <i class="fa fa-check mr-1"></i>@lang('app.save')
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @endif
+
+        <h5 class="f-14 text-dark-grey font-weight-bold mt-4 mb-3">@lang('production::app.reworkOrders')</h5>
+        <div class="d-flex flex-column w-tables rounded mb-3 bg-white table-responsive">
+            <table class="table table-hover border-0 w-100 mb-0">
+                <thead>
+                    <tr>
+                        <th class="f-14 text-dark-grey">#</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.status')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.requestedQty')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.approvedQty')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.reason')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.postedAt')</th>
+                        <th class="f-14 text-dark-grey text-right">@lang('app.action')</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($batch->reworkOrders as $rework)
+                        <tr>
+                            <td>#{{ $rework->id }}</td>
+                            <td>{{ ucfirst($rework->status) }}</td>
+                            <td>{{ $formatQuantity($rework->requested_quantity) }}</td>
+                            <td>{{ $rework->approved_quantity !== null ? $formatQuantity($rework->approved_quantity) : '—' }}</td>
+                            <td class="text-break">{{ $rework->reason ? \Illuminate\Support\Str::limit($rework->reason, 120) : '—' }}</td>
+                            <td>{{ $rework->completed_at ?? ($rework->approved_at ?? '—') }}</td>
+                            <td class="text-right">
+                                @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true))
+                                    @if ($rework->status === \Modules\Production\Entities\ProductionReworkOrder::STATUS_REQUESTED)
+                                        <form method="post" action="{{ route('production.batches.rework-orders.approve', [$batch, $rework]) }}" class="d-inline mr-1" onsubmit="return confirm(@json(__('app.areYouSure')));">
+                                            @csrf
+                                            <input type="hidden" name="approved_quantity" value="{{ $rework->requested_quantity }}">
+                                            <button type="submit" class="btn btn-outline-success rounded f-13 btn-sm">
+                                                @lang('production::app.approveRework')
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{{ route('production.batches.rework-orders.reject', [$batch, $rework]) }}" class="d-inline" onsubmit="return confirm(@json(__('app.areYouSure')));">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-danger rounded f-13 btn-sm">
+                                                @lang('production::app.rejectRework')
+                                            </button>
+                                        </form>
+                                    @elseif ($rework->status === \Modules\Production\Entities\ProductionReworkOrder::STATUS_APPROVED)
+                                        <form method="post" action="{{ route('production.batches.rework-orders.complete', [$batch, $rework]) }}" class="d-inline" onsubmit="return confirm(@json(__('app.areYouSure')));">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-primary rounded f-13 btn-sm">
+                                                @lang('production::app.completeRework')
+                                            </button>
+                                        </form>
+                                    @endif
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">@lang('messages.noRecordFound')</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true))
+            <div class="bg-white rounded p-4 mb-4">
+                <h6 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.requestRework')</h6>
+                <form method="post" action="{{ route('production.batches.rework-orders.store', $batch) }}" class="form-row align-items-end">
+                    @csrf
+                    <div class="form-group col-md-3">
+                        <x-forms.label fieldId="requested_quantity" :fieldLabel="__('production::app.requestedQty')" fieldRequired="true" />
+                        <input type="number" step="0.0001" min="0.0001" name="requested_quantity" id="requested_quantity" class="form-control height-35 f-14" required>
+                    </div>
+                    <div class="form-group col-md-7">
+                        <x-forms.label fieldId="rework_reason" :fieldLabel="__('production::app.reason')" fieldRequired="false" />
+                        <input type="text" name="reason" id="rework_reason" class="form-control height-35 f-14" maxlength="5000">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button type="submit" class="btn btn-primary rounded f-14 p-2 btn-block">
+                            <i class="fa fa-plus mr-1"></i>@lang('production::app.requestRework')
                         </button>
                     </div>
                 </form>

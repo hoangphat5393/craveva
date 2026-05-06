@@ -11,6 +11,7 @@
                 <th>@lang('purchase::modules.deliveryOrder.batchLot')</th>
                 <th>@lang('purchase::modules.deliveryOrder.expiryDate')</th>
                 <th>@lang('purchase::modules.deliveryOrder.pickingRule')</th>
+                <th>@lang('purchase::modules.deliveryOrder.qcStatus')</th>
             </tr>
         </thead>
         <tbody>
@@ -45,6 +46,13 @@
                                 <option value="FEFO" @selected($line->picking_rule_applied === 'FEFO')>FEFO</option>
                             </select>
                         </td>
+                        <td>
+                            <select class="form-control select-picker height-35 f-14" name="qc_status[]" data-size="3" data-container="body">
+                                <option value="accepted" @selected(($line->qc_status ?? 'accepted') === 'accepted')>@lang('purchase::modules.deliveryOrder.qcAccepted')</option>
+                                <option value="pending" @selected(($line->qc_status ?? '') === 'pending')>@lang('purchase::modules.deliveryOrder.qcPending')</option>
+                                <option value="rejected" @selected(($line->qc_status ?? '') === 'rejected')>@lang('purchase::modules.deliveryOrder.qcRejected')</option>
+                            </select>
+                        </td>
                     </tr>
                 @endforeach
             @else
@@ -73,6 +81,13 @@
                                 <option value="">—</option>
                                 <option value="FIFO">FIFO</option>
                                 <option value="FEFO">FEFO</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control select-picker height-35 f-14" name="qc_status[]" data-size="3" data-container="body">
+                                <option value="accepted">@lang('purchase::modules.deliveryOrder.qcAccepted')</option>
+                                <option value="pending">@lang('purchase::modules.deliveryOrder.qcPending')</option>
+                                <option value="rejected">@lang('purchase::modules.deliveryOrder.qcRejected')</option>
                             </select>
                         </td>
                     </tr>

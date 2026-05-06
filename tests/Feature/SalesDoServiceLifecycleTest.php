@@ -65,12 +65,21 @@ beforeEach(function () {
         $table->string('batch_number')->nullable();
         $table->timestamps();
     });
+
+    Schema::create('production_orders', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->unsignedBigInteger('sales_order_id')->nullable();
+        $table->string('status')->default('draft');
+        $table->timestamps();
+    });
 });
 
 afterEach(function () {
     Mockery::close();
     Schema::dropIfExists('sales_shipment_items');
     Schema::dropIfExists('sales_shipments');
+    Schema::dropIfExists('production_orders');
     Schema::dropIfExists('warehouses');
     Schema::dropIfExists('orders');
 });
@@ -248,6 +257,80 @@ it('blocks ship when warehouse id is missing on the header', function () {
     $mockStock->shouldNotReceive('applyOutboundForShipment');
 
     expect($service->ship($shipment->fresh('items')))->toBe('messages.salesDoHeaderRequiresOrderAndWarehouse');
+});
+
+it('blocks ship when linked production order is not completed', function () {
+    Config::set('production.phase2.enforce_quality_lock_sales_do', true);
+
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
+    $service = new SalesDoService($mockStock);
+
+    $shipment = SalesShipment::create([
+        'company_id' => 10,
+        'order_id' => 2,
+        'warehouse_id' => 1,
+        'shipment_number' => 'SS-LOCK',
+        'shipment_date' => now()->toDateString(),
+        'status' => 'confirmed',
+    ]);
+
+    SalesShipmentItem::create([
+        'sales_shipment_id' => $shipment->id,
+        'order_item_id' => 101,
+        'product_id' => 201,
+        'quantity_ordered' => 10,
+        'quantity_shipped' => 3,
+    ]);
+
+    DB::table('production_orders')->insert([
+        'company_id' => 10,
+        'sales_order_id' => 2,
+        'status' => 'released',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $mockStock->shouldNotReceive('ensureReservationsForShipment');
+    $mockStock->shouldNotReceive('applyOutboundForShipment');
+
+    expect($service->ship($shipment->fresh('items')))->toBe('production::app.salesDoBlockedByProductionQualityLock');
+});
+
+it('allows ship when linked production orders are completed', function () {
+    Config::set('production.phase2.enforce_quality_lock_sales_do', true);
+
+    $mockStock = Mockery::mock(SalesShipmentStockService::class);
+    $service = new SalesDoService($mockStock);
+
+    $shipment = SalesShipment::create([
+        'company_id' => 10,
+        'order_id' => 3,
+        'warehouse_id' => 1,
+        'shipment_number' => 'SS-LOCK-OK',
+        'shipment_date' => now()->toDateString(),
+        'status' => 'confirmed',
+    ]);
+
+    SalesShipmentItem::create([
+        'sales_shipment_id' => $shipment->id,
+        'order_item_id' => 102,
+        'product_id' => 202,
+        'quantity_ordered' => 10,
+        'quantity_shipped' => 5,
+    ]);
+
+    DB::table('production_orders')->insert([
+        'company_id' => 10,
+        'sales_order_id' => 3,
+        'status' => 'completed',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $mockStock->shouldReceive('ensureReservationsForShipment')->once();
+    $mockStock->shouldReceive('applyOutboundForShipment')->once();
+
+    expect($service->ship($shipment->fresh('items')))->toBeNull();
 });
 
 it('blocks confirm when linked order does not exist for the shipment company', function () {

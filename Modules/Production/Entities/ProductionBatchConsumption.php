@@ -20,6 +20,8 @@ class ProductionBatchConsumption extends BaseModel
         'component_product_id',
         'warehouse_product_batch_id',
         'planned_quantity',
+        'planned_quantity_shadow',
+        'shadow_basis',
         'actual_quantity',
         'unit_id',
         'line_order',
@@ -29,6 +31,8 @@ class ProductionBatchConsumption extends BaseModel
     {
         return [
             'planned_quantity' => 'float',
+            'planned_quantity_shadow' => 'float',
+            'shadow_basis' => 'array',
             'actual_quantity' => 'float',
             'line_order' => 'integer',
         ];

@@ -103,6 +103,7 @@ beforeEach(function () {
         $table->unsignedBigInteger('product_id')->nullable();
         $table->double('quantity_ordered')->default(0);
         $table->double('quantity_received')->default(0);
+        $table->string('qc_status')->nullable();
         $table->timestamps();
     });
 
@@ -157,6 +158,7 @@ it('posts inbound stock when inbound DO is received and WAREHOUSE_INBOUND_FROM_D
         'product_id' => 99,
         'quantity_ordered' => 5,
         'quantity_received' => 5,
+        'qc_status' => 'accepted',
         'created_at' => now(),
         'updated_at' => now(),
     ]);
@@ -194,6 +196,57 @@ it('posts inbound stock when inbound DO is received and WAREHOUSE_INBOUND_FROM_D
     expect((bool) DB::table('grns')->where('id', $doId)->value('inbound_stock_applied'))->toBeTrue();
 });
 
+it('skips inbound stock for rejected QC lines when receiving QC enforcement is enabled', function () {
+    Config::set('warehouse.inbound_from_delivery_order_received', true);
+    Config::set('warehouse.inbound_from_purchase_order_delivered', false);
+    Config::set('purchase.receiving_qc_enforced', true);
+
+    $doId = DB::table('delivery_orders')->insertGetId([
+        'company_id' => 10,
+        'purchase_order_id' => null,
+        'type' => 'inbound',
+        'status' => 'received',
+        'warehouse_id' => 1,
+        'inbound_stock_applied' => false,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    DB::table('delivery_order_items')->insert([
+        'delivery_order_id' => $doId,
+        'purchase_item_id' => null,
+        'product_id' => 99,
+        'quantity_ordered' => 5,
+        'quantity_received' => 5,
+        'qc_status' => 'rejected',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    DB::table('grns')->insert([
+        'id' => $doId,
+        'company_id' => 10,
+        'purchase_order_id' => null,
+        'type' => 'inbound',
+        'warehouse_id' => 1,
+        'status' => 'received',
+        'inbound_stock_applied' => false,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $deliveryOrder = DeliveryOrder::with('items')->findOrFail($doId);
+    app(DeliveryOrderObserver::class)->saved($deliveryOrder);
+
+    expect(DB::table('stock_movements')
+        ->where('movement_type', 'inbound')
+        ->where('reference_type', DeliveryOrder::class)
+        ->where('reference_id', $doId)
+        ->count())->toBe(0);
+    expect(DB::table('warehouse_product_stock')->count())->toBe(0);
+    expect((bool) DB::table('grns')->where('id', $doId)->value('inbound_stock_applied'))->toBeFalse();
+});
+
 it('posts inbound stock from purchase order path when WAREHOUSE_INBOUND_FROM_PO_DELIVERED is true', function () {
     Config::set('warehouse.inbound_from_purchase_order_delivered', true);
     Config::set('warehouse.inbound_from_delivery_order_received', false);
@@ -206,7 +259,7 @@ it('posts inbound stock from purchase order path when WAREHOUSE_INBOUND_FROM_PO_
     ]);
     $po->exists = true;
 
-    $method = (new \ReflectionClass(PurchaseOrderObserver::class))->getMethod('recordPurchaseOrderInbound');
+    $method = (new ReflectionClass(PurchaseOrderObserver::class))->getMethod('recordPurchaseOrderInbound');
     $method->setAccessible(true);
     $method->invoke($observer, $po, 99, 6.0);
 
@@ -235,7 +288,7 @@ it('skips purchase order inbound when WAREHOUSE_INBOUND_FROM_PO_DELIVERED is fal
     ]);
     $po->exists = true;
 
-    $method = (new \ReflectionClass(PurchaseOrderObserver::class))->getMethod('recordPurchaseOrderInbound');
+    $method = (new ReflectionClass(PurchaseOrderObserver::class))->getMethod('recordPurchaseOrderInbound');
     $method->setAccessible(true);
     $method->invoke($observer, $po, 99, 2.0);
 

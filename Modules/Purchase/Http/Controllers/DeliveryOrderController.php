@@ -7,11 +7,14 @@ use App\Http\Controllers\AccountBaseController;
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Modules\Purchase\DataTables\DeliveryOrderDataTable;
 use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Services\GrnService;
 use Modules\Purchase\Support\FlowPermission;
 use Modules\Purchase\Support\GrnRuntime;
+use Modules\Warehouse\Entities\Warehouse;
 
 class DeliveryOrderController extends AccountBaseController
 {
@@ -19,7 +22,7 @@ class DeliveryOrderController extends AccountBaseController
     {
         $prefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn';
 
-        return $prefix . '.' . $action;
+        return $prefix.'.'.$action;
     }
 
     private function grnTitleKey(): string
@@ -119,7 +122,7 @@ class DeliveryOrderController extends AccountBaseController
     public function create()
     {
         abort_403(! FlowPermission::allowsAlias('grn.create'));
-        $this->pageTitle = __('app.add') . ' ' . __($this->grnTitleKey());
+        $this->pageTitle = __('app.add').' '.__($this->grnTitleKey());
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
         $this->warehouses = $this->warehouseList();
         $this->nextDeliveryNumber = $this->nextDeliveryNumber();
@@ -138,7 +141,7 @@ class DeliveryOrderController extends AccountBaseController
     public function edit($id)
     {
         abort_403(! FlowPermission::allowsAlias('grn.update'));
-        $this->pageTitle = __('app.edit') . ' ' . __($this->grnTitleKey());
+        $this->pageTitle = __('app.edit').' '.__($this->grnTitleKey());
         $this->delivery = $this->queryByCompany()->with(['items.purchaseItem.unit', 'purchaseOrder'])->findOrFail($id);
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
         $this->warehouses = $this->warehouseList();
@@ -198,8 +201,8 @@ class DeliveryOrderController extends AccountBaseController
         $pdf->setOption('enable_php', true);
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
 
-        \Illuminate\Support\Facades\App::setLocale($this->invoiceSetting->locale ?? 'en');
-        \Carbon\Carbon::setLocale($this->invoiceSetting->locale ?? 'en');
+        App::setLocale($this->invoiceSetting->locale ?? 'en');
+        Carbon::setLocale($this->invoiceSetting->locale ?? 'en');
 
         $pdf->loadView('purchase::delivery-order.pdf.delivery-order-1', $this->data);
 
@@ -207,18 +210,18 @@ class DeliveryOrderController extends AccountBaseController
         $canvas = $dom_pdf->getCanvas();
         $canvas->page_text(530, 820, 'Page {PAGE_NUM} of {PAGE_COUNT}', null, 10);
 
-        $filename = 'delivery-order-' . $this->delivery->delivery_number;
+        $filename = 'delivery-order-'.$this->delivery->delivery_number;
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
-    private function warehouseList(): \Illuminate\Support\Collection
+    private function warehouseList(): Collection
     {
-        if (! $this->company || ! class_exists(\Modules\Warehouse\Entities\Warehouse::class)) {
+        if (! $this->company || ! class_exists(Warehouse::class)) {
             return collect();
         }
 
-        return \Modules\Warehouse\Entities\Warehouse::query()
+        return Warehouse::query()
             ->where('company_id', $this->company->id)
             ->orderBy('name')
             ->get();
@@ -303,16 +306,20 @@ class DeliveryOrderController extends AccountBaseController
             $payload['quantity_ordered'] = $request->quantity_ordered ?? [];
             $payload['quantity_received'] = $request->quantity_received ?? [];
             $payload['batch_number'] = array_map(
-                fn($batch) => $this->normalizeBatch($batch),
+                fn ($batch) => $this->normalizeBatch($batch),
                 $request->batch_number ?? []
             );
             $payload['expiry_date'] = array_map(
-                fn($expiry) => $this->parseDoExpiryInput($expiry),
+                fn ($expiry) => $this->parseDoExpiryInput($expiry),
                 $request->expiry_date ?? []
             );
             $payload['picking_rule_applied'] = array_map(
-                fn($rule) => $this->normalizePickingRule($rule),
+                fn ($rule) => $this->normalizePickingRule($rule),
                 $request->picking_rule_applied ?? []
+            );
+            $payload['qc_status'] = array_map(
+                fn ($status) => $this->normalizeQcStatus($status),
+                $request->qc_status ?? []
             );
         }
 
@@ -329,5 +336,16 @@ class DeliveryOrderController extends AccountBaseController
         }
 
         return $q;
+    }
+
+    private function normalizeQcStatus(?string $raw): string
+    {
+        $status = strtolower(trim((string) $raw));
+
+        if (! in_array($status, ['pending', 'accepted', 'rejected'], true)) {
+            return 'accepted';
+        }
+
+        return $status;
     }
 }

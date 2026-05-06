@@ -263,6 +263,10 @@ return [
         'batchLot' => 'Số lô',
         'expiryDate' => 'Hạn dùng',
         'pickingRule' => 'Quy tắc lấy hàng (FIFO / FEFO)',
+        'qcStatus' => 'Trạng thái QC đầu vào',
+        'qcAccepted' => 'Đạt',
+        'qcPending' => 'Chờ QC',
+        'qcRejected' => 'Không đạt',
     ],
     'salesShipment' => [
         'draft' => 'Nháp',

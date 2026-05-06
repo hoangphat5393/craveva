@@ -30,7 +30,7 @@ class ProductionBomController extends AccountBaseController
     {
         $this->assertViewProductionBoms();
 
-        $this->pageTitle = __('production::app.menuProductionBoms');
+        $this->pageTitle = __('production::app.menuBillOfMaterials');
         $companyId = (int) company()->id;
 
         $query = ProductionBom::query()
@@ -92,7 +92,8 @@ class ProductionBomController extends AccountBaseController
                     'production_bom_id' => $bom->id,
                     'component_product_id' => (int) $line['component_product_id'],
                     'quantity' => (float) $line['quantity'],
-                    'unit_id' => null,
+                    'unit_id' => isset($line['unit_id']) ? (int) $line['unit_id'] : null,
+                    'yield_factor' => isset($line['yield_factor']) ? (float) $line['yield_factor'] : null,
                     'sort_order' => (int) $index,
                 ]);
             }
@@ -112,7 +113,7 @@ class ProductionBomController extends AccountBaseController
 
         $bom->load(['items.componentProduct', 'outputProduct']);
 
-        $this->pageTitle = __('production::app.bomDetail').' '.$bom->version;
+        $this->pageTitle = __('production::app.bomDetail') . ' ' . $bom->version;
         $this->bom = $bom;
 
         return view('production::boms.show', $this->data);
@@ -165,7 +166,8 @@ class ProductionBomController extends AccountBaseController
                     'production_bom_id' => $bom->id,
                     'component_product_id' => (int) $line['component_product_id'],
                     'quantity' => (float) $line['quantity'],
-                    'unit_id' => null,
+                    'unit_id' => isset($line['unit_id']) ? (int) $line['unit_id'] : null,
+                    'yield_factor' => isset($line['yield_factor']) ? (float) $line['yield_factor'] : null,
                     'sort_order' => (int) $index,
                 ]);
             }

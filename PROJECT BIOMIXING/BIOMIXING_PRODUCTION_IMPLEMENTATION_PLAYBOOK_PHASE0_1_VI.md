@@ -264,3 +264,251 @@ Tham chiếu pattern test có sẵn: tests đề cập Warehouse/Sales DO upgrad
 ---
 
 _Khi MVP chạy production pilot, fork sang tài liệu Phase 2 playbook (CCP, receiving QC, rework) để không phình file này._
+
+---
+
+## 11. Phase 1 proposal readiness (Done / Partial / Missing)
+
+Mục này đối chiếu nhanh giữa proposal Biomixing (Order Intake & Recipe Review + Planning + Production + Fulfillment) với trạng thái hệ thống hiện tại để team chốt sprint.
+
+| Hạng mục proposal Phase 1                                                            | Done | Partial | Missing |
+| ------------------------------------------------------------------------------------ | :--: | :-----: | :-----: |
+| Production BOM CRUD (version, default/effective date, lock khi đã có order dùng BOM) |  ✅  |         |         |
+| Production Order lifecycle (draft/release/cancel/completed)                          |  ✅  |         |         |
+| Snapshot BOM tại thời điểm release                                                   |  ✅  |         |         |
+| Planned RM từ snapshot + gán lô RM trước khi post                                    |      |   ✅    |         |
+| Multi-batch planning nâng cao (chia planned RM theo nhiều batch/order)               |      |         |   ✅    |
+| FG quantity policy (strict/controlled/flexible) + variance                           |  ✅  |         |         |
+| Workflow approval riêng khi variance vượt ngưỡng (`approved_by`, `approved_at`)      |      |   ✅    |         |
+| Yield factor + unit conversion nâng cao trên BOM                                     |      |         |   ✅    |
+| Traceability tối thiểu (batch trace RM/FG movements)                                 |  ✅  |         |         |
+| UAT E2E sâu với Sales DO/Settlement (bài test vận hành liên phòng ban)               |      |   ✅    |         |
+| Estimate approval loop theo proposal (Sales -> President -> VP) ở lớp Sales/Estimate |      |   ✅    |         |
+| AI Agent “check recipe history” gắn trực tiếp lúc tạo Estimate                       |      |         |   ✅    |
+
+### Gợi ý ưu tiên sprint sau (an toàn với B2B hiện tại)
+
+1. **Ưu tiên A (ít rủi ro):** UAT E2E sâu + approval riêng cho variance (feature flag theo company).
+2. **Ưu tiên B (rủi ro trung bình):** Multi-batch planning (giữ `reference_type` riêng cho Production, không đụng luồng core PO/GRN/DO).
+3. **Ưu tiên C (rủi ro cao hơn):** yield/UOM conversion engine; triển khai additive + shadow-mode trước khi bật mặc định.
+
+---
+
+## 12. Gap triển khai, rủi ro và cách khắc phục (để không vỡ B2B hiện tại)
+
+### 12.1 Bảng Gap -> Risk -> Mitigation
+
+| Gap / phần còn thiếu                                      | Rủi ro khi implement                                                                 | Cách khắc phục (bắt buộc trước go-live)                                                                                               |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Multi-batch planning nâng cao                             | Sai phân bổ RM giữa batch, double-post movement, lệch tồn kho                        | Giữ logic mới trong `Modules/Production`; dùng `reference_type` riêng; bật theo feature flag; test idempotency + concurrent posting   |
+| Approval workflow variance (`approved_by`, `approved_at`) | Chặn nhầm luồng xuất FG hoặc bypass approval                                         | Mặc định giữ behavior cũ; chỉ enforce approval khi policy company bật; thêm audit log + phân quyền rõ (`approve_production_variance`) |
+| Yield factor + UOM conversion nâng cao                    | Sai công thức tính planned/actual, rounding drift, lệch cost/margin                  | Additive schema (không sửa cột cũ); chạy dual-calculation (old/new) ở shadow mode; đối chiếu 2-4 tuần trước khi chuyển mặc định       |
+| UAT E2E sâu Sales DO -> Invoice                           | Hở case tích hợp liên module khi lên production                                      | Viết test checklist liên phòng ban + script data chuẩn; bắt buộc pass UAT trên staging trước rollout tenant thật                      |
+| Estimate approval loop (Sales -> President -> VP)         | Trùng/đè với luồng Sales Order hiện tại, người dùng tạo SO trực tiếp bỏ qua approval | Đặt gate rõ: SO từ estimate approved hoặc quyền override; ban đầu chỉ áp dụng cho nhóm/tenant pilot; giữ fallback manual có kiểm soát |
+| AI recipe history trong lúc tạo estimate                  | Gợi ý sai gây quyết định sai giá/công thức; tăng độ phức tạp vận hành                | Agent ở chế độ "assist-only"; luôn cần human confirm; log prompt/output; rollout pilot với use case hẹp trước khi mở rộng             |
+
+### 12.2 Guardrails kỹ thuật bắt buộc
+
+1. **Backward compatible:** migration kiểu additive, không phá schema/behavior cũ.
+2. **Feature flags theo company/tenant:** bật dần, có nút tắt khẩn cấp.
+3. **Isolation theo reference_type:** tách rõ Production với PO/GRN/DO để không lẫn stock ledger.
+4. **Regression tests B2B:** PO/GRN/DO/Invoice phải chạy pass song song test Production.
+5. **Observability:** log event quan trọng (release, post RM, post FG, variance approval) + dashboard lỗi.
+
+### 12.3 Kế hoạch rollout an toàn (đề xuất)
+
+- **Wave 1 (Pilot):** approval variance + UAT E2E sâu (ít rủi ro, tác động nhỏ).
+- **Wave 2 (Controlled):** multi-batch planning sau khi có baseline movement ổn định.
+- **Wave 3 (Advanced):** yield/UOM conversion + estimate approval + AI assist theo phạm vi tenant pilot.
+
+---
+
+## 13. Chu thich ro 4 phase nghiep vu (de doc nhanh, khong can suy luan)
+
+Muc nay dien giai truc tiep 4 phase trong proposal Biomixing: phase nao la gi, dau ra nghiep vu can co, va he thong hien tai dang o muc nao.
+
+### 13.1 Phase 1 - Order Intake & Recipe Review
+
+**La gi:** Giai doan tiep nhan yeu cau khach hang va duyet de xuat cong thuc/gia truoc khi chot don ban.
+
+**Dau ra mong doi:**
+
+- Estimate/bao gia co cau truc day du.
+- Luong duyet ro role (Sales -> President -> VP Pricing).
+- Ket qua cuoi: approve de convert sang Sales Order, hoac reject/yeu cau sua.
+
+**Trang thai hien tai (doi chieu proposal):** **Partial**
+
+- Da co nen Sales va du lieu Production/BOM de tham chieu.
+- Chua full luong duyet dung mau proposal + AI assist ngay trong man hinh estimate.
+
+### 13.2 Phase 2 - Planning & Pre-Production
+
+**La gi:** Lap ke hoach truoc san xuat: BOM, planned quantity, kho RM/FG, release lenh, san sang batch.
+
+**Dau ra mong doi:**
+
+- Production Order draft/release dung BOM/version.
+- Snapshot BOM tai release.
+- Planned RM ro rang truoc khi post.
+
+**Trang thai hien tai:** **Gan day du MVP (Done/Partial)**
+
+- Da co: BOM CRUD, Order lifecycle, snapshot, FG policy.
+- Con partial: multi-batch planning nang cao.
+
+### 13.3 Phase 3 - Production & QA
+
+**La gi:** Thuc thi san xuat, ghi nhan tieu hao RM, nhap FG, kiem soat quality/compliance.
+
+**Dau ra mong doi:**
+
+- RM consumption posted dung lo.
+- FG receipt posted dung batch.
+- Kiem soat variance va checkpoint QA truoc xuat.
+
+**Trang thai hien tai:** **Partial (core da co)**
+
+- Da co core: post RM/FG, variance policy, traceability co ban.
+- Chua full enterprise QA: approval rieng khi vuot nguong, checklist/quality lock nang cao.
+
+### 13.4 Phase 4 - Fulfillment & Settlement
+
+**La gi:** Giao hang va chot tai chinh.
+
+**Dau ra mong doi:**
+
+- Tao va ship Delivery Order (DO) theo dung FG batch.
+- Tao Invoice, doi soat cong no/thanh toan.
+
+**Trang thai hien tai:** **Partial**
+
+- Nen B2B (SO/DO/Invoice) da co.
+- Con can UAT E2E sau voi du lieu Production de chot van hanh lien phong ban.
+
+### 13.5 Tong ket 1 dong (de dung trong hop)
+
+**Estimate (duyet) -> Sales Order -> Production Planning -> Production Execution + QA -> DO -> Invoice**
+
+> Luu y quan trong: He thong hien tai manh o Production MVP (Phase 2-3 core), nhung chua full theo proposal o lop commercial approval (Phase 1) va AI layer.
+
+---
+
+## 14. Ke hoach uu tien lam chuan Phase 1 truoc, sau do moi day manh Phase 2
+
+Muc tieu cua section nay: neu team quyet dinh "lam chuan luong Phase 1 truoc" thi van giu duoc lien ket voi Production hien co, khong pha vo B2B core.
+
+### 14.1 Nguyen tac kien truc (bat buoc)
+
+1. **Production khong phu thuoc truc tiep Estimate**; Production chi nhan dau vao tu **Sales Order hop le**.
+2. **Phase 1 dong vai tro gate** (duyet thuong mai + cong thuc + gia) truoc khi tao SO.
+3. **Backward-compatible:** trong thoi gian chuyen tiep, cho phep co che override co kiem soat de khong dung van hanh.
+
+### 14.2 Scope "Phase 1 First" (lam truoc)
+
+#### A. Workflow thuong mai can co
+
+- Trang thai Estimate ro rang: `draft -> pending_president -> pending_vp_pricing -> approved/rejected`.
+- Rule convert:
+    - Chi `approved` moi duoc convert sang `Sales Order`.
+    - Nhom co quyen override duoc phep convert co audit.
+- Audit trail day du: nguoi duyet, thoi diem, ly do reject/chinh sua.
+
+#### B. Du lieu va lien ket
+
+- Bo sung mapping `estimate_id -> sales_order_id` (1-1 hoac 1-n theo policy).
+- Chuan hoa truong lien ket de khong refactor lai Phase 2:
+    - `company_id`, `sales_order_id`, `project_id`, `reference_type`, `reference_id`.
+- Khong doi nghia cac cot Production da chay.
+
+#### C. AI o muc an toan (assist-only)
+
+- AI recipe/pricing chi de **goi y**, khong auto-approve.
+- Human confirm la bat buoc.
+- Log input/output de review chat luong goi y.
+
+### 14.3 Dieu kien "Definition of Done" cho Phase 1 First
+
+- Co duoc luong duyet Sales -> President -> VP chay duoc tren staging.
+- Convert SO bi chan dung rule neu chua duyet.
+- Co override role + audit log.
+- Co regression test cho Sales/Estimate/convert SO pass.
+- Khong phat sinh incident tren luong B2B hien hanh (SO/DO/Invoice).
+
+### 14.4 Sau khi xong Phase 1 moi mo rong Phase 2
+
+Khi da dat DoD o 14.3, tiep tuc backlog Phase 2/3 theo thu tu:
+
+1. Multi-batch planning nang cao (Production).
+2. Approval variance day du (`approved_by`, `approved_at` enforcement).
+3. Yield/UOM conversion nang cao.
+4. UAT E2E sau voi DO -> Invoice tren tenant pilot.
+
+### 14.5 Ke hoach rollout de xuat (1-2-2)
+
+- **Sprint N (Phase 1 core):** workflow duyet + gate convert SO + audit + test.
+- **Sprint N+1 (Phase 1 hardening):** AI assist-only + pilot nho + training.
+- **Sprint N+2,N+3 (Phase 2/3 hardening):** multi-batch + variance approval + yield/UOM + UAT E2E sau.
+
+> Quyet dinh van hanh de nghi: Chot "Phase 1 First" cho tenant pilot truoc; giu feature flag de tan suat rollout co the dieu chinh ma khong anh huong tenant khac.
+
+### 14.6 Anh huong toi 2 luong core B2B va cach giai quyet
+
+**Cau tra loi ngan:** Ke hoach nay **khong duoc phep** pha vo logic:
+
+- `SO -> DO (ship/outbound) -> Invoice`
+- `PO -> GRN (inbound) -> Bill`
+
+Neu co dau hieu xung dot, phai ap dung cac bien phap sau truoc khi merge.
+
+#### A. Bao toan luong `SO -> DO -> Invoice`
+
+Rui ro tiem an:
+
+- Gate moi o Phase 1 chan nham viec tao/chot SO.
+- Production outbound bi nham sang logic ship DO.
+
+Bien phap bat buoc:
+
+1. Gate approval chi ap vao **estimate -> convert SO**, khong doi state machine DO/Invoice hien tai.
+2. Khong sua contract outbound cua DO; Production dung `reference_type` rieng (`production_*`), DO giu `sales_*`.
+3. Regression tests bat buoc pass:
+    - tao SO tu flow cu
+    - tao DO, ship outbound
+    - tao invoice va doi soat so lieu.
+
+#### B. Bao toan luong `PO -> GRN -> Bill`
+
+Rui ro tiem an:
+
+- Inbound FG tu Production bi nham chung nghia voi GRN inbound mua hang.
+- Doi policy kho lam anh huong GRN/Bill.
+
+Bien phap bat buoc:
+
+1. Tach ro `reference_type` inbound:
+    - GRN: `purchase_*` (hoac ten hien hanh)
+    - Production FG receipt: `production_receipt`.
+2. Khong thay doi mapping PO/GRN/Bill; chi bo sung additive cho Production.
+3. Regression tests bat buoc pass:
+    - nhap GRN vao kho
+    - tao Bill/Invoice mua hang
+    - doi chieu ton va cong no khong lech.
+
+#### C. Co che "phanh an toan" khi rollout
+
+1. Feature flag theo tenant/company cho tat ca logic moi.
+2. Canary rollout: 1 tenant pilot truoc, theo doi 1-2 chu ky van hanh.
+3. Co nut rollback:
+    - tat gate approval moi
+    - tat AI assist
+    - giu nguyen flow SO/PO core.
+4. Dashboard canh bao:
+    - sai lech stock movement theo `reference_type`
+    - mismatch giua outbound DO va inbound/receipt bat thuong.
+
+#### D. Exit criteria truoc go-live rong
+
+- 0 incident tren 2 luong core B2B trong pilot window.
+- Toan bo regression suite B2B + Production pass.
+- So lieu doi soat (stock + AR/AP) khop theo checklist finance.

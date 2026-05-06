@@ -393,5 +393,54 @@
                 $.easyUnblockUI('#invoices-table');
             });
         });
+
+        $('body').on('click', '.convert-to-order', function() {
+            var id = $(this).data('estimate-id');
+            var url = "{{ route('estimates.convert_to_sales_order', ':id') }}";
+            url = url.replace(':id', id);
+
+            Swal.fire({
+                title: 'Convert to Sales Order?',
+                text: 'This will create a Sales Order from this estimate.',
+                icon: 'question',
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText: 'Convert',
+                cancelButtonText: "@lang('app.cancel')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.easyBlockUI('#invoices-table');
+                    window.apiHttp.postUrlEncoded(url, {
+                        _token: "{{ csrf_token() }}"
+                    }).then(function(response) {
+                        if (response.status == "success") {
+                            if (response.redirectUrl) {
+                                window.location.href = response.redirectUrl;
+                            } else {
+                                window.LaravelDataTables["invoices-table"].draw(true);
+                            }
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#invoices-table');
+                    });
+                }
+            });
+        });
     </script>
 @endpush

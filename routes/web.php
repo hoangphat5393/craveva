@@ -763,6 +763,9 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('estimates/download/{id}', [EstimateController::class, 'download'])->name('estimates.download');
     Route::post('estimates/send-estimate/{id}', [EstimateController::class, 'sendEstimate'])->name('estimates.send_estimate');
     Route::get('estimates/change-status/{id}', [EstimateController::class, 'changeStatus'])->name('estimates.change_status');
+    Route::post('estimates/{id}/president-review', [EstimateController::class, 'presidentReview'])->name('estimates.president_review');
+    Route::post('estimates/{id}/vp-pricing-review', [EstimateController::class, 'vpPricingReview'])->name('estimates.vp_pricing_review');
+    Route::post('estimates/{id}/convert-to-sales-order', [EstimateController::class, 'convertToSalesOrder'])->name('estimates.convert_to_sales_order');
     Route::post('estimates/accept/{id}', [EstimateController::class, 'accept'])->name('estimates.accept');
     Route::post('estimates/decline/{id}', [EstimateController::class, 'decline'])->name('estimates.decline');
     Route::get('estimates/add-item', [EstimateController::class, 'addItem'])->name('estimates.add_item');
@@ -1051,7 +1054,7 @@ Route::get('/test-broadcast', function () {
 
         return response()->json(['success' => true, 'message' => 'Event broadcasted successfully']);
     } catch (Throwable $e) {
-        return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        return response()->json(['success' => false, 'message' => 'Error: '.$e->getMessage()]);
     }
 })->name('test-broadcast');
 

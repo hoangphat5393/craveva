@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Helper\NumberFormat;
 use App\Scopes\ActiveScope;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 
 /**
@@ -30,17 +34,17 @@ use Illuminate\Notifications\Notifiable;
  * @property int $send_status
  * @property int|null $added_by
  * @property int|null $last_updated_by
- * @property-read \App\Models\User $client
- * @property-read \App\Models\Currency|null $currency
+ * @property-read User $client
+ * @property-read Currency|null $currency
  * @property-read mixed $extras
  * @property-read mixed $icon
  * @property-read mixed $total_amount
  * @property-read mixed $valid_date
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EstimateItem[] $items
+ * @property-read Collection|EstimateItem[] $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
- * @property-read \App\Models\AcceptEstimate|null $sign
+ * @property-read AcceptEstimate|null $sign
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate newQuery()
@@ -76,14 +80,14 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereDescription($value)
  *
  * @property int|null $company_id
- * @property-read \App\Models\ClientDetails $clientdetails
- * @property-read \App\Models\Company|null $company
+ * @property-read ClientDetails $clientdetails
+ * @property-read Company|null $company
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereCompanyId($value)
  *
  * @property \Illuminate\Support\Carbon|null $last_viewed
  * @property string|null $ip_address
- * @property-read \App\Models\UnitType|null $unit
+ * @property-read UnitType|null $unit
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereIpAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereLastViewed($value)
@@ -98,6 +102,12 @@ use Illuminate\Notifications\Notifiable;
 class Estimate extends BaseModel
 {
     use CustomFieldsTrait, HasCompany, Notifiable;
+
+    public const INTERNAL_REVIEW_PENDING = 'pending';
+
+    public const INTERNAL_REVIEW_APPROVED = 'approved';
+
+    public const INTERNAL_REVIEW_REJECTED = 'rejected';
 
     protected $casts = [
         'valid_till' => 'datetime',
@@ -160,7 +170,7 @@ class Estimate extends BaseModel
 
     public function getTotalAmountAttribute()
     {
-        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol . $this->total : '';
+        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol.$this->total : '';
     }
 
     public function getValidDateAttribute()
@@ -172,7 +182,7 @@ class Estimate extends BaseModel
     {
         $invoiceSettings = (company()) ? company()->invoiceSetting : $this->company->invoiceSetting;
 
-        return \App\Helper\NumberFormat::estimate($this->estimate_number, $invoiceSettings);
+        return NumberFormat::estimate($this->estimate_number, $invoiceSettings);
     }
 
     public static function lastEstimateNumber()
@@ -183,5 +193,38 @@ class Estimate extends BaseModel
     public function estimateRequest(): BelongsTo
     {
         return $this->belongsTo(EstimateRequest::class, 'estimate_request_id');
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'estimate_id');
+    }
+
+    public function hasLegacyInternalReviewState(): bool
+    {
+        return $this->president_review_status === null && $this->vp_pricing_review_status === null;
+    }
+
+    public function hasPresidentApproved(): bool
+    {
+        if ($this->hasLegacyInternalReviewState()) {
+            return true;
+        }
+
+        return $this->president_review_status === self::INTERNAL_REVIEW_APPROVED;
+    }
+
+    public function hasVpPricingApproved(): bool
+    {
+        if ($this->hasLegacyInternalReviewState()) {
+            return true;
+        }
+
+        return $this->vp_pricing_review_status === self::INTERNAL_REVIEW_APPROVED;
+    }
+
+    public function isReadyForCommercialConversion(): bool
+    {
+        return $this->hasPresidentApproved() && $this->hasVpPricingApproved();
     }
 }

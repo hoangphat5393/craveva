@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Helper\NumberFormat;
 use App\Scopes\ActiveScope;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Modules\Purchase\Entities\SalesShipment;
 
 /**
@@ -25,18 +28,18 @@ use Modules\Purchase\Entities\SalesShipment;
  * @property string|null $note
  * @property int|null $added_by
  * @property int|null $last_updated_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $client
- * @property-read \App\Models\ClientDetails|null $clientdetails
- * @property-read \App\Models\Currency|null $currency
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\OrderItems[] $items
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $invoice
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $client
+ * @property-read ClientDetails|null $clientdetails
+ * @property-read Currency|null $currency
+ * @property-read Collection|OrderItems[] $items
+ * @property-read Collection|Invoice[] $invoice
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Payment[] $payment
+ * @property-read Collection|Payment[] $payment
  * @property-read int|null $payment_count
- * @property-read \App\Models\Project $project
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $recurrings
+ * @property-read Project $project
+ * @property-read Collection|Invoice[] $recurrings
  * @property-read int|null $recurrings_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
@@ -66,15 +69,15 @@ use Modules\Purchase\Entities\SalesShipment;
  *
  * @property int|null $company_id
  * @property int|null $company_address_id
- * @property-read \App\Models\CompanyAddress|null $address
- * @property-read \App\Models\Company|null $company
+ * @property-read CompanyAddress|null $address
+ * @property-read Company|null $company
  * @property int|null $unit_id
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereCompanyAddressId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereOrderNumber($value)
  *
- * @property-read \App\Models\UnitType $unit
+ * @property-read UnitType $unit
  * @property int|null $unit_id
  * @property string|null $custom_order_number
  *
@@ -159,11 +162,16 @@ class Order extends BaseModel
     {
         $orderSettings = (company()) ? company()->invoiceSetting : $this->company->invoiceSetting;
 
-        return \App\Helper\NumberFormat::order($this->order_number, $orderSettings);
+        return NumberFormat::order($this->order_number, $orderSettings);
     }
 
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id')->withTrashed();
+    }
+
+    public function estimate(): BelongsTo
+    {
+        return $this->belongsTo(Estimate::class, 'estimate_id');
     }
 }

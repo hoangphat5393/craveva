@@ -9,7 +9,9 @@ use App\Models\CustomFieldGroup;
 use App\Models\Estimate;
 use App\Models\GlobalSetting;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
@@ -24,6 +26,8 @@ class EstimatesDataTable extends BaseDataTable
     private $deleteEstimatePermission;
 
     private $addInvoicePermission;
+
+    private $addOrderPermission;
 
     private $viewEstimatePermission;
 
@@ -43,6 +47,7 @@ class EstimatesDataTable extends BaseDataTable
         $this->editEstimatePermission = user()->permission('edit_estimates');
         $this->deleteEstimatePermission = user()->permission('delete_estimates');
         $this->addInvoicePermission = user()->permission('add_invoices');
+        $this->addOrderPermission = user()->permission('add_order');
         $this->viewProjectEstimatePermission = user()->permission('view_project_estimates');
         $this->showRequest = in_array(user()->permission('view_estimate_request'), ['all', 'added', 'owned', 'both']);
         $this->projectID = $projectID;
@@ -53,7 +58,7 @@ class EstimatesDataTable extends BaseDataTable
      * Build DataTable class.
      *
      * @param  mixed  $query  Results from query() method.
-     * @return \Yajra\DataTables\DataTableAbstract
+     * @return DataTableAbstract
      */
     public function dataTable($query)
     {
@@ -113,7 +118,14 @@ class EstimatesDataTable extends BaseDataTable
                 }
             }
 
-            if ($row->status == 'waiting' || (is_null($row->estimate_id) && $row->status == 'accepted')) {
+            $isReadyForCommercialConversion = ($row->president_review_status === null && $row->vp_pricing_review_status === null)
+                || ($row->president_review_status === Estimate::INTERNAL_REVIEW_APPROVED && $row->vp_pricing_review_status === Estimate::INTERNAL_REVIEW_APPROVED);
+
+            if (($row->status == 'waiting' || (is_null($row->estimate_id) && $row->status == 'accepted')) && $isReadyForCommercialConversion) {
+                if ($this->addOrderPermission == 'all' || $this->addOrderPermission == 'added' || $this->addOrderPermission == 'both') {
+                    $action .= '<a class="dropdown-item convert-to-order" href="javascript:;" data-estimate-id="'.$row->id.'"><i class="fa fa-random mr-2"></i>Convert to Sales Order</a>';
+                }
+
                 if ($this->addInvoicePermission == 'all' || $this->addInvoicePermission == 'added') {
                     $action .= '<a class="dropdown-item" href="'.route('invoices.create').'?estimate='.$row->id.'" ><i class="fa fa-plus mr-2"></i> '.__('app.create').' '.__('app.invoice').'</a>';
                 }
@@ -164,6 +176,21 @@ class EstimatesDataTable extends BaseDataTable
                 $status .= ' <span class="badge badge-secondary my-2"> '.__('modules.invoices.notSent').'</span>';
             }
 
+            if ($row->president_review_status !== null || $row->vp_pricing_review_status !== null) {
+                $presidentLabel = ucfirst((string) $row->president_review_status);
+                $vpLabel = ucfirst((string) $row->vp_pricing_review_status);
+                $presidentClass = $row->president_review_status === Estimate::INTERNAL_REVIEW_APPROVED ? 'badge-success' : ($row->president_review_status === Estimate::INTERNAL_REVIEW_REJECTED ? 'badge-danger' : 'badge-warning');
+                $vpClass = $row->vp_pricing_review_status === Estimate::INTERNAL_REVIEW_APPROVED ? 'badge-success' : ($row->vp_pricing_review_status === Estimate::INTERNAL_REVIEW_REJECTED ? 'badge-danger' : 'badge-warning');
+
+                if ($row->president_review_status !== null) {
+                    $status .= ' <span class="badge '.$presidentClass.' my-1">P: '.$presidentLabel.'</span>';
+                }
+
+                if ($row->vp_pricing_review_status !== null) {
+                    $status .= ' <span class="badge '.$vpClass.' my-1">VP: '.$vpLabel.'</span>';
+                }
+            }
+
             return $status;
         });
         $datatables->addColumn('estimate_request_number', function ($row) {
@@ -189,7 +216,7 @@ class EstimatesDataTable extends BaseDataTable
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function query()
     {
@@ -231,6 +258,8 @@ class EstimatesDataTable extends BaseDataTable
                 'estimates.created_at',
                 'estimates.estimate_request_id',
                 'estimate_requests.estimate_request_number',
+                'estimates.president_review_status',
+                'estimates.vp_pricing_review_status',
             ]);
 
         if ($this->projectID != null && $this->clientID != null) {

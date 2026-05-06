@@ -4,6 +4,10 @@
     $editEstimatePermission = user()->permission('edit_estimates');
     $deleteEstimatePermission = user()->permission('delete_estimates');
     $addInvoicePermission = user()->permission('add_invoices');
+    $hasLegacyInternalReview = is_null($invoice->president_review_status) && is_null($invoice->vp_pricing_review_status);
+    $presidentApproved = $hasLegacyInternalReview || $invoice->president_review_status === \App\Models\Estimate::INTERNAL_REVIEW_APPROVED;
+    $vpApproved = $hasLegacyInternalReview || $invoice->vp_pricing_review_status === \App\Models\Estimate::INTERNAL_REVIEW_APPROVED;
+    $readyForCommercialConversion = $presidentApproved && $vpApproved;
 @endphp
 
 <style>
@@ -520,6 +524,30 @@
                                 </a>
                             </li>
                         @endif
+                        @if (($editEstimatePermission == 'all' || ($editEstimatePermission == 'added' && $invoice->added_by == user()->id)) && !in_array('client', user_roles()))
+                            <li>
+                                <a class="dropdown-item president-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="approved">
+                                    <i class="fa fa-user-check f-w-500 mr-2 f-11"></i> President approve
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item president-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="rejected">
+                                    <i class="fa fa-user-times f-w-500 mr-2 f-11"></i> President reject
+                                </a>
+                            </li>
+                            @if ($presidentApproved)
+                                <li>
+                                    <a class="dropdown-item vp-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="approved">
+                                        <i class="fa fa-check-circle f-w-500 mr-2 f-11"></i> VP pricing approve
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item vp-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="rejected">
+                                        <i class="fa fa-times-circle f-w-500 mr-2 f-11"></i> VP pricing reject
+                                    </a>
+                                </li>
+                            @endif
+                        @endif
                         @if ($invoice->send_status)
                             <li>
                                 <a class="dropdown-item btn-copy" data-clipboard-text="{{ url()->temporarySignedRoute('front.estimate.show', now()->addDays(\App\Models\GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash) }}">
@@ -539,9 +567,16 @@
                             </a>
                         </li>
                         @if ($invoice->status == 'waiting')
+                            @if (($addEstimatePermission == 'all' || $addEstimatePermission == 'added') && $readyForCommercialConversion)
+                                <li>
+                                    <a class="dropdown-item convert-to-order" href="javascript:;" data-estimate-id="{{ $invoice->id }}">
+                                        <i class="fa fa-random f-w-500 mr-2 f-11"></i> Convert to Sales Order
+                                    </a>
+                                </li>
+                            @endif
                             @if ($addInvoicePermission == 'all' || $addInvoicePermission == 'added')
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('invoices.create') . '?estimate=' . $invoice->id }}">
+                                    <a class="dropdown-item {{ $readyForCommercialConversion ? '' : 'disabled' }}" @if ($readyForCommercialConversion) href="{{ route('invoices.create') . '?estimate=' . $invoice->id }}" @else href="javascript:;" @endif>
                                         <i class="fa fa-plus f-w-500 mr-2 f-11"></i> @lang('app.create')
                                         @lang('app.invoice')
                                     </a>
@@ -676,6 +711,145 @@
                         $.easyUnblockUI('.content-wrapper');
                     });
                 }
+            });
+        });
+
+        $('body').on('click', '.president-review-action', function() {
+            const id = $(this).data('estimate-id');
+            const decision = $(this).data('decision');
+            const actionLabel = decision === 'approved' ? 'President approve' : 'President reject';
+
+            Swal.fire({
+                title: actionLabel,
+                input: 'textarea',
+                inputPlaceholder: 'Review note (optional)',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: "@lang('app.cancel')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                const url = "{{ route('estimates.president_review', ':id') }}".replace(':id', id);
+                $.easyBlockUI('.content-wrapper');
+
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: '{{ csrf_token() }}',
+                    decision: decision,
+                    note: result.value || ''
+                }).then(function(response) {
+                    if (response.status === 'success') {
+                        window.location.reload();
+                    }
+                }).catch(function(err) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message || 'Unable to update president review',
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
+                });
+            });
+        });
+
+        $('body').on('click', '.vp-review-action', function() {
+            const id = $(this).data('estimate-id');
+            const decision = $(this).data('decision');
+            const actionLabel = decision === 'approved' ? 'VP pricing approve' : 'VP pricing reject';
+
+            Swal.fire({
+                title: actionLabel,
+                input: 'textarea',
+                inputPlaceholder: 'Review note (optional)',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: "@lang('app.cancel')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                const url = "{{ route('estimates.vp_pricing_review', ':id') }}".replace(':id', id);
+                $.easyBlockUI('.content-wrapper');
+
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: '{{ csrf_token() }}',
+                    decision: decision,
+                    note: result.value || ''
+                }).then(function(response) {
+                    if (response.status === 'success') {
+                        window.location.reload();
+                    }
+                }).catch(function(err) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message || 'Unable to update VP pricing review',
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
+                });
+            });
+        });
+
+        $('body').on('click', '.convert-to-order', function() {
+            const id = $(this).data('estimate-id');
+            const url = "{{ route('estimates.convert_to_sales_order', ':id') }}".replace(':id', id);
+
+            Swal.fire({
+                title: 'Convert to Sales Order?',
+                text: 'This will create a Sales Order from this estimate.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Convert',
+                cancelButtonText: "@lang('app.cancel')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                $.easyBlockUI('.content-wrapper');
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.status === 'success' && response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    }
+                }).catch(function(err) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message || 'Unable to convert estimate',
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
+                });
             });
         });
 

@@ -6,6 +6,7 @@ Central index for function-level documentation groups:
 - `FUNC_IMPORT`
 - `FUNC_IMPROVE`
 - `FUNC_LOGIC`
+- `FUNC_TEST`
 
 This file is the root navigation layer only. Detailed business flow and module logic stay in module-specific master guides.
 
@@ -17,6 +18,7 @@ This file is the root navigation layer only. Detailed business flow and module l
 | `FUNC_IMPORT`  | Import design, implementation prompts, trackers                         | `FUNC_IMPORT/INDEX.md`  |
 | `FUNC_IMPROVE` | Improvement proposals, refactor plans, optimization tasks               | `FUNC_IMPROVE/INDEX.md` |
 | `FUNC_LOGIC`   | Master business logic, functional flow, audits, cross-module references | `FUNC_LOGIC/INDEX.md`   |
+| `FUNC_TEST`    | Test strategy, test cases, UAT execution matrix                         | `FUNC_TEST/INDEX.md`    |
 
 ## 2) Module Master Guides (Single source per module)
 
@@ -34,6 +36,7 @@ When a module needs deep details (product/client/production integrations), keep 
 - `FUNC_IMPORT/INDEX.md`
 - `FUNC_IMPROVE/INDEX.md`
 - `FUNC_LOGIC/INDEX.md`
+- `FUNC_TEST/INDEX.md`
 
 ## 4) Working Rules
 

@@ -14,11 +14,11 @@ return [
          */
         'enforce_quality_lock_sales_do' => true,
         /*
-         * Shadow mode for Phase 2/3 yield + UOM conversion:
-         * - Keep current planned_quantity behavior unchanged.
-         * - Also compute planned_quantity_shadow using unit conversion + yield factor.
+         * Shadow mode for yield + UOM conversion (optional; requires business sign-off).
+         * - Default false: Phase 1–2 run on planned_quantity only (BOM × planned FG).
+         * - When true: also compute planned_quantity_shadow for comparison; see FUNC_IMPROVE/11_*.
          */
-        'yield_uom_shadow_enabled' => true,
+        'yield_uom_shadow_enabled' => false,
     ],
 
     'fg_quantity_policy' => [

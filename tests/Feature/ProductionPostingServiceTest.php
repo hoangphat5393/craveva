@@ -94,15 +94,15 @@ beforeEach(function (): void {
         $table->timestamps();
     });
 
-    $migration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
+    $migration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
     $migration->up();
 
-    $productionFgQuantityPolicyMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
+    $productionFgQuantityPolicyMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
     $productionFgQuantityPolicyMigration->up();
 
-    $bomSnapshotMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
+    $bomSnapshotMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
     $bomSnapshotMigration->up();
-    $yieldUomShadowMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
+    $yieldUomShadowMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
     $yieldUomShadowMigration->up();
 
     DB::table('companies')->insert([
@@ -488,8 +488,12 @@ it('creates planned consumption lines from snapshot for a single-batch order', f
 
     expect(ProductionBatchConsumption::query()->where('production_batch_id', $batch->id)->count())->toBe(1)
         ->and((float) $consumption->planned_quantity)->toBe(50.0)
-        ->and((float) $consumption->planned_quantity_shadow)->toBe(50.0)
+        ->and($consumption->planned_quantity_shadow)->toBeNull()
         ->and($consumption->warehouse_product_batch_id)->toBeNull();
+
+    $order->refresh();
+    $snapshot = ProductionOrderBomSnapshotItem::query()->where('production_order_id', $order->id)->firstOrFail();
+    expect($snapshot->quantity_per_fg_unit_base_shadow)->toBeNull();
 });
 
 it('computes planned_quantity_shadow using UOM conversion and yield factor in shadow mode', function (): void {

@@ -97,7 +97,7 @@ class ProductionPlannedConsumptionFromSnapshotService
      */
     protected function resolvePlannedQuantityShadow(ProductionOrder $order, mixed $line, float $effectivePlannedFg, float $fallbackQty): array
     {
-        if (! (bool) config('production.phase2.yield_uom_shadow_enabled', true)) {
+        if (! (bool) config('production.phase2.yield_uom_shadow_enabled', false)) {
             return ['quantity' => null, 'basis' => null];
         }
 

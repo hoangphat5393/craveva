@@ -1,12 +1,12 @@
 # Playbook triển khai kỹ thuật — Module Production (Phase 0 + Phase 1 / MVP)
 
-| Thuộc tính           | Giá trị                                                                                                                                                                                                             |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Đối tượng**        | BA, Tech Lead, dev backend trước khi mở sprint code                                                                                                                                                                 |
-| **Phạm vi**          | **Phase 0 + Phase 1** theo `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` §4 — không thay roadmap; đây là **chi tiết hóa** migration, luồng, điểm chạm code, test và milestone                                          |
-| **Out of scope MVP** | CCP cứng, rework workflow, receiving QC, sampling/COA, Quality Lock đầy đủ (thuộc Phase 2–4)                                                                                                                        |
-| **Repo**             | `Modules/Production/` — MVP: orders/batches, BOM CRUD, **snapshot BOM khi release**, sinh RM planned từ snapshot (1 batch/đơn), gán SO/Project trên form, post RM/FG, trace, FG policy. Phase 2+ (CCP, QC…) — §1.3. |
-| **Cập nhật**         | 2026-05-06 — đồng bộ checklist với code: §1.3, §3.1 (snapshot), §5 luồng, §7 UI, §10 milestone; đối chiếu `FUNC_IMPROVE/01_PRODUCTION_BOM_AND_FG_POLICY_RECOMMENDATION_VI.md` §0                                    |
+| Thuộc tính           | Giá trị                                                                                                                                                                                                                                                                                                         |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Đối tượng**        | BA, Tech Lead, dev backend trước khi mở sprint code                                                                                                                                                                                                                                                             |
+| **Phạm vi**          | **Phase 0 + Phase 1** theo `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` §4 — không thay roadmap; đây là **chi tiết hóa** migration, luồng, điểm chạm code, test và milestone                                                                                                                                      |
+| **Out of scope MVP** | CCP cứng, rework workflow, receiving QC, sampling/COA, Quality Lock đầy đủ (thuộc Phase 2–4)                                                                                                                                                                                                                    |
+| **Repo**             | `Modules/Production/` — MVP: orders/batches, BOM CRUD, **snapshot BOM khi release**, sinh RM planned từ snapshot (1 batch/đơn), gán SO/Project trên form, post RM/FG, trace, FG policy. Phase 2+ (CCP, QC…) — §1.3.                                                                                             |
+| **Cập nhật**         | 2026-05-07 — Phase 1–2 playbook nghiệp vụ: chốt vận hành trên **`planned_quantity`** + BOM snapshot; shadow Yield/UOM tách sang `FUNC_IMPROVE/11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` (mặc định tắt trong config). 2026-05-06 — đồng bộ checklist §1.3, §3.1, §5, §7, §10; đối chiếu `FUNC_IMPROVE/01_*` §0 |
 
 ---
 
@@ -27,7 +27,7 @@
 2. ~~**Nổ BOM → dòng tiêu hao đề xuất**~~ — **Một phần:** nút “Create planned RM lines from BOM snapshot” trên batch khi đơn hàng chỉ có **đúng 1 batch** và chưa có dòng RM; sau đó user **gán lô RM** trước khi post. Chưa auto multi-batch chia tổng.
 3. ~~**Gắn `sales_order_id` / `project_id`**~~ — **Đã có:** chọn nullable trên form tạo/sửa lệnh nháp; hiển thị trên order detail (_chưa_ auto từ SO/Observer — vẫn thủ công).
 4. **Cân bằng “complete” cứng** — order `completed` khi mọi batch post FG; không chặn partial theo policy nâng cao.
-5. **Phase 2+ (ngoài file này):** CCP, receiving QC, rework, quality lock DO, sampling/COA, API read cho AI — playbook **chưa viết** chi tiết Phase 2 → tách file `..._PHASE2_VI.md` khi kickoff.
+5. **Phase 2 (mở rộng đã có trong code, checklist UAT:** `FUNC_TEST/01_*`): variance approval FG, receiving QC GRN (flag Purchase), rework batch, quality lock Sales DO — **không phụ thuộc** `planned_quantity_shadow`. CCP cứng, sampling/COA đầy đủ, API read AI → backlog / phase sau.
 
 ---
 

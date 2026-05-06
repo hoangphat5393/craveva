@@ -63,26 +63,34 @@ class ProductionPostingService
         }
 
         $plannedQty = (float) $order->planned_quantity;
+        $shadowEnabled = (bool) config('production.phase2.yield_uom_shadow_enabled', false);
 
         foreach ($bom->items as $index => $item) {
-            $yieldFactor = $this->normalizeYieldFactor($item->yield_factor);
             $quantityPerFgUnit = (float) $item->quantity;
-            $baseQuantityRaw = $this->unitConversionService->convertToBase(
-                (int) $order->company_id,
-                (int) $item->component_product_id,
-                $quantityPerFgUnit,
-                $item->unit_id !== null ? (int) $item->unit_id : null,
-            );
-            $baseQuantityAdjustedByYield = $baseQuantityRaw / $yieldFactor;
+            $unitId = $item->unit_id !== null ? (int) $item->unit_id : null;
+
+            $yieldFactor = null;
+            $quantityPerFgUnitBaseShadow = null;
+
+            if ($shadowEnabled) {
+                $yieldFactor = $this->normalizeYieldFactor($item->yield_factor);
+                $baseQuantityRaw = $this->unitConversionService->convertToBase(
+                    (int) $order->company_id,
+                    (int) $item->component_product_id,
+                    $quantityPerFgUnit,
+                    $unitId,
+                );
+                $quantityPerFgUnitBaseShadow = $baseQuantityRaw / $yieldFactor;
+            }
 
             ProductionOrderBomSnapshotItem::query()->create([
                 'company_id' => $order->company_id,
                 'production_order_id' => $order->id,
                 'component_product_id' => (int) $item->component_product_id,
                 'quantity_per_fg_unit' => $quantityPerFgUnit,
-                'unit_id' => $item->unit_id !== null ? (int) $item->unit_id : null,
+                'unit_id' => $unitId,
                 'yield_factor' => $yieldFactor,
-                'quantity_per_fg_unit_base_shadow' => $baseQuantityAdjustedByYield,
+                'quantity_per_fg_unit_base_shadow' => $quantityPerFgUnitBaseShadow,
                 'sort_order' => (int) ($item->sort_order ?? $index),
             ]);
         }
@@ -229,7 +237,7 @@ class ProductionPostingService
             'manufacturing_date' => $output->manufacturing_date?->format('Y-m-d'),
             'reference_type' => ProductionBatch::class,
             'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-fg-receipt:'.$output->id,
+            'idempotency_key' => 'production-fg-receipt:' . $output->id,
         ];
 
         DB::transaction(function () use ($payload, $output, $batch, $order): void {
@@ -297,7 +305,7 @@ class ProductionPostingService
                 'batch_id' => (int) $allocation['batch_id'],
                 'reference_type' => ProductionBatch::class,
                 'reference_id' => (int) $batch->id,
-                'idempotency_key' => 'production-consume:'.$consumption->id.':'.$index,
+                'idempotency_key' => 'production-consume:' . $consumption->id . ':' . $index,
             ];
 
             $this->stockMovementService->recordOutbound($payload);
@@ -347,7 +355,7 @@ class ProductionPostingService
             ->where('warehouse_id', $rmWarehouseId)
             ->where('product_id', (int) $consumption->component_product_id)
             ->where('quantity', '>', 0)
-            ->when($preferredBatchId !== null, fn ($query) => $query->where('id', '!=', (int) $preferredBatchId))
+            ->when($preferredBatchId !== null, fn($query) => $query->where('id', '!=', (int) $preferredBatchId))
             ->orderByDesc('quantity')
             ->orderBy('id')
             ->get(['id', 'quantity', 'reserved_quantity']);

@@ -13,6 +13,8 @@ Navigation index for improvement plans, refactor proposals, and optimization tas
 - `FUNC_IMPROVE/07_PRICING_MODULE_DEV_TASKS.md`
 - `FUNC_IMPROVE/08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md`
 - `FUNC_IMPROVE/09_ORDER_HISTORY_IMPROVE_PLAN.MD`
+- `FUNC_IMPROVE/10_UX_UI_IMPROVEMENT_BACKLOG.md`
+- `FUNC_IMPROVE/11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` — phân tích shadow/Yield/UOM; **chỉ bật sau khi được xác nhận** (xem mục governance trong file).
 
 ## Maintenance Notes
 

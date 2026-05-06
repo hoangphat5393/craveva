@@ -827,6 +827,18 @@
                 window.apiHttp.postForm(updateUrl, saveFormEl).then(function(response) {
                     if (response.status === 'success' && response.redirectUrl) {
                         window.location.href = response.redirectUrl;
+                        return;
+                    }
+
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: response.message || "{{ __('messages.invalidRequest') }}",
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 }).catch(function(err) {
                     if (typeof Swal !== 'undefined') {

@@ -27,16 +27,24 @@ class ProductionServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
     }
 
+    /**
+     * Register translations.
+     *
+     * Load defaults bundled with this module first, then merge overrides from
+     * resources/lang/modules/{production} when that directory exists (Language Pack publish / deployment).
+     * Loading module defaults first avoids missing keys when a published folder is stale.
+     */
     public function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/'.$this->moduleNameLower);
+        $moduleLangPath = module_path($this->moduleName, 'Resources/lang');
 
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom($langPath);
-        } else {
-            $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->moduleName, 'Resources/lang'));
+        $this->loadTranslationsFrom($moduleLangPath, $this->moduleNameLower);
+        $this->loadJsonTranslationsFrom($moduleLangPath);
+
+        $publishedPath = resource_path('lang/modules/'.$this->moduleNameLower);
+        if (is_dir($publishedPath)) {
+            $this->loadTranslationsFrom($publishedPath, $this->moduleNameLower);
+            $this->loadJsonTranslationsFrom($publishedPath);
         }
     }
 

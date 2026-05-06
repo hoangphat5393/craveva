@@ -1,0 +1,18 @@
+---
+description: When the user wants a live or visible web demo, use Cursor IDE Browser MCP first (not only tinker/CLI).
+alwaysApply: true
+---
+
+# Live demo (Cursor IDE Browser)
+
+When the user asks for a **live / interactive / visible** demo of the app (e.g. “live demo”, “demo trực tiếp”, “chạy trên browser”, “xem luồng UI”, “không chạy code ngầm”, walkthrough of screens), **proactively use the MCP server `cursor-ide-browser`** to drive the in-IDE Simple Browser.
+
+## Do this
+
+1. Read tool schemas under the project MCP descriptors (e.g. `mcps/cursor-ide-browser/tools/*.json`) before calling tools; use the server identifier **`cursor-ide-browser`**.
+2. Typical flow: `browser_tabs` (list) → `browser_navigate` to the target URL → `browser_snapshot` (often `interactive: true`) → `browser_select_option` / `browser_fill` / `browser_click` using **exact `ref` values from the latest snapshot**.
+3. Prefer **real UI actions** over Laravel Boost `tinker` or one-off scripts when the goal is to **show** the flow. You may still use **Laravel Boost** (`get-absolute-url`, `list-routes`, read-only `database-query`) to resolve URLs or confirm state—**not** as a substitute for the visible demo unless the user explicitly accepts non-UI verification only.
+
+## If blocked
+
+- If no browser tab, no login session, or the page is outside reach, say so briefly and state what the user must open or sign in to first; then continue with browser MCP once possible.

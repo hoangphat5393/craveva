@@ -108,6 +108,7 @@ class FrontendController extends FrontBaseController
         $this->packageFeaturesModuleData = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
+            ->where('module_name', '<>', 'discount')
             ->whereNotIn('module_name', Module::disabledModuleArray())
             ->get();
 
@@ -175,6 +176,7 @@ class FrontendController extends FrontBaseController
         $this->packageFeaturesModuleData = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
+            ->where('module_name', '<>', 'discount')
             ->whereNotIn('module_name', Module::disabledModuleArray())
             ->get();
 
@@ -234,6 +236,7 @@ class FrontendController extends FrontBaseController
             $this->packageFeaturesModuleData = Module::where('module_name', '<>', 'settings')
                 ->where('module_name', '<>', 'dashboards')
                 ->where('module_name', '<>', 'restApi')
+                ->where('module_name', '<>', 'discount')
                 ->whereNotIn('module_name', Module::disabledModuleArray())
                 ->get();
 

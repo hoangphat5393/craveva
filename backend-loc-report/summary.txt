@@ -1,0 +1,5 @@
+Backend LOC Report
+==================
+Total backend PHP files: 8663
+Total lines of code: 1011021
+CSV breakdown: backend-loc-report/backend_file_loc.csv

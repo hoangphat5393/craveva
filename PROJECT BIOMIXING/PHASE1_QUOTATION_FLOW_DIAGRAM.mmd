@@ -1,0 +1,11 @@
+flowchart TD
+    A([Client Request]) --> B[Sales Rep: Create Estimate]
+
+    B --> C[AI Agent: Check Recipe History]
+    C --> D{President Review}
+
+    D -- Rejected --> B
+    D -- Approved --> E{VP Pricing Review}
+
+    E -- Rejected --> B
+    E -- Approved --> F[Convert to Sales Order]

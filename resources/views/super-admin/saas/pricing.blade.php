@@ -5,25 +5,25 @@
 
 
 @push('head-script')
-    @if(count($packages) > 0)
-    <style>
-        .package-column {
-            max-width: 25%;
-            flex: 0 0 25%
-        }
+    @if (count($packages) > 0)
+        <style>
+            .package-column {
+                max-width: 25%;
+                flex: 0 0 25%
+            }
 
-        .package-contact-btn {
-            font-size: 12px;
-        }
+            .package-contact-btn {
+                font-size: 12px;
+            }
 
-        .rate p {
-            font-size: 12px;
-        }
+            .rate p {
+                font-size: 12px;
+            }
 
-        span.font-weight-bolder {
-            font-size: 20px !important;
-        }
-    </style>
+            span.font-weight-bolder {
+                font-size: 20px !important;
+            }
+        </style>
     @endif
     <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/css/quill.snow.css') }}">
 @endpush
@@ -38,9 +38,9 @@
                         <h3>{{ $trFrontDetail->price_title }}</h3>
                         <p>{{ $trFrontDetail->price_description }}</p>
                     </div>
-                    {{--@if (isset($packageSetting) && isset($trialPackage) && $packageSetting && !is_null($trialPackage))--}}
-                        {{--<h4 class="text-center mb-5">{{$packageSetting->trial_message}}</h4>--}}
-                    {{--@endif--}}
+                    {{-- @if (isset($packageSetting) && isset($trialPackage) && $packageSetting && !is_null($trialPackage)) --}}
+                    {{-- <h4 class="text-center mb-5">{{$packageSetting->trial_message}}</h4> --}}
+                    {{-- @endif --}}
                 </div>
 
             </div>
@@ -48,7 +48,7 @@
                 <div class="col-md-4 col-12"></div>
                 <div class="col-md-4 col-12">
                     <select class="custom-select custom-select-sm" id="currency">
-                        @foreach($currencies as $currency)
+                        @foreach ($currencies as $currency)
                             <option value="{{ $currency->id }}" @selected($currency->id == global_setting()->currency_id)>
                                 {{ $currency->currency_name }} ({{ $currency->currency_symbol }})
                             </option>
@@ -80,17 +80,15 @@
                             <div class="card border-0 mb-30">
                                 <div class="card-header border-bottom-0 p-0" id="acc{{ $frontFaq->id }}">
                                     <h5 class="mb-0">
-                                        <button class="position-relative text-decoration-none w-100 text-left collapsed"
-                                                data-toggle="collapse" data-target="#collapse{{ $frontFaq->id }}"
-                                                aria-controls="collapse{{ $frontFaq->id }}">
-                                           {{ $frontFaq->question }}
+                                        <button class="position-relative text-decoration-none w-100 text-left collapsed" data-toggle="collapse" data-target="#collapse{{ $frontFaq->id }}" aria-controls="collapse{{ $frontFaq->id }}">
+                                            {{ $frontFaq->question }}
                                         </button>
                                     </h5>
                                 </div>
 
                                 <div id="collapse{{ $frontFaq->id }}" class="collapse" aria-labelledby="acc{{ $frontFaq->id }}" data-parent="#accordion">
                                     <div class="card-body ql-editor">
-                                        <p>{!! $frontFaq->answer  !!}</p>
+                                        <p>{!! $frontFaq->answer !!}</p>
                                     </div>
                                 </div>
                             </div>
@@ -102,28 +100,44 @@
         </div>
     </section>
     <!-- END Section FAQ -->
-
 @endsection
 @push('footer-script')
-<script>
-   @if($monthlyPlan <= 0)
-        $('.annual_package').removeClass('inactive').addClass('active');
-        $('#yearly').removeClass('inactive').addClass('active');
-    @else
-        $('#monthly').removeClass('inactive').addClass('active');
-    @endif
-    // #currency on change request and load price plan on that currency
-    $('body').on('change', '#currency', function () {
-        let currencyId = $(this).val();
-        let url = '{{ route('front.pricing') }}';
-        window.apiHttp.get(url, { params: { currencyId: currencyId } }).then(function (response) {
-            $('#price-plan').html(response.view);
-        }).catch(function (err) {
-            $.handleApiFormError(err);
-        })
+    <script>
+        const requestPricingPlanByCurrency = function(url, currencyId) {
+            if (window.apiHttp && typeof window.apiHttp.get === 'function') {
+                return window.apiHttp.get(url, {
+                    params: {
+                        currencyId: currencyId
+                    }
+                });
+            }
 
-    });
+            return $.ajax({
+                url: url,
+                method: 'GET',
+                dataType: 'json',
+                data: {
+                    currencyId: currencyId
+                },
+            });
+        };
 
-</script>
+        @if ($monthlyPlan <= 0)
+            $('.annual_package').removeClass('inactive').addClass('active');
+            $('#yearly').removeClass('inactive').addClass('active');
+        @else
+            $('#monthly').removeClass('inactive').addClass('active');
+        @endif
+        // #currency on change request and load price plan on that currency
+        $('body').on('change', '#currency', function() {
+            let currencyId = $(this).val();
+            let url = '{{ route('front.pricing') }}';
+            requestPricingPlanByCurrency(url, currencyId).then(function(response) {
+                $('#price-plan').html(response.view);
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
 
+        });
+    </script>
 @endpush

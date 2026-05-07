@@ -1,57 +1,82 @@
 @extends('super-admin.layouts.front-app')
 @section('header-section')
     <style>
-        .mb-3, .my-3{
+        .mb-3,
+        .my-3 {
             margin-bottom: 0px !important;
         }
-        .section-header small{
+
+        .section-header small {
             font-size: 18px;
         }
-        .container-scroll > .row{
+
+        .container-scroll>.row {
             overflow-x: auto;
             white-space: nowrap;
         }
-        .container-scroll > .row > .col-md-2{
+
+        .container-scroll>.row>.col-md-2 {
             display: inline-block;
             float: none;
         }
-        .pricing__head h3, .pricing__head h5{
+
+        .pricing__head h3,
+        .pricing__head h5 {
             white-space: normal;
         }
-        .container .gap-y .col-12 .flexbox{
+
+        .container .gap-y .col-12 .flexbox {
             justify-content: unset;
         }
     </style>
     @include('super-admin.front.section.header')
-
 @endsection
 @section('content')
     <!--
-        |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒`‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
-        | Features
-        |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
-        !-->
+            |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒`‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
+            | Features
+            |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
+            !-->
     @include('super-admin.front.section.feature')
 
     <!--
-        |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
-        | Pricing
-        |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
-        !-->
-    @if(!empty($packages))
+            |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
+            | Pricing
+            |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
+            !-->
+    @if (!empty($packages))
         @include('super-admin.front.section.pricing')
     @endif
 
     <!--
-        |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
-        | CONTACT
-        |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
-        !-->
+            |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
+            | CONTACT
+            |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
+            !-->
     @include('super-admin.front.section.contact')
 @endsection
 @push('footer-script')
     <script>
         var maxHeight = -1;
+        const requestPricingPlanByCurrency = function(url, currencyId) {
+            if (window.apiHttp && typeof window.apiHttp.get === 'function') {
+                return window.apiHttp.get(url, {
+                    params: {
+                        currencyId: currencyId
+                    }
+                });
+            }
+
+            return $.ajax({
+                url: url,
+                method: 'GET',
+                dataType: 'json',
+                data: {
+                    currencyId: currencyId
+                },
+            });
+        };
+
         $(document).ready(function() {
 
             var promise1 = new Promise(function(resolve, reject) {
@@ -67,76 +92,74 @@
                     $(this).height(Math.round(maxHeight));
                 });
                 $('.planNameTitle').each(function() {
-                    $(this).height(Math.round(maxHeight-28));
+                    $(this).height(Math.round(maxHeight - 28));
                 });
 
             });
         });
-        function planShow(type){
-            if(type == 'monthly'){
+
+        function planShow(type) {
+            if (type == 'monthly') {
                 $('#monthlyPlan').show();
                 $('#annualPlan').hide();
-            }
-            else{
+            } else {
                 $('#monthlyPlan').hide();
                 $('#annualPlan').show();
             }
         }
 
-        $('#save-form').click(function () {
+        $('#save-form').click(function() {
 
-            window.apiHttp.postUrlEncoded("{{route('front.contact-us')}}", $('#contactUs').serialize()).then(function (response) {
-                if(response.status == 'success'){
+            window.apiHttp.postUrlEncoded("{{ route('front.contact-us') }}", $('#contactUs').serialize()).then(function(response) {
+                if (response.status == 'success') {
                     $('#contactUsBox').remove();
                 }
-            }).catch(function (err) {
+            }).catch(function(err) {
                 $.handleApiFormError(err);
             })
         });
 
         // #currency on change request and load price plan on that currency
-        $('body').on('change', '#currency', function () {
+        $('body').on('change', '#currency', function() {
             let currencyId = $(this).val();
             let url = '{{ route('front.pricing_plan') }}';
-            window.apiHttp.get(url, { params: { currencyId: currencyId } }).then(function (response) {
+            requestPricingPlanByCurrency(url, currencyId).then(function(response) {
                 $('#price-plan').html(response.view);
-            }).catch(function (err) {
+            }).catch(function(err) {
                 $.handleApiFormError(err);
-            })
+            });
 
         });
     </script>
 
     @if ($global->google_recaptcha_status == 'active' && $global->google_recaptcha_v2_status == 'active')
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async
-            defer></script>
-    <script>
-        var gcv3;
-        var onloadCallback = function () {
-            // Renders the HTML element with id 'captcha_container' as a reCAPTCHA widget.
-            // The id of the reCAPTCHA widget is assigned to 'gcv3'.
-            gcv3 = grecaptcha.render('captcha_container', {
-                'sitekey': '{{ $global->google_recaptcha_v2_site_key }}',
-                'theme': 'light',
-                'callback': function (response) {
-                    if (response) {
-                        $('#g_recaptcha').val(response);
-                    }
-                },
-            });
-        };
-    </script>
+        <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+        <script>
+            var gcv3;
+            var onloadCallback = function() {
+                // Renders the HTML element with id 'captcha_container' as a reCAPTCHA widget.
+                // The id of the reCAPTCHA widget is assigned to 'gcv3'.
+                gcv3 = grecaptcha.render('captcha_container', {
+                    'sitekey': '{{ $global->google_recaptcha_v2_site_key }}',
+                    'theme': 'light',
+                    'callback': function(response) {
+                        if (response) {
+                            $('#g_recaptcha').val(response);
+                        }
+                    },
+                });
+            };
+        </script>
     @endif
     @if ($global->google_recaptcha_status == 'active' && $global->google_recaptcha_v3_status == 'active')
-    <script
-        src="https://www.google.com/recaptcha/api.js?render={{ $global->google_recaptcha_v3_site_key }}"></script>
-    <script>
-        grecaptcha.ready(function () {
-            grecaptcha.execute('{{ $global->google_recaptcha_v3_site_key }}').then(function (token) {
-                // Add your logic to submit to your backend server here.
-                $('#g_recaptcha').val(token);
+        <script src="https://www.google.com/recaptcha/api.js?render={{ $global->google_recaptcha_v3_site_key }}"></script>
+        <script>
+            grecaptcha.ready(function() {
+                grecaptcha.execute('{{ $global->google_recaptcha_v3_site_key }}').then(function(token) {
+                    // Add your logic to submit to your backend server here.
+                    $('#g_recaptcha').val(token);
+                });
             });
-        });
-    </script>
+        </script>
     @endif
 @endpush

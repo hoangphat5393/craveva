@@ -1,7 +1,7 @@
 # Graph Report - craveva-staging  (2026-05-07)
 
 ## Corpus Check
-- 8118 files · ~3,334,925 words
+- 8118 files · ~3,336,362 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

@@ -70,4 +70,41 @@ Không thuộc riêng Package UI — xem **`FUNC_LOGIC/FLOW_Modules_Package_Lang
 
 ---
 
+## 7. Điều kiện gói hiển thị ở Frontend Pricing
+
+Nguồn dữ liệu FE pricing lấy trực tiếp từ BE (`FrontendController@pricing`, `FrontendController@pricingPlan`) và bảng `packages`; FE không có bảng giá riêng.
+
+### 7.1 Điều kiện lọc gói để render ở FE
+
+Gói xuất hiện trên `/pricing` khi thỏa:
+
+1. `is_private = 0`
+2. Và thỏa **một trong ba nhánh**:
+    - `default = 'no'` và `currency_id = currency đang chọn`
+    - `default = 'lifetime'` và `currency_id = currency đang chọn`
+    - `is_free = 1` (gói free luôn được lấy trong query hiện tại)
+
+Sau đó FE chia tab:
+
+- **Monthly tab**: `monthly_status = 1` hoặc gói lifetime
+- **Annual tab**: `annual_status = 1` hoặc gói lifetime
+
+### 7.2 Giải thích nhầm lẫn “không tick private mà vẫn hiện FE”
+
+Checkbox **Make Private** có nghĩa:
+
+- tick (`is_private = 1`) => ẩn khỏi FE pricing
+- không tick (`is_private = 0`) => gói public, có thể hiện ở FE nếu thỏa các điều kiện còn lại
+
+### 7.3 Case đã verify: Professional
+
+Tại thời điểm audit:
+
+- `Professional`: `default='no'`, `is_private=0`, `monthly_status=1`, `annual_status=1`, `currency_id=1 (USD)`
+- Vì vậy:
+    - Khi FE chọn USD => gói Professional hiện
+    - Khi FE chọn SGD (currency mặc định hiện tại) => gói Professional không hiện do lệch `currency_id`
+
+---
+
 _Cập nhật: audit Package Super Admin + sửa hiển thị module (unique + normalized names)._

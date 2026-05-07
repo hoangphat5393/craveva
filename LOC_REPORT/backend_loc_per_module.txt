@@ -1,0 +1,46 @@
+﻿# Backend LOC - Per-module rollup
+# Generated: 2026-05-07
+# Scope: PHP files under app/, bootstrap/, config/, database/, routes/, Modules/, lang/
+# Excluded: tests/Tests/test/Test paths, *.blade.php views, vendor/, node_modules/, docs/
+# Backend totals (full): 7684 files, 885275 lines  |  excl. all i18n: 3858 files, 363572 lines
+# i18n locations merged: lang/<locale>/, Modules/<X>/Resources/lang/<locale>/, Modules/LanguagePack/Languages/{app,modules/<X>}/<locale>/
+# Total file count and line count grouped by top-level dir (or Modules/<name>).
+# ----------------------------------------------------------------------------
+
+Group                   Files  Lines
+-----                   -----  -----
+Modules/LanguagePack     2049 264640
+app                      1709 190683
+lang                      471 184301
+Modules/Recruit           359  43145
+Modules/Purchase          343  32323
+database                  445  31858
+Modules/Payroll           246  18583
+Modules/Sms               233  16622
+Modules/ServerManager      98  11817
+Modules/Performance       110  10074
+Modules/Biolinks          225   9645
+Modules/Zoom              157   8031
+Modules/Warehouse          63   5887
+config                     48   5236
+Modules/QRCode             54   4752
+Modules/Asset             134   4735
+Modules/Webhooks          192   4249
+Modules/Production         43   4142
+Modules/Onboarding         51   3981
+Modules/CyberSecurity     153   3777
+Modules/Policy             51   3711
+Modules/Pricing            47   3489
+Modules/Affiliate          64   3058
+Modules/Biometric          40   2972
+Modules/DeveloperTools     26   2210
+Modules/ProjectRoadmap     44   2125
+Modules/EInvoice           97   2105
+Modules/Letter             32   1914
+routes                      7   1814
+Modules/Subdomain          57   1688
+bootstrap                  29   1410
+Modules/LineIntegration     7    298
+
+
+

@@ -29,6 +29,7 @@ use App\Models\UserAuth;
 use App\Notifications\NewCustomer;
 use App\Notifications\SuperAdmin\ContactUsMail;
 use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -54,9 +55,10 @@ class FrontendController extends FrontBaseController
         $this->seoDetail = SeoDetail::where('page_name', 'home')->where('language_setting_id', $this->localeLanguage?->id)->first() ?: SeoDetail::where('page_name', 'home')->first();
 
         $this->pageTitle = $this->seoDetail ? $this->seoDetail->seo_title : __('app.menu.home');
-        $this->currencies = GlobalCurrency::get();
+        $packageCurrencyId = $this->frontendPricingCurrencyId();
+        $this->currencies = $this->frontendPricingCurrencies($packageCurrencyId);
         $this->packages = Package::where('default', 'no')
-            ->where('currency_id', global_setting()->currency_id)
+            ->where('currency_id', $packageCurrencyId)
             ->where('is_private', 0)
             ->orderBy('sort', 'ASC')
             ->get();
@@ -130,7 +132,7 @@ class FrontendController extends FrontBaseController
 
         foreach ($types as $type) {
             $featureCount = Feature::select('id', 'language_setting_id', 'type')->where(['language_setting_id' => $this->localeLanguage ? $this->localeLanguage->id : null, 'type' => $type])->count();
-            $this->data['feature'.ucfirst(str_plural($type))] = Feature::where([
+            $this->data['feature' . ucfirst(str_plural($type))] = Feature::where([
                 'language_setting_id' => $featureCount > 0 ? ($this->localeLanguage ? $this->localeLanguage->id : null) : null,
                 'type' => $type,
             ])->get();
@@ -157,7 +159,7 @@ class FrontendController extends FrontBaseController
         $this->seoDetail = SeoDetail::where('page_name', 'pricing')->where('language_setting_id', $this->localeLanguage?->id)->first() ?: SeoDetail::where('page_name', 'pricing')->first();
         $this->pageTitle = isset($this->seoDetail) ? $this->seoDetail->seo_title : __('app.menu.pricing');
 
-        $packageCurrencyId = request()->currencyId ?: global_setting()->currency_id;
+        $packageCurrencyId = $this->frontendPricingCurrencyId();
 
         $this->packages = Package::where(function ($query) use ($packageCurrencyId) {
             $query->where(function ($q) use ($packageCurrencyId) {
@@ -168,7 +170,10 @@ class FrontendController extends FrontBaseController
                     $q->where('default', 'lifetime')
                         ->where('currency_id', $packageCurrencyId);
                 })
-                ->orWhere('is_free', 1);
+                ->orWhere(function ($q) use ($packageCurrencyId) {
+                    $q->where('is_free', 1)
+                        ->where('currency_id', $packageCurrencyId);
+                });
         })
             ->where('is_private', 0)
             ->orderBy('sort', 'ASC')
@@ -209,7 +214,7 @@ class FrontendController extends FrontBaseController
         $this->packageSetting = PackageSetting::where('status', 'active')->first();
         $this->trialPackage = Package::where('default', 'trial')->first();
 
-        $this->currencies = GlobalCurrency::get();
+        $this->currencies = $this->frontendPricingCurrencies($packageCurrencyId);
 
         return view('super-admin.saas.pricing', $this->data);
     }
@@ -217,7 +222,7 @@ class FrontendController extends FrontBaseController
     public function pricingPlan()
     {
         if (request()->ajax()) {
-            $packageCurrencyId = request()->currencyId ?: global_setting()->currency_id;
+            $packageCurrencyId = $this->frontendPricingCurrencyId();
             $this->packages = Package::where(function ($query) use ($packageCurrencyId) {
                 $query->where(function ($q) use ($packageCurrencyId) {
                     $q->where('default', 'no')
@@ -227,7 +232,10 @@ class FrontendController extends FrontBaseController
                         $q->where('default', 'lifetime')
                             ->where('currency_id', $packageCurrencyId);
                     })
-                    ->orWhere('is_free', 1);
+                    ->orWhere(function ($q) use ($packageCurrencyId) {
+                        $q->where('is_free', 1)
+                            ->where('currency_id', $packageCurrencyId);
+                    });
             })
                 ->where('is_private', 0)
                 ->orderBy('sort', 'ASC')
@@ -251,6 +259,26 @@ class FrontendController extends FrontBaseController
                 ]
             );
         }
+    }
+
+    private function frontendPricingCurrencyId(): int
+    {
+        $usdCurrencyId = GlobalCurrency::query()
+            ->where('currency_code', 'USD')
+            ->value('id');
+
+        if ($usdCurrencyId) {
+            return (int) $usdCurrencyId;
+        }
+
+        return (int) global_setting()->currency_id;
+    }
+
+    private function frontendPricingCurrencies(int $currencyId): Collection
+    {
+        return GlobalCurrency::query()
+            ->where('id', $currencyId)
+            ->get();
     }
 
     public function contact()
@@ -288,15 +316,15 @@ class FrontendController extends FrontBaseController
         $this->table = '<table><tbody style="color:#0000009c;">
         <tr>
             <td><p>Name : </p></td>
-            <td><p>'.$request->name.'</p></td>
+            <td><p>' . $request->name . '</p></td>
         </tr>
         <tr>
             <td><p>Email : </p></td>
-            <td><p>'.$request->email.'</p></td>
+            <td><p>' . $request->email . '</p></td>
         </tr>
         <tr>
-            <td style="font-family: Avenir, Helvetica, sans-serif;box-sizing: border-box;min-width: 98px;vertical-align: super;"><p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">'.__('app.message').' : </p></td>
-            <td><p>'.$request->message.'</p></td>
+            <td style="font-family: Avenir, Helvetica, sans-serif;box-sizing: border-box;min-width: 98px;vertical-align: super;"><p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">' . __('app.message') . ' : </p></td>
+            <td><p>' . $request->message . '</p></td>
         </tr>
 </tbody>
 

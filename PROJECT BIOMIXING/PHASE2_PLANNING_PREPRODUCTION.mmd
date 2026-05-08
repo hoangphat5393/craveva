@@ -1,0 +1,11 @@
+flowchart TD
+    A[Convert to Sales Order] --> B[Create Production Project]
+    B --> C[AI Agent: Check BOM & Stock]
+    C --> D{Stock Sufficient ?}
+
+    D -- Yes --> G[Generate Tasks]
+    D -- No --> E[Purchase Missing Ingredients]
+    E --> F[Receive Raw Materials]
+    F --> G
+
+    G --> H[Task : Print Labels & Batch #]

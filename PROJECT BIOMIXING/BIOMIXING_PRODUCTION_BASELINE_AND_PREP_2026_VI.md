@@ -85,7 +85,9 @@ Chi tiết schema & legacy: `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRI
 ## 7. Liên hệ demo / dữ liệu khách
 
 - Checklist file mẫu: `2-4-2026_BIOMIXIN_DEMO_PREP_CHECKLIST.md`
-- Timeline sau khi nhận file: `BIOMIXING_DEMO_TIMELINE_FROM_DATA_HANDOFF_EN.md`
+- Timeline demo đã bỏ; dùng checklist + script demo:
+    - `2-4-2026_BIOMIXIN_DEMO_PREP_CHECKLIST.md`
+    - `BIOMIXING_DEMO_SCRIPT.md`
 
 ---
 

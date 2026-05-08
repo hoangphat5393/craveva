@@ -10,7 +10,14 @@
         mermaid.initialize({
             startOnLoad: true,
             theme: 'neutral',
-            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 32,
+                nodeSpacing: 70,
+                rankSpacing: 80,
+            },
             sequence: { mirrorActors: false },
         });
     </script>
@@ -89,34 +96,45 @@
     <div class="mermaid">
         flowchart TB
         subgraph channels["Kênh chat"]
+        direction TB
         U["Người dùng"]
+        subgraph messaging["LINE / WhatsApp"]
+        direction TB
         LINE["LINE Official Account"]
         WA["WhatsApp Business"]
         end
-
-        subgraph ai_layer["Nền tảng AI"]
-        AI["Craveva AI\nhttps://ai.craveva.com\nWebhook + Agent / LLM"]
+        U --> LINE
+        U --> WA
         end
 
+        subgraph systems["Nền tảng AI & Craveva Hub"]
+        direction LR
+        subgraph ai_layer["Nền tảng AI"]
+        direction TB
+        AI["Craveva AI\nhttps://ai.craveva.com\nWebhook + Agent / LLM"]
+        OUT["Trả lời chat\nqua API LINE / WhatsApp"]
+        AI --> OUT
+        end
         subgraph hub_layer["Craveva Hub"]
+        direction TB
         HUB["hub.craveva.com\n(ứng dụng Hub)"]
         DB[("Database Hub\nsản phẩm, giá, …")]
         HUB --> DB
         end
-
-        U --> LINE
-        U --> WA
-        LINE -->|"HTTPS Webhook"| AI
-        WA -->|"HTTPS Webhook"| AI
         AI -->|"Truy vấn (API Hub / theo triển khai)"| HUB
         AI -.->|"Tuỳ cấu hình:\nđọc DB trực tiếp"| DB
-        AI -->|"Phản hồi qua API nền tảng"| LINE
-        AI --> WA
+        end
+
+        LINE -->|"HTTPS Webhook"| AI
+        WA -->|"HTTPS Webhook"| AI
     </div>
 
     <div class="note">
         <strong>Ghi chú triển khai:</strong> Cạnh nét đứt tới <code>Database</code> là tùy chọn khi dịch vụ AI được phép
         kết nối DB (hoặc replica) trực tiếp. Nhiều triển khai chỉ dùng <strong>API Hub</strong> làm ranh giới bảo mật.
+        Bố cục <strong>trên → dưới</strong>: <strong>Kênh chat</strong> luôn phía trên; hàng dưới là AI (có nhánh
+        <strong>Trả lời chat</strong> qua API nền tảng) và Hub/DB cạnh nhau. Không vẽ mũi tên AI → lại LINE/WA
+        vì tạo vòng khiến Mermaid đảo khung (chat bị tụt xuống). Luồng 2 chiều đầy đủ xem mục 2 (sequence bên dưới).
     </div>
 
     <h2>2. Trình tự: hỏi sản phẩm / giá trong chat</h2>

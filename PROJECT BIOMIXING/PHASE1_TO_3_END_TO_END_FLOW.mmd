@@ -1,0 +1,32 @@
+flowchart TD
+    subgraph P1[Phase 1 - Order Intake & Recipe Review]
+        A([Client Request]) --> B[Sales Rep: Create Estimate]
+        B --> C[AI Agent: Check Recipe History]
+        C --> D{President Review}
+        D -- Rejected --> B
+        D -- Approved --> E{VP Pricing Review}
+        E -- Rejected --> B
+        E -- Approved --> F[Convert to Sales Order]
+    end
+
+    subgraph P2[Phase 2 - Planning & Pre-Production]
+        F --> G[Create Production Project]
+        G --> H[AI Agent: Check BOM & Stock]
+        H --> I{Stock Sufficient ?}
+        I -- Yes --> L[Generate Tasks]
+        I -- No --> J[Purchase Missing Ingredients]
+        J --> K[Receive Raw Materials]
+        K --> L
+        L --> M[Task : Print Labels & Batch #]
+    end
+
+    subgraph P3[Phase 3 - Production & QA]
+        M --> N[Task : Ingredient Weighing]
+        M --> O[Task : Mixing & Processing]
+        N --> O
+        O --> P[Task : Packaging]
+        P --> Q{Quality Check}
+        Q -- Fail --> O
+        Q -- Pass --> R[AI Agent : Validate Certs]
+        R --> S([Project Completed])
+    end

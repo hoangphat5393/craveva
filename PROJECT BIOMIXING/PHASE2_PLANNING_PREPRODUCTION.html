@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 2 - Planning & Pre-Production</title>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "default" });
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #f5f5f5;
+    }
+
+    .card {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0 0 16px 0;
+      font-size: 22px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Phase 2 - Planning & Pre-Production</h1>
+    <div class="mermaid">
+      flowchart TD
+      A[Convert to Sales Order] --> B[Create Production Project]
+      B --> C[AI Agent: Check BOM & Stock]
+      C --> D{Stock Sufficient ?}
+
+      D -- Yes --> G[Generate Tasks]
+      D -- No --> E[Purchase Missing Ingredients]
+      E --> F[Receive Raw Materials]
+      F --> G
+
+      G --> H[Task : Print Labels & Batch #]
+    </div>
+  </div>
+</body>
+
+</html>

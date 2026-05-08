@@ -1,69 +1,86 @@
-# Biomixing Phase 1 - Management One Pager
+# Biomixing implementation status one-pager (PM)
 
-Ngay cap nhat: 2026-05-06
-Pham vi: Production + luong lien quan tu de xuat Biomixing (Estimate -> Production -> DO -> Invoice)
+Ngay cap nhat: 2026-05-08  
+Pham vi: doi chieu trang thai thuc te theo flow `PHASE1_TO_3_END_TO_END_FLOW.mmd` + tai lieu `FUNC_LOGIC/` + `FUNC_TEST/`.
 
-## 1) Muc tieu kinh doanh
+---
 
-- Rut ngan thoi gian duyet don/cong thuc tu vai ngay xuong cung ngay.
-- So hoa luong san xuat (BOM, lenh SX, batch, tieu hao RM, nhap FG) de trace duoc.
-- Giu an toan cho luong B2B dang chay (SO/DO/Invoice/Kho) khi mo rong tinh nang.
+## 1) Ket luan nhanh cho PM
 
-## 2) Trang thai hien tai (tom tat)
+- Khong can mo module Quotation moi: he thong dang dung `Estimate` voi nhan UI `Quotation`.
+- Nen tang B2B (SO/DO/Invoice + Warehouse batch) da on dinh va co test pass.
+- Production MVP da len code va test duoc phan lon, nhung chua full theo muc enterprise QA/COA.
+- Lop "Phase 1 proposal" (duyet thuong mai + AI assist ngay tren estimate) van la diem Partial.
 
-- **Da co va chay duoc (Production MVP):**
-    - BOM CRUD + version.
-    - Production Order: draft/release/cancel/completed.
-    - Snapshot BOM khi release.
-    - Post RM consumption / Post FG receipt.
-    - FG policy (strict/controlled/flexible) + variance.
-    - Traceability co ban theo batch.
-- **Chua full theo proposal tong the:**
-    - Multi-batch planning nang cao.
-    - Approval rieng khi vuot tolerance (approved_by/approved_at).
-    - Yield factor + UOM conversion nang cao.
-    - Estimate approval loop theo proposal (Sales -> President -> VP) va AI recipe assist chua full.
+---
 
-## 3) Khoang trong quan trong (Gap)
+## 2) Trang thai theo 4 phase nghiep vu (doc theo `PHASE1_TO_3_END_TO_END_FLOW.mmd`)
 
-- Gap A (it rui ro): UAT E2E sau voi Sales DO -> Invoice + approval variance.
-- Gap B (trung binh): Multi-batch planning.
-- Gap C (cao hon): Yield/UOM conversion + estimate approval + AI assist.
+| Phase nghiep vu                            | Ty le hoan thanh (uoc luong) | Trang thai           | Can cu chinh                                                                                                                                       |
+| ------------------------------------------ | ---------------------------: | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Phase 1 - Order Intake & Recipe Review** |                      **60%** | Partial              | Co Estimate/Quotation + internal review gate, nhung full loop proposal + AI assist tai man estimate chua dong (`BIO-TC-020` dang Blocked/Partial). |
+| **Phase 2 - Planning & Pre-Production**    |                      **80%** | Gan day du MVP       | BOM CRUD, order lifecycle, snapshot BOM, planned RM co test; con multi-batch planning nang cao.                                                    |
+| **Phase 3 - Production & QA**              |                      **65%** | Partial (core da co) | Da co post RM/FG, traceability, FG policy, rework/receiving-QC lock mot phan; chua full enterprise QA/checkpoint + COA workflow day du.            |
+| **Phase 4 - Fulfillment & Settlement**     |                      **75%** | Partial+             | SO/DO/Invoice/Warehouse da on dinh va pass QA co ban; lien ket E2E sau voi toan bo tinh huong Production van can UAT lien phong ban.               |
 
-## 4) Rui ro neu implement nhanh khong co guardrail
+**Cach tinh:** `Done = 1`, `Partial = 0.5`, `Missing = 0`; doi chieu bang readiness trong playbook + ket qua test/UAT hien co.
 
-- Lech ton kho hoac double-post movement (neu xu ly multi-batch sai).
-- Vo luong B2B hien tai (PO/GRN/DO/Invoice) neu dung chung logic ma khong tach reference.
-- Sai tinh planned/actual khi them yield/UOM conversion.
-- User bo qua approval neu gate khong ro (vua co SO cu, vua co estimate approval moi).
+---
 
-## 5) Cach giam rui ro (bat buoc)
+## 3) Trang thai theo roadmap ky thuat (Phase 0 -> 4 trong development plan)
 
-- Migration additive, khong pha schema/behavior cu.
-- Feature flag theo company/tenant, rollout dan.
-- Tach `reference_type` rieng cho Production.
-- Bat buoc regression test B2B song song test Production.
-- Co log/audit cho release, post RM, post FG, variance approval.
+| Phase ky thuat                                 |    Ty le | Trang thai   | Ghi chu                                                                                               |
+| ---------------------------------------------- | -------: | ------------ | ----------------------------------------------------------------------------------------------------- |
+| **Phase 0 - Chuan bi**                         | **100%** | Done         | Co baseline docs, playbook, module Production da scaffold va chay.                                    |
+| **Phase 1 - Critical MVP**                     |  **85%** | Done/Partial | Core MVP da co tren `Modules/Production` + test; con hardening mot so canh edge.                      |
+| **Phase 2 - High (QC/rework/lock)**            |  **45%** | Partial      | Da co mot phan (rework, receiving QC gate, sales lock), chua dong goi day du quy trinh QA enterprise. |
+| **Phase 3 - Medium (sampling/COA, auto flow)** |  **20%** | Early        | Co y tuong va khung, chua thay bang chung hoan tat end-to-end.                                        |
+| **Phase 4 - Advanced (PRP/audit mo rong)**     |   **5%** | Backlog      | Chu yeu con o muc ke hoach.                                                                           |
 
-## 6) Quyet dinh can chot trong tuan nay
+---
 
-1. Co dong y rollout theo 3 wave (A -> B -> C) khong?
-2. Co cho phep enforce approval variance ngay trong pilot tenant khong?
-3. Team co uu tien multi-batch truoc hay estimate approval truoc?
+## 4) Bang chung doi chieu (de tranh danh gia cam tinh)
 
-## 7) Ke hoach 3 wave de de trien khai
+1. **Flow nghiep vu:**  
+   `PROJECT BIOMIXING/PHASE1_TO_3_END_TO_END_FLOW.mmd`  
+   `PROJECT BIOMIXING/PHASE1_QUOTATION_FLOW_DIAGRAM.mmd`  
+   `PROJECT BIOMIXING/PHASE2_PLANNING_PREPRODUCTION.mmd`  
+   `PROJECT BIOMIXING/PHASE3_PRODUCTION_QA.mmd`
 
-- **Wave 1 (Pilot, 1-2 sprint):**
-    - UAT E2E sau, approval variance (flag-on cho pilot tenant).
-- **Wave 2 (Controlled, 1 sprint):**
-    - Multi-batch planning + hardening idempotency.
-- **Wave 3 (Advanced, 1-2 sprint):**
-    - Yield/UOM conversion + estimate approval loop + AI assist (assist-only, human confirm).
+2. **Playbook + readiness table:**  
+   `PROJECT BIOMIXING/BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md` (muc 11, 13, 14)
 
-## 8) KPI de theo doi
+3. **Kiem chung nen tang B2B + warehouse:**  
+   `FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`  
+   `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`  
+   `FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`
 
-- Lead time duyet don (Estimate -> SO).
-- Ty le order dung han giao.
-- So lan loi stock movement/idempotency.
-- Ty le variance FG vuot nguong va thoi gian approve.
-- So incident anh huong luong B2B (muc tieu: 0).
+4. **Ket qua test Biomixing:**  
+   `FUNC_TEST/01_BIOMIXING_PROPOSAL_TEST_CASE_MATRIX_VI.md` (40 passed / 0 failed trong cum test gan nhat; `BIO-TC-020` con Blocked/Partial)
+
+---
+
+## 5) Viec can lam tiep de chot "Phase nao xong 100%"
+
+### Uu tien 1 (dong full Phase 1 nghiep vu)
+
+- Chot workflow duyet estimate theo role (Sales -> President -> VP) + gate convert SO.
+- Chot UAT `BIO-TC-020` end-to-end co bien ban sign-off.
+
+### Uu tien 2 (dong Phase 2/3 quality hardening)
+
+- Multi-batch planning nang cao.
+- Approval variance enforce day du + audit.
+- UAT lien phong ban cho chuoi `Estimate -> SO -> Production -> DO -> Invoice`.
+
+### Uu tien 3 (phase sau)
+
+- Sampling/COA full workflow.
+- PRP/audit export theo muc compliance yeu cau.
+
+---
+
+## 6) Tuyen bo de PM dung trong hop
+
+> "Nen tang B2B da san sang va Production MVP da chay duoc phan lon.  
+> De coi la hoan tat theo proposal Biomixing, can dong nốt luong duyet Phase 1 va UAT lien phong ban cho chuoi tu Estimate den Invoice."

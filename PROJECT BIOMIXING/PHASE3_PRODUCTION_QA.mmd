@@ -1,0 +1,10 @@
+flowchart TD
+    A[Task : Print Labels & Batch #] --> B[Task : Ingredient Weighing]
+    A --> C[Task : Mixing & Processing]
+    B --> C
+    C --> D[Task : Packaging]
+    D --> E{Quality Check}
+
+    E -- Fail --> C
+    E -- Pass --> F[AI Agent : Validate Certs]
+    F --> G[Project Completed]

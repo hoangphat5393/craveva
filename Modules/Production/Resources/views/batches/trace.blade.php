@@ -18,6 +18,9 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.componentProduct')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.warehouseBatchId')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.plannedConsumption')</th>
+                        @if (!empty($canLinkWarehouseBatches))
+                            <th class="f-14 text-dark-grey">@lang('production::app.inventoryBatchColumn')</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -29,6 +32,15 @@
                                 @endif
                             </td>
                             <td>{{ $line->actual_quantity ?? $line->planned_quantity }}</td>
+                            @if (!empty($canLinkWarehouseBatches))
+                                <td class="f-13">
+                                    @if ($line->warehouse_product_batch_id)
+                                        <a href="{{ route('warehouse.product-batches.show', $line->warehouse_product_batch_id) }}">@lang('production::app.openWarehouseBatch')</a>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>
@@ -45,6 +57,9 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.movementQuantity')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.fgBatchNumber')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.referenceType')</th>
+                        @if (!empty($canLinkWarehouseBatches))
+                            <th class="f-14 text-dark-grey">@lang('production::app.inventoryBatchColumn')</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -60,10 +75,22 @@
                             <td>{{ $m->quantity }}</td>
                             <td>{{ $m->batch_number }}</td>
                             <td>{{ $refLabel }}</td>
+                            @if (!empty($canLinkWarehouseBatches))
+                                <td class="f-13">
+                                    @php
+                                        $wbOut = $outboundWarehouseBatchIds[$m->id] ?? null;
+                                    @endphp
+                                    @if ($wbOut)
+                                        <a href="{{ route('warehouse.product-batches.show', $wbOut) }}">@lang('production::app.openWarehouseBatch')</a>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-5">
+                            <td colspan="{{ !empty($canLinkWarehouseBatches) ? 6 : 5 }}" class="p-5">
                                 <x-cards.no-record icon="list" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>
@@ -82,6 +109,9 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.movementQuantity')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.fgBatchNumber')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.referenceType')</th>
+                        @if (!empty($canLinkWarehouseBatches))
+                            <th class="f-14 text-dark-grey">@lang('production::app.inventoryBatchColumn')</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -97,10 +127,22 @@
                             <td>{{ $m->quantity }}</td>
                             <td>{{ $m->batch_number }}</td>
                             <td>{{ $refLabel }}</td>
+                            @if (!empty($canLinkWarehouseBatches))
+                                <td class="f-13">
+                                    @php
+                                        $wbIn = $inboundWarehouseBatchIds[$m->id] ?? null;
+                                    @endphp
+                                    @if ($wbIn)
+                                        <a href="{{ route('warehouse.product-batches.show', $wbIn) }}">@lang('production::app.openWarehouseBatch')</a>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-5">
+                            <td colspan="{{ !empty($canLinkWarehouseBatches) ? 6 : 5 }}" class="p-5">
                                 <x-cards.no-record icon="list" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>

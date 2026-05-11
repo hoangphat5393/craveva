@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Warehouse\Http\Controllers\WarehouseCompanyFlowSettingController;
 use Modules\Warehouse\Http\Controllers\WarehouseController;
 use Modules\Warehouse\Http\Controllers\WarehouseMovementController;
+use Modules\Warehouse\Http\Controllers\WarehouseProductBatchController;
 use Modules\Warehouse\Http\Controllers\WarehouseStockController;
 use Modules\Warehouse\Http\Controllers\WarehouseTransferController;
 
@@ -67,6 +68,8 @@ Route::group([
         ->name('warehouse.company-flow-settings.update');
     Route::resource('warehouse', WarehouseController::class)->names('warehouse');
     Route::get('warehouse-movements', [WarehouseMovementController::class, 'index'])->name('warehouse.movements.index');
+    Route::get('warehouse-product-batches', [WarehouseProductBatchController::class, 'index'])->name('warehouse.product-batches.index');
+    Route::get('warehouse-product-batches/{warehouseProductBatch}', [WarehouseProductBatchController::class, 'show'])->name('warehouse.product-batches.show');
     Route::resource('warehouse-stock', WarehouseStockController::class)->names('warehouse.stock');
     Route::get('warehouse-transfer', [WarehouseTransferController::class, 'create'])->name('warehouse.transfer.create');
     Route::post('warehouse-transfer', [WarehouseTransferController::class, 'store'])->name('warehouse.transfer.store');

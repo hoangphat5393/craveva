@@ -4,10 +4,10 @@
 
 Tài liệu này tổng hợp sau khi rà soát:
 
-- `FUNC_IMPROVE/INVENTORY_BUSINESS_IMPROVE.md`
-- `FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`
-- `FUNC_IMPROVE/SO_DO_PO_GRN_REFACTOR_VI.md`
-- `PROJECT BIOMIXING/BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md`
+- `FUNC_IMPROVE/06_INVENTORY_BUSINESS_IMPROVE.md`
+- `FUNC_IMPROVE/04_WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`
+- `FUNC_IMPROVE/05_SO_DO_PO_GRN_REFACTOR_VI.md`
+- `FUNC_IMPROVE/BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md`
 - Trạng thái code hiện tại ở `Modules/Warehouse/*` và `Modules/Production/*`.
 
 Mục tiêu là trả lời 3 câu hỏi:
@@ -38,6 +38,15 @@ Mục tiêu là trả lời 3 câu hỏi:
 - `Production Batch` (module Production): mẻ sản xuất, trạng thái và tiêu hao/nhập FG.
 
 **Không nên gộp 1 list batch duy nhất** cho toàn hệ thống vì sẽ lẫn ngữ nghĩa nghiệp vụ.
+
+### 2.3 Recheck trạng thái triển khai P0 (doi chieu code 2026-05-09)
+
+| Hạng mục P0 trong tài liệu này                   | Trạng thái thực tế | Bằng chứng nhanh                                                                                                                                                   |
+| ------------------------------------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Batch naming chuẩn UI (Lô tồn kho / Mẻ sản xuất) | **Mot phan**       | Production `production.batches.*`; Warehouse da co menu/route `warehouse.product-batches.*` (MVP list/detail batch ton kho).                                       |
+| Thêm màn Warehouse Batch List                    | **Da lam (MVP)**   | Route `warehouse-product-batches`, `WarehouseProductBatchController`, test `WarehouseProductBatchRoutesTest`.                                                      |
+| Trace link 2 chiều Warehouse <-> Production      | **Mot phan**       | Warehouse→Production: detail batch + movement ref; Production→Warehouse: `production.batches.trace` co link `warehouse.product-batches.show`. UAT 2 chieu con lai. |
+| Reconciliation widget (batch sum vs snapshot)    | **Mot phan**       | Widget tren `warehouse.stock.index` + method `WarehouseReconciliationService::inventorySnapshotVsBatchTotals`; command/report van dung.                            |
 
 ---
 

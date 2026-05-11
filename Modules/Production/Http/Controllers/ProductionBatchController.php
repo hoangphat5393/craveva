@@ -75,7 +75,6 @@ class ProductionBatchController extends AccountBaseController
             ->get();
 
         $this->canApplyBomSnapshotPlanned = $order->bom_snapshot_at !== null
-            && $order->batches()->count() === 1
             && $batch->posted_consumptions_at === null
             && $batch->consumptions->isEmpty()
             && in_array($order->status, [ProductionOrder::STATUS_RELEASED, ProductionOrder::STATUS_IN_PROGRESS], true);
@@ -132,10 +131,26 @@ class ProductionBatchController extends AccountBaseController
             ->orderBy('id')
             ->get();
 
+        $companyId = (int) ($batch->order?->company_id ?? company()->id);
+
+        $outboundWarehouseBatchIds = [];
+        foreach ($outboundMovements as $movement) {
+            $outboundWarehouseBatchIds[$movement->id] = $this->resolveWarehouseProductBatchIdForMovement($movement, 'outbound', $companyId);
+        }
+
+        $inboundWarehouseBatchIds = [];
+        foreach ($inboundMovements as $movement) {
+            $inboundWarehouseBatchIds[$movement->id] = $this->resolveWarehouseProductBatchIdForMovement($movement, 'inbound', $companyId);
+        }
+
         $this->pageTitle = __('production::app.traceability');
         $this->batch = $batch;
         $this->outboundMovements = $outboundMovements;
         $this->inboundMovements = $inboundMovements;
+        $this->outboundWarehouseBatchIds = $outboundWarehouseBatchIds;
+        $this->inboundWarehouseBatchIds = $inboundWarehouseBatchIds;
+        $this->canLinkWarehouseBatches = in_array('warehouse', user_modules(), true)
+            && user()->permission('view_warehouse_stock') !== 'none';
 
         return view('production::batches.trace', $this->data);
     }
@@ -343,5 +358,45 @@ class ProductionBatchController extends AccountBaseController
     {
         abort_if((int) $rework->source_production_batch_id !== (int) $batch->id, 404);
         abort_if((int) $rework->company_id !== (int) company()->id, 403);
+    }
+
+    /**
+     * Best-effort match of a stock movement to a `warehouse_product_batches` row (product + warehouse side + batch label + expiry).
+     */
+    protected function resolveWarehouseProductBatchIdForMovement(StockMovement $movement, string $direction, int $companyId): ?int
+    {
+        $warehouseId = $direction === 'inbound'
+            ? $movement->warehouse_to_id
+            : $movement->warehouse_from_id;
+
+        if ($warehouseId === null) {
+            return null;
+        }
+
+        $query = WarehouseProductBatch::query()
+            ->where(function ($q) use ($companyId): void {
+                $q->whereNull('company_id')
+                    ->orWhere('company_id', $companyId);
+            })
+            ->where('warehouse_id', (int) $warehouseId)
+            ->where('product_id', (int) $movement->product_id);
+
+        if ($movement->batch_number !== null && $movement->batch_number !== '') {
+            $query->where('batch_number', $movement->batch_number);
+        } else {
+            $query->where(function ($q): void {
+                $q->whereNull('batch_number')->orWhere('batch_number', '');
+            });
+        }
+
+        if ($movement->expiry_date !== null) {
+            $query->whereDate('expiration_date', $movement->expiry_date);
+        } else {
+            $query->whereNull('expiration_date');
+        }
+
+        $id = $query->orderByDesc('id')->value('id');
+
+        return $id !== null ? (int) $id : null;
     }
 }

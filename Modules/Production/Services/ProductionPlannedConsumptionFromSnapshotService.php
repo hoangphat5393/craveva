@@ -20,8 +20,9 @@ class ProductionPlannedConsumptionFromSnapshotService
     /**
      * Create planned RM lines from the order's BOM snapshot (no warehouse batches).
      *
-     * Planned quantity per snapshot line = quantity_per_fg_unit × bom_snapshot_planned_quantity
-     * (MVP: only when the order has exactly one production batch — see {@see self::assertSingleBatchOrder}.)
+     * Planned quantity per snapshot line = quantity_per_fg_unit × **effective planned FG units for this batch**.
+     * With **multiple** production batches on the same order, the snapshot planned FG is **split equally**
+     * across all batches (each batch receives {@see self::effectivePlannedFgUnitsForBatch}).
      *
      * @throws InvalidArgumentException
      */
@@ -57,9 +58,7 @@ class ProductionPlannedConsumptionFromSnapshotService
             throw new InvalidArgumentException(__('production::app.noBomSnapshot'));
         }
 
-        $this->assertSingleBatchOrder($order);
-
-        $effectivePlannedFg = (float) $snapshotPlannedQty;
+        $effectivePlannedFg = $this->effectivePlannedFgUnitsForBatch($order);
 
         DB::transaction(function () use ($batch, $items, $order, $effectivePlannedFg): void {
             $lineOrder = -1;
@@ -85,11 +84,22 @@ class ProductionPlannedConsumptionFromSnapshotService
         });
     }
 
-    protected function assertSingleBatchOrder(ProductionOrder $order): void
+    /**
+     * Equal split of {@see ProductionOrder::$bom_snapshot_planned_quantity} across all batches on the order.
+     */
+    protected function effectivePlannedFgUnitsForBatch(ProductionOrder $order): float
     {
-        if ($order->batches()->count() !== 1) {
-            throw new InvalidArgumentException(__('production::app.snapshotApplyRequiresSingleBatch'));
+        $snapshotPlannedQty = $order->bom_snapshot_planned_quantity;
+        if ($snapshotPlannedQty === null || (float) $snapshotPlannedQty <= 0) {
+            throw new InvalidArgumentException(__('production::app.noBomSnapshot'));
         }
+
+        $batchCount = $order->batches()->count();
+        if ($batchCount < 1) {
+            throw new InvalidArgumentException(__('production::app.missingOrderOnBatch'));
+        }
+
+        return (float) $snapshotPlannedQty / $batchCount;
     }
 
     /**

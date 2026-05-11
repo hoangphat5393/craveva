@@ -7,6 +7,12 @@
 - Mới bổ sung nhưng chưa có implementation: `WUP-10` (chống invoice trùng SO/DO).
 - Khuyến nghị: giữ file này làm **nguồn trạng thái chính** cho nhóm Warehouse/Purchase improve.
 
+### Recheck 2026-05-09 (Specification Reconciliation)
+
+- Xac nhan lai: `WUP-01` -> `WUP-07` van co bang chung code/test trong `Modules/Warehouse/*` va `tests/Feature/*`.
+- `WUP-08`, `WUP-09`, `WUP-10` van la backlog (chua co bang chung implementation day du de doi sang Done).
+- Quy tac cap nhat: chi danh dau Done khi co du ca 3 lop **route/service(or migration)/test hoac UAT evidence**.
+
 **Ngày gộp:** 2026-04-06  
 **Nguồn:** `WAREHOUSE_OPERATION_RUNBOOK_VI.md` + `WAREHOUSE_UPGRADE_PLANE.MD` (tên cũ _PLANE_ đã đổi nội dung vào file này).
 
@@ -161,6 +167,23 @@ Kết quả:
 | WUP-08 | Báo cáo vận hành theo kho          | UI/báo cáo có thể chưa đủ góc nhìn đối soát                              | Có báo cáo tồn theo kho + movement theo reference + export phục vụ kế toán/vận hành                    |
 | WUP-09 | Bin/location (giai đoạn 2)         | Có field location ở movement nhưng chưa triển khai hoàn chỉnh            | Có mô hình location rõ hoặc quyết định postpone chính thức                                             |
 | WUP-10 | Chống tạo invoice trùng theo SO/DO | Hiện có thể tạo nhiều invoice cho cùng `order_id`/DO dẫn tới double bill | Có guard nghiệp vụ: chặn hoặc cảnh báo mạnh khi tổng qty/amount invoice vượt phần đã giao/chưa invoice |
+
+### 2.1 Bảng Evidence WUP (P0-07 — ba lớp: code / test / UAT)
+
+Dùng bảng này khi đánh dấu `Done`/`Partial` theo quy tắc `FUNC_IMPROVE/P0_NEXT_ACTION_BIOMIXING_VI.md`. Cột **UAT** điền tham chiếu biên bản hoặc mục checklist §1 runbook / báo cáo mini-UAT.
+
+| Mã     | Trạng thái tổng quát (Apr 2026) | Evidence (code — thư mục / service chính)                                                                | Evidence (test — file gợi ý)                                                      | UAT / Runbook                                  |
+| ------ | ------------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- |
+| WUP-01 | Done                            | `Modules/Warehouse` `warehouse_type`, flow policy outbound                                               | `tests/Feature/WarehouseUpgradeP0Test.php`                                        | §1 runbook 3.1 kho `normal` vs locked          |
+| WUP-02 | Done                            | `WarehouseAvailabilityService`, `Modules/Warehouse/Routes/api.php`                                       | `tests/Feature/WarehouseAvailabilityApiTest.php`                                  | API §1.6 + checklist §6                        |
+| WUP-03 | Done                            | Sales DO lifecycle + `StockReservationService`                                                           | `tests/Feature/SalesDoServiceLifecycleTest.php`                                   | §1.3 reserve → ship → cancel                   |
+| WUP-04 | Done                            | Inbound/outbound mutual exclusion, `WarehouseFlowPolicyService`                                          | `tests/Feature/WarehouseInboundMutualExclusionValidationTest.php`                 | §1.3 inbound canonical                         |
+| WUP-05 | Done (nền)                      | API availability + AI webhook hooks                                                                      | `tests/Feature/WarehouseAvailabilityApiTest.php`, webhook scenarios trong runbook | §1.6 item 5–6                                  |
+| WUP-06 | Done (nền)                      | `WarehouseUnitConversionService`, strict mode config                                                     | `tests/Feature/WarehouseUnitConversionFlowTest.php`                               | §1 §4 unit conversion                          |
+| WUP-07 | Done (tối thiểu)                | `stock_movements.idempotency_key`, `warehouse:reconciliation-report`, widget snapshot vs batch (2026-05) | `WarehouseUpgradeP0Test`, lệnh `warehouse:reconciliation-report`                  | §1 §5 + màn **Adjust stock** (widget đối soát) |
+| WUP-08 | Backlog                         | —                                                                                                        | —                                                                                 | —                                              |
+| WUP-09 | Backlog                         | —                                                                                                        | —                                                                                 | —                                              |
+| WUP-10 | Backlog                         | —                                                                                                        | —                                                                                 | Chờ spec guard invoice                         |
 
 ---
 

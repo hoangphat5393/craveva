@@ -56,7 +56,7 @@ Với **mỗi dòng** client, sau khi tạo User + ClientDetails, code gọi:
 - CustomFieldGroup + CustomField: 2 query × 20 = **40** (hoặc 2 nếu cache theo chunk)
 - Per field per row: 20 × 5 × (findOrFail + select + insert/update) ≈ **300** query chỉ cho custom field trong 1 job.
 
-→ **Phần custom field chiếm phần lớn số query và thời gian** (đúng như IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS §1–2).
+→ **Phần custom field chiếm phần lớn số query và thời gian** (đúng như IMPORT_CHUNK_AND_BULK_INSERT.md §1–2).
 
 ### 2.2. So sánh với Product import
 
@@ -69,7 +69,7 @@ Với **mỗi dòng** client, sau khi tạo User + ClientDetails, code gọi:
 
 ---
 
-## 3. Các cách cải thiện (theo IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS)
+## 3. Các cách cải thiện (theo IMPORT_CHUNK_AND_BULK_INSERT.md)
 
 ### 3.1. Bulk insert custom_fields_data (ưu tiên cao)
 

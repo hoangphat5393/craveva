@@ -1,6 +1,6 @@
 # Phân tích Import sản phẩm chậm – Nguyên nhân và Giải pháp
 
-**Tham chiếu:** FUNC_LOGIC/FLOW_ADD_PRODUCT.md, FUNC_LOGIC/IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md
+**Tham chiếu:** FUNC_LOGIC/FLOW_ADD_PRODUCT.md, FUNC_LOGIC/IMPORT_CHUNK_AND_BULK_INSERT.md
 
 ---
 
@@ -27,7 +27,7 @@
 - Mỗi job có overhead: deserialize, load company context, xử lý, commit.
 - **Đã áp dụng:** default chunk **100** (ProductController::importProcess, PurchaseProductController). Override qua request `chunk_size`.
 
-**Tham khảo IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS:** Chunk nhỏ không giảm tổng query, chỉ tăng overhead; tăng chunk giảm số job.
+**Tham khảo IMPORT_CHUNK_AND_BULK_INSERT.md:** Chunk nhỏ không giảm tổng query, chỉ tăng overhead; tăng chunk giảm số job.
 
 ---
 
@@ -53,7 +53,7 @@
 - `buildProductCustomFieldsData()` gọi **mỗi dòng** → query CustomFieldGroup + CustomField lặp lại.
 - `updateCustomFieldData()` xử lý **từng field từng dòng** → nhiều round-trip DB.
 
-**Tham khảo IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS (mục 2, 3):** Bulk insert custom field giảm mạnh số query (từ ~300/chunk xuống ~5/chunk).
+**Tham khảo IMPORT_CHUNK_AND_BULK_INSERT.md (mục 2, 3):** Bulk insert custom field giảm mạnh số query (từ ~300/chunk xuống ~5/chunk).
 
 ---
 
@@ -143,7 +143,7 @@ $existingSkus[$skuTrimmed] = true; // Sau khi tạo xong
 
 **Hiện tại:** Product import **không ghi** custom field (buildProductCustomFieldsData trả về []); product_grade, product_source, brand là cột DB → không phát sinh query custom field.
 
-**Nếu sau này bật ghi custom field khi import:** Nên áp dụng (theo IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS):
+**Nếu sau này bật ghi custom field khi import:** Nên áp dụng (theo IMPORT_CHUNK_AND_BULK_INSERT.md):
 
 1. **Load 1 lần/chunk:** CustomFieldGroup + CustomField (trừ product_grade, product_source, brand).
 2. **Mỗi dòng:** Chỉ build mảng `['field_id' => value]` trong memory, **không** gọi `updateCustomFieldData`.
@@ -157,7 +157,7 @@ $existingSkus[$skuTrimmed] = true; // Sau khi tạo xong
 
 - Product import hiện **không ghi** custom field (product_grade, product_source, brand là cột DB; custom field khác không đưa vào import).
 - Không cần checkbox: không gọi `updateCustomFieldData` vì `buildProductCustomFieldsData()` trả về [].
-- Nếu sau này thêm custom field cho Product và muốn import → cần mở lại logic + cân nhắc bulk insert (IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS §6).
+- Nếu sau này thêm custom field cho Product và muốn import → cần mở lại logic + cân nhắc bulk insert (IMPORT_CHUNK_AND_BULK_INSERT.md §6).
 
 ---
 
@@ -211,5 +211,5 @@ $existingSkus[$skuTrimmed] = true; // Sau khi tạo xong
 
 **Chưa làm (chỉ cần khi bật ghi custom field khi import):**
 
-1. Custom field: bulk insert (IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS §2, §6).
+1. Custom field: bulk insert (IMPORT_CHUNK_AND_BULK_INSERT.md §2, §6).
 2. Đảm bảo queue database + worker chạy đúng (môi trường).

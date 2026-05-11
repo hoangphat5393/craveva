@@ -40,4 +40,12 @@ return [
      * Set false to preserve legacy behaviour if integrations do not pass unit_id / stock yet.
      */
     'ai_order_webhook_check_stock' => env('WAREHOUSE_AI_ORDER_WEBHOOK_CHECK_STOCK', true),
+
+    /**
+     * Snapshot vs summed batch totals on the stock index reconciliation widget.
+     */
+    'inventory_reconciliation' => [
+        'equality_epsilon' => (float) env('WAREHOUSE_INVENTORY_RECONCILIATION_EQUALITY_EPSILON', 0.0001),
+        'warning_absolute_delta' => (float) env('WAREHOUSE_INVENTORY_RECONCILIATION_WARNING_ABSOLUTE_DELTA', 0.01),
+    ],
 ];

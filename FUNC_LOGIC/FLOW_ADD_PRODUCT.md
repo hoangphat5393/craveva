@@ -22,7 +22,7 @@
         +-------+-------+
 ```
 
-**Lưu ý Import:** product_source, brand, product_grade ghi vào cột DB **products** (không qua custom_fields_data). Hiện tại buildProductCustomFieldsData trả về rỗng (danh sách custom field dùng khi import rỗng) nên import **không ghi** custom_fields_data. Chỉ form UI mới ghi custom_fields_data khi request có custom_fields_data. Nếu sau này bổ sung custom field cho Product và muốn import theo cột Excel thì cần mở lại buildProductCustomFieldsData + ProductImport::fields() (xem IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS §6).
+**Lưu ý Import:** product_source, brand, product_grade ghi vào cột DB **products** (không qua custom_fields_data). Hiện tại buildProductCustomFieldsData trả về rỗng (danh sách custom field dùng khi import rỗng) nên import **không ghi** custom_fields_data. Chỉ form UI mới ghi custom_fields_data khi request có custom_fields_data. Nếu sau này bổ sung custom field cho Product và muốn import theo cột Excel thì cần mở lại buildProductCustomFieldsData + ProductImport::fields() (xem IMPORT_CHUNK_AND_BULK_INSERT.md §6).
 
 ---
 
@@ -118,7 +118,7 @@
 | **Cột import**              | ProductImport::fields() gồm product_name, price, sku, description, specification, product_source, brand, product_grade, unit_type, shelf_life_days, … |
 | **Custom field**            | Hiện không ghi custom_fields_data khi import (buildProductCustomFieldsData trả về []). product_grade, product_source, brand đã là cột DB.             |
 
-## 8. Đối chiếu kế hoạch (IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS) – đã triển khai
+## 8. Đối chiếu kế hoạch (IMPORT_CHUNK_AND_BULK_INSERT.md) – đã triển khai
 
 | Phương án trong kế hoạch       | Product import | Ghi chú                                                    |
 | ------------------------------ | -------------- | ---------------------------------------------------------- |

@@ -7,4 +7,11 @@ This project has a graphify knowledge graph at graphify-out/.
 
 - Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
 - If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
-- After modifying code files in this session, run `graphify update .` to keep the graph current (AST-only, no API cost)
+
+## When to run `graphify update .` (AST-only, no API cost)
+
+**Application / test code (prioritize fresh graph):** After a **meaningful batch** of edits under paths such as `app/`, `Modules/`, `routes/`, `database/migrations/`, `database/seeders/`, `tests/`, or other `*.php` that affects runtime behaviour, run **`graphify update .` at least once** before (a) relying on `GRAPH_REPORT.md` for architecture answers or (b) ending the session if those edits are complete.
+
+**Documentation only (avoid redundant full scans):** If this session only changes **documentation** — e.g. `*.md`, `*.mmd`, `FUNC_*`, `docs/`, `PROJECT */`, `ai-context/`, `DIAGRAM/`, `.cursor/rules/*.mdc` — do **not** run `graphify update .` after every file. Run it **at most once** at the **end of the doc batch**, before **PR merge**, or when the **user explicitly** wants an up-to-date graph. If no architecture/graph read is needed, **skipping** graphify for a pure-doc session is acceptable.
+
+**Mixed sessions:** If both code and docs were edited, follow the **code** rule above (one batch run covers the repo scan).

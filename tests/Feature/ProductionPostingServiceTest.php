@@ -94,15 +94,15 @@ beforeEach(function (): void {
         $table->timestamps();
     });
 
-    $migration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
+    $migration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
     $migration->up();
 
-    $productionFgQuantityPolicyMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
+    $productionFgQuantityPolicyMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
     $productionFgQuantityPolicyMigration->up();
 
-    $bomSnapshotMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
+    $bomSnapshotMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
     $bomSnapshotMigration->up();
-    $yieldUomShadowMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
+    $yieldUomShadowMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
     $yieldUomShadowMigration->up();
 
     DB::table('companies')->insert([
@@ -561,7 +561,7 @@ it('computes planned_quantity_shadow using UOM conversion and yield factor in sh
         ->and((float) data_get($consumption->shadow_basis, 'yield_factor'))->toBe(0.8);
 });
 
-it('rejects snapshot planned consumption when order has multiple batches', function (): void {
+it('creates planned consumption from snapshot for each batch with equal FG split across batches', function (): void {
     $bom = ProductionBom::query()->create([
         'company_id' => 1,
         'output_product_id' => 2,
@@ -588,7 +588,7 @@ it('rejects snapshot planned consumption when order has multiple batches', funct
         'planned_quantity' => 100,
     ]);
 
-    ProductionBatch::query()->create([
+    $batchA = ProductionBatch::query()->create([
         'company_id' => 1,
         'production_order_id' => $order->id,
         'batch_code' => 'PB-A',
@@ -604,8 +604,16 @@ it('rejects snapshot planned consumption when order has multiple batches', funct
     $service->releaseOrder($order);
 
     $apply = app(ProductionPlannedConsumptionFromSnapshotService::class);
+    $apply->applySnapshotToBatch($batchA->fresh(['order']));
     $apply->applySnapshotToBatch($batchB->fresh(['order']));
-})->throws(InvalidArgumentException::class);
+
+    $qtyA = (float) ProductionBatchConsumption::query()->where('production_batch_id', $batchA->id)->value('planned_quantity');
+    $qtyB = (float) ProductionBatchConsumption::query()->where('production_batch_id', $batchB->id)->value('planned_quantity');
+
+    expect($qtyA)->toBe(25.0)
+        ->and($qtyB)->toBe(25.0)
+        ->and(ProductionBatchConsumption::query()->whereIn('production_batch_id', [$batchA->id, $batchB->id])->count())->toBe(2);
+});
 
 it('auto-assigns RM warehouse batch when consumption line has no assigned batch', function (): void {
     $order = ProductionOrder::query()->create([

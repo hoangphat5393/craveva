@@ -270,7 +270,7 @@ INSERT INTO universal_search (company_id, searchable_id, title, route_name, modu
 
 **Đã triển khai:** Bulk insert custom_fields_data, cache metadata (getClientCustomFieldMap 1 lần/chunk), chunk size mặc định 100, queue database. Chi tiết §8.2 (cột Trạng thái) và §8.3.
 
-**Tham chiếu:** ../FUNC_IMPROVE/CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md, IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md, kinh nghiệm Product import (chunk 100, cache metadata).
+**Tham chiếu:** ../FUNC_IMPROVE/08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md, IMPORT_CHUNK_AND_BULK_INSERT.md, kinh nghiệm Product import (chunk 100, cache metadata).
 
 ### 8.1. Vấn đề trước đây (đã xử lý)
 
@@ -318,8 +318,8 @@ Trước đây: nhiều chunk job chạy song song, mỗi dòng gọi `assignUse
 
 | Nội dung                                     | File / tài liệu                                                                          |
 | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Phân tích chi tiết import chậm + bulk insert | FUNC_IMPROVE/CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md                                    |
-| Chunk vs bulk insert, queue sync/database    | FUNC_LOGIC/IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md                                      |
+| Phân tích chi tiết import chậm + bulk insert | FUNC_IMPROVE/08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md                                    |
+| Chunk vs bulk insert, queue sync/database    | FUNC_LOGIC/IMPORT_CHUNK_AND_BULK_INSERT.md                                      |
 | Cột file Miaolin vs DB/Custom                | (đã gộp) xem `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md` + `FUNC_LOGIC/MAOLIN_IMPORT_MAPPING.md` |
 
 ---

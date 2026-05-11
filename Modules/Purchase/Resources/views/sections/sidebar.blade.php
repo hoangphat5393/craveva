@@ -94,6 +94,9 @@
                 <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" :active="request()->routeIs('warehouse.stock.*')" />
             @endif
             @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
+                <x-sub-menu-item :link="route('warehouse.product-batches.index')" :text="__('warehouse::app.warehouseBatchInventory')" :permission="true" :active="request()->routeIs('warehouse.product-batches.*')" />
+            @endif
+            @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
                 <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" :active="request()->routeIs('warehouse.movements.*')" />
             @endif
 

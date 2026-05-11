@@ -14,8 +14,9 @@ use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Entities\WarehouseProductStock;
 use Modules\Warehouse\Http\Controllers\Concerns\HandlesWarehouseErrors;
-use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 use Modules\Warehouse\Services\StockMovementService;
+use Modules\Warehouse\Services\WarehouseFlowPolicyService;
+use Modules\Warehouse\Services\WarehouseReconciliationService;
 
 class WarehouseStockController extends AccountBaseController
 {
@@ -64,13 +65,20 @@ class WarehouseStockController extends AccountBaseController
             })
             ->when($search, function ($query) use ($search) {
                 return $query->whereHas('product', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('sku', 'like', '%' . $search . '%');
+                    $q->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('sku', 'like', '%'.$search.'%');
                 });
             })
             ->paginate($perPage);
 
         $this->appendSellableMetrics($stocks);
+
+        $companyId = $this->warehouseCompanyId();
+        $this->inventoryReconciliationWidget = null;
+        if ($companyId && Schema::hasTable('warehouse_product_batches') && Schema::hasTable('warehouse_product_stock')) {
+            $this->inventoryReconciliationWidget = app(WarehouseReconciliationService::class)
+                ->inventorySnapshotVsBatchTotals((int) $companyId);
+        }
 
         $this->pageTitle = 'warehouse::app.adjustStock';
         $this->pageIcon = 'ti-layout';
@@ -221,10 +229,10 @@ class WarehouseStockController extends AccountBaseController
             ->whereIn('product_id', $productIds)
             ->groupBy('warehouse_id', 'product_id')
             ->get()
-            ->keyBy(fn($row) => $row->warehouse_id . ':' . $row->product_id);
+            ->keyBy(fn ($row) => $row->warehouse_id.':'.$row->product_id);
 
         $stocks->getCollection()->transform(function ($stock) use ($batchAgg) {
-            $key = $stock->warehouse_id . ':' . $stock->product_id;
+            $key = $stock->warehouse_id.':'.$stock->product_id;
             $reserved = (float) ($batchAgg->get($key)->reserved ?? 0);
             $onHand = (float) $stock->quantity;
             $available = max(0.0, $onHand - $reserved);

@@ -3,7 +3,7 @@
 Tài liệu này dùng để đối chiếu nhanh giữa đề xuất nghiệp vụ của khách và cách triển khai kỹ thuật trong hệ thống.
 
 - Proposal gốc: `PROJECT BIOMIXING/2-4-2026_Biomixing_Proposal_CravevaERP_Formatted.pdf`
-- Playbook triển khai nội bộ: `PROJECT BIOMIXING/BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md`
+- Playbook triển khai nội bộ: `FUNC_IMPROVE/BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md`
 - **Phase 1 + 2 (chốt vận hành):** dùng **`planned_quantity`** từ BOM snapshot (định mức × số TP kế hoạch). Chi tiết trạng thái: `FUNC_TEST/01_BIOMIXING_PROPOSAL_TEST_CASE_MATRIX_VI.md`.
 
 ## 1) Nguyên tắc đọc tài liệu

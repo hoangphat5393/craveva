@@ -10,9 +10,9 @@ Dùng file này để vào nhanh tài liệu mới nhất, tránh đọc nhầm 
 3. `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
 4. **`FUNC_LOGIC/SALES_RETURN_CREDIT_NOTE_STOCK_VI.md`** — trả hàng bán (Credit Note → nhập kho)
 5. **`FUNC_LOGIC/PURCHASE_RETURN_VENDOR_CREDIT_STOCK_VI.md`** — trả hàng mua (Vendor Credit → xuất kho)
-6. `PROJECT BIOMIXING/BIOMIXING_FLOW_CRACEVA_GAP.md`
+6. `FUNC_IMPROVE/BIOMIXING_FLOW_CRACEVA_GAP.md`
 7. `FUNC_LOGIC/SALES_PURCHASE_FLOW.md`
-8. `FUNC_IMPROVE/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md` (runbook + WUP)
+8. `FUNC_IMPROVE/04_WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md` (runbook + WUP; **§6** — batch kho, đối soát snapshot, WUP-07)
 9. **`FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`** — checklist nghiệm thu Mua · Bán · Kho (E2E + phụ lục Warehouse)
 
 **Sơ đồ:** `DIAGRAM/Purchasing - Inventory - Sales End-to-End Current Flow.mmd` (đầy đủ) · `DIAGRAM/Purchasing - Inventory - Sales End-to-End Flow.mmd` (rút gọn).

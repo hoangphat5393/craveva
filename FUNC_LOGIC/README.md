@@ -2,6 +2,8 @@
 
 Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**, không thay cho code.
 
+**Kiểm tra tài liệu (audit):** [`DOCUMENTATION_AUDIT_FUNC_LOGIC_2026_VI.md`](DOCUMENTATION_AUDIT_FUNC_LOGIC_2026_VI.md) · mục lục máy: [`INDEX.md`](INDEX.md).
+
 ## AI context (đọc nhanh kiến trúc hệ thống)
 
 - `ai-context/core/SYSTEM_OVERVIEW.md` (tổng quan hệ thống, routes, risk signals)
@@ -50,6 +52,7 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 | File                                                                                                         | Nội dung                                                                                |
 | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
 | [WAREHOUSE_INDEX.md](WAREHOUSE_INDEX.md)                                                                     | **Mục lục Warehouse** (FLOW, UAT, audit, PM)                                            |
+| [SALES_FULFILLMENT_DOCS_INDEX.md](SALES_FULFILLMENT_DOCS_INDEX.md)                                           | **Mục lục canonical** Sales · Warehouse (đọc trước khi lần các doc phân tán)          |
 | [UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)                                   | **UAT E2E** Mua · Bán · Kho (bản chuẩn)                                                 |
 | [ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md)           | **Master:** luồng bán, DROP legacy, audit gộp (§7); schema `grns`/`sales_dos` vs legacy |
 | [WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)           | **Biến `.env`** kho + PO/GRN/Sales DO/webhook AI (tham chiếu một chỗ)                   |
@@ -58,6 +61,7 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 | [WAREHOUSE_MASTER_GUIDE.md](WAREHOUSE_MASTER_GUIDE.md)                                                       | Tài liệu Warehouse gộp (analysis + UI + DB)                                             |
 | [WAREHOUSE_TOM_TAT_NOI_BO.md](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11                                            | Audit trước nâng cấp kho + prompt Cursor UAT (đã gộp)                                   |
 | [ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md) | QA verification hiện tại cho SO/PO/DO/Invoice/Warehouse                                 |
+| [BIOMIXING / Production (triển khai)](../FUNC_IMPROVE/BIOMIXING_PRODUCTION_PREP_INDEX_EN.md)                 | Kế hoạch & playbook dev **Production** (tách khỏi `FUNC_LOGIC`; liên kết kho/SO/DO)     |
 | [MAOLIN_MASTER_GUIDE.md](MAOLIN_MASTER_GUIDE.md)                                                             | **Bản gộp MAOLIN** (đọc 1 file là đủ)                                                   |
 | [MAOLIN_IMPORT_MAPPING.md](MAOLIN_IMPORT_MAPPING.md)                                                         | Map cột import MAOLIN (ready to use)                                                    |
 | (đã gộp)                                                                                                     | CF trùng PO/DO/SO/Client → xem `CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md`             |
@@ -69,8 +73,8 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 | File                                                                                                                     | Nội dung                                                                            |
 | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| [CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md](../FUNC_IMPROVE/CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                     | Review import client (archived — ưu tiên `FLOW_ADD_CLIENT.md`)                      |
-| [ORDER_HISTORY_IMPROVE_PLAN.MD](../FUNC_IMPROVE/ORDER_HISTORY_IMPROVE_PLAN.MD)                                           | Import Sales History — cải tiện / vận hành queue                                    |
+| [CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md](../FUNC_IMPROVE/08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                  | Review import client (archived — ưu tiên `FLOW_ADD_CLIENT.md`)                      |
+| [09_ORDER_HISTORY_IMPROVE_PLAN.md](../FUNC_IMPROVE/09_ORDER_HISTORY_IMPROVE_PLAN.md)                                     | Import Sales History — cải tiện / vận hành queue                                    |
 | (import log)                                                                                                             | Import log hiện đang mô tả trong `FLOW_ADD_CLIENT.md` + các view/progress liên quan |
 | [IMPORT_CHUNK_AND_BULK_INSERT.md](IMPORT_CHUNK_AND_BULK_INSERT.md)                                                       | Chunk & bulk insert                                                                 |
 | [PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md](PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md)                                               | Import chậm                                                                         |
@@ -81,10 +85,10 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 ### Pricing / dev tools
 
-| File                                                                       | Nội dung                       |
-| -------------------------------------------------------------------------- | ------------------------------ |
-| [PRICING_MODULE_DEV_TASKS.md](../FUNC_IMPROVE/PRICING_MODULE_DEV_TASKS.md) | Task dev Pricing               |
-| [DEVELOPER_TOOLS_EXT_PLAN.md](DEVELOPER_TOOLS_EXT_PLAN.md)                 | Mở rộng Developer Tools (plan) |
+| File                                                                          | Nội dung                       |
+| ----------------------------------------------------------------------------- | ------------------------------ |
+| [PRICING_MODULE_DEV_TASKS.md](../FUNC_IMPROVE/07_PRICING_MODULE_DEV_TASKS.md) | Task dev Pricing               |
+| [DEVELOPER_TOOLS_EXT_PLAN.md](DEVELOPER_TOOLS_EXT_PLAN.md)                    | Mở rộng Developer Tools (plan) |
 
 ---
 

@@ -137,7 +137,7 @@ Như vậy vừa giữ đúng hành vi (custom field vẫn gắn đúng client),
 
 **Tài liệu tham chiếu:** FUNC_LOGIC/PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md, FUNC_LOGIC/FLOW_ADD_PRODUCT.md
 
-### 6.1. Các phương án trong IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS (mục 1–5)
+### 6.1. Các phương án trong IMPORT_CHUNK_AND_BULK_INSERT.md (mục 1–5)
 
 | Đề xuất / Phương án                        | Áp dụng cho Product?              | Trạng thái Product import | Ghi chú                                                                                                                                                                  |
 | ------------------------------------------ | --------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

@@ -29,8 +29,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 
 - `FUNC_LOGIC/SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md`
 - `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`
-- `FUNC_LOGIC/API_DATA_TYPE_LIST_EN.md`
-- `FUNC_LOGIC/API_DATA_TYPE_LIST_VI.md`
+- `FUNC_LOGIC/API_DATA_TYPE_LIST_VI.md` — canonical (đã gộp nội dung trùng từ bản EN 2026-05)
 - `FUNC_LOGIC/Libraries_And_Module_Names.md`
 
 ## Audit and Review Documents
@@ -54,6 +53,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 
 ## Maintenance Notes
 
+- **Documentation audit (FUNC_LOGIC):** [`DOCUMENTATION_AUDIT_FUNC_LOGIC_2026_VI.md`](DOCUMENTATION_AUDIT_FUNC_LOGIC_2026_VI.md)
 - Keep this file as route map only, not as a content duplicate.
 - Add new docs in the nearest matching section.
 - For major new domains, add a dedicated `<DOMAIN>_MASTER_GUIDE.md` and list it under Primary Entry Points.

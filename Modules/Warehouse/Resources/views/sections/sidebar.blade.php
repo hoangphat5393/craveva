@@ -23,6 +23,7 @@
 
             @if ($viewWarehouseStock && $viewWarehouseStock != 'none')
                 <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" :active="request()->routeIs('warehouse.stock.*')" />
+                <x-sub-menu-item :link="route('warehouse.product-batches.index')" :text="__('warehouse::app.warehouseBatchInventory')" :permission="true" :active="request()->routeIs('warehouse.product-batches.*')" />
             @endif
 
             @if ($canSeeWarehouseTransferUi)

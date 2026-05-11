@@ -34,8 +34,8 @@ When a module needs deep details (product/client/production integrations), keep 
 
 - `FUNC_BUG/INDEX.md`
 - `FUNC_IMPORT/INDEX.md`
-- `FUNC_IMPROVE/INDEX.md`
-- `FUNC_LOGIC/INDEX.md`
+- `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **audit tài liệu nhóm:** `FUNC_IMPROVE/DOCUMENTATION_AUDIT_2026_VI.md`
+- `FUNC_LOGIC/INDEX.md` — **audit tài liệu nhóm:** `FUNC_LOGIC/DOCUMENTATION_AUDIT_FUNC_LOGIC_2026_VI.md`
 - `FUNC_TEST/INDEX.md`
 
 ## 4) Working Rules

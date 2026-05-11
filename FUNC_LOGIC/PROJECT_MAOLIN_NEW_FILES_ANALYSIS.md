@@ -9,7 +9,7 @@
 **Tài liệu gộp MAOLIN (đọc 1 file là đủ):** xem **`FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`**.  
 **Tóm tắt phạm vi 4 nhóm + file đã gộp:** xem **`FUNC_LOGIC/MAOLIN_INDEX.md`** (mục 2–3).  
 **Phân tích Multi-Warehouse + roadmap triển khai end-to-end:** xem **`FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`**.  
-**Chỉ giá / tier pricing + thống kê file CSV:** **`FUNC_LOGIC/PROJECT_MAOLIN_NEW_TIER_PRICING_IMPORT.md`**.
+**Giá / báo giá / tồn trong workbook Quote:** **`§4`** trong cùng file này (không có file `PROJECT_MAOLIN_NEW_TIER_PRICING_IMPORT.md` — tên đó là lỗi tham chiếu cũ).
 
 ---
 

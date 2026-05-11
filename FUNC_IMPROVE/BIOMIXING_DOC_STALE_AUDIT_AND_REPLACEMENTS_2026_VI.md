@@ -1,6 +1,6 @@
-# Kiểm tra tài liệu PROJECT BIOMIXING — mức độ lỗi thời & file thay thế (2026)
+# Kiểm tra tài liệu Biomixing (`FUNC_IMPROVE/` — file `BIOMIXING_*`) — mức độ lỗi thời & file thay thế (2026)
 
-**Mục đích:** Sau khi **SO / PO / Sales DO / Invoice / Warehouse** (đa kho, batch, reservation, inbound canonical) được hoàn thiện nhiều trên Hub/staging, một số file trong thư mục này **mô tả trạng thái cũ**. Bảng dưới giúp **không đọc nhầm** khi chuẩn bị **module Production**.
+**Mục đích:** Sau khi **SO / PO / Sales DO / Invoice / Warehouse** (đa kho, batch, reservation, inbound canonical) được hoàn thiện nhiều trên Hub/staging, một số file **`BIOMIXING_*` ở gốc `FUNC_IMPROVE/`** **mô tả trạng thái cũ**. Bảng dưới giúp **không đọc nhầm** khi chuẩn bị **module Production**.
 
 **Baseline mới (đọc trước):** `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`  
 **Chỉ mục tiếng Anh:** `BIOMIXING_PRODUCTION_PREP_INDEX_EN.md`

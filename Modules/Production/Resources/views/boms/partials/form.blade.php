@@ -18,15 +18,30 @@
             ->all();
     }
     $rowCount = max(count($lines), 1);
+
+    $bomFgUnitByProductId = $bomFgUnitByProductId ?? $finishedGoods->keyBy('id')->map(static fn($p) => optional($p->unit)->unit_type ?? '—');
+    $bomComponentUnitByProductId = $bomComponentUnitByProductId ?? $componentProducts->keyBy('id')->map(static fn($p) => optional($p->unit)->unit_type ?? '—');
+
+    /** @param  \App\Models\Product  $product */
+    $bomProductLabelWithUnit = static function ($product, \Illuminate\Support\Collection $unitByProductId): string {
+        $u = (string) ($unitByProductId->get((string) $product->id) ?? ($unitByProductId->get((int) $product->id) ?? '—'));
+        if ($u !== '' && $u !== '—') {
+            return $product->name . ' (' . $u . ')';
+        }
+
+        return $product->name;
+    };
 @endphp
 
-<div class="form-group my-3">
-    <x-forms.select fieldId="output_product_id" :fieldLabel="__('production::app.fgProduct')" fieldName="output_product_id" fieldRequired="true">
-        <option value="">—</option>
-        @foreach ($finishedGoods as $p)
-            <option value="{{ $p->id }}" @selected((int) old('output_product_id', isset($bom) ? $bom->output_product_id : 0) === (int) $p->id)>{{ $p->name }}</option>
-        @endforeach
-    </x-forms.select>
+<div class="form-row my-3">
+    <div class="col-12">
+        <x-forms.select class="mb-0" fieldId="output_product_id" :fieldLabel="__('production::app.fgProduct')" fieldName="output_product_id" fieldRequired="true">
+            <option value="">—</option>
+            @foreach ($finishedGoods as $p)
+                <option value="{{ $p->id }}" @selected((int) old('output_product_id', isset($bom) ? $bom->output_product_id : 0) === (int) $p->id)>{{ $bomProductLabelWithUnit($p, $bomFgUnitByProductId) }}</option>
+            @endforeach
+        </x-forms.select>
+    </div>
 </div>
 
 <div class="form-row">
@@ -80,7 +95,7 @@
                         <select name="items[{{ $i }}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8">
                             <option value="">—</option>
                             @foreach ($componentProducts as $p)
-                                <option value="{{ $p->id }}" @selected((string) $cid === (string) $p->id)>{{ $p->name }}</option>
+                                <option value="{{ $p->id }}" @selected((string) $cid === (string) $p->id)>{{ $bomProductLabelWithUnit($p, $bomComponentUnitByProductId) }}</option>
                             @endforeach
                         </select>
                     </td>
@@ -88,9 +103,11 @@
                         <input type="number" step="0.0001" min="0.0001" name="items[{{ $i }}][quantity]" class="form-control height-35 f-14" value="{{ $qty }}">
                     </td>
                     <td class="text-right">
-                        <button type="button" class="btn btn-outline-danger btn-sm bom-remove-row" title="@lang('app.delete')">
-                            <i class="fa fa-trash"></i>
-                        </button>
+                        @if ($i > 0)
+                            <button type="button" class="btn btn-outline-danger btn-sm bom-remove-row" title="@lang('app.delete')">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        @endif
                     </td>
                 </tr>
             @endfor
@@ -108,33 +125,66 @@
         (() => {
             const body = document.getElementById('bom-lines-body');
             const addBtn = document.getElementById('bom-add-row');
-            const fgSelect = document.getElementById('output_product_id');
             const bomForm = body ? body.closest('form') : null;
-            if (!body || !addBtn || !fgSelect) {
+            const fgSelect = bomForm ?
+                (bomForm.querySelector('#output_product_id') || bomForm.querySelector('select[name="output_product_id"]')) :
+                null;
+            if (!body || !addBtn || !bomForm) {
                 return;
             }
 
             const componentOptionsHtml = `
                 <option value="">—</option>
                 @foreach ($componentProducts as $p)
-                    <option value="{{ $p->id }}">{{ $p->name }}</option>
+                    <option value="{{ $p->id }}">{{ $bomProductLabelWithUnit($p, $bomComponentUnitByProductId) }}</option>
                 @endforeach
             `;
 
+            const collectSelectOptionElements = (selectEl) => {
+                if (!selectEl || typeof selectEl.querySelectorAll !== 'function') {
+                    return [];
+                }
+
+                return Array.from(selectEl.querySelectorAll('option'));
+            };
+
+            const syncRemoveRowButtons = () => {
+                body.querySelectorAll('.bom-line-row').forEach((row, idx) => {
+                    const btn = row.querySelector('.bom-remove-row');
+                    if (!btn) {
+                        return;
+                    }
+                    btn.classList.toggle('d-none', idx === 0);
+                });
+            };
+
             const refreshPicker = (selectEl) => {
-                if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
-                    window.jQuery(selectEl).selectpicker('refresh');
+                if (!window.jQuery || typeof window.jQuery.fn.selectpicker !== 'function') {
+                    return;
+                }
+                try {
+                    const ret = window.jQuery(selectEl).selectpicker('refresh');
+                    if (ret != null && typeof ret.then === 'function') {
+                        ret.catch(() => {});
+                    }
+                } catch (e) {
+                    /* bootstrap-select refresh can throw or reject */
                 }
             };
 
             const applyFgRestrictionForRow = (row) => {
-                const fgId = String(fgSelect.value || '');
+                if (!row || typeof row.querySelector !== 'function') {
+                    return;
+                }
+                const fgId = fgSelect ? String(fgSelect.value || '') : '';
                 const componentSelect = row.querySelector('.bom-component-select');
-                if (!componentSelect) {
+                if (!(componentSelect instanceof HTMLSelectElement)) {
                     return;
                 }
 
-                Array.from(componentSelect.options).forEach((opt) => {
+                const optionNodes = collectSelectOptionElements(componentSelect);
+
+                optionNodes.forEach((opt) => {
                     if (!opt.value) {
                         opt.disabled = false;
                         opt.hidden = false;
@@ -157,7 +207,7 @@
             };
 
             const enforceComponentNotEqualFg = (componentSelect) => {
-                if (!componentSelect) {
+                if (!componentSelect || !fgSelect) {
                     return;
                 }
                 const fgId = String(fgSelect.value || '');
@@ -178,6 +228,7 @@
                         field.setAttribute('name', name.replace(/items\[\d+\]/, `items[${index}]`));
                     });
                 });
+                syncRemoveRowButtons();
             };
 
             addBtn.addEventListener('click', () => {
@@ -205,7 +256,13 @@
                 if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
                     window.jQuery(tr).find('.select-picker').selectpicker();
                 }
-                applyFgRestrictionForRow(tr);
+                window.setTimeout(() => {
+                    applyFgRestrictionForRow(tr);
+                    syncRemoveRowButtons();
+                    if (newComponentSelect instanceof HTMLSelectElement) {
+                        bindBomUnitPickerListeners();
+                    }
+                }, 0);
 
                 if (newComponentSelect) {
                     if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
@@ -219,20 +276,92 @@
                 }
             });
 
-            body.addEventListener('change', (event) => {
-                const target = event.target;
-                if (!(target instanceof HTMLSelectElement)) {
+            const onComponentSelectInteraction = (selectEl) => {
+                if (!(selectEl instanceof HTMLSelectElement) || !selectEl.classList.contains('bom-component-select')) {
                     return;
                 }
-                if (!target.classList.contains('bom-component-select')) {
+                window.setTimeout(() => {
+                    enforceComponentNotEqualFg(selectEl);
+                }, 0);
+            };
+
+            let bomFgSyncQueued = false;
+            const onFgSelectInteraction = () => {
+                if (bomFgSyncQueued) {
                     return;
                 }
-                enforceComponentNotEqualFg(target);
-            });
+                bomFgSyncQueued = true;
+                window.setTimeout(() => {
+                    bomFgSyncQueued = false;
+                    applyFgRestrictionAllRows();
+                }, 0);
+            };
+
+            /**
+             * Bootstrap-select: use document delegation so listeners survive re-init / `data-container="body"`.
+             */
+            const bomLineComponentSelectHandler = function() {
+                onComponentSelectInteraction(this);
+            };
+            const bomFgSelectHandler = function() {
+                onFgSelectInteraction();
+            };
+
+            /**
+             * Capture-phase `change` + jQuery delegation: enforce RM ≠ FG when picks change.
+             */
+            const bomDocumentChangeCapture = (ev) => {
+                if (!bomForm) {
+                    return;
+                }
+                const t = ev.target;
+                if (!(t instanceof HTMLSelectElement) || !bomForm.contains(t)) {
+                    return;
+                }
+                if (t.classList.contains('bom-component-select') && body.contains(t)) {
+                    onComponentSelectInteraction(t);
+
+                    return;
+                }
+                if (fgSelect && t === fgSelect) {
+                    onFgSelectInteraction();
+                }
+            };
+
+            const attachBomUnitDocumentListeners = () => {
+                document.removeEventListener('change', bomDocumentChangeCapture, true);
+                document.addEventListener('change', bomDocumentChangeCapture, true);
+                if (!window.jQuery) {
+                    return;
+                }
+                const $ = window.jQuery;
+                $(document)
+                    .off('changed.bs.select.bomUnitForm', '.bom-component-select')
+                    .on('changed.bs.select.bomUnitForm', '.bom-component-select', bomLineComponentSelectHandler);
+                $(document)
+                    .off('hidden.bs.select.bomUnitForm', '.bom-component-select')
+                    .on('hidden.bs.select.bomUnitForm', '.bom-component-select', bomLineComponentSelectHandler);
+                if (fgSelect) {
+                    $(document)
+                        .off('changed.bs.select.bomUnitFormFg', '#output_product_id')
+                        .on('changed.bs.select.bomUnitFormFg', '#output_product_id', bomFgSelectHandler);
+                    $(document)
+                        .off('hidden.bs.select.bomUnitFormFg', '#output_product_id')
+                        .on('hidden.bs.select.bomUnitFormFg', '#output_product_id', bomFgSelectHandler);
+                }
+            };
+
+            const bindBomUnitPickerListeners = () => {
+                attachBomUnitDocumentListeners();
+            };
 
             if (window.jQuery) {
-                window.jQuery(body).on('changed.bs.select', '.bom-component-select', function() {
-                    enforceComponentNotEqualFg(this);
+                window.jQuery(function() {
+                    window.setTimeout(() => attachBomUnitDocumentListeners(), 0);
+                });
+                window.jQuery(window).on('load', () => {
+                    window.setTimeout(() => attachBomUnitDocumentListeners(), 0);
+                    window.setTimeout(() => attachBomUnitDocumentListeners(), 250);
                 });
             }
 
@@ -252,6 +381,7 @@
                         select.value = '';
                         refreshPicker(select);
                     });
+                    applyFgRestrictionAllRows();
                     return;
                 }
 
@@ -260,14 +390,11 @@
                 applyFgRestrictionAllRows();
             });
 
-            fgSelect.addEventListener('change', applyFgRestrictionAllRows);
-            if (window.jQuery) {
-                window.jQuery(fgSelect).on('changed.bs.select', applyFgRestrictionAllRows);
-            }
+            bindBomUnitPickerListeners();
 
             if (bomForm) {
                 bomForm.addEventListener('submit', (event) => {
-                    const fgId = String(fgSelect.value || '');
+                    const fgId = fgSelect ? String(fgSelect.value || '') : '';
                     if (fgId === '') {
                         return;
                     }
@@ -290,8 +417,17 @@
             }
 
             applyFgRestrictionAllRows();
-            window.setTimeout(applyFgRestrictionAllRows, 150);
-            window.setTimeout(applyFgRestrictionAllRows, 500);
+            syncRemoveRowButtons();
+            window.setTimeout(() => {
+                bindBomUnitPickerListeners();
+                applyFgRestrictionAllRows();
+                syncRemoveRowButtons();
+            }, 150);
+            window.setTimeout(() => {
+                bindBomUnitPickerListeners();
+                applyFgRestrictionAllRows();
+                syncRemoveRowButtons();
+            }, 500);
         })();
     </script>
 @endpush

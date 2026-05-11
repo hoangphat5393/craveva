@@ -78,6 +78,7 @@
                     <tr>
                         <th class="f-14 text-dark-grey">ID</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.fgProduct')</th>
+                        <th class="f-14 text-dark-grey">@lang('modules.invoices.unitType')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.plannedQty')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.status')</th>
                         <th class="f-14 text-dark-grey text-right">@lang('app.action')</th>
@@ -88,6 +89,7 @@
                         <tr>
                             <td>{{ $order->id }}</td>
                             <td>{{ $order->outputProduct?->name ?? '—' }}</td>
+                            <td class="text-dark-grey">{{ $orderListFgUnitByProductId->get((string) $order->output_product_id) ?? ($orderListFgUnitByProductId->get($order->output_product_id) ?? '—') }}</td>
                             <td>{{ $order->planned_quantity }}</td>
                             <td>{{ ucfirst(str_replace('_', ' ', $order->status)) }}</td>
                             <td class="text-right">
@@ -98,7 +100,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-5">
+                            <td colspan="6" class="p-5">
                                 <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>

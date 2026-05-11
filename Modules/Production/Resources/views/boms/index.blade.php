@@ -37,6 +37,7 @@
                     <tr>
                         <th class="f-14 text-dark-grey">ID</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.fgProduct')</th>
+                        <th class="f-14 text-dark-grey">@lang('modules.invoices.unitType')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomVersion')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomCode')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomLines')</th>
@@ -49,6 +50,7 @@
                         <tr>
                             <td class="f-14">{{ $bom->id }}</td>
                             <td class="f-14">{{ $bom->outputProduct?->name ?? '—' }}</td>
+                            <td class="f-14 text-dark-grey">{{ $bomListFgUnitByProductId->get((string) $bom->output_product_id) ?? ($bomListFgUnitByProductId->get($bom->output_product_id) ?? '—') }}</td>
                             <td class="f-14">{{ $bom->version }}</td>
                             <td class="f-14">{{ $bom->code ?: '—' }}</td>
                             <td class="f-14">{{ (int) $bom->items_count }}</td>
@@ -61,7 +63,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="p-5">
+                            <td colspan="8" class="p-5">
                                 <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>

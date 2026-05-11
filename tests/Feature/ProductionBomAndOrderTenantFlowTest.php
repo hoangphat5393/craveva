@@ -171,10 +171,10 @@ function productionTenantFlowFixtures(): ?array
     }
 
     foreach ($permissionNames as $permissionName) {
-        Cache::forget('permission-'.$permissionName.'-'.$user->id);
+        Cache::forget('permission-' . $permissionName . '-' . $user->id);
     }
 
-    Cache::forget('user_modules_'.$user->id);
+    Cache::forget('user_modules_' . $user->id);
 
     return [
         'company' => $company,
@@ -193,7 +193,7 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         return;
     }
 
-    $version = 't-http-'.uniqid('', true);
+    $version = 't-http-' . uniqid('', true);
 
     $this->actingAs($fix['userAuth'], 'web')
         ->withSession([
@@ -255,4 +255,39 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
     expect($order)->not->toBeNull();
     expect((int) $order->output_product_id)->toBe((int) $fix['fg']->id);
     expect($order->status)->toBe(ProductionOrder::STATUS_DRAFT);
+
+    $session = [
+        'company' => $fix['company'],
+        'multi_company_selected' => 1,
+        'user_company_count' => 1,
+    ];
+
+    $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->get(route('production.orders.index'))
+        ->assertSuccessful()
+        ->assertSee(__('modules.invoices.unitType'), false);
+
+    $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->get(route('production.orders.show', $order))
+        ->assertSuccessful()
+        ->assertSee(__('modules.invoices.unitType'), false);
+});
+
+it('lists BOM index with unit type column for finished good', function (): void {
+    $fix = productionTenantFlowFixtures();
+    if ($fix === null) {
+        return;
+    }
+
+    $this->actingAs($fix['userAuth'], 'web')
+        ->withSession([
+            'company' => $fix['company'],
+            'multi_company_selected' => 1,
+            'user_company_count' => 1,
+        ])
+        ->get(route('production.boms.index'))
+        ->assertSuccessful()
+        ->assertSee(__('modules.invoices.unitType'), false);
 });

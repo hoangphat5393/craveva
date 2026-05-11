@@ -16,6 +16,7 @@ use Modules\Production\Http\Concerns\HandlesProductionErrors;
 use Modules\Production\Http\Requests\StoreProductionOrderRequest;
 use Modules\Production\Http\Requests\UpdateProductionOrderRequest;
 use Modules\Production\Services\ProductionPostingService;
+use Modules\Production\Support\ProductionProductUnitLabelMap;
 use Modules\Production\Support\ProductionTenantAccess;
 use Modules\Warehouse\Entities\Warehouse;
 
@@ -40,13 +41,27 @@ class ProductionOrderController extends AccountBaseController
 
         $this->pageTitle = __('production::app.menuProductionOrders');
 
-        $query = ProductionOrder::query()->orderByDesc('id');
+        $companyId = (int) company()->id;
+
+        $query = ProductionOrder::query()
+            ->with(['outputProduct'])
+            ->orderByDesc('id');
 
         if ($request->filled('status')) {
             $query->where('status', $request->string('status'));
         }
 
         $this->orders = $query->paginate(25)->withQueryString();
+
+        $pageOutputProducts = $this->orders->getCollection()
+            ->map(static fn(ProductionOrder $order): ?Product => $order->outputProduct)
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        $this->orderListFgUnitByProductId = $pageOutputProducts->isEmpty()
+            ? collect()
+            : ProductionProductUnitLabelMap::forProducts($pageOutputProducts, $companyId);
 
         return view('production::orders.index', $this->data);
     }
@@ -91,6 +106,11 @@ class ProductionOrderController extends AccountBaseController
             'bomSnapshotItems.componentProduct',
         ]);
         $this->order = $order;
+
+        $fgUnitMap = $order->outputProduct !== null
+            ? ProductionProductUnitLabelMap::forProducts(collect([$order->outputProduct]), (int) company()->id)
+            : collect();
+        $this->orderFgUnitType = (string) ($fgUnitMap->get((string) $order->output_product_id) ?? $fgUnitMap->get($order->output_product_id) ?? '—');
 
         return view('production::orders.show', $this->data);
     }

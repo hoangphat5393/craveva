@@ -12,6 +12,7 @@ use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionBomItem;
 use Modules\Production\Http\Requests\StoreProductionBomRequest;
 use Modules\Production\Http\Requests\UpdateProductionBomRequest;
+use Modules\Production\Support\ProductionProductUnitLabelMap;
 use Modules\Production\Support\ProductionTenantAccess;
 
 class ProductionBomController extends AccountBaseController
@@ -44,6 +45,17 @@ class ProductionBomController extends AccountBaseController
         }
 
         $this->boms = $query->paginate(25)->withQueryString();
+
+        $pageOutputProducts = $this->boms->getCollection()
+            ->map(static fn(ProductionBom $bom): ?Product => $bom->outputProduct)
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        $this->bomListFgUnitByProductId = $pageOutputProducts->isEmpty()
+            ? collect()
+            : ProductionProductUnitLabelMap::forProducts($pageOutputProducts, $companyId);
+
         $this->finishedGoodsFilter = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->where('type', 'goods')
@@ -240,13 +252,18 @@ class ProductionBomController extends AccountBaseController
         $this->finishedGoods = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->where('type', 'goods')
+            ->with('unit:id,unit_type')
             ->orderBy('name')
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'unit_id']);
 
         $this->componentProducts = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->where('type', 'goods')
+            ->with('unit:id,unit_type')
             ->orderBy('name')
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'unit_id']);
+
+        $this->bomFgUnitByProductId = ProductionProductUnitLabelMap::forProducts($this->finishedGoods, $companyId);
+        $this->bomComponentUnitByProductId = ProductionProductUnitLabelMap::forProducts($this->componentProducts, $companyId);
     }
 }

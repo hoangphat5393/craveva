@@ -44,6 +44,8 @@
                 <div class="col-md-6 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.fgProduct')</span>
                     <span class="font-weight-normal">{{ $order->outputProduct?->name ?? '—' }}</span>
+                    <span class="text-dark-grey d-block mb-1 mt-2">@lang('modules.invoices.unitType')</span>
+                    <span class="font-weight-normal">{{ $orderFgUnitType ?? '—' }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.plannedQty')</span>

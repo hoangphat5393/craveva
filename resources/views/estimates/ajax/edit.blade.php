@@ -234,7 +234,7 @@
                                             <input type="text" class="f-14 border-0 w-100 item_name form-control" name="item_name[]" placeholder="@lang('modules.expenses.itemName')" value="{{ $item->item_name }}">
                                         </td>
                                         <td class="border-bottom-0 d-block d-lg-none d-md-none">
-                                            <textarea class="f-14 border-0 w-100 mobile-description form-control" placeholder="@lang('placeholders.invoices.description')" name="item_summary[]">{{ $item->item_summary }}</textarea>
+                                            <textarea rows="4" class="f-14 border-0 w-100 mobile-description form-control" placeholder="@lang('placeholders.invoices.description')" name="item_summary[]">{{ $item->item_summary }}</textarea>
                                         </td>
                                         @if ($invoiceSetting->hsn_sac_code_show)
                                             <td class="border-bottom-0">
@@ -277,7 +277,7 @@
                                     </tr>
                                     <tr class="d-none d-md-block d-lg-table-row">
                                         <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? 4 : 3 }}" class="dash-border-top bblr">
-                                            <textarea class="f-14 border-0 w-100 desktop-description form-control" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')">{{ $item->item_summary }}</textarea>
+                                            <textarea rows="4" class="f-14 border-0 w-100 desktop-description form-control" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')">{{ $item->item_summary }}</textarea>
                                         </td>
                                         <td class="border-left-0">
                                             <input type="file" class="dropify" name="invoice_item_image[]" data-allowed-file-extensions="png jpg jpeg bmp" data-messages-default="test" data-height="70" data-id="{{ $item->id }}" id="{{ $item->id }}" data-default-file="{{ $item->estimateItemImage ? $item->estimateItemImage->file_url : '' }}"
@@ -458,16 +458,7 @@
                         $('#project_id').selectpicker('refresh');
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 }).finally(function() {
                     $.easyUnblockUI('#saveInvoiceForm');
                 });
@@ -492,16 +483,7 @@
                         $('#add-products').selectpicker('refresh');
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 }).finally(function() {
                     $.easyUnblockUI('#saveInvoiceForm');
                 });
@@ -558,16 +540,7 @@
                                 element.resetPreview();
                             }
                         }).catch(function(err) {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({
-                                    icon: 'error',
-                                    text: err.message,
-                                    toast: true,
-                                    position: 'top-end',
-                                    timer: 4000,
-                                    showConfirmButton: false
-                                });
-                            }
+                            $.handleApiFormError(err);
                         }).finally(function() {
                             $.easyUnblockUI('#saveInvoiceForm');
                         });
@@ -655,16 +628,7 @@
                         });
                     });
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 }).finally(function() {
                     $.easyUnblockUI('#saveInvoiceForm');
                 });
@@ -700,7 +664,7 @@
                     `<input type="text" class="form-control f-14 border-0 w-100 item_name" name="item_name[]" placeholder="@lang('modules.expenses.itemName')">` +
                     '</td>' +
                     '<td class="border-bottom-0 d-block d-lg-none d-md-none">' +
-                    `<textarea class="f-14 border-0 w-100 mobile-description form-control" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')"></textarea>` +
+                    `<textarea rows="4" class="f-14 border-0 w-100 mobile-description form-control" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')"></textarea>` +
                     '</td>';
 
                 if (hsn_status == 1) {
@@ -740,7 +704,7 @@
                 '</tr>' +
                 '<tr class="d-none d-md-table-row d-lg-table-row">' +
                 '<td colspan="{{ $invoiceSetting->hsn_sac_code_show ? 4 : 3 }}" class="dash-border-top bblr">' +
-                '<textarea class="f-14 border-0 w-100 desktop-description form-control" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')"></textarea>' +
+                '<textarea rows="4" class="f-14 border-0 w-100 desktop-description form-control" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')"></textarea>' +
                 '</td>' +
                 '<td class="border-left-0">' +
                 '<input type="file" class="dropify" id="dropify' + i + '" name="invoice_item_image[]" data-allowed-file-extensions="png jpg jpeg bmp" data-messages-default="test" data-height="70" /><input type="hidden" name="invoice_item_image_url[]">' +
@@ -825,6 +789,10 @@
                 $saveBtn.prop('disabled', true);
                 $.easyBlockUI('#saveInvoiceForm');
                 window.apiHttp.postForm(updateUrl, saveFormEl).then(function(response) {
+                    if (response.status === 'success' && response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                        return;
+                    }
                     if (response.status === 'success' && response.redirectUrl) {
                         window.location.href = response.redirectUrl;
                         return;
@@ -841,16 +809,7 @@
                         });
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 }).finally(function() {
                     $saveBtn.prop('disabled', false);
                     $.easyUnblockUI('#saveInvoiceForm');

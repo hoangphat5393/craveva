@@ -20,7 +20,8 @@
 | 1    | Chọn **màn tham chiếu** gần nhất trong Hub (Orders = list + status inline; Products = filter + cột nhị phân; …).                          |
 | 2    | Copy cấu trúc Blade: `@extends`, `@section('filter-section')`, action bar, `x-datatable.actions`, `@push('scripts')` + `datatable_js`.    |
 | 3    | Cột **Action** (mục **4**); trạng thái: nếu có — pattern **mục 5** (nhị phân) hoặc **mục 6** (đa trạng thái + inline) và **bám map màu**. |
-| 4    | Sau khi code: chạy checklist **mục 10**.                                                                                                  |
+| 4    | Form create/edit: xử lý lỗi validation & redirect AJAX theo **mục 12** (tránh toast sai icon / thiếu field).                              |
+| 5    | Sau khi code: chạy checklist **mục 10**.                                                                                                  |
 
 ---
 
@@ -172,10 +173,13 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 
 ## 7. Textarea — mô tả dài (Description)
 
-| Ngữ cảnh                   | Quy ước                     | File                                                                                                                               |
-| -------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `<x-forms.textarea>`       | `rows="3"` mặc định         | `resources/views/components/forms/textarea.blade.php`                                                                              |
-| Product / Purchase Product | `rows="4"` + `form-control` | `resources/views/products/ajax/create.blade.php`, `edit.blade.php`; `Modules/Purchase/.../purchase-products/ajax/create.blade.php` |
+| Ngữ cảnh                   | Quy ước                                                                   | File                                                                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<x-forms.textarea>`       | **`rows="4"`** mặc định (plain textarea, không editor rich text)          | `resources/views/components/forms/textarea.blade.php`                                                                                      |
+| Product / Purchase Product | `rows="4"` + `form-control`                                               | `resources/views/products/ajax/create.blade.php`, `edit.blade.php`; `Modules/Purchase/.../purchase-products/ajax/create.blade.php`         |
+| Estimate / Quotation       | Plain `<textarea>` (line item summary, ghi chú, delivery): **`rows="4"`** | `resources/views/estimates/ajax/create.blade.php`, `edit.blade.php`; `resources/views/estimates/partials/quotation-extra-fields.blade.php` |
+
+- **Rich text (Quill, …):** không dùng `rows` — chiều cao do CSS / editor; ví dụ khối `#description` trên invoice/estimate.
 
 ---
 
@@ -189,6 +193,7 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 ## 9. Liên kết chéo (tránh nhầm file cũ)
 
 - `FUNC_LOGIC/DESIGN_FRONTEND_UI.md` §5 → trỏ tới **file này**.
+- Form validation AJAX (inline + toast + `Reply::redirect`): **mục §12**; rollout Client: `FUNC_LOGIC/CLIENT_INLINE_VALIDATION_ROLLOUT.md`.
 - Không dùng tên `FRONTEND_UI.md`, `HUB_BACKEND_UI_UX_DESIGN_SPEC_VI.md`, `HUB_FORM_UI_CONVENTIONS_VI.md` (đã đổi tên).
 
 ---
@@ -203,6 +208,7 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 - [ ] Textarea mô tả: `rows` theo §7.
 - [ ] DataTable: CSS/JS đủ; `rawColumns` đủ.
 - [ ] Quyền: không được sửa → chỉ đọc (nhánh tương tự Orders).
+- [ ] **Form create/edit (mục 12):** lỗi validation hiển thị rõ (field hoặc toast có nội dung từng rule); redirect sau `Reply::redirect` dùng đúng `action` + `url` (không chỉ `redirectUrl`).
 
 ---
 
@@ -227,4 +233,64 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 
 ---
 
-_Cập nhật: 2026-05-10 — §4 Action; §11 phụ lục Inventory/BOM (Stock Health không dot; BOM: unit trong label option, không cột Unit type)._
+## 12. Lỗi validation & phản hồi AJAX trên form create/edit
+
+Mục này ghi lại **cơ chế Hub hiện có** để làm tương tự cho view create/edit mới, và **so sánh** với luồng Estimate (đã chỉnh gần đây).
+
+### 12.1 Nguồn sự thật (backend)
+
+- **Rule:** `FormRequest` / `validate()` trong Controller.
+- **Câu chữ lỗi:** Laravel `lang/.../validation.php` + `messages()` / `attributes()` trong request; module có thể thêm file lang riêng (ví dụ Purchase).
+
+### 12.2 Hai nhánh hiển thị lỗi trên UI (frontend)
+
+| Nhánh                              | Công nghệ                                                                                                                  | Cách dùng điển hình                                                                                                                                                                                                                                                                                                                                      | File / ghi chú                                                                                                             |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **A — Legacy jQuery (theo field)** | **jQuery** + class **Bootstrap** (`.form-group`, `.has-error`, `.help-block`, đôi khi `.is-invalid` / `.invalid-feedback`) | `$.showErrors(errorsObject)` — tenant: bản ghi đè **`showErrorsLaravel.js`** (mục **§12.2.1**). **`$.easyAjax`**: `errorPosition: 'field'`.                                                                                                                                                                                                              | `vendor/helper/helper.js` + `resources/js/showErrorsLaravel.js`                                                            |
+| **B — Axios `window.apiHttp`**     | **Axios** (`resources/js/http/apiClient.js`): 422 / `status: fail` → `Error` có `err.errors`, `err.message`.               | **Toast:** **SweetAlert2** (`Swal.fire` toast). Ghép nhiều field: **`window.apiHttp.formatValidationErrors(err)`** (chuỗi các message nối bằng `·`). **Redirect thành công:** với `Reply::redirect` Laravel trả `action: 'redirect'` + **`url`** (không phải `redirectUrl`); JS phải kiểm **cả hai** (`url` và `redirectUrl`) trước khi `location.href`. | `resources/js/http/apiClient.js`; ví dụ đã chuẩn hóa: `resources/views/estimates/ajax/create.blade.php`, `edit.blade.php`. |
+
+**Không** dùng thư viện kiểu **jQuery Validation** / **Parsley** trong repo này cho các form Hub nói trên.
+
+### 12.2.1 Ghi đè `$.showErrors` (tenant app)
+
+- File **`resources/js/showErrorsLaravel.js`** được `require` từ **`resources/js/main.js`** — thứ tự load trang: `vendor/helper/helper.js` → **`js/main.js`** → nên **ghi đè** `$.showErrors` sau helper gốc.
+- Hành vi bổ sung:
+    - Chuỗi lỗi Laravel dạng **mảng** (`["…"]`) được **ghép** thành một dòng hiển thị.
+    - Nếu không có `.form-group` bao control (ví dụ chỉ có **`x-forms.input-group`**), lần lượt thử host: **`.input-group`** → **cột grid** (`.col-lg-*` / `.col-md-*` / `.col-12`) → **`parent()`**.
+    - **Không** tìm được control hoặc host → message đưa vào nhóm **orphan** → **một** `Swal` toast (các dòng nối bằng `·`). Trường hợp này dùng cho lỗi không khớp `name`/`id` trên DOM.
+- Component **`client-selection-dropdown`**: bọc label + `input-group` trong **`<div class="form-group my-3">`** để đồng bộ với các field Hub khác.
+
+### 12.3 Product (Add / Edit) — trạng thái thực tế trong code
+
+- **Lưu form:** `window.apiHttp.postForm` + `.catch` → thường chỉ **Swal** với `err.message` (toast tổng), trừ khi bổ sung `$.handleApiFormError(err)` như rollout Client.
+- **Upload ảnh (Dropzone):** trong Blade có đoạn **jQuery** tự chèn `.help-block` + `.has-error` / `.is-invalid` khi lỗi file — cùng **họ visual** với nhánh A.
+- **Khi cần lỗi theo field giống màn Client:** áp dụng cùng pattern `CLIENT_INLINE_VALIDATION_ROLLOUT.md` trong `.catch` của `postForm` / `post`.
+
+### 12.4 Estimate / Quotation (create / edit / list / show)
+
+- **`apiHttp`** + **`.catch` → `$.handleApiFormError(err)`** — lỗi validation hiển thị **inline theo field** (giống Client); không có `errors` thì helper **fallback** toast như trước.
+- **Redirect sau save:** nhận **`Reply::redirect`** → ưu tiên `response.action === 'redirect' && response.url`, fallback `redirectUrl` (create store từng trả `redirectUrl`).
+
+### 12.5 So sánh nhanh: Product vs Estimate — “cái nào tốt hơn?”
+
+| Tiêu chí                          | Product (save chính qua `apiHttp`, chưa gắn `handleApiFormError` mặc định)     | Estimate (đã `handleApiFormError` + redirect `url` trên save)                |
+| --------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **Tìm đúng ô sai**                | Yếu nếu chỉ toast một dòng chung                                               | **Inline** theo field khi API trả `errors`                                   |
+| **Đồng bộ theme (đỏ từng field)** | Sẵn class + helper `$.showErrors` / Dropzone đã làm kiểu đó cục bộ             | **Đã gắn** `handleApiFormError` trên create/edit/index/show                  |
+| **Redirect / success**            | Cần kiểm tra từng màn: chỗ nào backend `Reply::redirect` thì JS phải đọc `url` | Save/show đã đọc `action` + `url`; **list convert** vẫn có thể bổ sung `url` |
+
+**Kết luận thiết kế (khuyến nghị):**
+
+- **Tốt nhất cho UX form dài:** **nhánh A + B kết hợp** — sau `apiHttp` fail: gọi **`$.handleApiFormError(err)`** (inline field) và **tùy chọn** toast ngắn hoặc chỉ inline; thành công: **`action` + `url`** hoặc `redirectUrl` nhất quán.
+- **So “Product vs Estimate”:** không phải “module nào tốt hơn” mà là **layer nào đầy đủ hơn**. **Estimate** đã dùng **`handleApiFormError`** (inline) + **redirect JSON** đúng `url`. **Product** save chính vẫn có thể bổ sung cùng helper nếu muốn đồng bộ.
+
+### 12.6 Checklist khi copy form mới
+
+1. Submit qua **`window.apiHttp`** (hoặc thống nhất một lớp wrapper).
+2. `.catch`: ưu tiên **`$.handleApiFormError(err)`** (inline + fallback Swal); hoặc **`window.apiHttp.formatValidationErrors(err)`** chỉ khi **chỉ** cần toast một chuỗi (hiếm).
+3. `.then` success: nếu API có thể là `Reply::redirect` → xử lý **`url`** + **`redirectUrl`**; không dùng icon lỗi (`icon: 'error'`) khi `status === 'success'`.
+4. Không hard-code message tiếng Anh trong JS — lấy từ response / `trans` Blade nếu cần.
+
+---
+
+_Cập nhật: 2026-05-10 — §7 textarea `rows="4"` + Quill ngoại lệ; §12.2.1 `showErrorsLaravel.js` + orphan Swal; `client-selection-dropdown` bọc `form-group`._

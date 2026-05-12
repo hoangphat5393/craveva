@@ -27,13 +27,14 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 ### Package, module, đăng nhập
 
-| File                                                                                                         | Nội dung                                                                   |
-| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| [SUPERADMIN_PACKAGE_AUDIT_VI.md](SUPERADMIN_PACKAGE_AUDIT_VI.md)                                             | Super Admin **Packages**: JSON module, DataTable, đồng bộ company          |
-| [DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md](DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md)                                 | Developer Tools: gateway DB, quyền UI, AI/SQL, `developertools:audit`      |
-| [FLOW_Modules_Package_LanguagePack_CustomFields_VI.md](FLOW_Modules_Package_LanguagePack_CustomFields_VI.md) | **Gộp:** `packages:modules` (nwidart), LanguagePack, custom fields + audit |
-| [Libraries_And_Module_Names.md](Libraries_And_Module_Names.md)                                               | Composer / tên module trong app                                            |
-| [FLOW_USERS_CLIENT.md](FLOW_USERS_CLIENT.md)                                                                 | Đăng nhập (Fortify/session) + quan hệ users/client (có sequence)           |
+| File                                                                                                         | Nội dung                                                                    |
+| ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| [SUPERADMIN_PACKAGE_AUDIT_VI.md](SUPERADMIN_PACKAGE_AUDIT_VI.md)                                             | Super Admin **Packages**: JSON module, DataTable, đồng bộ company           |
+| [DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md](DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md)                                 | Developer Tools: gateway DB, quyền UI, AI/SQL, `developertools:audit`       |
+| [FLOW_Modules_Package_LanguagePack_CustomFields_VI.md](FLOW_Modules_Package_LanguagePack_CustomFields_VI.md) | **Gộp:** `packages:modules` (nwidart), LanguagePack, custom fields + audit  |
+| [AUDIT_WEBHOOKS_MODULE_VI.md](AUDIT_WEBHOOKS_MODULE_VI.md)                                                   | Module **Webhooks** (outbound ERP→URL ngoài): route, quyền, job, rủi ro TLS |
+| [Libraries_And_Module_Names.md](Libraries_And_Module_Names.md)                                               | Composer / tên module trong app                                             |
+| [FLOW_USERS_CLIENT.md](FLOW_USERS_CLIENT.md)                                                                 | Đăng nhập (Fortify/session) + quan hệ users/client (có sequence)            |
 
 ### Flow nghiệp vụ (FLOW\_\*)
 
@@ -52,7 +53,7 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 | File                                                                                                         | Nội dung                                                                                |
 | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
 | [WAREHOUSE_INDEX.md](WAREHOUSE_INDEX.md)                                                                     | **Mục lục Warehouse** (FLOW, UAT, audit, PM)                                            |
-| [SALES_FULFILLMENT_DOCS_INDEX.md](SALES_FULFILLMENT_DOCS_INDEX.md)                                           | **Mục lục canonical** Sales · Warehouse (đọc trước khi lần các doc phân tán)          |
+| [SALES_FULFILLMENT_DOCS_INDEX.md](SALES_FULFILLMENT_DOCS_INDEX.md)                                           | **Mục lục canonical** Sales · Warehouse (đọc trước khi lần các doc phân tán)            |
 | [UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)                                   | **UAT E2E** Mua · Bán · Kho (bản chuẩn)                                                 |
 | [ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md)           | **Master:** luồng bán, DROP legacy, audit gộp (§7); schema `grns`/`sales_dos` vs legacy |
 | [WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)           | **Biến `.env`** kho + PO/GRN/Sales DO/webhook AI (tham chiếu một chỗ)                   |

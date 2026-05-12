@@ -109,7 +109,7 @@ Mục tiêu là trả lời 3 câu hỏi:
     - Production Batch list (process-first).
 2. Dùng chung inventory backend ở Warehouse.
 3. Liên kết chéo 2 chiều bằng trace link:
-    - từ Production Batch -> Warehouse batches consumed/created
+    - từ Production Batch -> Stock batches consumed/created
     - từ Warehouse Batch -> source refs (GRN/DO/Production)
 
 ### 5.2 Quy định bắt buộc

@@ -81,7 +81,7 @@
                     </x-forms.link-secondary>
                 @endif
                 <x-forms.link-secondary :link="route('warehouse.product-batches.index')" class="mr-3 float-left" icon="tags">
-                    @lang('warehouse::app.warehouseBatchInventory')
+                    @lang('warehouse::app.stockBatches')
                 </x-forms.link-secondary>
             </div>
         </div>

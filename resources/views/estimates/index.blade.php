@@ -266,16 +266,7 @@
                             window.LaravelDataTables["invoices-table"].draw(true);
                         }
                     }).catch(function(err) {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                text: err.message,
-                                toast: true,
-                                position: 'top-end',
-                                timer: 4000,
-                                showConfirmButton: false
-                            });
-                        }
+                        $.handleApiFormError(err);
                     }).finally(function() {
                         $.easyUnblockUI('#invoices-table');
                     });
@@ -315,16 +306,7 @@
                             showTable();
                         }
                     }).catch(function(err) {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                text: err.message,
-                                toast: true,
-                                position: 'top-end',
-                                timer: 4000,
-                                showConfirmButton: false
-                            });
-                        }
+                        $.handleApiFormError(err);
                     }).finally(function() {
                         $.easyUnblockUI('#invoices-table');
                     });
@@ -348,16 +330,7 @@
                     resetActionButtons();
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             }).finally(function() {
                 $qaBtn.prop('disabled', false);
                 $.easyUnblockUI('.content-wrapper');
@@ -379,16 +352,7 @@
                     window.LaravelDataTables["invoices-table"].draw(true);
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             }).finally(function() {
                 $.easyUnblockUI('#invoices-table');
             });
@@ -418,6 +382,10 @@
                     window.apiHttp.postUrlEncoded(url, {
                         _token: "{{ csrf_token() }}"
                     }).then(function(response) {
+                        if (response.status == "success" && response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                            return;
+                        }
                         if (response.status == "success") {
                             if (response.redirectUrl) {
                                 window.location.href = response.redirectUrl;
@@ -426,16 +394,7 @@
                             }
                         }
                     }).catch(function(err) {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                text: err.message,
-                                toast: true,
-                                position: 'top-end',
-                                timer: 4000,
-                                showConfirmButton: false
-                            });
-                        }
+                        $.handleApiFormError(err);
                     }).finally(function() {
                         $.easyUnblockUI('#invoices-table');
                     });

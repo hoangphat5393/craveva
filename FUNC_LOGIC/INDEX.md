@@ -40,6 +40,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/AUDIT_REPORTS_ERP_VI.md`
 - `FUNC_LOGIC/AUDIT_BILLING_MODULE_VI.md`
 - `FUNC_LOGIC/AUDIT_PERFORMANCE_MODULE_VI.md`
+- `FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md`
 - `FUNC_LOGIC/multi_warehouse_audit_report.md`
 
 ## Integration and Implementation Notes

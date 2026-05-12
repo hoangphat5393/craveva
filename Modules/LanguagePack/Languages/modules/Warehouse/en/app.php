@@ -85,4 +85,5 @@ return [
     'flow_mode_invoice' => 'Invoice',
     'flow_ai_webhook_check_stock' => 'AI order webhook: check sellable stock before creating order',
     'err_inbound_both_sources_true' => 'Only one inbound source can be enabled at a time (PO delivered or DO received).',
+    'stockBatches' => 'Stock batches',
 ];

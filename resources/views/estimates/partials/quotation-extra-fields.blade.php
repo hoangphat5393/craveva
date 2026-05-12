@@ -47,7 +47,7 @@
 <div class="col-md-12">
     <div class="form-group mb-4">
         <x-forms.label fieldId="delivery_note" :fieldLabel="__('modules.estimates.deliveryNote')" />
-        <textarea name="delivery_note" id="delivery_note" rows="2" class="form-control f-14">{{ $e?->delivery_note ?? '' }}</textarea>
+        <textarea name="delivery_note" id="delivery_note" rows="4" class="form-control f-14">{{ $e?->delivery_note ?? '' }}</textarea>
     </div>
 </div>
 <div class="col-md-6 col-lg-4">

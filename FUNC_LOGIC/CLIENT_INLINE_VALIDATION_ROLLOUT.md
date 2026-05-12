@@ -16,6 +16,7 @@ Da tao helper global trong `public/vendor/helper/helper.js`:
 
 - `$.extractApiValidationErrors(err)`
 - `$.handleApiFormError(err, options)`
+- **Tenant:** `$.showErrors` được ghi đè bởi `resources/js/showErrorsLaravel.js` (qua `main.js`) — flatten mảng Laravel, host `.input-group` / cột grid, **Swal** cho lỗi không map được field (xem `FUNC_LOGIC/DESIGN_BACKEND_UI_UX_DESIGN_SPEC_VI.md` §12.2.1).
 
 Trong `.catch(function(err) { ... })` chi can:
 
@@ -90,6 +91,16 @@ Cap nhat:
 - `resources/views/clients/notes/index.blade.php`
 - `resources/views/clients/contacts/show.blade.php`
 - `resources/views/clients/gdpr/consent-form.blade.php`
+
+## Files da cap nhat (Phase — Estimates / Quotations)
+
+- `resources/views/estimates/ajax/create.blade.php` — save + change client / product category / add line item: `$.handleApiFormError(err)`.
+- `resources/views/estimates/ajax/edit.blade.php` — tuong tuc.
+- `resources/views/estimates/ajax/show.blade.php` — change status, decline, accept signature, send, delete, v.v.
+- `resources/views/estimates/index.blade.php` — quick action, send, delete, change status, convert.
+- `resources/views/estimates/ajax/import.blade.php` — da co tu truoc.
+
+**Test (hop dong JSON validation cho UI):** `tests/Feature/EstimateStoreValidationJsonTest.php` — `postJson` thieu `client_id` → `422` + `errors.client_id`.
 
 ## Ket qua sau Phase 2
 

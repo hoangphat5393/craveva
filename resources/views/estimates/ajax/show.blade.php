@@ -697,16 +697,7 @@
                             window.location.reload();
                         }
                     }).catch(function(err) {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                text: err.message,
-                                toast: true,
-                                position: 'top-end',
-                                timer: 4000,
-                                showConfirmButton: false
-                            });
-                        }
+                        $.handleApiFormError(err);
                     }).finally(function() {
                         $.easyUnblockUI('.content-wrapper');
                     });
@@ -748,14 +739,7 @@
                         window.location.reload();
                     }
                 }).catch(function(err) {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message || 'Unable to update president review',
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
+                    $.handleApiFormError(err);
                 }).finally(function() {
                     $.easyUnblockUI('.content-wrapper');
                 });
@@ -796,14 +780,7 @@
                         window.location.reload();
                     }
                 }).catch(function(err) {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message || 'Unable to update VP pricing review',
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
+                    $.handleApiFormError(err);
                 }).finally(function() {
                     $.easyUnblockUI('.content-wrapper');
                 });
@@ -835,18 +812,15 @@
                 window.apiHttp.postUrlEncoded(url, {
                     _token: '{{ csrf_token() }}'
                 }).then(function(response) {
+                    if (response.status === 'success' && response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                        return;
+                    }
                     if (response.status === 'success' && response.redirectUrl) {
                         window.location.href = response.redirectUrl;
                     }
                 }).catch(function(err) {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message || 'Unable to convert estimate',
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
+                    $.handleApiFormError(err);
                 }).finally(function() {
                     $.easyUnblockUI('.content-wrapper');
                 });
@@ -862,16 +836,7 @@
                     window.location.reload();
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             }).finally(function() {
                 $.easyUnblockUI('.content-wrapper');
             });
@@ -933,22 +898,19 @@
             $sigBtn.prop('disabled', true);
             $.easyBlockUI('#acceptEstimate');
             window.apiHttp.postForm("{{ route('estimates.accept', $invoice->id) }}", acceptFd).then(function(response) {
+                if (response.status == 'success' && response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                    return;
+                }
                 if (response.status == 'success' && response.redirectUrl) {
                     window.location.href = response.redirectUrl;
-                } else if (response.status == 'success') {
+                    return;
+                }
+                if (response.status == 'success') {
                     window.location.reload();
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             }).finally(function() {
                 $sigBtn.prop('disabled', false);
                 $.easyUnblockUI('#acceptEstimate');
@@ -970,16 +932,7 @@
                     window.LaravelDataTables["invoices-table"].draw(true);
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             }).finally(function() {
                 $.easyUnblockUI('#invoices-table');
             });
@@ -1039,16 +992,7 @@
                             window.location.href = "{{ route('estimates.index') }}";
                         }
                     }).catch(function(err) {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                text: err.message,
-                                toast: true,
-                                position: 'top-end',
-                                timer: 4000,
-                                showConfirmButton: false
-                            });
-                        }
+                        $.handleApiFormError(err);
                     }).finally(function() {
                         $.easyUnblockUI('.content-wrapper');
                     });

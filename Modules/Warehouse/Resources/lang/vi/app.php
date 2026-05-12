@@ -86,7 +86,7 @@ return [
     'flow_mode_invoice' => 'Theo hóa đơn',
     'flow_ai_webhook_check_stock' => 'Webhook đơn AI: kiểm tra tồn bán được trước khi tạo đơn',
     'err_inbound_both_sources_true' => 'Chỉ được bật một nguồn nhập (PO delivered hoặc DO received), không bật cả hai.',
-    'warehouseBatchInventory' => 'Lô tồn kho (theo dòng batch)',
+    'stockBatches' => 'Tồn theo lô',
     'warehouseBatchDetail' => 'Chi tiết lô kho',
     'backToWarehouseStock' => 'Quay lại tồn (snapshot)',
     'backToBatchList' => 'Quay lại danh sách lô',

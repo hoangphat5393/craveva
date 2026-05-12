@@ -1,4 +1,5 @@
 require('./http/apiClient');
+require('./showErrorsLaravel');
 
 /*******************************************************
                 Accordion Sidebar Menu Start

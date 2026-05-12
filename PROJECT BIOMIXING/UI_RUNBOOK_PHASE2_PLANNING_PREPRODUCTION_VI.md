@@ -18,12 +18,12 @@
 | Bước sơ đồ                   | Ý nghiệp vụ                     | Gợi ý menu / khu vực trên Hub                                                                                                                                                                                       |
 | ---------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Create Production Project    | Gom việc xưởng theo đơn / khách | **Work Management** → **Projects** — tạo project mới, gán khách hàng & thông tin đơn hàng; có thể **liên kết project** với đơn hàng (trường project trên order — xem chỉnh sửa order hoặc tạo order đã gắn project) |
-| AI: Check BOM & Stock        | Đối chiếu công thức & tồn       | **AI Workspace** (nếu bật) + **Products** / **Inventory** / **Warehouses** / **Warehouse batches** — đối chiếu thủ công hoặc qua công cụ đã triển khai                                                              |
+| AI: Check BOM & Stock        | Đối chiếu công thức & tồn       | **AI Workspace** (nếu bật) + **Products** / **Inventory** / **Warehouses** / **Stock batches** — đối chiếu thủ công hoặc qua công cụ đã triển khai                                                                  |
 | Stock sufficient?            | Quyết định mua hay không        | **Inventory** / báo cáo tồn theo kho & lô (tenant đã bật module Warehouse)                                                                                                                                          |
 | Purchase missing ingredients | Mua nguyên liệu                 | **Operations** → **Purchase Order** → xử lý duyệt PO theo quy trình công ty                                                                                                                                         |
 | Receive raw materials        | Nhập kho RM                     | **Goods Received Note** (GRN) / luồng nhận hàng gắn PO trong **Purchase**                                                                                                                                           |
 | Generate tasks               | Chia nhỏ công việc xưởng        | Vào **Project** đã tạo → **Tasks** — thêm task (cân, trộn, in nhãn, v.v.) hoặc dùng template task nếu công ty cấu hình                                                                                              |
-| Print labels & batch #       | Chuẩn bị nhãn lô                | Thực hiện qua task + quy trình xưởng; dữ liệu lô có thể tham chiếu **Warehouse batches** / quy trình in của tenant                                                                                                  |
+| Print labels & batch #       | Chuẩn bị nhãn lô                | Thực hiện qua task + quy trình xưởng; dữ liệu lô có thể tham chiếu **Stock batches** / quy trình in của tenant                                                                                                      |
 
 ---
 
@@ -46,7 +46,7 @@
 ### 3.3 Kiểm tồn & BOM (thủ công / bán tự động)
 
 1. **Products**: xác định SKU / FG liên quan đơn.
-2. **Inventory** / **Warehouses** / **Warehouse batches (inventory)**: xem số lượng khả dụng theo kho, theo lô (nếu dùng batch).
+2. **Inventory** / **Warehouses** / **Stock batches**: xem số lượng khả dụng theo kho, theo lô (nếu dùng batch).
 3. Nếu thiếu: ghi nhận trong task project hoặc tạo **Purchase Order** cho nguyên liệu.
 
 ### 3.4 Mua và nhận hàng (khi tồn không đủ)
@@ -58,7 +58,7 @@
 ### 3.5 Chuẩn bị nhãn & số lô
 
 1. Giao task cho xưởng/QA: nội dung task mô tả **batch number**, quy tắc in nhãn, HSD (nếu có).
-2. Dữ liệu lô trên hệ thống: cập nhật theo policy tại **Warehouse batches** / nhập kho — chi tiết kỹ thuật xem runbook kho trong repo nếu cần.
+2. Dữ liệu lô trên hệ thống: cập nhật theo policy tại **Stock batches** / nhập kho — chi tiết kỹ thuật xem runbook kho trong repo nếu cần.
 
 ### 3.6 AI hỗ trợ BOM & stock
 
@@ -81,14 +81,14 @@ Khi các tính năng này go-live, bổ sung mục vào runbook này hoặc tác
 
 ## 5. Checklist nhanh (sau SO)
 
-| #   | Việc cần làm                                 | Ghi chú                       |
-| --- | -------------------------------------------- | ----------------------------- |
-| 1   | Mở Sale Order, đối chiếu khách & dòng hàng   | `/account/orders/{id}`        |
-| 2   | Tạo / gán **Project**                        | Work Management → Projects    |
-| 3   | Kiểm **tồn & lô**                            | Inventory / Warehouse batches |
-| 4   | Nếu thiếu: **PO** → **GRN**                  | Operations → Purchase         |
-| 5   | Tạo **Tasks** (BOM, mua hàng, in nhãn lô, …) | Trong project                 |
-| 6   | (Tùy) AI Workspace                           | Hỗ trợ, không thay chứng từ   |
+| #   | Việc cần làm                                 | Ghi chú                     |
+| --- | -------------------------------------------- | --------------------------- |
+| 1   | Mở Sale Order, đối chiếu khách & dòng hàng   | `/account/orders/{id}`      |
+| 2   | Tạo / gán **Project**                        | Work Management → Projects  |
+| 3   | Kiểm **tồn & lô**                            | Inventory / Stock batches   |
+| 4   | Nếu thiếu: **PO** → **GRN**                  | Operations → Purchase       |
+| 5   | Tạo **Tasks** (BOM, mua hàng, in nhãn lô, …) | Trong project               |
+| 6   | (Tùy) AI Workspace                           | Hỗ trợ, không thay chứng từ |
 
 ---
 

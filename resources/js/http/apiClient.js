@@ -88,6 +88,34 @@ apiClient.interceptors.response.use(
     (error) => Promise.reject(normalizeApiError(error))
 );
 
+/**
+ * Flatten Laravel validation `errors` (and similar) for user-facing toasts.
+ * @param {import('axios').AxiosError & { errors?: Record<string, string|string[]>|null, message?: string }} err
+ * @returns {string}
+ */
+function formatValidationErrors(err) {
+    if (!err || !err.errors || typeof err.errors !== 'object') {
+        return err && err.message ? String(err.message) : 'Request failed';
+    }
+    const parts = [];
+    Object.keys(err.errors).forEach((key) => {
+        const val = err.errors[key];
+        if (Array.isArray(val)) {
+            val.forEach((msg) => {
+                if (msg) {
+                    parts.push(String(msg));
+                }
+            });
+        } else if (val) {
+            parts.push(String(val));
+        }
+    });
+    if (parts.length === 0) {
+        return err.message ? String(err.message) : 'Validation failed';
+    }
+    return parts.join(' · ');
+}
+
 function unwrapData(promise) {
     return promise.then((response) => response.data);
 }
@@ -174,6 +202,7 @@ const apiHttp = {
     postForm,
     postUrlEncoded,
     normalizeApiError,
+    formatValidationErrors,
     csrfToken,
 };
 

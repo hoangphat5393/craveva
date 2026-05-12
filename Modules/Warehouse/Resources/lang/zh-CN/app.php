@@ -86,4 +86,5 @@ return [
     'err_missing_unit_conversion' => '缺少产品 :product_id、单位 :unit_id 的换算。',
     'err_insufficient_stock' => '库存不足：可用 :available，请求 :requested。',
     'err_ai_order_insufficient_sellable' => '产品 :product_id 可售库存不足（需要 :needed，可售 :sellable）。',
+    'stockBatches' => '批次库存',
 ];

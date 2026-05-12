@@ -62,10 +62,10 @@ class WarehouseProductBatchController extends AccountBaseController
             ->when($search, function ($query) use ($search) {
                 return $query->where(function ($q) use ($search): void {
                     $q->whereHas('product', function ($pq) use ($search): void {
-                        $pq->where('name', 'like', '%'.$search.'%')
-                            ->orWhere('sku', 'like', '%'.$search.'%');
+                        $pq->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('sku', 'like', '%' . $search . '%');
                     })
-                        ->orWhere('batch_number', 'like', '%'.$search.'%');
+                        ->orWhere('batch_number', 'like', '%' . $search . '%');
                     if (is_numeric($search)) {
                         $q->orWhere('warehouse_product_batches.id', (int) $search);
                     }
@@ -74,7 +74,7 @@ class WarehouseProductBatchController extends AccountBaseController
             ->orderByDesc('id')
             ->paginate($perPage);
 
-        $this->pageTitle = 'warehouse::app.warehouseBatchInventory';
+        $this->pageTitle = 'warehouse::app.stockBatches';
         $this->pageIcon = 'ti-layout';
         $this->batches = $batches;
         $this->warehouses = $warehouses;

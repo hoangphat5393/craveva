@@ -47,6 +47,10 @@
             <x-setting-menu-item :active="$activeMenu" menu="invoice_settings" :href="route('invoice-settings.index')" :text="__('app.menu.financeSettings')" />
         @endif
 
+        @if (user()->permission('manage_finance_setting') == 'all' && in_array('orders', user_modules()))
+            <x-setting-menu-item :active="$activeMenu" menu="sales_order_settings" :href="route('sales-order-settings.index')" :text="__('app.menu.saleOrderSettings')" />
+        @endif
+
 
         @if (user()->permission('manage_contract_setting') == 'all' && in_array('contracts', user_modules()))
             <x-setting-menu-item :active="$activeMenu" menu="contract_settings" :href="route('contract-settings.index')" :text="__('app.menu.contractSettings')" />

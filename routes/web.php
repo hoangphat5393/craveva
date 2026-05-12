@@ -78,6 +78,7 @@ use App\Http\Controllers\QuickbookController;
 use App\Http\Controllers\RecurringEventController;
 use App\Http\Controllers\RecurringTaskController;
 use App\Http\Controllers\SalesHistoryController;
+use App\Http\Controllers\SalesOrderSettingsController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingsController;
@@ -495,6 +496,7 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
 
     /* Orders */
     Route::resource('orders', OrderController::class);
+    Route::get('sales-order-settings', [SalesOrderSettingsController::class, 'index'])->name('sales-order-settings.index');
 
     /* NOTICE */
     Route::post('notices/apply-quick-action', [NoticeController::class, 'applyQuickAction'])->name('notices.apply_quick_action');

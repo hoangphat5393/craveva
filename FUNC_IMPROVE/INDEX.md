@@ -33,6 +33,11 @@ Các file **`BIOMIXING_*`**, **`AUDIT_PROJECT_BIOMIXING_*`** (12 file) nằm **c
 - `FUNC_IMPROVE/09_ORDER_HISTORY_IMPROVE_PLAN.md`
 - `FUNC_IMPROVE/10_UX_UI_IMPROVEMENT_BACKLOG.md`
 - `FUNC_IMPROVE/11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` — phân tích shadow/Yield/UOM; **chỉ bật sau khi được xác nhận** (xem mục governance trong file).
+- `FUNC_IMPROVE/12_AI_THIRDPARTY_SALES_ORDER_INTEGRATION_OPTIONS_VI.md` — AI / third-party tạo SO: webhook vs API, phương án thay thế, trạng thái code hiện tại
+- `FUNC_IMPROVE/13_SALE_ORDER_AI_INTEGRATION_ROLLOUT_PROMPT_VI.md` — Kiểm tra repo: không có REST SO ngoài `ai-order-webhook`; prompt Cursor triển khai Sale order settings + tab **API** (hướng dẫn tích hợp)
+- `FUNC_IMPROVE/14_SALE_ORDER_AI_WEBHOOK_ROLLOUT_PLAN_VI.md` — **Kế hoạch triển khai + checklist** theo dõi tiến độ AI → ERP (webhook SO)
+- `FUNC_IMPROVE/15_SALE_ORDER_AI_SETTINGS_GUIDE_AND_RINGFENCE_PROMPT_VI.md` — **Prompt Cursor** hoàn thiện hướng dẫn tab API (đồng bộ PM_READY) + ringfence theo công ty (Tier A UX / Tier B token)
+- `FUNC_LOGIC/SURVEY_SYSTEM_WIDE_API_AND_REST_VI.md` — khảo sát API `/api` toàn repo & REST (tham chiếu chéo)
 
 ## Maintenance Notes
 

@@ -41,6 +41,8 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/AUDIT_BILLING_MODULE_VI.md`
 - `FUNC_LOGIC/AUDIT_PERFORMANCE_MODULE_VI.md`
 - `FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md`
+- `FUNC_LOGIC/AUDIT_AI_ORDER_INBOUND_SO_API_VI.md` — inbound AI → Sales Order (`ai-order-webhook`): chuẩn de facto, auth, gap OpenAPI/rate limit
+- `FUNC_LOGIC/SURVEY_SYSTEM_WIDE_API_AND_REST_VI.md` — **khảo sát toàn repo** các route `/api` + mức độ REST; không có REST “toàn hệ thống”
 - `FUNC_LOGIC/multi_warehouse_audit_report.md`
 
 ## Integration and Implementation Notes

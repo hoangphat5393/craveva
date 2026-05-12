@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Company;
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
+use Nwidart\Modules\Facades\Module;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         if (app()->environment(['development', 'local', 'craveva'])) {
-            $ideHelperProvider = \Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class;
+            $ideHelperProvider = IdeHelperServiceProvider::class;
 
             if (class_exists($ideHelperProvider)) {
                 $this->app->register($ideHelperProvider);
@@ -53,6 +55,17 @@ class AppServiceProvider extends ServiceProvider
             return CarbonInterval::minutes($totalMinutes)->cascade()->forHumans(['short' => true, 'options' => 0]);
             /** @phpstan-ignore-line */
         });
+
+        /*
+         * Merge LanguagePack source translations so new keys work before/without
+         * `php artisan languagepack:publish-translation` (published `resources/lang` can be stale).
+         */
+        if (Module::has('LanguagePack')) {
+            $languagePackAppPath = module_path('LanguagePack', 'Languages/app');
+            if (is_dir($languagePackAppPath)) {
+                $this->loadTranslationsFrom($languagePackAppPath);
+            }
+        }
 
         //    Model::preventLazyLoading(app()->environment('development'));
 

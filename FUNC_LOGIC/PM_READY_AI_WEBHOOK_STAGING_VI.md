@@ -130,6 +130,8 @@ curl -X POST "https://staging.craveva.com/ai-order-webhook/stg-ai-order-20260329
 - Tách mapping `line_user_id -> client_id` tự động (không gửi `client_id` thủ công).
 - Nâng cấp chữ ký HMAC chuẩn thay vì shared secret đơn.
 
+**Prompt triển khai UI + ringfence theo company (Cursor):** [`../FUNC_IMPROVE/15_SALE_ORDER_AI_SETTINGS_GUIDE_AND_RINGFENCE_PROMPT_VI.md`](../FUNC_IMPROVE/15_SALE_ORDER_AI_SETTINGS_GUIDE_AND_RINGFENCE_PROMPT_VI.md).
+
 Dữ liệu mãu
 
 curl -X POST "https://staging.craveva.com/ai-order-webhook/stg-ai-order-20260329-9fA2mK" \

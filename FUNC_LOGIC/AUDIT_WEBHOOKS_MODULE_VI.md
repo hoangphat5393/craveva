@@ -1,7 +1,7 @@
 # Audit module Webhooks (`Modules/Webhooks`)
 
 **Phạm vi:** `Modules/Webhooks/` — cấu hình đẩy sự kiện ra URL ngoài, UI quản lý, log, observer, job queue.  
-**Không thuộc phạm vi:** webhook **inbound** tạo đơn AI (`app/Http/Controllers/Integrations/AiOrderWebhookController.php` — xem `PM_READY_AI_WEBHOOK_STAGING_VI.md`, `WH_PURCHASE_ENV_REFERENCE_VI.md`).  
+**Không thuộc phạm vi:** inbound tạo đơn AI (**`POST /api/integrations/orders`**, `AiIntegrationOrdersController` — xem `PM_READY_AI_WEBHOOK_STAGING_VI.md`, `WH_PURCHASE_ENV_REFERENCE_VI.md`, `docs/AI_ORDER_INTEGRATION_REST.md`).  
 **Ngày audit:** 2026-05-12
 
 ---
@@ -13,7 +13,7 @@
 | **Outbound** | **Đúng.** ERP đăng ký URL + method; khi model được tạo (`created`), hệ thống **gọi HTTP ra ngoài** (Guzzle) tới endpoint khách hàng (Zapier, n8n, hệ thống ngoài, …). |
 | **Inbound**  | **Không.** Module này **không** expose route public để bên ngoài POST vào ERP như một “receiver webhook”.                                                             |
 
-**Thuật ngữ thống nhất với tài liệu kho:** xem mục _Thuật ngữ Inbound/Outbound_ trong [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) — tóm tắt: AI → ERP (`/ai-order-webhook/...`) = inbound phía ERP; module Webhooks = outbound.
+**Thuật ngữ thống nhất với tài liệu kho:** xem mục _Thuật ngữ Inbound/Outbound_ trong [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) — tóm tắt: AI → ERP (**POST `/api/integrations/orders`**) = inbound phía ERP; module Webhooks = outbound.
 
 ---
 

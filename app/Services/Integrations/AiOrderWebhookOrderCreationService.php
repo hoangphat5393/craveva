@@ -11,7 +11,7 @@ use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 use Modules\Warehouse\Services\WarehouseAvailabilityService;
 use Modules\Warehouse\Services\WarehouseFlowConfigService;
 
-final class AiOrderWebhookOrderCreationService
+class AiOrderWebhookOrderCreationService
 {
     /**
      * @param  array<string, mixed>  $payload

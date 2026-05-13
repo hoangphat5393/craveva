@@ -2,7 +2,7 @@
 
 **Mục đích:** Gom quyết định kiến trúc (inbound webhook, REST API, queue, …) và trả lời: _có thể không dùng webhook mà dùng API để third-party AI gọi tạo SO không?_  
 **Phạm vi:** ERP Craveva (Laravel) — tạo `Order` / dòng `OrderItems`; không mô tả chi tiết payload (xem tài liệu webhook AI).  
-**Cập nhật:** 2026-05-12
+**Cập nhật:** 2026-05-13 (inbound REST; legacy webhook path đã gỡ)
 
 ---
 
@@ -19,25 +19,25 @@
 
 ## 2. Trạng thái hiện tại trong repo (rút gọn)
 
-| Cách                                                            | File / route gợi ý                                                                     | Ghi chú                                                                                                                                                                                                         |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **POST inbound (đang có, machine-friendly)**                    | `routes/web-public.php` → `POST ai-order-webhook/{hash}` → `AiOrderWebhookController`  | Secret URL + header; validation `StoreAiOrderWebhookRequest`; có thể kiểm sellable (Warehouse). Tài liệu: [`../FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md`](../FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md). Rollout/prompt (gộp): [`SO_AI_WEBHOOK_PROMPTS_VI.md`](SO_AI_WEBHOOK_PROMPTS_VI.md). |
-| **Tạo đơn qua UI / session**                                    | `routes/web.php` → `OrderController` (resource `orders` trong nhóm `account` + `auth`) | Form web, cookie session — **không** phù hợp làm contract chính cho AI third-party.                                                                                                                             |
-| **REST API `POST /api/.../orders` (Sanctum) dành riêng cho AI** | _Chưa thấy_ route tương đương trong `routes/api.php` cho tạo SO giống webhook          | **Có thể triển khai** — cần thiết kế token theo company, policy, rate limit, payload (có thể tái sử dụng logic/service từ `AiOrderWebhookController`).                                                          |
-| **Module Webhooks (`Modules/Webhooks`)**                        | Outbound                                                                               | **Không** thay thế nhu cầu “AI đẩy đơn vào ERP”. Audit: [`../FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md`](../FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md).                                                               |
+| Cách                                                            | File / route gợi ý                                                                       | Ghi chú                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **POST inbound (canonical, machine-friendly)**                  | `routes/api.php` → **`POST /api/integrations/orders`** → `AiIntegrationOrdersController` | Header secret (`X-AI-Webhook-Secret` / `Authorization: Bearer`); validation `StoreAiOrderWebhookRequest`; có thể kiểm sellable (Warehouse). Tài liệu: [`../docs/AI_ORDER_INTEGRATION_REST.md`](../docs/AI_ORDER_INTEGRATION_REST.md), [`../FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md`](../FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md). Rollout/prompt (gộp): [`SO_AI_WEBHOOK_PROMPTS_VI.md`](SO_AI_WEBHOOK_PROMPTS_VI.md). |
+| **Tạo đơn qua UI / session**                                    | `routes/web.php` → `OrderController` (resource `orders` trong nhóm `account` + `auth`)   | Form web, cookie session — **không** phù hợp làm contract chính cho AI third-party.                                                                                                                                                                                                                                                                                                                                             |
+| **REST mở rộng (Sanctum `api/v1/...` tài nguyên Order đầy đủ)** | _Tùy roadmap_                                                                            | Inbound hiện tại đã là REST tại `/api/integrations/orders`; mở rộng CRUD/versioning/OpenAPI là **hướng cải tiện** thêm.                                                                                                                                                                                                                                                                                                         |
+| **Module Webhooks (`Modules/Webhooks`)**                        | Outbound                                                                                 | **Không** thay thế nhu cầu “AI đẩy đơn vào ERP”. Audit: [`../FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md`](../FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md).                                                                                                                                                                                                                                                                               |
 
-Biến môi trường liên quan webhook AI: [`../FUNC_LOGIC/WH_PURCHASE_ENV_REFERENCE_VI.md`](../FUNC_LOGIC/WH_PURCHASE_ENV_REFERENCE_VI.md).
+Biến môi trường liên quan inbound AI: [`../FUNC_LOGIC/WH_PURCHASE_ENV_REFERENCE_VI.md`](../FUNC_LOGIC/WH_PURCHASE_ENV_REFERENCE_VI.md). _(Legacy `POST /ai-order-webhook/{hash}` đã gỡ — xem [`../FUNC_LOGIC/AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`](../FUNC_LOGIC/AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md).)_
 
 ---
 
 ## 3. Câu trả lời trực tiếp: _Không dùng webhook, chỉ API — third-party AI có tạo được SO không?_
 
-**Có — về mặt kiến trúc hoàn toàn khả thi**, với hai ý:
+**Có — và đã có endpoint REST inbound:** **`POST /api/integrations/orders`** (middleware `ai.integration.*`, cùng payload/validation với trước). Secret **không** nằm trên path URL.
 
-1. **Hiện tại:** Đường **sẵn có** và ổn định cho máy gọi máy là **`POST /ai-order-webhook/{hash}`** (về kỹ thuật là HTTP API POST; có thể cấu hình trên `ai.craveva.com` như “API CRUD” / “writeback” miễn là trỏ đúng URL + auth).
-2. **Nếu muốn “đúng nghĩa REST API”** (ví dụ `Authorization: Bearer <token>`, prefix `api/v1`, không đặt secret trong path): **cần phát triển thêm** endpoint + phân quyền (Sanctum hoặc API key) — repo chưa thể hiện một endpoint API công khai tương đương chỉ cho tạo SO ngoài luồng trên.
+1. **Hiện tại:** Đường **sẵn có** cho máy gọi máy là REST ở trên (JSON + header Bearer hoặc `X-AI-Webhook-Secret`).
+2. **Nếu muốn “đúng nghĩa REST API” thêm** (ví dụ `api/v1` đầy đủ CRUD Order + OpenAPI): **có thể mở rộng** — tách khỏi integration hiện tại.
 
-**Kết luận cho PM/kiến trúc:** Third-party **được** gọi API để tạo SO; **không bắt buộc** gọi là “webhook” theo tên — quan trọng là **contract HTTP + auth + idempotency (nếu cần)**. Hiện tại “gói” sẵn nhất cho AI là endpoint `ai-order-webhook`; chuyển sang Bearer + `/api/v1/...` là **hướng cải tiện / chuẩn hóa**, không phải bật sẵn.
+**Kết luận cho PM/kiến trúc:** Third-party **được** gọi API để tạo SO; quan trọng là **contract HTTP + auth + idempotency (nếu cần)**. Tên “webhook” hay “API” không quyết định kỹ thuật — hiện contract chính là **`/api/integrations/orders`**.
 
 ---
 

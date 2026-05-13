@@ -2,7 +2,9 @@
 #
 # Mặc định: KHÔNG chạy git add/commit/push trên máy dev — chỉ SSH lên server → pull + migrate/optimize.
 #         (Code đã có trên origin do máy khác/CI push; hoặc bạn push tay trước đó.)
-# Nếu cần luồng “commit + push từ máy này rồi mới deploy”: chạy với -SkipLocalGit:$false
+# Nếu cần luồng “commit + push từ máy này rồi mới deploy”:
+#   .\scripts\upload_staging.ps1 -PushLocalFirst
+#   hoặc: .\scripts\upload_staging.ps1 -SkipLocalGit:$false
 #
 # Quyền trên server: thư mục .git thuộc user RemoteGitUser. Đăng nhập SSH bằng Admin rồi `git pull` trực tiếp
 # thường báo Permission denied trên .git/FETCH_HEAD — phải chạy git với đúng owner, ví dụ:
@@ -18,8 +20,14 @@ param(
     [string]$Branch = "main",
     [string]$GitHubToken = "", # Tùy chọn; nếu rỗng dùng env CRAVEVA_GITHUB_DEPLOY_TOKEN
     [string]$CommitMessage = "", # Khi bật push local: nếu rỗng và có commit — dùng message mặc định có timestamp
-    [bool]$SkipLocalGit = $true # $true (mặc định): bỏ qua add/commit/push local, chỉ SSH deploy. $false: push từ máy này trước.
+    [switch]$PushLocalFirst, # Bật: commit + push từ repo hiện tại lên origin rồi mới SSH deploy (tương đương -SkipLocalGit:$false)
+    [bool]$SkipLocalGit = $true # $true (mặc định): bỏ qua add/commit/push local, chỉ SSH deploy. $false hoặc -PushLocalFirst: push từ máy này trước.
 )
+
+# -PushLocalFirst tiện hơn -SkipLocalGit:$false (PowerShell switch)
+if ($PushLocalFirst) {
+    $SkipLocalGit = $false
+}
 
 $ErrorActionPreference = "Stop"
 $StagingHost = "craveva-staging" # Phải khớp Host trong ~/.ssh/config — user SSH thường là Admin (GCP), không phải hoangphat5393 (owner git trên disk).
@@ -55,6 +63,17 @@ if ($resolvedToken) {
 }
 
 Write-Host "Starting Git-based deploy on Staging..."
+
+if ($SkipLocalGit) {
+    Write-Host ""
+    Write-Host "  [Local git] SKIPPED (SkipLocalGit=true is the default)." -ForegroundColor Yellow
+    Write-Host "  Server will only git pull what is already on origin/$Branch — uncommitted work here is NOT deployed." -ForegroundColor Yellow
+    Write-Host "  To commit + push from this PC then deploy:  -PushLocalFirst   or   -SkipLocalGit:`$false" -ForegroundColor Yellow
+    Write-Host ""
+} else {
+    Write-Host "  [Local git] Will fetch/checkout $Branch, git add -A, commit (if needed), push — then remote deploy." -ForegroundColor Cyan
+    Write-Host ""
+}
 
 if (-not $SkipLocalGit) {
     $repoRoot = Split-Path -Parent $PSScriptRoot

@@ -8,19 +8,19 @@ Các tài liệu nội bộ cũ (audit trước nâng cấp, prompt UAT, §10–
 
 ## Đọc gì thay cho §10–11 và “trạng thái triển khai”
 
-| Chủ đề                                                           | File                                                                                                                                               |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chủ đề                                                           | File                                                                                                                                  |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **Trạng thái WUP-01…WUP-07**, runbook local, checklist UAT nhanh | [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](../FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE_VI.md) (mục §1 Runbook + §6 Trạng thái triển khai) |
-| **Mục lục** toàn bộ tài liệu Warehouse                           | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)                                                                                                         |
-| QA đối chiếu SO / PO / DO / Invoice / kho với code               | [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                                     |
-| Checklist UAT E2E (Mua · Bán · Kho)                              | [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)                                                                       |
+| **Mục lục** toàn bộ tài liệu Warehouse                           | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)                                                                                            |
+| QA đối chiếu SO / PO / DO / Invoice / kho với code               | [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                                                                        |
+| Checklist UAT E2E (Mua · Bán · Kho)                              | [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)                                                          |
 
 ---
 
 ## Khớp thiết kế WUP (tóm tắt)
 
 - **P0 (WUP-01…04):** đã có trong code (policy `warehouse_type`, `WarehouseAvailabilityService`, lifecycle reserve/outbound/release trên Sales DO, guard inbound/outbound canonical). Chi tiết và tiến độ: [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](../FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE_VI.md) §6.
-- **P1 nền:** WUP-06 (unit conversion + strict env), WUP-07 (idempotency + reconciliation command) **Done (nền)**; **WUP-05 Done (nền + webhook AI)** — API Sanctum + kiểm tra sellable trên `POST /ai-order-webhook/{hash}` (xem runbook §6).
+- **P1 nền:** WUP-06 (unit conversion + strict env), WUP-07 (idempotency + reconciliation command) **Done (nền)**; **WUP-05 Done (nền + inbound AI)** — kiểm tra sellable trên **`POST /api/integrations/orders`** (xem runbook §6).
 - **WUP-08 / WUP-09:** vẫn là backlog / giai đoạn sau trong cùng file runbook (báo cáo vận hành rộng, bin/location).
 
 ---

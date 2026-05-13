@@ -22,8 +22,8 @@ function aiWebhookCreateProductLine(Company $company): array
         test()->markTestSkipped('products table missing.');
     }
 
-    $name = 'AI Webhook Line ' . uniqid('', true);
-    $sku = 'WH-SKU-' . substr(str_replace('.', '', uniqid('', true)), 0, 12);
+    $name = 'AI Webhook Line '.uniqid('', true);
+    $sku = 'WH-SKU-'.substr(str_replace('.', '', uniqid('', true)), 0, 12);
 
     try {
         Product::withoutGlobalScopes()->forceCreate([
@@ -34,16 +34,16 @@ function aiWebhookCreateProductLine(Company $company): array
             'allow_purchase' => 1,
             'sku' => $sku,
         ]);
-    } catch (\Throwable $e) {
-        test()->markTestSkipped('Could not insert product fixture: ' . $e->getMessage());
+    } catch (Throwable $e) {
+        test()->markTestSkipped('Could not insert product fixture: '.$e->getMessage());
     }
 
     return ['name' => $name, 'sku' => $sku];
 }
 
-it('returns 422 when body company_id does not match company for per-company webhook secret', function (): void {
-    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
-        test()->markTestSkipped('companies.ai_order_webhook_secret column missing; run migrations.');
+it('returns 422 when body company_id does not match company for per-company REST secret', function (): void {
+    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret') || ! Schema::hasColumn('companies', 'ai_order_integration_allow_create')) {
+        test()->markTestSkipped('Required company integration columns missing; run migrations.');
 
         return;
     }
@@ -101,12 +101,15 @@ it('returns 422 when body company_id does not match company for per-company webh
 
     $secret = bin2hex(random_bytes(32));
 
-    Company::withoutGlobalScopes()->where('id', $companyA->id)->update(['ai_order_webhook_secret' => $secret]);
+    Company::withoutGlobalScopes()->where('id', $companyA->id)->update([
+        'ai_order_webhook_secret' => $secret,
+        'ai_order_integration_allow_create' => true,
+    ]);
 
-    $response = $this->postJson('/ai-order-webhook/' . $secret, [
+    $response = $this->postJson('/api/integrations/orders', [
         'company_id' => $companyB->id,
         'client_code' => $detailB->client_code,
-        'external_event_id' => 'mismatch-test-' . uniqid('', true),
+        'external_event_id' => 'mismatch-test-'.uniqid('', true),
         'items' => [
             [
                 'item_name' => $line['name'],
@@ -120,12 +123,12 @@ it('returns 422 when body company_id does not match company for per-company webh
     ]);
 
     $response->assertUnprocessable();
-    $response->assertJsonPath('message', 'company_id must match the company for this webhook secret.');
+    $response->assertJsonPath('message', 'company_id must match the company for this integration secret.');
 });
 
 it('returns 422 with guidance when client_code is unknown for the company', function (): void {
-    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
-        test()->markTestSkipped('companies.ai_order_webhook_secret column missing; run migrations.');
+    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret') || ! Schema::hasColumn('companies', 'ai_order_integration_allow_create')) {
+        test()->markTestSkipped('Required company integration columns missing; run migrations.');
 
         return;
     }
@@ -140,14 +143,17 @@ it('returns 422 with guidance when client_code is unknown for the company', func
     $line = aiWebhookCreateProductLine($company);
 
     $secret = bin2hex(random_bytes(32));
-    Company::withoutGlobalScopes()->where('id', $company->id)->update(['ai_order_webhook_secret' => $secret]);
+    Company::withoutGlobalScopes()->where('id', $company->id)->update([
+        'ai_order_webhook_secret' => $secret,
+        'ai_order_integration_allow_create' => true,
+    ]);
 
     App::setLocale('en');
 
-    $response = $this->postJson('/ai-order-webhook/' . $secret, [
+    $response = $this->postJson('/api/integrations/orders', [
         'company_id' => $company->id,
         'client_code' => '__NO_SUCH_CLIENT_CODE__',
-        'external_event_id' => 'client-invalid-' . uniqid('', true),
+        'external_event_id' => 'client-invalid-'.uniqid('', true),
         'items' => [
             [
                 'item_name' => $line['name'],
@@ -161,12 +167,12 @@ it('returns 422 with guidance when client_code is unknown for the company', func
     ]);
 
     $response->assertUnprocessable();
-    $response->assertJsonPath('errors.client_code.0', __('modules.orders.apiWebhookClientCodeInvalid'));
+    $response->assertJsonPath('error.details.client_code.0', __('modules.orders.apiWebhookClientCodeInvalid'));
 });
 
 it('accepts client_id only when user belongs to the same company', function (): void {
-    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
-        test()->markTestSkipped('companies.ai_order_webhook_secret column missing; run migrations.');
+    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret') || ! Schema::hasColumn('companies', 'ai_order_integration_allow_create')) {
+        test()->markTestSkipped('Required company integration columns missing; run migrations.');
 
         return;
     }
@@ -193,12 +199,15 @@ it('accepts client_id only when user belongs to the same company', function (): 
     $line = aiWebhookCreateProductLine($company);
 
     $secret = bin2hex(random_bytes(32));
-    Company::withoutGlobalScopes()->where('id', $company->id)->update(['ai_order_webhook_secret' => $secret]);
+    Company::withoutGlobalScopes()->where('id', $company->id)->update([
+        'ai_order_webhook_secret' => $secret,
+        'ai_order_integration_allow_create' => true,
+    ]);
 
-    $response = $this->postJson('/ai-order-webhook/' . $secret, [
+    $response = $this->postJson('/api/integrations/orders', [
         'company_id' => $company->id,
         'client_id' => $user->id,
-        'external_event_id' => 'client-id-only-' . uniqid('', true),
+        'external_event_id' => 'client-id-only-'.uniqid('', true),
         'check_stock' => false,
         'items' => [
             [
@@ -216,8 +225,8 @@ it('accepts client_id only when user belongs to the same company', function (): 
 });
 
 it('accepts client_code only and persists client_id on the order', function (): void {
-    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
-        test()->markTestSkipped('companies.ai_order_webhook_secret column missing; run migrations.');
+    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret') || ! Schema::hasColumn('companies', 'ai_order_integration_allow_create')) {
+        test()->markTestSkipped('Required company integration columns missing; run migrations.');
 
         return;
     }
@@ -262,11 +271,14 @@ it('accepts client_code only and persists client_id on the order', function (): 
     $line = aiWebhookCreateProductLine($company);
 
     $secret = bin2hex(random_bytes(32));
-    Company::withoutGlobalScopes()->where('id', $company->id)->update(['ai_order_webhook_secret' => $secret]);
+    Company::withoutGlobalScopes()->where('id', $company->id)->update([
+        'ai_order_webhook_secret' => $secret,
+        'ai_order_integration_allow_create' => true,
+    ]);
 
-    $externalEventId = 'client-code-only-' . uniqid('', true);
+    $externalEventId = 'client-code-only-'.uniqid('', true);
 
-    $response = $this->postJson('/ai-order-webhook/' . $secret, [
+    $response = $this->postJson('/api/integrations/orders', [
         'company_id' => $company->id,
         'client_code' => $detail->client_code,
         'external_event_id' => $externalEventId,
@@ -290,8 +302,8 @@ it('accepts client_code only and persists client_id on the order', function (): 
 });
 
 it('returns 422 when item_name and sku do not match any product', function (): void {
-    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
-        test()->markTestSkipped('companies.ai_order_webhook_secret column missing; run migrations.');
+    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret') || ! Schema::hasColumn('companies', 'ai_order_integration_allow_create')) {
+        test()->markTestSkipped('Required company integration columns missing; run migrations.');
 
         return;
     }
@@ -316,14 +328,17 @@ it('returns 422 when item_name and sku do not match any product', function (): v
     }
 
     $secret = bin2hex(random_bytes(32));
-    Company::withoutGlobalScopes()->where('id', $company->id)->update(['ai_order_webhook_secret' => $secret]);
+    Company::withoutGlobalScopes()->where('id', $company->id)->update([
+        'ai_order_webhook_secret' => $secret,
+        'ai_order_integration_allow_create' => true,
+    ]);
 
     App::setLocale('en');
 
-    $response = $this->postJson('/ai-order-webhook/' . $secret, [
+    $response = $this->postJson('/api/integrations/orders', [
         'company_id' => $company->id,
         'client_id' => $user->id,
-        'external_event_id' => 'no-product-' . uniqid('', true),
+        'external_event_id' => 'no-product-'.uniqid('', true),
         'check_stock' => false,
         'items' => [
             [
@@ -339,14 +354,13 @@ it('returns 422 when item_name and sku do not match any product', function (): v
     ]);
 
     $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['items.0.item_name']);
-    $errors = $response->json('errors');
-    expect($errors['items.0.item_name'][0] ?? null)->toBe(__('modules.orders.apiWebhookProductNotFound'));
+    $details = $response->json('error.details');
+    expect($details['items.0.item_name'][0] ?? null)->toBe(__('modules.orders.apiWebhookProductNotFound'));
 });
 
 it('resolves product by sku when item_name does not match', function (): void {
-    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
-        test()->markTestSkipped('companies.ai_order_webhook_secret column missing; run migrations.');
+    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret') || ! Schema::hasColumn('companies', 'ai_order_integration_allow_create')) {
+        test()->markTestSkipped('Required company integration columns missing; run migrations.');
 
         return;
     }
@@ -373,12 +387,15 @@ it('resolves product by sku when item_name does not match', function (): void {
     $line = aiWebhookCreateProductLine($company);
 
     $secret = bin2hex(random_bytes(32));
-    Company::withoutGlobalScopes()->where('id', $company->id)->update(['ai_order_webhook_secret' => $secret]);
+    Company::withoutGlobalScopes()->where('id', $company->id)->update([
+        'ai_order_webhook_secret' => $secret,
+        'ai_order_integration_allow_create' => true,
+    ]);
 
-    $response = $this->postJson('/ai-order-webhook/' . $secret, [
+    $response = $this->postJson('/api/integrations/orders', [
         'company_id' => $company->id,
         'client_id' => $user->id,
-        'external_event_id' => 'sku-resolve-' . uniqid('', true),
+        'external_event_id' => 'sku-resolve-'.uniqid('', true),
         'check_stock' => false,
         'items' => [
             [

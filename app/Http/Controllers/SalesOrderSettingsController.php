@@ -76,19 +76,13 @@ class SalesOrderSettingsController extends AccountBaseController
         $this->aiOrderRestCurlExamplePut = null;
         $this->aiOrderRestCurlExampleDelete = null;
 
-        $effectiveSecret = $companySecret !== '' ? $companySecret : $globalSecret;
-
-        $this->aiOrderWebhookCompanySecretConfigured = $companySecret !== '';
-        $this->aiOrderWebhookLegacyGlobalConfigured = $globalSecret !== '';
-        $this->aiOrderWebhookUsingLegacyGlobalFallback = $companySecret === '' && $globalSecret !== '';
-        $this->aiOrderWebhookSecretConfigured = $effectiveSecret !== '';
+        $this->aiOrderWebhookSecretConfigured = $companySecret !== '';
+        $this->aiOrderGlobalSecretConfigured = $globalSecret !== '';
 
         $this->aiOrderWebhookBaseUrl = $baseUrl;
-        $this->aiOrderWebhookUrl = $effectiveSecret !== '' ? $baseUrl.'/ai-order-webhook/'.$effectiveSecret : null;
-        $this->aiOrderWebhookHeaderLine = $effectiveSecret !== '' ? 'X-AI-Webhook-Secret: '.$effectiveSecret : '';
 
         $exampleAiOrderPostPayload = null;
-        if ($companyId > 0 && ($this->aiOrderRestOrdersUrl !== null || $this->aiOrderWebhookUrl !== null)) {
+        if ($companyId > 0 && $this->aiOrderRestOrdersUrl !== null) {
             $exampleAiOrderPostPayload = $this->buildAiOrderExamplePostPayload($companyId);
         }
 
@@ -120,27 +114,6 @@ class SalesOrderSettingsController extends AccountBaseController
             $this->aiOrderRestCurlExamplePatch = $this->buildAiOrderRestCurlExample('PATCH', $restOne, $companySecret, $updateBodyPretty);
             $this->aiOrderRestCurlExamplePut = $this->buildAiOrderRestCurlExample('PUT', $restOne, $companySecret, $updateBodyPretty);
             $this->aiOrderRestCurlExampleDelete = $this->buildAiOrderRestCurlExample('DELETE', $restOne, $companySecret, null);
-        }
-
-        $this->aiOrderWebhookCurlExample = null;
-        if ($this->aiOrderWebhookUrl !== null && $effectiveSecret !== '' && $companyId > 0) {
-            $example = $exampleAiOrderPostPayload ?? $this->buildAiOrderExamplePostPayload($companyId);
-            $jsonPrettyFlags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
-            $jsonBody = json_encode($example, $jsonPrettyFlags);
-            if ($jsonBody === false) {
-                $jsonBody = '{}';
-            }
-
-            $headerSecret = 'X-AI-Webhook-Secret: '.$effectiveSecret;
-            $webhookJsonCompact = $this->normalizeAiOrderExampleJsonString($jsonBody);
-            $lines = [
-                'curl -X POST '.$this->curlWordSingleQuoted($this->aiOrderWebhookUrl).' \\',
-                '  -H '.$this->curlWordSingleQuoted('Accept: application/json').' \\',
-                '  -H '.$this->curlWordSingleQuoted('Content-Type: application/json').' \\',
-                '  -H '.$this->curlWordSingleQuoted($headerSecret).' \\',
-                '  -d '.$this->curlWordSingleQuoted($webhookJsonCompact),
-            ];
-            $this->aiOrderWebhookCurlExample = implode("\n", $lines);
         }
 
         return view('sales-order-settings.index', $this->data);
@@ -190,7 +163,7 @@ class SalesOrderSettingsController extends AccountBaseController
     }
 
     /**
-     * @return array{company_id: int, client_code: string, external_event_id: string, check_stock: bool, items: array<int, array{item_name: string, quantity: int, unit_price: float|int}>}
+     * @return array{company_id: int, client_code: string, external_event_id: string, check_stock: bool, items: array<int, array{item_name: string, quantity: int, unit_price: float|int, sku?: string}>}
      */
     private function buildAiOrderExamplePostPayload(int $companyId): array
     {
@@ -220,17 +193,31 @@ class SalesOrderSettingsController extends AccountBaseController
 
         $itemName = $defaultItemName;
         $unitPrice = 0;
+        $itemSku = null;
         if ($companyId > 0 && Schema::hasTable('products')) {
             $product = Product::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->whereNotNull('name')
                 ->where('name', '!=', '')
                 ->orderBy('id')
-                ->first(['name', 'price']);
+                ->first(['name', 'price', 'sku']);
             if ($product !== null) {
                 $itemName = (string) $product->name;
                 $unitPrice = $this->exampleUnitPriceFromProductPrice($product->price);
+                $skuRaw = $product->sku ?? null;
+                if (is_string($skuRaw) && trim($skuRaw) !== '') {
+                    $itemSku = trim($skuRaw);
+                }
             }
+        }
+
+        $line = [
+            'item_name' => $itemName,
+            'quantity' => 1,
+            'unit_price' => $unitPrice,
+        ];
+        if ($itemSku !== null) {
+            $line['sku'] = $itemSku;
         }
 
         return [
@@ -238,13 +225,7 @@ class SalesOrderSettingsController extends AccountBaseController
             'client_code' => (string) $clientCode,
             'external_event_id' => 'example-event-001',
             'check_stock' => false,
-            'items' => [
-                [
-                    'item_name' => $itemName,
-                    'quantity' => 1,
-                    'unit_price' => $unitPrice,
-                ],
-            ],
+            'items' => [$line],
         ];
     }
 

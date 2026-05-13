@@ -12,7 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        'ai-order-webhook/*',
         // Same-domain Postman / ERP clients send cookies; Sanctum stateful stack may
         // otherwise apply CSRF to these API routes. Auth is header secret, not session.
         'api/integrations/*',

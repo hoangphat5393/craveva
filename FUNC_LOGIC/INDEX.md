@@ -32,6 +32,9 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/API_DATA_TYPE_LIST_VI.md` — canonical (đã gộp nội dung trùng từ bản EN 2026-05)
 - `FUNC_LOGIC/Libraries_And_Module_Names.md`
 - `docs/AI_ORDER_INTEGRATION_REST.md` — REST AI order (`/api/integrations/orders`), auth, method toggles, troubleshooting 404
+- `docs/AI_ORDER_INTEGRATION_REST_SETUP_VI.md` — hướng dẫn Postman / probe / CSRF
+- `FUNC_LOGIC/AI_ORDER_REST_API_RUNTIME_AUDIT_VI.md` — audit luồng route + middleware + nguyên nhân 404 runtime
+- `FUNC_LOGIC/AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md` — đã gỡ `POST /ai-order-webhook/{hash}`; chỉ REST `/api/integrations/orders`
 
 ## Audit and Review Documents
 
@@ -42,7 +45,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/AUDIT_BILLING_MODULE_VI.md`
 - `FUNC_LOGIC/AUDIT_PERFORMANCE_MODULE_VI.md`
 - `FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md`
-- `FUNC_LOGIC/AUDIT_AI_ORDER_INBOUND_SO_API_VI.md` — inbound AI → Sales Order (`ai-order-webhook`): chuẩn de facto, auth, gap OpenAPI/rate limit
+- `FUNC_LOGIC/AUDIT_AI_ORDER_INBOUND_SO_API_VI.md` — inbound AI → Sales Order (lịch sử: webhook path; hiện dùng REST — xem `AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`)
 - `FUNC_LOGIC/SURVEY_SYSTEM_WIDE_API_AND_REST_VI.md` — **khảo sát toàn repo** các route `/api` + mức độ REST; không có REST “toàn hệ thống”
 - `FUNC_LOGIC/multi_warehouse_audit_report.md`
 
@@ -76,8 +79,8 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/MAOLIN_IMPORT_MAPPING.md`
 - `FUNC_LOGIC/MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md`
 - `FUNC_LOGIC/PM_DEMO_SO_DO_PO_INVOICE_3PM_VI.md`
-- `FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md` — runbook inbound AI → SO (placeholder URL/secret; không hardcode credential trong repo)
-- `FUNC_LOGIC/AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md` — secret DB + `client_code` / `client_id` + audit payload
+- `FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md` — runbook inbound AI → SO (cập nhật client: URL dùng REST `/api/integrations/orders`; xem `AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`)
+- `FUNC_LOGIC/AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md` — secret DB + `client_code` / `client_id` + audit payload (payload giữ nguyên; endpoint = REST)
 - `FUNC_LOGIC/PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`
 - `FUNC_LOGIC/PROMPT_REFACTOR_SO_DO_PO_GRN_VI.md`
 - `FUNC_LOGIC/PURCHASE_RETURN_VENDOR_CREDIT_STOCK_VI.md`
@@ -87,3 +90,6 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`
 - `FUNC_LOGIC/WH_PURCHASE_ENV_REFERENCE_VI.md`
 - `FUNC_LOGIC/WAREHOUSE_TOM_TAT_NOI_BO.md`
+- `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md`
+- `FUNC_LOGIC/MIAOLIN_SALES_ORDER_API_DATABASE_ALL_FIELDS.md`
+- `FUNC_LOGIC/MIAOLIN_SALES_ORDER_API_DATABASE_REQUIRED_FIELDS.md`

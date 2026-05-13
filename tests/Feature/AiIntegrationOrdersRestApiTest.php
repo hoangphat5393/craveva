@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 use App\Models\ClientDetails;
 use App\Models\Company;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\Integrations\AiOrderWebhookOrderCreationService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+
+use function Pest\Laravel\mock;
 
 uses(DatabaseTransactions::class);
 
@@ -187,9 +191,86 @@ it('creates an order via REST POST when create is enabled', function (): void {
     $response->assertCreated();
     $response->assertJsonPath('status', 'success');
     expect($response->json('data.order_id'))->toBeInt();
+
+    $order = Order::withoutGlobalScopes()->find($response->json('data.order_id'));
+    expect($order)->not->toBeNull();
+    expect((int) $order->client_id)->toBe((int) $user->id);
 });
 
-it('returns 403 for legacy webhook POST when create is disabled', function (): void {
+it('returns structured 500 when order persistence throws after stock check', function (): void {
+    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret') || ! Schema::hasColumn('companies', 'ai_order_integration_allow_create')) {
+        test()->markTestSkipped('Required columns missing; run migrations.');
+
+        return;
+    }
+
+    if (! Schema::hasTable('client_details')) {
+        test()->markTestSkipped('client_details table missing.');
+
+        return;
+    }
+
+    $company = Company::withoutGlobalScopes()->where('status', 'active')->orderBy('id')->first();
+    if ($company === null) {
+        test()->markTestSkipped('No active company.');
+
+        return;
+    }
+
+    $userIds = User::withoutGlobalScopes()->where('company_id', $company->id)->pluck('id');
+    $detail = ClientDetails::withoutGlobalScopes()
+        ->whereIn('user_id', $userIds)
+        ->whereNotNull('client_code')
+        ->where('client_code', '!=', '')
+        ->first();
+
+    if ($detail === null) {
+        test()->markTestSkipped('No client_details.client_code for company.');
+
+        return;
+    }
+
+    $line = aiRestIntegrationCreateProductLine($company);
+    $secret = bin2hex(random_bytes(32));
+
+    Company::withoutGlobalScopes()->where('id', $company->id)->update([
+        'ai_order_webhook_secret' => $secret,
+        'ai_order_integration_allow_create' => true,
+        'ai_order_integration_allow_read' => true,
+        'ai_order_integration_allow_update' => true,
+        'ai_order_integration_allow_delete' => true,
+    ]);
+
+    mock(AiOrderWebhookOrderCreationService::class, function ($mock): void {
+        $mock->shouldReceive('isDuplicateExternalEvent')->andReturn(false);
+        $mock->shouldReceive('assertStockAllowsOrder')->once();
+        $mock->shouldReceive('createOrder')->once()->andThrow(new RuntimeException('Simulated persistence failure'));
+    });
+
+    $response = $this->postJson('/api/integrations/orders', [
+        'company_id' => $company->id,
+        'client_code' => $detail->client_code,
+        'external_event_id' => 'rest-create-fail-'.uniqid('', true),
+        'check_stock' => false,
+        'items' => [
+            [
+                'item_name' => $line['name'],
+                'quantity' => 1,
+                'unit_price' => 0,
+            ],
+        ],
+    ], [
+        'X-AI-Webhook-Secret' => $secret,
+        'Accept' => 'application/json',
+    ]);
+
+    $response->assertStatus(500);
+    $response->assertJsonPath('status', 'error');
+    $response->assertJsonPath('code', 'AI_ORDER_CREATE_FAILED');
+    $response->assertJsonPath('message', 'Order could not be persisted. Check company addresses, currency, and line items; see server logs for details.');
+});
+
+it('returns 403 for REST POST when create is disabled', function (): void {
     if (! Schema::hasColumn('companies', 'ai_order_webhook_secret') || ! Schema::hasColumn('companies', 'ai_order_integration_allow_create')) {
         test()->markTestSkipped('Required columns missing; run migrations.');
 
@@ -233,10 +314,10 @@ it('returns 403 for legacy webhook POST when create is disabled', function (): v
         'ai_order_integration_allow_delete' => false,
     ]);
 
-    $response = $this->postJson('/ai-order-webhook/'.$secret, [
+    $response = $this->postJson('/api/integrations/orders', [
         'company_id' => $company->id,
         'client_code' => $detail->client_code,
-        'external_event_id' => 'legacy-blocked-'.uniqid('', true),
+        'external_event_id' => 'rest-blocked-'.uniqid('', true),
         'check_stock' => false,
         'items' => [
             [

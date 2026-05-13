@@ -1,4 +1,4 @@
-# FUNC_LOGIC — Documentation Audit & cleanup (2026-05-09; chu kỳ 2026-05-12; cập nhật 2026-05-12 §8 FUNC_IMPORT / LOG_REPORT)
+# FUNC_LOGIC — Documentation Audit & cleanup (2026-05-09; chu kỳ 2026-05-12; cập nhật 2026-05-13 §10 đồng bộ REST + deploy script)
 
 Bản rà soát theo yêu cầu: **lỗi thời**, **trùng lặp**, **logic nghiệp vụ cần đọc kèm bối cảnh**, **thiếu triển khai**, **tính năng đã code chưa được ghi**. Kèm **hành động đã làm** và **việc chưa làm / cố ý giữ nguyên**. Chu kỳ **2026-05-12** (mục §7): inbound AI webhook — đồng bộ `FUNC_IMPROVE` ↔ `PM_READY` / `client_code`·`client_id`.
 
@@ -145,5 +145,40 @@ rg "stg-ai-order|9fA2mK" FUNC_LOGIC FUNC_IMPROVE docs
 | **FUNC_IMPROVE**     | Gộp `13_` + `14_` + `15_` (AI → SO webhook) → `SO_AI_WEBHOOK_PROMPTS_VI.md`; cập nhật `AUDIT_IMPROVE_2026_VI.md` §2/§7 và `INDEX.md`.                                                                                                                                                             |
 | **FUNC\_\* rút tên** | Nhiều `.md` dài dưới `FUNC_BUG/`, `FUNC_IMPORT/`, `FUNC_IMPROVE/`, `FUNC_LOGIC/`, `FUNC_REPORT/`, `FUNC_TEST/` → tên ngắn (cùng ngày); bảng đối chiếu: `FUNC_IMPROVE/AUDIT_IMPROVE_2026_VI.md` §8.                                                                                                |
 | **`scripts/`**       | Xóa `edited_files_partial_preview.ps1`; đổi tên export allowlist → `export_sql_allowlist.ps1`; `STAGING_OPERATIONS` + `05_SO_DO_PO_GRN_REFACTOR_VI` bỏ tham chiếu shell không có trong repo. Audit: `scripts/AUDIT_2026_VI.md`.                                                                   |
+
+---
+
+## 10) Chu kỳ 2026-05-13 — Documentation Audit + Sync + refactor + nợ tài liệu (AI inbound REST, `md_master_sync`, staging deploy)
+
+### 10.1 Documentation Audit (phát hiện)
+
+| Nguồn                                                                                                                                                                                     | Vấn đề                                                                                                                                                | Mức độ                                                                |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `FUNC_LOGIC/PM_READY_*`, `AUDIT_AI_ORDER_*`, `SURVEY_SYSTEM_WIDE_API_*`, `WH_PURCHASE_ENV_*`, `WAREHOUSE_INDEX`, `12_AI_*`, `SO_AI_WEBHOOK_PROMPTS_VI.md`, `AI_ORDER_WEBHOOK_SECRET_*` §4 | Vẫn mô tả **`POST /ai-order-webhook/{hash}`** / `AiOrderWebhookController` như endpoint đang chạy sau khi code đã chuyển **REST** — **lệch thực tế**. | Cao (đã chỉnh trong cùng chu kỳ)                                      |
+| `FUNC_LOGIC/SURVEY_SYSTEM_WIDE_API_AND_REST_VI.md` §2                                                                                                                                     | Dòng **Biometric** trong bảng markdown bị **gãy cột** (ký tự `\|` trong ô).                                                                           | Trung bình (đã sửa)                                                   |
+| `scripts/upload_staging.ps1`                                                                                                                                                              | Mặc định **không** `git push` local — dễ hiểu nhầm “deploy = đẩy code”.                                                                               | Thấp (đã thêm `-PushLocalFirst` + cảnh báo console; ghi trong §10.3)  |
+| `md_master_sync.ps1` (read-only trước chỉnh)                                                                                                                                              | Nhiều file `FUNC_LOGIC/*.md` / `FUNC_IMPROVE/BIOMIXING_*` chưa nằm trong `INDEX.md` auto-section.                                                     | Trung bình — **đã chạy** `-Fix` + `-FixMaster` (thêm mục Auto-added). |
+
+### 10.2 Documentation Sync & Refactoring (đã làm)
+
+1. Chạy **`.\scripts\md_master_sync.ps1 -Fix`** rồi **`-FixMaster`** — bổ sung liên kết trong `FUNC_LOGIC/INDEX.md`, `FUNC_IMPROVE/INDEX.md` (khối _Auto-added by md_master_sync.ps1_).
+2. **Refactor nội dung** (không gộp file): đồng bộ mô tả inbound AI → SO sang **`POST /api/integrations/orders`**, trỏ `docs/AI_ORDER_INTEGRATION_REST*.md` và `AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md` nơi còn nhắc path cũ.
+3. **`docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md`:** mục §6 (chu kỳ 2026-05-13) — canonical REST + script staging.
+
+### 10.3 Technical Debt Cleanup (Documentation) — đã thực hiện
+
+1. Cập nhật **`PM_READY_AI_WEBHOOK_STAGING_VI.md`** (trạng thái + ví dụ curl JSON REST).
+2. Cập nhật **`AUDIT_AI_ORDER_INBOUND_SO_API_VI.md`**, **`AUDIT_WEBHOOKS_MODULE_VI.md`**, **`WH_PURCHASE_ENV_REFERENCE_VI.md`**, **`WAREHOUSE_INDEX.md`**, **`WAREHOUSE_TOM_TAT_NOI_BO.md`**, **`SURVEY_SYSTEM_WIDE_API_AND_REST_VI.md`**, **`FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE_VI.md`**, **`FUNC_IMPROVE/12_AI_THIRDPARTY_SO_OPTIONS_VI.md`**, **`FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md`** (banner + bảng/prompt chính), **`AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md`** (§4.1 / mẫu HTTP).
+3. **`FUNC_IMPROVE/AUDIT_IMPROVE_2026_VI.md`:** dòng tóm tắt chu kỳ 2026-05-13 (REST + gỡ legacy trong tài liệu improve).
+4. **`scripts/upload_staging.ps1`:** `-PushLocalFirst` + cảnh báo khi bỏ qua local git (đã merge trước đó; ghi nhận tại audit này).
+
+### 10.4 Tái kiểm nhanh
+
+```text
+rg "AiOrderWebhookController|ai-order-webhook" FUNC_LOGIC FUNC_IMPROVE docs --glob "*.md"
+# Kỳ vọng: chỉ còn trong ghi chú "đã gỡ" / lịch sử / bảng có nhãn rõ.
+.\scripts\md_master_sync.ps1
+# Kỳ vọng: Missing from group INDEX = 0; Missing from both = 0 (sau khi master guide heuristic đã chạy).
+```
 
 _Tài liệu này thay cho việc phải đọc diff rải rác; cập nhật khi có đợt dọn `FUNC_LOGIC` lớn tiếp theo._

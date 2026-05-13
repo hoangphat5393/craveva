@@ -25,13 +25,13 @@
                     </x-alert>
                 @endif
 
-                @if (!$aiOrderWebhookSecretConfigured)
+                @if (! $aiOrderWebhookSecretConfigured)
                     <x-alert type="danger" icon="exclamation-circle" class="mb-3">
                         @lang('modules.orders.apiNoWebhookSecret')
                     </x-alert>
-                @elseif (!empty($aiOrderWebhookUsingLegacyGlobalFallback))
+                @elseif ($aiOrderGlobalSecretConfigured)
                     <x-alert type="info" icon="info-circle" class="mb-3">
-                        @lang('modules.orders.apiUsingLegacyGlobalSecretHint')
+                        @lang('modules.orders.apiGlobalSecretIgnoredForRestHint')
                     </x-alert>
                 @endif
 
@@ -73,36 +73,6 @@
                         </form>
                         <p class="f-12 text-lightest mt-2 mb-0">@lang('modules.orders.apiRegenerateWebhookHelp')</p>
                     </div>
-                    @if ($aiOrderWebhookUrl)
-                        <div class="col-md-12 mb-3">
-                            <div class="form-group my-3">
-                                <x-forms.label fieldId="ai_webhook_post_url" :fieldLabel="__('modules.orders.apiWebhookPostUrl')" fieldRequired="false" />
-                                <div class="input-group">
-                                    <input type="text" class="form-control height-35 f-14" id="ai_webhook_post_url" name="ai_webhook_post_url" value="{{ $aiOrderWebhookUrl }}" readonly>
-                                    <div class="input-group-append">
-                                        <a href="javascript:;" class="btn btn-secondary btn-copy height-35 f-12 d-flex align-items-center px-3 border-left-0" data-clipboard-target="#ai_webhook_post_url" role="button">
-                                            <i class="fa fa-copy mr-1"></i>@lang('app.copy')
-                                        </a>
-                                    </div>
-                                </div>
-                                <p class="f-12 text-lightest mt-2 mb-0">@lang('modules.orders.apiWebhookPathSpellingNote')</p>
-                            </div>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <div class="form-group my-3">
-                                <x-forms.label fieldId="ai_webhook_header" :fieldLabel="__('modules.orders.apiWebhookHeader')" fieldRequired="false" />
-                                <div class="input-group">
-                                    <input type="text" class="form-control height-35 f-14" id="ai_webhook_header" name="ai_webhook_header" value="{{ $aiOrderWebhookHeaderLine }}" readonly>
-                                    <div class="input-group-append">
-                                        <a href="javascript:;" class="btn btn-secondary btn-copy height-35 f-12 d-flex align-items-center px-3 border-left-0" data-clipboard-target="#ai_webhook_header" role="button">
-                                            <i class="fa fa-copy mr-1"></i>@lang('app.copy')
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="f-12 text-lightest mt-1">@lang('modules.orders.apiWebhookHeaderHelp')</p>
-                        </div>
-                    @endif
                 </div>
 
                 <div class="row">
@@ -286,19 +256,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <h6 class="f-14 font-weight-bold text-dark mb-2">@lang('modules.orders.apiCurlExampleTitle')</h6>
-                    @if (!empty($aiOrderWebhookCurlExample))
-                        <p class="f-12 text-lightest mb-2">@lang('modules.orders.apiCurlCopyHint')</p>
-                        <textarea id="ai_webhook_curl_clipboard" readonly class="position-fixed border-0 p-0 m-0 overflow-hidden" style="top: -2000px; left: 0; width: 1px; height: 1px; opacity: 0; z-index: -1;" aria-hidden="true" tabindex="-1">{{ $aiOrderWebhookCurlExample }}</textarea>
-                        <div class="position-relative">
-                            <pre class="f-12 p-3 bg-additional-grey rounded border-grey text-dark mb-0 pr-5" style="white-space: pre-wrap; word-break: break-all;">{{ $aiOrderWebhookCurlExample }}</pre>
-                            <a href="javascript:;" class="btn-copy btn-secondary f-12 rounded px-2 py-1 position-absolute" style="top: 8px; right: 8px;" data-clipboard-target="#ai_webhook_curl_clipboard" role="button">
-                                <i class="fa fa-copy mr-1"></i>@lang('app.copy')
-                            </a>
-                        </div>
-                    @else
-                        <p class="f-13 text-dark-grey mb-0">@lang('modules.orders.apiCurlExampleMissingSecret')</p>
-                    @endif
+                    <p class="f-13 text-dark-grey mb-0">@lang('modules.orders.apiIntegrationRestOnlyFooter')</p>
                 </div>
             </div>
         </x-setting-card>

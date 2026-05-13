@@ -2,12 +2,14 @@
 
 **Cập nhật:** 2026-05-12 — **Đã gỡ khỏi tài liệu** URL/secret tạm dùng cho test gấp (`stg-ai-order-*` trên `staging.craveva.com`). Mọi môi trường dùng **secret lấy từ ERP** (theo công ty) hoặc, khi vận hành cho phép, **fallback `.env`** do quản trị cấu hình (không đăng secret thật trong repo).
 
+**2026-05-13:** Inbound tạo đơn **chỉ** qua **`POST /api/integrations/orders`** (REST). Đường cũ `POST /ai-order-webhook/{hash}` đã **gỡ khỏi app** — xem [`AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`](AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md) và [`../docs/AI_ORDER_INTEGRATION_REST_SETUP_VI.md`](../docs/AI_ORDER_INTEGRATION_REST_SETUP_VI.md).
+
 ---
 
 ## Trạng thái hiện tại
 
-- Webhook inbound AI: **`POST /ai-order-webhook/{hash}`** — tạo `orders` + `order_items`.
-- Xác thực: **`{hash}` trong URL** = **`X-AI-Webhook-Secret`** (so khớp `hash_equals`).
+- **Inbound AI (canonical):** **`POST {APP_URL}/api/integrations/orders`** — `AiIntegrationOrdersController@store`, `StoreAiOrderWebhookRequest`, `AiOrderWebhookOrderCreationService`; middleware `ai.integration.auth`, `ai.integration.method`.
+- **Xác thực:** header **`X-AI-Webhook-Secret`** hoặc **`Authorization: Bearer`** (cùng giá trị secret); **không** đặt secret trên path URL.
 - Ringfence: secret **theo công ty** (`companies.ai_order_webhook_secret`) + `company_id` trong body phải khớp khi dùng secret đó.
 - Idempotency cơ bản: `external_event_id` (tra cứu qua tag trong `note`).
 - Chi tiết secret / `client_code` / `client_id`: [`AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md`](AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md).
@@ -18,21 +20,21 @@
 
 1. Đăng nhập ERP, chọn đúng **công ty (workspace)**.
 2. **Cài đặt → Sale order settings → tab API**.
-3. Nếu chưa có secret: bấm **Tạo / tạo lại secret webhook** — copy **POST URL** và dòng **HTTP header** hiển thị trên màn hình.
-4. Dán vào hệ thống gửi webhook (LINE / AI / middleware). **Không** hardcode secret vào repo hoặc ticket công khai.
+3. Copy **POST URL** (`…/api/integrations/orders`) và dòng **HTTP header** hiển thị trên màn hình (REST panels).
+4. Dán vào hệ thống gửi đơn (LINE / AI / middleware). **Không** hardcode secret vào repo hoặc ticket công khai.
 
-**Ghi chú vận hành:** Nếu công ty chưa tạo secret nhưng server có biến **`AI_ORDER_WEBHOOK_SECRET`** trong `.env`, UI có thể hiển thị URL/header dựa trên fallback toàn instance — quyền quyết định thuộc quản trị; runbook này khuyến nghị ưu tiên **secret theo công ty**. Nếu trước đây `.env` từng chứa secret tạm đã công bố trong tài liệu cũ, nên **đổi (rotate)** giá trị đó trên server và cập nhật mọi tích hợp.
+**Ghi chú vận hành:** Nếu công ty chưa tạo secret nhưng server có biến **`AI_ORDER_WEBHOOK_SECRET`** trong `.env`, UI có thể hiển thị hướng dẫn dựa trên fallback toàn instance — quyền quyết định thuộc quản trị; runbook này khuyến nghị ưu tiên **secret theo công ty**. Nếu trước đây `.env` từng chứa secret tạm đã công bố trong tài liệu cũ, nên **đổi (rotate)** giá trị đó trên server và cập nhật mọi tích hợp.
 
 ---
 
-## 2) Payload tối thiểu (form-data hoặc `x-www-form-urlencoded` hoặc JSON)
+## 2) Payload tối thiểu (khuyến nghị **raw JSON**)
 
-Trường bắt buộc:
+Trường bắt buộc (cùng validation với trước đây; xem tab API trên ERP để copy mẫu JSON đầy đủ):
 
 - `company_id` (integer, tồn tại trong `companies`)
 - **Khách:** ít nhất một trong hai — `client_code` **hoặc** `client_id` (xem [`AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md`](AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md))
 - `external_event_id` (khuyến nghị unique theo từng event)
-- `items[0][item_name]`, `items[0][quantity]`, `items[0][unit_price]`
+- `items[0].item_name`, `items[0].quantity`, `items[0].unit_price` (mảng **`items`** trong JSON)
 
 ### `client_code` / `client_id` — tránh 422
 
@@ -41,26 +43,20 @@ Trường bắt buộc:
 
 ### Cách test
 
-1. **Postman / curl:** URL + header lấy từ tab API; body đủ trường trên.
-2. **Test tự động (repo):** `php artisan test --compact tests/Feature/AiOrderWebhookPerCompanySecretTest.php`
+1. **Postman / curl:** URL + header lấy từ tab API; body **JSON** đủ trường trên (xem [`../docs/AI_ORDER_INTEGRATION_REST_SETUP_VI.md`](../docs/AI_ORDER_INTEGRATION_REST_SETUP_VI.md)).
+2. **Test tự động (repo):** `php artisan test --compact tests/Feature/AiOrderWebhookPerCompanySecretTest.php` (gọi REST).
 
 ### Ví dụ curl (placeholder — thay bằng giá trị từ ERP)
 
 ```bash
-curl -X POST "https://YOUR_APP_HOST/ai-order-webhook/YOUR_SECRET_HEX_FROM_SETTINGS" \
+curl -X POST "https://YOUR_APP_HOST/api/integrations/orders" \
   -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
   -H "X-AI-Webhook-Secret: YOUR_SECRET_HEX_FROM_SETTINGS" \
-  -d "company_id=YOUR_COMPANY_ID" \
-  -d "client_code=YOUR_CLIENT_CODE" \
-  -d "external_event_id=line-msg-001" \
-  -d "note=Order from LINE AI" \
-  -d "check_stock=0" \
-  -d "items[0][item_name]=Coffee test" \
-  -d "items[0][quantity]=1" \
-  -d "items[0][unit_price]=10000"
+  --data-raw '{"company_id":1,"client_code":"YOUR_CLIENT_CODE","external_event_id":"line-msg-001","note":"Order from LINE AI","check_stock":false,"items":[{"item_name":"Coffee test","quantity":1,"unit_price":10000}]}'
 ```
 
-Có thể thay `-d "client_code=..."` bằng `-d "client_id=YOUR_USER_ID"` (user active đúng công ty). `check_stock=0` tương đương bỏ kiểm tồn khi cấu hình warehouse bật kiểm tra (tùy nhu cầu pilot).
+Có thể thay `client_code` bằng `client_id` (user active đúng công ty). `check_stock: false` tương đương bỏ kiểm tồn khi cấu hình warehouse bật kiểm tra (tùy nhu cầu pilot).
 
 ---
 

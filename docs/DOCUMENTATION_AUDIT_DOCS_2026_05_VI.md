@@ -32,3 +32,13 @@
 - Audit nhóm bug: `FUNC_BUG/AUDIT_BUG_2026_VI.md`
 - Snapshot đếm dòng backend: `LOG_REPORT/INDEX.md` + `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`
 - Đặc tả / snapshot infra app: `SPECIFICATION/INDEX.md` + `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`
+
+---
+
+## 6) Chu kỳ 2026-05-13 — inbound AI Order (REST) + deploy script
+
+| Việc                            | Chi tiết                                                                                                                                                                                                                                        |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Canonical**                   | Inbound tạo Sales Order từ AI/third-party: **`docs/AI_ORDER_INTEGRATION_REST.md`**, **`docs/AI_ORDER_INTEGRATION_REST_SETUP_VI.md`** (`POST /api/integrations/orders`). Gỡ legacy path: **`FUNC_LOGIC/AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`**. |
+| **Audit nhóm FUNC_LOGIC**       | **`FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md`** §10 (đồng bộ tài liệu sau REST + `md_master_sync`).                                                                                                                                                     |
+| **Staging deploy (PowerShell)** | **`scripts/upload_staging.ps1`** — mặc định không `git push` local; dùng **`-PushLocalFirst`** khi muốn commit + push rồi mới SSH pull trên server (xem comment đầu file).                                                                      |

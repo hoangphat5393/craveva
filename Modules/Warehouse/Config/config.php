@@ -35,9 +35,9 @@ return [
     'sales_outbound_mode' => env('WAREHOUSE_SALES_OUTBOUND_MODE', 'shipment'),
 
     /**
-     * When true, POST /ai-order-webhook/{hash} validates line items with product_id
+     * When true, AI inbound order create (REST POST /api/integrations/orders) validates line items with product_id
      * against WarehouseAvailabilityService (sellable qty) before creating the order.
-     * Set false to preserve legacy behaviour if integrations do not pass unit_id / stock yet.
+     * Set false if integrations do not pass unit_id / stock yet.
      */
     'ai_order_webhook_check_stock' => env('WAREHOUSE_AI_ORDER_WEBHOOK_CHECK_STOCK', true),
 

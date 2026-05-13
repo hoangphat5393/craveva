@@ -11,7 +11,9 @@ use App\Services\Integrations\AiOrderIntegrationAuthService;
 use App\Services\Integrations\AiOrderWebhookOrderCreationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Modules\Warehouse\Exceptions\WarehouseBusinessException;
+use Throwable;
 
 class AiIntegrationOrdersController extends Controller
 {
@@ -28,6 +30,19 @@ class AiIntegrationOrdersController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'company_id must match the company for this integration secret.',
+            ], 422);
+        }
+
+        // Match legacy webhook: `client_id` is merged in FormRequest after `client_code` lookup but may
+        // be absent from `validated()`; always pass the resolved user id into order creation.
+        $resolvedClientId = $request->input('client_id');
+        $payload['client_id'] = is_numeric($resolvedClientId) ? (int) $resolvedClientId : null;
+
+        if ($payload['client_id'] === null) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 'AI_ORDER_CLIENT_UNRESOLVED',
+                'message' => 'Could not resolve a client user from client_code or client_id for this company.',
             ], 422);
         }
 
@@ -60,7 +75,25 @@ class AiIntegrationOrdersController extends Controller
             ], 422);
         }
 
-        $order = $this->orderCreationService->createOrder($company, $payload, $items);
+        try {
+            $order = $this->orderCreationService->createOrder($company, $payload, $items);
+        } catch (Throwable $e) {
+            Log::error('AI integration REST: order create failed.', [
+                'company_id' => $company->id,
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'code' => 'AI_ORDER_CREATE_FAILED',
+                'message' => 'Order could not be persisted. Check company addresses, currency, and line items; see server logs for details.',
+                'details' => config('app.debug') ? [
+                    'exception' => $e::class,
+                    'message' => $e->getMessage(),
+                ] : null,
+            ], 500);
+        }
 
         return response()->json([
             'status' => 'success',
@@ -109,16 +142,16 @@ class AiIntegrationOrdersController extends Controller
         }
 
         $payload = $request->validated();
-        $audit = ' [ai_integration:patch:' . now()->toIso8601String() . ']';
+        $audit = ' [ai_integration:patch:'.now()->toIso8601String().']';
 
         if (array_key_exists('status', $payload) && $payload['status'] !== null) {
             $order->status = (string) $payload['status'];
         }
 
         if (array_key_exists('note', $payload) && $payload['note'] !== null) {
-            $order->note = trim((string) $order->note . ' ' . (string) $payload['note']) . $audit;
+            $order->note = trim((string) $order->note.' '.(string) $payload['note']).$audit;
         } else {
-            $order->note = trim((string) $order->note) . $audit;
+            $order->note = trim((string) $order->note).$audit;
         }
 
         $order->save();
@@ -153,7 +186,7 @@ class AiIntegrationOrdersController extends Controller
         }
 
         $order->status = 'canceled';
-        $order->note = trim((string) $order->note . ' [ai_integration:delete:' . now()->toIso8601String() . ']');
+        $order->note = trim((string) $order->note.' [ai_integration:delete:'.now()->toIso8601String().']');
         $order->save();
 
         return response()->json([

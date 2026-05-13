@@ -255,12 +255,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | AI order webhook (integrations)
+    | AI order integration (optional global secret)
     |--------------------------------------------------------------------------
     |
-    | Shared secret for POST /ai-order-webhook/{hash} when no per-company secret is set.
-    | Prefer generating a secret per company from Sale order settings (companies.ai_order_webhook_secret).
-    | Set in .env as AI_ORDER_WEBHOOK_SECRET.
+    | Legacy POST /ai-order-webhook/{hash} has been removed. Inbound order creation
+    | uses REST only: POST /api/integrations/orders with companies.ai_order_webhook_secret
+    | (per company). This env value is optional and is not accepted on REST routes.
+    | Set in .env as AI_ORDER_WEBHOOK_SECRET if other tooling still reads it.
     |
     */
 

@@ -122,7 +122,7 @@ Kết quả:
 5. API availability trả đúng:
     - `GET /api/v1/warehouse/availability?company_id=...&product_id=...` (query; `warehouse_ids[]` tùy chọn)
     - Route nằm trong nhóm **`auth:sanctum`** — gọi từ Postman/cần `Authorization: Bearer {token}` (token Sanctum của user/app)
-6. Webhook AI tạo đơn (`POST /ai-order-webhook/{hash}`): khi company có module **warehouse** trong package và không tắt kiểm tra, hệ thống chặn tạo Order nếu **tổng sellable (base)** không đủ (HTTP 422 + message). Tắt tạm: `check_stock: false` hoặc env `WAREHOUSE_AI_ORDER_WEBHOOK_CHECK_STOCK=false`.
+6. Inbound AI tạo đơn (**`POST /api/integrations/orders`**): khi company có module **warehouse** trong package và không tắt kiểm tra, hệ thống chặn tạo Order nếu **tổng sellable (base)** không đủ (HTTP 422 + message). Tắt tạm: `check_stock: false` hoặc env `WAREHOUSE_AI_ORDER_WEBHOOK_CHECK_STOCK=false`.
 
 ## 7) Vận hành sự cố
 
@@ -295,7 +295,7 @@ tests/
     - Guard cấu hình outbound canonical (invoice vs shipment) + fail fast khi mode sai.
 - `WUP-05` (P1 nền): **Done (nền + call-site chính)**
     - API `GET /api/v1/warehouse/availability` (Sanctum) + `WarehouseAvailabilityService`.
-    - **Call-site nghiệp vụ:** `POST /ai-order-webhook/{hash}` gọi `validateAiOrderWebhookItems` trước khi tạo Order (theo package + env; có `check_stock`, `warehouse_ids`, `items.*.unit_id`). Các luồng khác có thể gọi cùng service khi cần mở rộng.
+    - **Call-site nghiệp vụ:** **`POST /api/integrations/orders`** (`AiIntegrationOrdersController`) gọi `validateAiOrderWebhookItems` trước khi tạo Order (theo package + env; có `check_stock`, `warehouse_ids`, `items.*.unit_id`). Các luồng khác có thể gọi cùng service khi cần mở rộng.
 - `WUP-06` (P1 nền): **Done (nền)**
     - Bổ sung service conversion về base unit trước reserve/inbound/outbound.
     - Có cấu hình strict/fallback (`WAREHOUSE_STRICT_UNIT_CONVERSION`).
@@ -305,6 +305,6 @@ tests/
 
 ### Audit (2026-04-09)
 
-- **Code đối chiếu:** `Modules/Warehouse/Services/WarehouseAvailabilityService`, `AiOrderWebhookController`, `Modules/Warehouse/Routes/api.php`, `Modules/Warehouse/Config/config.php` (`WAREHOUSE_AI_ORDER_WEBHOOK_CHECK_STOCK`).
+- **Code đối chiếu:** `Modules/Warehouse/Services/WarehouseAvailabilityService`, `AiIntegrationOrdersController`, `Modules/Warehouse/Routes/api.php`, `Modules/Warehouse/Config/config.php` (`WAREHOUSE_AI_ORDER_WEBHOOK_CHECK_STOCK`).
 - **Test đã chạy:** `tests/Feature/WarehouseUpgradeP0Test.php`, `tests/Feature/SalesDoServiceLifecycleTest.php`.
 - **Backlog theo kế hoạch gốc:** `WUP-08` (báo cáo vận hành rộng), `WUP-09` (bin/location) — chưa nằm trong phạm vi P0/P1 nền.

@@ -98,8 +98,8 @@ function salesOrderSettingsFinanceUser(): ?array
         ],
     );
 
-    Cache::forget('permission-manage_finance_setting-'.$user->id);
-    Cache::forget('user_modules_'.$user->id);
+    Cache::forget('permission-manage_finance_setting-' . $user->id);
+    Cache::forget('user_modules_' . $user->id);
 
     return ['company' => $company, 'user' => $user->fresh(), 'userAuth' => $userAuth];
 }
@@ -164,7 +164,7 @@ it('shows company id on sales order settings for authorized user', function (): 
         $response->assertSee(__('modules.orders.apiRestMethodsTitle'), false);
         $response->assertSee(__('modules.orders.apiRestMethodPanelsHint'), false);
         $response->assertSee(__('modules.orders.apiRestPostmanManualNote'), false);
-        $response->assertSee(__('modules.orders.apiWebhookPathSpellingNote'), false);
+        $response->assertSee(__('modules.orders.apiIntegrationRestOnlyFooter'), false);
         $response->assertSee('YOUR_ORDER_ID', false);
         $response->assertSee('ai_rest_copy_post', false);
         $response->assertSee('ai_rest_tpl_post', false);
@@ -246,8 +246,8 @@ it('returns forbidden for employee without manage finance setting', function ():
         ],
     );
 
-    Cache::forget('permission-manage_finance_setting-'.$user->id);
-    Cache::forget('user_modules_'.$user->id);
+    Cache::forget('permission-manage_finance_setting-' . $user->id);
+    Cache::forget('user_modules_' . $user->id);
 
     $response = $this->actingAs($userAuth, 'web')
         ->withSession([

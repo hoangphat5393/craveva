@@ -1,6 +1,6 @@
 # AI order integration — REST API (`/api/integrations/orders`)
 
-**Vietnamese setup (Postman / webhook vs REST):** [`AI_ORDER_INTEGRATION_REST_SETUP_VI.md`](./AI_ORDER_INTEGRATION_REST_SETUP_VI.md)
+**Vietnamese setup:** [`AI_ORDER_INTEGRATION_REST_SETUP_VI.md`](./AI_ORDER_INTEGRATION_REST_SETUP_VI.md)
 
 ## Base path
 
@@ -47,7 +47,9 @@ Defaults after migration: **Create = on**, Read / Update / Delete = **off** (saf
 
 ## Create (`POST`) body
 
-Same rules as legacy webhook `POST /ai-order-webhook/{hash}`: use `StoreAiOrderWebhookRequest` validation — include `company_id` (must match the company for the secret), `client_code` or `client_id`, `items[]`, optional `external_event_id`, optional `check_stock: false`, etc.
+Same rules as `StoreAiOrderWebhookRequest` (used by REST create): include `company_id` (must match the company for the secret), **`client_code` (recommended)** or `client_id`, `items[]`, optional `external_event_id`, optional `check_stock: false`, etc.
+
+The backend resolves `client_code` + `company_id` to the client’s **`users.id`** (via `client_details`) and stores it on the order as `client_id`. The REST controller merges this id into the create payload before persisting.
 
 ## Update (`PATCH` / `PUT`)
 
@@ -101,10 +103,10 @@ That JSON shape usually means the HTTP request **never reached** the Laravel rou
 **Automated proof the stack creates orders:** from repo root run  
 `php artisan test --compact tests/Feature/AiIntegrationOrdersRestApiTest.php`.
 
-## Legacy webhook
+## Legacy webhook (removed)
 
-`POST /ai-order-webhook/{hash}` remains supported. It respects **`ai_order_integration_allow_create`** the same way as REST create.
+The former `POST /ai-order-webhook/{hash}` endpoint has been **removed**. Use **`POST /api/integrations/orders`** with the same JSON body and `X-AI-Webhook-Secret` / `Authorization: Bearer` headers.
 
 ## ERP settings UI
 
-**Settings → Sale order settings → API:** short intro, copy fields (Base URL, company id, webhook URL, header), optional **REST** collapsible panels with copyable examples, **Allowed HTTP methods** checkboxes, legacy **example curl**, regenerate secret. Technical reference text is kept in repository docs only, not on the customer-facing page.
+**Settings → Sale order settings → API:** intro, copy fields (Base URL, company id), **REST** collapsible panels with copyable examples, **Allowed HTTP methods** checkboxes, regenerate secret. Technical reference: repository `docs/` files.

@@ -43,6 +43,10 @@ $resolvedToken = $GitHubToken
 if (-not $resolvedToken) {
     $resolvedToken = $env:CRAVEVA_GITHUB_DEPLOY_TOKEN
 }
+# Tránh CR/newline trong PAT làm vỡ dòng bash trên server (lỗi kiểu: bearer: command not found).
+if ($resolvedToken) {
+    $resolvedToken = ($resolvedToken -replace "`r`n?", '').Trim()
+}
 
 Write-Host "Starting Git-based deploy on Staging..."
 
@@ -95,16 +99,17 @@ if [ '{1}' -eq 1 ]; then
   if [ -n '{2}' ]; then
     export GIT_TERMINAL_PROMPT=0
     export GITHUB_DEPLOY_TOKEN='{2}'
-    header="AUTHORIZATION: bearer $GITHUB_DEPLOY_TOKEN"
+    # GitHub/Git dùng "Bearer"; nối chuỗi (không printf %s) để token có ký tự % vẫn an toàn.
+    _git_auth_header='AUTHORIZATION: Bearer '"$GITHUB_DEPLOY_TOKEN"
 
-    sudo -u '{3}' git -c http.extraHeader="$header" fetch origin
+    sudo -u '{3}' git -c "http.extraHeader=$_git_auth_header" fetch origin
 
     if sudo -u '{3}' git status --porcelain | grep -q .; then
       sudo -u '{3}' git stash push -u -m stash-auto-deploy
     fi
 
     sudo -u '{3}' git checkout '{4}'
-    sudo -u '{3}' git -c http.extraHeader="$header" pull origin '{4}'
+    sudo -u '{3}' git -c "http.extraHeader=$_git_auth_header" pull origin '{4}'
   else
     sudo -u '{3}' git fetch origin '{4}'
 
@@ -141,7 +146,12 @@ sudo -u www-data php artisan optimize:clear
 '@
 
 $remoteBash = $remoteBashTemplate -f $remotePath, $gitPullFlag, $remoteToken, $RemoteGitUser, $remoteBranch
+# Chuẩn hóa LF: CRLF từ Windows có thể làm bash trên Linux parse sai (header git / dòng lệnh).
+$remoteBash = $remoteBash -replace "`r`n", "`n"
 
 $remoteBashEscaped = Escape-BashSingleQuotedString $remoteBash
 ssh $StagingHost "bash -lc '$remoteBashEscaped'"
+if ($LASTEXITCODE -ne 0) {
+    throw "Remote deploy failed (ssh/bash exit $LASTEXITCODE). Kiểm tra log phía trên."
+}
 Write-Host "Deploy Staging Done."

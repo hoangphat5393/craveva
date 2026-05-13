@@ -1,10 +1,9 @@
 # Git-based deploy for Staging. SSH Host phải có trong ~/.ssh/config.
 #
-# Mặc định: KHÔNG chạy git add/commit/push trên máy dev — chỉ SSH lên server → pull + migrate/optimize.
-#         (Code đã có trên origin do máy khác/CI push; hoặc bạn push tay trước đó.)
-# Nếu cần luồng “commit + push từ máy này rồi mới deploy”:
-#   .\scripts\upload_staging.ps1 -PushLocalFirst
-#   hoặc: .\scripts\upload_staging.ps1 -SkipLocalGit:$false
+# Mặc định (2026-05): **có** chạy git add/commit/push trên máy dev rồi mới SSH deploy — khớp mong đợi “deploy = đẩy code lên rồi kéo staging”.
+# Chỉ deploy mà **không** đụng repo local (chỉ pull những gì đã có trên origin — máy khác/CI đã push):
+#   .\scripts\upload_staging.ps1 -DeployOnly
+#   hoặc: .\scripts\upload_staging.ps1 -SkipLocalGit:$true
 #
 # Quyền trên server: thư mục .git thuộc user RemoteGitUser. Đăng nhập SSH bằng Admin rồi `git pull` trực tiếp
 # thường báo Permission denied trên .git/FETCH_HEAD — phải chạy git với đúng owner, ví dụ:
@@ -20,11 +19,14 @@ param(
     [string]$Branch = "main",
     [string]$GitHubToken = "", # Tùy chọn; nếu rỗng dùng env CRAVEVA_GITHUB_DEPLOY_TOKEN
     [string]$CommitMessage = "", # Khi bật push local: nếu rỗng và có commit — dùng message mặc định có timestamp
-    [switch]$PushLocalFirst, # Bật: commit + push từ repo hiện tại lên origin rồi mới SSH deploy (tương đương -SkipLocalGit:$false)
-    [bool]$SkipLocalGit = $true # $true (mặc định): bỏ qua add/commit/push local, chỉ SSH deploy. $false hoặc -PushLocalFirst: push từ máy này trước.
+    [switch]$DeployOnly, # Chỉ SSH deploy: không add/commit/push trên máy này (server chỉ git pull origin)
+    [switch]$PushLocalFirst, # Giữ tương thích: ép chạy push local (tương đương -SkipLocalGit:$false)
+    [bool]$SkipLocalGit = $false # $false (mặc định): fetch/checkout, git add -A, commit nếu cần, push — rồi SSH. $true hoặc -DeployOnly: bỏ qua bước local.
 )
 
-# -PushLocalFirst tiện hơn -SkipLocalGit:$false (PowerShell switch)
+if ($DeployOnly) {
+    $SkipLocalGit = $true
+}
 if ($PushLocalFirst) {
     $SkipLocalGit = $false
 }
@@ -66,9 +68,9 @@ Write-Host "Starting Git-based deploy on Staging..."
 
 if ($SkipLocalGit) {
     Write-Host ""
-    Write-Host "  [Local git] SKIPPED (SkipLocalGit=true is the default)." -ForegroundColor Yellow
+    Write-Host "  [Local git] SKIPPED (-DeployOnly / -SkipLocalGit:`$true)." -ForegroundColor Yellow
     Write-Host "  Server will only git pull what is already on origin/$Branch — uncommitted work here is NOT deployed." -ForegroundColor Yellow
-    Write-Host "  To commit + push from this PC then deploy:  -PushLocalFirst   or   -SkipLocalGit:`$false" -ForegroundColor Yellow
+    Write-Host "  To push from this PC first: run again **without** -DeployOnly (default runs add/commit/push)." -ForegroundColor Yellow
     Write-Host ""
 } else {
     Write-Host "  [Local git] Will fetch/checkout $Branch, git add -A, commit (if needed), push — then remote deploy." -ForegroundColor Cyan

@@ -82,43 +82,45 @@ if (-not $SkipLocalGit) {
 }
 
 # Chạy toàn bộ remote trong một bash -lc duy nhất để tránh lỗi context (cd/user/quote).
-$remoteBranch = Escape-BashSingleQuotedString $Branch
-$remotePath = Escape-BashSingleQuotedString $StagingPath
-$remoteToken = ""
+# Dùng placeholder + .Replace (không dùng PowerShell -f cho cả template): -f ăn nhầm {{}} trong find
+# và dễ tương tác xấu với chuỗi có dấu ' khi Escape-BashSingleQuotedString bọc toàn script.
+$remoteBranchEscaped = Escape-BashSingleQuotedString $Branch
+$remotePathEscaped = Escape-BashSingleQuotedString $StagingPath
+$remoteTokenEscaped = ""
 if ($resolvedToken) {
-    $remoteToken = Escape-BashSingleQuotedString $resolvedToken
+    $remoteTokenEscaped = Escape-BashSingleQuotedString $resolvedToken
 }
+$remoteGitUserEscaped = Escape-BashSingleQuotedString $RemoteGitUser
 $gitPullFlag = if ($GitPull) { '1' } else { '0' }
 
 $remoteBashTemplate = @'
 set -euo pipefail
 
-cd '{0}'
+cd '__RB_PATH__'
 
-if [ '{1}' -eq 1 ]; then
-  if [ -n '{2}' ]; then
+if [ '__RB_GITPULL__' -eq 1 ]; then
+  if [ -n '__RB_TOKEN__' ]; then
     export GIT_TERMINAL_PROMPT=0
-    export GITHUB_DEPLOY_TOKEN='{2}'
-    # GitHub/Git dùng "Bearer"; nối chuỗi (không printf %s) để token có ký tự % vẫn an toàn.
-    _git_auth_header='AUTHORIZATION: Bearer '"$GITHUB_DEPLOY_TOKEN"
+    export GITHUB_DEPLOY_TOKEN='__RB_TOKEN__'
+    header="AUTHORIZATION: Bearer $GITHUB_DEPLOY_TOKEN"
 
-    sudo -u '{3}' git -c "http.extraHeader=$_git_auth_header" fetch origin
+    sudo -u '__RB_GITUSER__' git -c http.extraHeader="$header" fetch origin
 
-    if sudo -u '{3}' git status --porcelain | grep -q .; then
-      sudo -u '{3}' git stash push -u -m stash-auto-deploy
+    if sudo -u '__RB_GITUSER__' git status --porcelain | grep -q .; then
+      sudo -u '__RB_GITUSER__' git stash push -u -m stash-auto-deploy
     fi
 
-    sudo -u '{3}' git checkout '{4}'
-    sudo -u '{3}' git -c "http.extraHeader=$_git_auth_header" pull origin '{4}'
+    sudo -u '__RB_GITUSER__' git checkout '__RB_BRANCH__'
+    sudo -u '__RB_GITUSER__' git -c http.extraHeader="$header" pull origin '__RB_BRANCH__'
   else
-    sudo -u '{3}' git fetch origin '{4}'
+    sudo -u '__RB_GITUSER__' git fetch origin '__RB_BRANCH__'
 
-    if sudo -u '{3}' git status --porcelain | grep -q .; then
-      sudo -u '{3}' git stash push -u -m stash-auto-deploy
+    if sudo -u '__RB_GITUSER__' git status --porcelain | grep -q .; then
+      sudo -u '__RB_GITUSER__' git stash push -u -m stash-auto-deploy
     fi
 
-    sudo -u '{3}' git checkout '{4}'
-    sudo -u '{3}' git pull origin '{4}'
+    sudo -u '__RB_GITUSER__' git checkout '__RB_BRANCH__'
+    sudo -u '__RB_GITUSER__' git pull origin '__RB_BRANCH__'
   fi
 fi
 
@@ -133,11 +135,11 @@ sudo chmod -R 775 storage bootstrap/cache
 sudo chmod -R 775 public/user-uploads
 sudo chmod 2777 storage/logs
 sudo chmod -R ug+rwX Modules/LanguagePack/Languages resources/lang lang
-sudo find Modules/LanguagePack/Languages resources/lang lang -type d -exec chmod g+s {{}} \; 2>/dev/null || true
+sudo find Modules/LanguagePack/Languages resources/lang lang -type d -exec chmod g+s {} \; 2>/dev/null || true
 for d in Modules/*/Resources/lang; do
   [ -d "$d" ] || continue
   sudo chmod -R ug+rwX "$d"
-  sudo find "$d" -type d -exec chmod g+s {{}} \;
+  sudo find "$d" -type d -exec chmod g+s {} \;
 done
 
 sudo -u www-data php artisan migrate --force
@@ -145,8 +147,13 @@ sudo -u www-data php artisan languagepack:publish-translation
 sudo -u www-data php artisan optimize:clear
 '@
 
-$remoteBash = $remoteBashTemplate -f $remotePath, $gitPullFlag, $remoteToken, $RemoteGitUser, $remoteBranch
-# Chuẩn hóa LF: CRLF từ Windows có thể làm bash trên Linux parse sai (header git / dòng lệnh).
+$remoteBash = $remoteBashTemplate.
+    Replace('__RB_PATH__', $remotePathEscaped).
+    Replace('__RB_GITPULL__', $gitPullFlag).
+    Replace('__RB_TOKEN__', $remoteTokenEscaped).
+    Replace('__RB_GITUSER__', $remoteGitUserEscaped).
+    Replace('__RB_BRANCH__', $remoteBranchEscaped)
+# Chuẩn hóa LF: CRLF từ Windows có thể làm bash trên Linux parse sai.
 $remoteBash = $remoteBash -replace "`r`n", "`n"
 
 $remoteBashEscaped = Escape-BashSingleQuotedString $remoteBash

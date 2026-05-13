@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Schema;
 
 uses(DatabaseTransactions::class);
 
-it('registers the sales order settings route', function (): void {
+it('registers the sales order settings routes', function (): void {
     expect(Route::has('sales-order-settings.index'))->toBeTrue();
+    expect(Route::has('sales-order-settings.regenerate-webhook-secret'))->toBeTrue();
 });
 
 /**
@@ -94,8 +95,8 @@ function salesOrderSettingsFinanceUser(): ?array
         ],
     );
 
-    Cache::forget('permission-manage_finance_setting-' . $user->id);
-    Cache::forget('user_modules_' . $user->id);
+    Cache::forget('permission-manage_finance_setting-'.$user->id);
+    Cache::forget('user_modules_'.$user->id);
 
     return ['company' => $company, 'user' => $user->fresh(), 'userAuth' => $userAuth];
 }
@@ -116,6 +117,7 @@ it('shows company id on sales order settings for authorized user', function (): 
 
     $response->assertOk();
     $response->assertSee((string) $fix['company']->id, false);
+    $response->assertSee('btn-copy', false);
     $response->assertSee(__('modules.orders.apiFillAiTitle'), false);
     $response->assertSee(__('modules.orders.apiRingfenceTitle'), false);
     if ($fix['company']->company_name !== '') {
@@ -186,8 +188,8 @@ it('returns forbidden for employee without manage finance setting', function ():
         ],
     );
 
-    Cache::forget('permission-manage_finance_setting-' . $user->id);
-    Cache::forget('user_modules_' . $user->id);
+    Cache::forget('permission-manage_finance_setting-'.$user->id);
+    Cache::forget('user_modules_'.$user->id);
 
     $response = $this->actingAs($userAuth, 'web')
         ->withSession([
@@ -198,4 +200,31 @@ it('returns forbidden for employee without manage finance setting', function ():
         ->get(route('sales-order-settings.index'));
 
     $response->assertForbidden();
+});
+
+it('regenerates company ai order webhook secret', function (): void {
+    if (! Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
+        test()->markTestSkipped('companies.ai_order_webhook_secret column missing; run migrations.');
+
+        return;
+    }
+
+    $fix = salesOrderSettingsFinanceUser();
+    if ($fix === null) {
+        return;
+    }
+
+    Company::withoutGlobalScopes()->where('id', $fix['company']->id)->update(['ai_order_webhook_secret' => null]);
+
+    $this->actingAs($fix['userAuth'], 'web')
+        ->withSession([
+            'company' => $fix['company'],
+            'multi_company_selected' => 1,
+            'user_company_count' => 1,
+        ])
+        ->post(route('sales-order-settings.regenerate-webhook-secret'))
+        ->assertRedirect(route('sales-order-settings.index'));
+
+    $secret = Company::withoutGlobalScopes()->where('id', $fix['company']->id)->value('ai_order_webhook_secret');
+    expect($secret)->toBeString()->not->toBe('');
 });

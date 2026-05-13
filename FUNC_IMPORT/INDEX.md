@@ -1,27 +1,19 @@
 # FUNC_IMPORT Index
 
-Navigation index for import-related implementation and tracking documents.
+Navigation index for import-related specifications, runtime mechanics, and archived implementation prompts.
 
-## Core Import Specifications
+## Canonical documents (đọc theo thứ tự này)
 
-- `FUNC_IMPORT/IMPORT_PRODUCT.md`
-- `FUNC_IMPORT/IMPORT_CLIENT.md`
-- `FUNC_IMPORT/IMPORT_INVENTORY.md`
-- `FUNC_IMPORT/IMPORT_SALE_ORDER.md`
-- `FUNC_IMPORT/IMPORT_QUOTATION.md`
+1. **`FUNC_IMPORT/IMPORT_SPECS_VI.md`** — Map cột Maolin → Craveva: Product, Client, Inventory (Purchase), Sale Order, Quotation (Estimates).
+2. **`FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md`** — Chunk vs 1-dòng/job, poll + `config/app.php` (`import_progress_*`), CF map, **phụ lục** tracker SO/PO ↔ Inventory (staging).
+3. **`FUNC_IMPORT/IMPORT_PROMPTS_ARCHIVE_VI.md`** — Prompt hand-off **đã triển khai** (Quotation import, Sales history); giữ để tái sử dụng pattern.
 
-## Architecture and Processing
+## Audit & maintenance
 
-- `FUNC_IMPORT/IMPORT_MECHANISMS_POLL_AND_QUEUE_VI.md`
-- `FUNC_IMPORT/SO_PO_INVENTORY_IMPLEMENTATION_TRACKER.md`
+- **`FUNC_IMPORT/AUDIT_IMPORT_2026_VI.md`** — Lịch sử gộp file 2026-05-12 + danh sách file đã thay thế.
+- Giữ `INDEX.md` làm **route map**; khi thêm domain import mới: cập nhật `IMPORT_SPECS_VI.md` (mục mới) hoặc tách file chuyên sâu nếu > ~400 dòng và link từ đây.
 
-## AI Prompt and Implementation Briefs
+## Liên quan `FUNC_LOGIC`
 
-- `FUNC_IMPORT/PROMPT_IMPLEMENT_QUOTATION_IMPORT.md`
-- `FUNC_IMPORT/SALES_HISTORY_IMPLEMENTATION_PROMPT.md`
-
-## Maintenance Notes
-
-- Keep this file as route map for import docs.
-- Add each new import spec here first, then link from relevant master guide.
-- Move superseded implementation prompts to deprecated status when replaced.
+- Chuỗi import Maolin tổng thể: `FUNC_LOGIC/MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md`, `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`.
+- Báo cáo số dòng backend (không phải log ứng dụng): `LOG_REPORT/README.md` · `LOG_REPORT/INDEX.md` · audit: `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`.

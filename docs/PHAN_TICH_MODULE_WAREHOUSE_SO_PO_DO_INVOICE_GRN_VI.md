@@ -2,7 +2,7 @@
 
 **Bản đầy đủ (cập nhật schema + legacy) đã gộp và duy trì trong repo tại:**
 
-→ **[`FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](../FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md)**
+→ **[`FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`](../FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md)**
 
 File đó là **nguồn chân lý** cho: **luồng bán hiện tại** (§1), bảng canonical vs legacy (§3), **DROP an toàn** (§4), class PHP (§5), lệnh migrate (§6), **audit gộp** (§7).
 

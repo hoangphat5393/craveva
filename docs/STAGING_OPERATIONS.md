@@ -6,7 +6,7 @@
 **App:** `/var/www/craveva-staging/current/craveva`  
 **URL:** `https://staging.craveva.com`
 
-**Nguyên tắc:** Staging **luôn lấy mã từ Git** (`git pull` trên `main`, working tree sạch). **Không** sửa tay / `scp` từng file PHP cho thay đổi tính năng. Cấu hình server-only (cron, systemd, `.env`) giữ tách hoặc document trong `deploy/`.
+**Nguyên tắc:** Staging **luôn lấy mã từ Git** (`git pull` trên `main`, working tree sạch). **Không** sửa tay / `scp` từng file PHP cho thay đổi tính năng. Cấu hình server-only (cron, systemd, Supervisor, snippet Nginx/PHP) xem **`docs/SERVER_RUNBOOK_VI.md` mục 10** (mẫu đã gộp từ thư mục `deploy/` cũ).
 
 - **Ngôn ngữ `en` (không `eng`):** xem [SERVER_RUNBOOK_VI §6](SERVER_RUNBOOK_VI.md#6-ngôn-ngữ-en-không-dùng-eng).
 - **Git deploy, `sudo -u www-data`, Supervisor, quyền storage:** xem [SERVER_RUNBOOK_VI](SERVER_RUNBOOK_VI.md).
@@ -38,7 +38,7 @@ sudo -u www-data touch "$APP/resources/lang/.write_test" && sudo rm -f "$APP/res
 
 ## 2. Ổ đĩa & khôi phục nhanh
 
-- Đầy disk / `git pull` lỗi: **`docs/STAGING_RECOVERY_LATEST.md`** (stub) và log chi tiết **`docs/STAGING_DISK_RECOVERY_2026-03-27.md`**.
+- Đầy disk / `git pull` lỗi: **`docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md`** (mục **Phụ lục — Recovery nhanh**) và incident trong cùng file / `SERVER_RUNBOOK_VI.md`.
 - Không xóa `vendor/**/.git` lẻ tẻ; nếu vendor hỏng: `rm -rf vendor` + `composer install --no-dev` theo lock.
 
 ---
@@ -68,20 +68,19 @@ sudo -u www-data php artisan cache:clear
 
 Kiểm tra web: `curl -sI -o /dev/null -w '%{http_code}\n' https://staging.craveva.com/` → **200**.
 
-Chi tiết allowlist / AI → DB: **`docs/ENG_AI_MYSQL_CONNECTIVITY_BOSS_REPORT.md`**.
+Chi tiết allowlist / AI → DB: **`docs/ENG_AI_MYSQL_CONNECTIVITY_QUESTIONNAIRE.md`**.
 
 ---
 
 ## 4. Tài liệu liên quan (không gộp nội dung)
 
-| File                                            | Nội dung                                      |
-| ----------------------------------------------- | --------------------------------------------- |
-| `docs/SERVER_RUNBOOK_VI.md`                     | Deploy hub/staging, quyền, queue, bẫy         |
-| `docs/STAGING_DISK_RECOVERY_2026-03-27.md`      | Nhật ký incident ổ đĩa (2026-03-27)           |
-| `docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md`     | Tiến độ PHP 8.3 / L11, composer, cache        |
-| `docs/STAGING_RECOVERY_LATEST.md`               | Stub trỏ về tài liệu này + recovery tối thiểu |
-| `docs/ENG_AI_MYSQL_CONNECTIVITY_BOSS_REPORT.md` | DB staging / allowlist / AI connectivity (EN) |
-| `scripts/download_staging_logs.ps1`             | Tải log Nginx/PHP từ staging về máy local     |
+| File                                              | Nội dung                                                                           |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `docs/SERVER_RUNBOOK_VI.md`                       | Deploy hub/staging, quyền, queue, bẫy                                              |
+| `docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md`       | Tiến độ PHP 8.3 / L11 + incident log + **phụ lục recovery** (gộp stub recovery cũ) |
+| `docs/ENG_AI_MYSQL_CONNECTIVITY_QUESTIONNAIRE.md` | DB staging / allowlist / AI connectivity (EN)                                      |
+| `scripts/AUDIT_2026_VI.md`                        | Rà soát `scripts/`: mục đích từng nhóm, legacy đã dọn, đổi tên                     |
+| `scripts/download_staging_logs.ps1`               | Tải log Nginx/PHP từ staging về máy local                                          |
 
 ---
 
@@ -126,58 +125,31 @@ Nếu có delta khác `0` hoặc quality check fail: **không bật cutover**, l
 - Command rehearsal có `--execute` nhưng hiện chỉ là placeholder, chưa chạy mutate.
 - Luôn giữ baseline/reconcile report để audit trước khi làm bước migrate thật.
 
-### 5.5 Script gate tự động (khuyến nghị)
+### 5.5 Gate rehearsal (thủ công — không còn script shell trong repo)
 
-Đã có script chạy trọn gói baseline + reconcile + gate:
+> **Cập nhật 2026-05-12:** Các helper từng mô tả dưới đây **không tồn tại** trong `scripts/` (`staging_sales_do_rehearsal_gate.sh`, `staging_phase3_safe_execute.sh`, `run_staging_phase3_safe_execute.ps1`, `staging_phase4_cutover_precheck.sh`). Gate rehearsal = chạy **§5.1** rồi **§5.2**, sau đó áp **§5.3** (tiêu chí pass). Cần “một lệnh” thì bọc hai lệnh `php artisan …` trong script nội bộ của đội.
 
-```bash
-cd /var/www/craveva-staging/current/craveva
-bash scripts/staging_sales_do_rehearsal_gate.sh 10 50
-```
-
-Gate sẽ fail (exit code `1`) nếu:
+Gate **fail** (coi như không pass) nếu JSON reconcile có:
 
 - `shipments_count_delta != 0`
 - `items_count_delta != 0`
 - `total_quantity_shipped_delta != 0`
-- hoặc quality check orphan/duplicate không đạt.
+- hoặc quality check orphan/duplicate không đạt (theo **§5.3**).
 
-### 5.6 Safe one-command cho staging (preflight + backup + gate)
+### 5.6 Preflight + backup trước rehearsal (thủ công)
 
-Nếu muốn chạy rehearsal có "hàng rào an toàn" trong một lệnh:
+Trước khi chạy §5.1–5.2 trên staging thật:
 
-```bash
-cd /var/www/craveva-staging/current/craveva
-bash scripts/staging_phase3_safe_execute.sh 10 50
-```
+1. **Disk:** `df -h /` (ví dụ còn ≥ 2GB trống trên `/`).
+2. **App:** `sudo -u www-data php artisan about`
+3. **DB:** `sudo -u www-data php artisan db:show`
+4. **Backup DB:** theo quy trình trong `docs/SERVER_RUNBOOK_VI.md` (mysqldump / snapshot), lưu vào thư mục backup chuẩn của đội (ví dụ `storage/app/backups/phase3/`).
 
-Script sẽ:
+Gợi ý biến môi trường khi tự viết wrapper (nội bộ): `MIN_FREE_MB`, `BACKUP_DIR`, `NO_BACKUP` (không khuyến nghị bỏ backup).
 
-1. Preflight:
-    - check dung lượng đĩa `/` (mặc định yêu cầu >= 2048MB trống),
-    - check app boot (`php artisan about`),
-    - check DB connectivity (`php artisan db:show`).
-2. Backup DB MySQL/MariaDB từ cấu hình hiện tại trong `.env`.
-3. Chạy gate rehearsal (`staging_sales_do_rehearsal_gate.sh`).
+### 5.7 Từ máy Windows
 
-Biến môi trường tùy chọn:
-
-- `NO_BACKUP=1` để bỏ backup (không khuyến nghị).
-- `MIN_FREE_MB=3072` để tăng ngưỡng disk check.
-- `BACKUP_DIR=storage/app/backups/phase3` để đổi nơi lưu backup.
-
-### 5.7 Chạy từ máy local Windows (PowerShell)
-
-Đã có script wrapper để chạy remote an toàn qua SSH:
-
-```powershell
-.\scripts\run_staging_phase3_safe_execute.ps1 -SshHost craveva-staging -CompanyId 10 -Sample 50
-```
-
-Điểm an toàn thêm:
-
-- Script sẽ tự chuẩn hóa line-ending shell script trên staging (`sed -i 's/\r$//'`) trước khi chạy để tránh lỗi CRLF.
-- Có thể dùng `-NoBackup` nếu cần chạy nhanh, nhưng mặc định vẫn backup trước khi gate.
+SSH vào host staging (`gcloud compute ssh` hoặc host trong `~/.ssh/config`), `cd` tới app path trong `SERVER_RUNBOOK_VI.md`, rồi chạy **§5.1 → §5.2**. Không còn `run_staging_phase3_safe_execute.ps1` trong repo.
 
 ### 5.8 Migrate thật + rollback (Phase 3 execute window)
 
@@ -211,25 +183,16 @@ sudo -u www-data php artisan purchase:sales-do-migrate-rollback \
   --force
 ```
 
-### 5.9 Precheck gate trước Phase 4 cutover
+### 5.9 Precheck trước Phase 4 cutover (thủ công)
 
-Dùng script precheck để xác nhận staging sẵn sàng trước khi bật cutover:
+Thay cho `staging_phase4_cutover_precheck.sh` (đã gỡ khỏi repo), lần lượt:
 
-```bash
-cd /var/www/craveva-staging/current/craveva
-bash scripts/staging_phase4_cutover_precheck.sh 20 20
-```
-
-Script sẽ kiểm tra:
-
-1. Disk/app/db preflight.
-2. Command cần thiết có sẵn (`rehearsal/reconcile/migrate/rollback`).
-3. Bảng nguồn + bảng đích (`sales_shipments`, `sales_shipment_items`, `sales_dos`, `sales_do_items`).
-4. Reconciliation gate pass.
-5. Migrate dry-run report tạo thành công.
-
-Nếu PASS, script sẽ in sẵn lệnh execute migrate và rollback để chạy trong cửa sổ cutover.
+1. **§5.6** — preflight disk / app / DB + backup nếu cần.
+2. **Lệnh có mặt:** `php artisan list` và xác nhận có `purchase:sales-do-migration-rehearsal`, `purchase:sales-do-reconcile-report`, `purchase:sales-do-migrate-data`, `purchase:sales-do-migrate-rollback`.
+3. **Schema:** bảng nguồn + đích (`sales_shipments`, `sales_shipment_items`, `sales_dos`, `sales_do_items`) đúng kỳ vọng môi trường.
+4. **§5.1 → §5.2 + §5.3** — gate rehearsal pass.
+5. **Migrate dry-run:** `purchase:sales-do-migrate-data` **không** `--execute` (sinh report); chỉ khi PASS mới mở cửa sổ execute như **§5.8**.
 
 ---
 
-_Cập nhật: 2026-04-04 — nội dung deploy/quyền/queue chuyển sang `SERVER_RUNBOOK_VI.md`; file này giữ zip upload, disk, Cloud SQL, rehearsal Phase 3._
+_Cập nhật: 2026-04-04 — nội dung deploy/quyền/queue chuyển sang `SERVER_RUNBOOK_VI.md`; file này giữ zip upload, disk, Cloud SQL, rehearsal Phase 3. **2026-05-12** — bỏ tham chiếu script shell không còn trong `scripts/`, thay bằng gate/precheck thủ công._

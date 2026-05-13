@@ -16,7 +16,7 @@ Da tao helper global trong `public/vendor/helper/helper.js`:
 
 - `$.extractApiValidationErrors(err)`
 - `$.handleApiFormError(err, options)`
-- **Tenant:** `$.showErrors` được ghi đè bởi `resources/js/showErrorsLaravel.js` (qua `main.js`) — flatten mảng Laravel, host `.input-group` / cột grid, **Swal** cho lỗi không map được field (xem `FUNC_LOGIC/DESIGN_BACKEND_UI_UX_DESIGN_SPEC_VI.md` §12.2.1).
+- **Tenant:** `$.showErrors` được ghi đè bởi `resources/js/showErrorsLaravel.js` (qua `main.js`) — flatten mảng Laravel, host `.input-group` / cột grid, **Swal** cho lỗi không map được field (xem `FUNC_LOGIC/DESIGN_BACKEND_UI_UX_VI.md` §12.2.1).
 
 Trong `.catch(function(err) { ... })` chi can:
 

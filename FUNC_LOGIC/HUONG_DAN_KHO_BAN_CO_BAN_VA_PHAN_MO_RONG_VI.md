@@ -95,7 +95,7 @@ App cho **hai cờ** (`WAREHOUSE_INBOUND_FROM_PO_DELIVERED`, `WAREHOUSE_INBOUND_
 
 ### 5.5 **Công tắc env** (`WAREHOUSE_*`)
 
-Để **không sửa code** khi từng khách tắt kho tự động, chỉ nhập tay, hoặc dùng mode invoice — tất cả nằm trong **biến môi trường**. Bảng đầy đủ: [`WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md).
+Để **không sửa code** khi từng khách tắt kho tự động, chỉ nhập tay, hoặc dùng mode invoice — tất cả nằm trong **biến môi trường**. Bảng đầy đủ: [`WH_PURCHASE_ENV_REFERENCE_VI.md`](WH_PURCHASE_ENV_REFERENCE_VI.md).
 
 ### 5.6 Tích hợp **AI / webhook** tạo SO
 
@@ -118,10 +118,10 @@ Có thể **kiểm tra còn bán được không** trước khi tạo đơn — 
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | **Đa kho** (tồn theo kho, transfer, import khách → kho) | [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md) · [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md) |
 | Quy trình đầy đủ PO / DO / SO / Invoice / kho           | [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                      |
-| Biến `.env` giải thích từng dòng                        | [`WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)                            |
-| So sánh kỳ vọng vs code (QA, có mục multi-warehouse)    | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)                  |
-| Audit tổng quan ổn định luồng                           | [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md)                            |
-| Smoke test sau khi đổi cấu hình                         | [`ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md)                  |
+| Biến `.env` giải thích từng dòng                        | [`WH_PURCHASE_ENV_REFERENCE_VI.md`](WH_PURCHASE_ENV_REFERENCE_VI.md)                            |
+| So sánh kỳ vọng vs code (QA, có mục multi-warehouse)    | [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                  |
+| Audit tổng quan ổn định luồng                           | [`ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md)                            |
+| Smoke test sau khi đổi cấu hình                         | [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                  |
 | Luồng kho thuần (điều chỉnh, **chuyển kho**, movement)  | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                                                        |
 
 **Mục lục nhanh:** [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) · [`SALES_FULFILLMENT_DOCS_INDEX.md`](SALES_FULFILLMENT_DOCS_INDEX.md)

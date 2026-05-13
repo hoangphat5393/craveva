@@ -2,7 +2,7 @@
 
 Tài liệu rà soát module **DeveloperTools** (gateway DB, view, quyền UI), và ghi chú lỗi **CRAVEVA AI semantic layer** khi chạy SQL có `CREATE`.
 
-**Tham chiếu lỗi “gói có module nhưng không hiện Settings”:** [../FUNC_BUG/DEVELOPER_TOOLS_MISSING_COMPANY_SETTINGS_DESPITE_PACKAGE.md](../FUNC_BUG/DEVELOPER_TOOLS_MISSING_COMPANY_SETTINGS_DESPITE_PACKAGE.md).
+**Tham chiếu lỗi “gói có module nhưng không hiện Settings”:** [../FUNC_BUG/DEVTOOLS_NO_COMPANY_SETTINGS.md](../FUNC_BUG/DEVTOOLS_NO_COMPANY_SETTINGS.md).
 
 ---
 

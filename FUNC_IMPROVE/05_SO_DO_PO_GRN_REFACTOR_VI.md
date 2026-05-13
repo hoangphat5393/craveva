@@ -13,7 +13,7 @@ Ghi chú: file này là tracker lịch sử refactor/cutover quan trọng, chưa
 **Ngày gộp:** 2026-04-06  
 **Nguồn:** Gộp từ `REFACTOR_SO_DO_PO_GRN_IMPLEMENTATION_PLAN_VI.md`, `REFACTOR_SO_DO_PO_GRN_TRACKER_VI.md`, `REFATOR_SO_DO_PO_GRN_DECISION_VI.md`.
 
-**Schema, luồng bán, DROP legacy, audit gộp (không thay thế file lịch sử này):** [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md).
+**Schema, luồng bán, DROP legacy, audit gộp (không thay thế file lịch sử này):** [`ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md).
 
 ---
 
@@ -201,7 +201,7 @@ Lý do:
 ## 11) Tài liệu triển khai liên quan
 
 - Kế hoạch + tracker: cùng file này ([mục 2](#2-kế-hoạch-triển-khai-chi-tiết), [mục 3](#3-tracker-triển-khai)).
-- Prompt thực thi cho AI: [`PROMPT_REFACTOR_SO_DO_PO_GRN_EXECUTION_VI.md`](PROMPT_REFACTOR_SO_DO_PO_GRN_EXECUTION_VI.md).
+- Prompt thực thi cho AI: [`PROMPT_REFACTOR_SO_DO_PO_GRN_VI.md`](PROMPT_REFACTOR_SO_DO_PO_GRN_VI.md).
 
 ---
 
@@ -599,17 +599,18 @@ Kế hoạch này đảm bảo:
         - fail khi thiếu `--baseline`,
         - fail khi baseline file không tồn tại,
         - pass và sinh delta report đúng dữ liệu mẫu.
-- 2026-03-30: Đã bổ sung script gate tự động cho staging rehearsal:
+- 2026-03-30: Đã bổ sung script gate tự động cho staging rehearsal _(lịch sử; không còn trong repo — xem STAGING_OPERATIONS §5)_:
     - `scripts/staging_sales_do_rehearsal_gate.sh`
     - chạy chuỗi baseline + reconcile + validation gate trong 1 lệnh,
     - trả exit code `1` nếu lệch số liệu/quality check fail.
-- 2026-03-30: Đã bổ sung safe runner cho staging rehearsal:
+- 2026-03-30: Đã bổ sung safe runner cho staging rehearsal _(lịch sử; không còn trong repo)_:
     - `scripts/staging_phase3_safe_execute.sh`
     - tích hợp preflight (disk/app/db) + backup DB + rehearsal gate,
     - ưu tiên an toàn vận hành staging và giảm rủi ro mất dữ liệu khi thao tác.
-- 2026-03-30: Đã bổ sung wrapper PowerShell chạy remote từ local:
+- 2026-03-30: Đã bổ sung wrapper PowerShell chạy remote từ local _(lịch sử; không còn trong repo)_:
     - `scripts/run_staging_phase3_safe_execute.ps1`
     - mục tiêu: thao tác 1 lệnh từ local -> staging, tự normalize CRLF cho `.sh` trước khi chạy.
+- **2026-05-12 (tài liệu / repo):** Các file `staging_sales_do_rehearsal_gate.sh`, `staging_phase3_safe_execute.sh`, `run_staging_phase3_safe_execute.ps1`, `staging_phase4_cutover_precheck.sh` **không còn trong** `scripts/`. Rehearsal/precheck dùng lệnh Artisan trực tiếp — xem `docs/STAGING_OPERATIONS.md` §5.1–5.4 và §5.6–5.9.
 - 2026-03-30: Test suite Phase 2 hiện tại pass:
     - 25 tests, 79 assertions (phase3 commands + permission alias + service lifecycle + service persistence + outbound/inbound + observer guard).
 
@@ -676,7 +677,7 @@ Kế hoạch này đảm bảo:
 ### Ghi chú
 
 - ...
-- 2026-03-30: Đã bổ sung precheck gate cho cutover:
+- 2026-03-30: Đã bổ sung precheck gate cho cutover _(lịch sử; không còn trong repo)_:
     - script: `scripts/staging_phase4_cutover_precheck.sh`,
     - chạy preflight disk/app/db + check command/table + chạy rehearsal gate + migrate dry-run report.
 - 2026-03-30: Đã chạy precheck trên staging (`company_id=20`) và PASS:
@@ -684,7 +685,7 @@ Kế hoạch này đảm bảo:
     - migrate dry-run report tạo thành công,
     - trạng thái hiện tại: sẵn sàng cửa sổ execute cutover.
 - 2026-03-30: Đã chạy cutover execution trên staging:
-    - backup DB thành công qua `staging_phase3_safe_execute.sh`,
+    - backup DB thành công qua quy trình thủ công / script nội bộ _(trước đây `staging_phase3_safe_execute.sh`)_,
     - migrate execute `company_id=20` thành công, dry-run sau execute cho thấy `pending=0`,
     - bật cờ cutover hiệu lực (`purchase.do_grn_cutover_enabled=true`, `purchase.flow_naming_mode=compat_v2`),
     - deploy route alias `sales-do.*` + `grn.*` lên staging và smoke route list PASS,

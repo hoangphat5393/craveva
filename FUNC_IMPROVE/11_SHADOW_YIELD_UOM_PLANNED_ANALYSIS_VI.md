@@ -60,7 +60,7 @@
 
 ## 5) Điều kiện nên cân nhắc chuyển từ shadow sang enforce (chỉ khi đã được phê duyệt)
 
-- Test High/Critical trên staging (matrix: `FUNC_TEST/01_BIOMIXING_PROPOSAL_TEST_CASE_MATRIX_VI.md`).
+- Test High/Critical trên staging (matrix: `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`).
 - Chênh lệch old/new trong ngưỡng business chấp nhận.
 - UAT có biên bản signed-off.
 - Rollback bằng feature flag và quy trình vận hành đã rehearse.

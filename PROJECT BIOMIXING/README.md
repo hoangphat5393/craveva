@@ -9,7 +9,7 @@ Thư mục này giữ **tài liệu không thuần “triển khai kỹ thuật 
 
 Toàn bộ **Markdown triển khai** nằm tại:
 
-**[`FUNC_IMPROVE/`](../FUNC_IMPROVE/)** — các file triển khai có tiền tố `BIOMIXING_` / `AUDIT_PROJECT_BIOMIXING_*` (xem [`FUNC_IMPROVE/INDEX.md`](../FUNC_IMPROVE/INDEX.md) mục Biomixing).
+**[`FUNC_IMPROVE/`](../FUNC_IMPROVE/)** — các file triển khai có tiền tố `BIOMIXING_*` và audit tách `BIOMIXING_MIGRATION_AUDIT_2026_VI.md` (xem [`FUNC_IMPROVE/INDEX.md`](../FUNC_IMPROVE/INDEX.md) mục Biomixing).
 
-- Chỉ mục (EN): [`FUNC_IMPROVE/BIOMIXING_PRODUCTION_PREP_INDEX_EN.md`](../FUNC_IMPROVE/BIOMIXING_PRODUCTION_PREP_INDEX_EN.md)
-- Audit tách thư mục: [`FUNC_IMPROVE/AUDIT_PROJECT_BIOMIXING_MIGRATION_2026_VI.md`](../FUNC_IMPROVE/AUDIT_PROJECT_BIOMIXING_MIGRATION_2026_VI.md)
+- Chỉ mục (EN): [`FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`](../FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md)
+- Audit tách thư mục: [`FUNC_IMPROVE/BIOMIXING_MIGRATION_AUDIT_2026_VI.md`](../FUNC_IMPROVE/BIOMIXING_MIGRATION_AUDIT_2026_VI.md)

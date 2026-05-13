@@ -258,7 +258,9 @@ return [
     | AI order webhook (integrations)
     |--------------------------------------------------------------------------
     |
-    | Shared secret for POST /ai-order-webhook/{hash}. Set in .env as AI_ORDER_WEBHOOK_SECRET.
+    | Shared secret for POST /ai-order-webhook/{hash} when no per-company secret is set.
+    | Prefer generating a secret per company from Sale order settings (companies.ai_order_webhook_secret).
+    | Set in .env as AI_ORDER_WEBHOOK_SECRET.
     |
     */
 

@@ -272,6 +272,7 @@ use Laravel\Cashier\Billable;
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereAuthThemeText($value)
  *
  * @property int $employee_can_export_data
+ * @property string|null $ai_order_webhook_secret
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereEmployeeCanExportData($value)
  *

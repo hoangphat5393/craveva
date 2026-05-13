@@ -146,3 +146,34 @@ APP_ENV=production php artisan view:cache
 - `migrate --force`: `Nothing to migrate`
 - No migration remains in `Pending` state.
 - Staging endpoint check after run: `HTTP/1.1 200 OK`.
+
+---
+
+## Phụ lục — Recovery nhanh (ổ đĩa / git / vendor)
+
+> Gộp từ `docs/STAGING_RECOVERY_LATEST.md` (2026-05-12). Runbook đầy đủ: [`SERVER_RUNBOOK_VI.md`](SERVER_RUNBOOK_VI.md), [`STAGING_OPERATIONS.md`](STAGING_OPERATIONS.md). _(File log `STAGING_DISK_RECOVERY_2026-03-27.md` có thể không còn trong repo — xem mục incident trong tài liệu này hoặc runbook.)_
+
+Target: `craveva-staging`, app: `/var/www/craveva-staging/current/craveva`
+
+```bash
+ssh craveva-staging "df -h"
+```
+
+Dọn an toàn + Laravel (xem `STAGING_OPERATIONS.md` để đủ ngữ cảnh):
+
+```bash
+ssh craveva-staging "
+  cd /var/www/craveva-staging/current/craveva &&
+  sudo -u www-data php artisan optimize:clear || true
+"
+```
+
+Vendor hỏng:
+
+```bash
+ssh craveva-staging "
+  cd /var/www/craveva-staging/current/craveva &&
+  rm -rf vendor &&
+  APP_ENV=production composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+"
+```

@@ -7,17 +7,10 @@ use Illuminate\View\Component;
 
 class SettingCard extends Component
 {
-    public $method;
-
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
-    public function __construct($method = 'PUT')
-    {
-        $this->method = $method;
-    }
+    public function __construct(
+        public string $method = 'PUT',
+        public bool $withoutForm = false,
+    ) {}
 
     /**
      * Get the view / contents that represent the component.

@@ -1,7 +1,7 @@
 # Audit module Webhooks (`Modules/Webhooks`)
 
 **Phạm vi:** `Modules/Webhooks/` — cấu hình đẩy sự kiện ra URL ngoài, UI quản lý, log, observer, job queue.  
-**Không thuộc phạm vi:** webhook **inbound** tạo đơn AI (`app/Http/Controllers/Integrations/AiOrderWebhookController.php` — xem `PM_READY_AI_WEBHOOK_STAGING_VI.md`, `WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`).  
+**Không thuộc phạm vi:** webhook **inbound** tạo đơn AI (`app/Http/Controllers/Integrations/AiOrderWebhookController.php` — xem `PM_READY_AI_WEBHOOK_STAGING_VI.md`, `WH_PURCHASE_ENV_REFERENCE_VI.md`).  
 **Ngày audit:** 2026-05-12
 
 ---

@@ -2,7 +2,7 @@
 
 Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**, không thay cho code.
 
-**Kiểm tra tài liệu (audit):** [`DOCUMENTATION_AUDIT_FUNC_LOGIC_2026_VI.md`](DOCUMENTATION_AUDIT_FUNC_LOGIC_2026_VI.md) · mục lục máy: [`INDEX.md`](INDEX.md).
+**Kiểm tra tài liệu (audit):** [`AUDIT_LOGIC_2026_VI.md`](AUDIT_LOGIC_2026_VI.md) · mục lục máy: [`INDEX.md`](INDEX.md). **Import (Maolin / queue):** [`../FUNC_IMPORT/AUDIT_IMPORT_2026_VI.md`](../FUNC_IMPORT/AUDIT_IMPORT_2026_VI.md) + [`../FUNC_IMPORT/INDEX.md`](../FUNC_IMPORT/INDEX.md). **Bug / incident archive:** [`../FUNC_BUG/AUDIT_BUG_2026_VI.md`](../FUNC_BUG/AUDIT_BUG_2026_VI.md). **Runbook `docs/`:** [`../docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md`](../docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md). **LOC snapshot `LOG_REPORT/`:** [`../LOG_REPORT/INDEX.md`](../LOG_REPORT/INDEX.md) + [`../LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`](../LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md). **Spec & infra snapshot `SPECIFICATION/`:** [`../SPECIFICATION/INDEX.md`](../SPECIFICATION/INDEX.md) + [`../SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`](../SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md).
 
 ## AI context (đọc nhanh kiến trúc hệ thống)
 
@@ -55,18 +55,18 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 | [WAREHOUSE_INDEX.md](WAREHOUSE_INDEX.md)                                                                     | **Mục lục Warehouse** (FLOW, UAT, audit, PM)                                            |
 | [SALES_FULFILLMENT_DOCS_INDEX.md](SALES_FULFILLMENT_DOCS_INDEX.md)                                           | **Mục lục canonical** Sales · Warehouse (đọc trước khi lần các doc phân tán)            |
 | [UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)                                   | **UAT E2E** Mua · Bán · Kho (bản chuẩn)                                                 |
-| [ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md)           | **Master:** luồng bán, DROP legacy, audit gộp (§7); schema `grns`/`sales_dos` vs legacy |
-| [WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)           | **Biến `.env`** kho + PO/GRN/Sales DO/webhook AI (tham chiếu một chỗ)                   |
+| [ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md](ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md)           | **Master:** luồng bán, DROP legacy, audit gộp (§7); schema `grns`/`sales_dos` vs legacy |
+| [WH_PURCHASE_ENV_REFERENCE_VI.md](WH_PURCHASE_ENV_REFERENCE_VI.md)           | **Biến `.env`** kho + PO/GRN/Sales DO/webhook AI (tham chiếu một chỗ)                   |
 | [AUDIT_WAREHOUSE_MODULE_VI.md](AUDIT_WAREHOUSE_MODULE_VI.md)                                                 | Audit **code** module Warehouse (route, quyền, API, liên kết Purchase/Invoice)          |
 | [QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                     | Quy trình PO / DO / SO / Invoice / Kho (VI, một chỗ)                                    |
 | [WAREHOUSE_MASTER_GUIDE.md](WAREHOUSE_MASTER_GUIDE.md)                                                       | Tài liệu Warehouse gộp (analysis + UI + DB)                                             |
 | [WAREHOUSE_TOM_TAT_NOI_BO.md](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11                                            | Audit trước nâng cấp kho + prompt Cursor UAT (đã gộp)                                   |
-| [ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md](ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md) | QA verification hiện tại cho SO/PO/DO/Invoice/Warehouse                                 |
-| [BIOMIXING / Production (triển khai)](../FUNC_IMPROVE/BIOMIXING_PRODUCTION_PREP_INDEX_EN.md)                 | Kế hoạch & playbook dev **Production** (tách khỏi `FUNC_LOGIC`; liên kết kho/SO/DO)     |
+| [ERP_SO_PO_DO_INV_WH_QA_VI.md](ERP_SO_PO_DO_INV_WH_QA_VI.md) | QA verification hiện tại cho SO/PO/DO/Invoice/Warehouse                                 |
+| [BIOMIXING / Production (triển khai)](../FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md)                 | Kế hoạch & playbook dev **Production** (tách khỏi `FUNC_LOGIC`; liên kết kho/SO/DO)     |
 | [MAOLIN_MASTER_GUIDE.md](MAOLIN_MASTER_GUIDE.md)                                                             | **Bản gộp MAOLIN** (đọc 1 file là đủ)                                                   |
 | [MAOLIN_IMPORT_MAPPING.md](MAOLIN_IMPORT_MAPPING.md)                                                         | Map cột import MAOLIN (ready to use)                                                    |
-| (đã gộp)                                                                                                     | CF trùng PO/DO/SO/Client → xem `CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md`             |
-| [CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md](CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md)                     | **Bảng CF toàn hệ** — slug seed vs nghiệp vụ vs core + SQL xuất DB thực tế              |
+| (đã gộp)                                                                                                     | CF trùng PO/DO/SO/Client → xem `CF_SYSTEMWIDE_AUDIT_VI.md`             |
+| [CF_SYSTEMWIDE_AUDIT_VI.md](CF_SYSTEMWIDE_AUDIT_VI.md)                     | **Bảng CF toàn hệ** — slug seed vs nghiệp vụ vs core + SQL xuất DB thực tế              |
 | [PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)                                 | Phân tích chi tiết file `PROJECT MAOLIN New`                                            |
 | [ERP_TECH_REVIEW_REPORT_VI.md](ERP_TECH_REVIEW_REPORT_VI.md)                                                 | Tech review (VI)                                                                        |
 
@@ -82,7 +82,7 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 | (đã gộp)                                                                                                                 | MAOLIN/Miaolin legacy + contract → xem `MAOLIN_MASTER_GUIDE.md`                     |
 | [SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md](SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md)                                           | Báo cáo tổng quan DB (MySQL, miền nghiệp vụ, SQL gợi ý)                             |
 | [FLOW_USERS_CLIENT.md](FLOW_USERS_CLIENT.md)                                                                             | Quan hệ users / client (gộp: mapping + sơ đồ + ghi chú schema)                      |
-| [SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md](SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md) | Layer users–client_details                                                          |
+| [SCHEMATIC_USERS_CLIENT_1_1_VI.md](SCHEMATIC_USERS_CLIENT_1_1_VI.md) | Layer users–client_details                                                          |
 
 ### Pricing / dev tools
 

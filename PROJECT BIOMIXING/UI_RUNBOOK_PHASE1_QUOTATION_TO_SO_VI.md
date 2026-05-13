@@ -2,7 +2,7 @@
 
 **Phạm vi nghiệp vụ (Biomixing):** từ tạo báo giá (Estimate / Quotation) đến **President review**, **VP Pricing review**, rồi **chuyển Sales Order** — khớp `PHASE1_QUOTATION_FLOW_DIAGRAM.mmd` và `PHASE1_TO_3_END_TO_END_FLOW.mmd` (subgraph P1).
 
-**Lưu ý tên “Phase 1”:** trong repo còn có **Phase 1 — MVP Production** (BOM, lệnh sản xuất, kho…) trong `FUNC_IMPROVE/BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md`. Tài liệu **này** chỉ nói về **Phase 1 thương mại / báo giá**, không phải module Production.
+**Lưu ý tên “Phase 1”:** trong repo còn có **Phase 1 — MVP Production** (BOM, lệnh sản xuất, kho…) trong `FUNC_IMPROVE/BIOMIXING_DEV_PLAN.md`. Tài liệu **này** chỉ nói về **Phase 1 thương mại / báo giá**, không phải module Production.
 
 ---
 

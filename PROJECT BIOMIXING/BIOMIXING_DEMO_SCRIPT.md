@@ -4,7 +4,7 @@
 **Focus:** Sustainable Farming Solutions (EHPurge, Probiotics, Feed Additives)
 **Scenario:** A Distributor orders 500kg of **EHPurge**. We demonstrate the synergy between **Craveva ERP (hub.craveva.com)** for operations and **AI Agents (ai.craveva.com)** for intelligence.
 
-**Rehearsal note (2026 Hub):** When demoing **Delivery Order → Ship**, align with live behaviour: **confirm** reserves stock; **ship** consumes by **warehouse + product line + batch + expiry** where applicable. See `FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md` and `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md` §3.
+**Rehearsal note (2026 Hub):** When demoing **Delivery Order → Ship**, align with live behaviour: **confirm** reserves stock; **ship** consumes by **warehouse + product line + batch + expiry** where applicable. See `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md` and `BIOMIXING_BASELINE_PREP_2026_VI.md` §3.
 
 ---
 

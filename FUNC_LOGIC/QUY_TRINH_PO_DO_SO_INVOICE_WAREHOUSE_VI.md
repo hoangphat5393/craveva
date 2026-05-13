@@ -4,7 +4,7 @@
 **Đối tượng:** PM, BA, vận hành, dev mới.  
 **Cập nhật:** 2026-04-12
 
-**Bảng thật trên DB (GRN / Sales DO) vs legacy:** [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md) — trong file này vẫn dùng từ nghiệp vụ “DO nhận hàng”, “phiếu giao bán”; **bảng ghi hiện tại** lần lượt là `grns` và `sales_dos`, không còn `delivery_orders` / `sales_shipments` cho CRUD chính.
+**Bảng thật trên DB (GRN / Sales DO) vs legacy:** [`ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md) — trong file này vẫn dùng từ nghiệp vụ “DO nhận hàng”, “phiếu giao bán”; **bảng ghi hiện tại** lần lượt là `grns` và `sales_dos`, không còn `delivery_orders` / `sales_shipments` cho CRUD chính.
 
 **Chi tiết kỹ thuật (class, bảng, observer):** [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)  
 **Trả hàng bán (Credit Note → nhập kho):** [`SALES_RETURN_CREDIT_NOTE_STOCK_VI.md`](SALES_RETURN_CREDIT_NOTE_STOCK_VI.md)  
@@ -22,7 +22,7 @@
 | 1      | **Công ty / tenant** đúng                                                                                  | Mọi chứng từ gắn `company_id`.                                                                      |
 | 2      | **Kho** (Warehouse): ít nhất 1 kho active, 1 kho mặc định công ty (nếu dùng)                               | Module Warehouse bật.                                                                               |
 | 3      | **Sản phẩm** (Product): SKU, loại **hàng hóa** (không phải service) nếu cần trừ tồn                        | Chi tiết form/import: [`FLOW_ADD_PRODUCT.md`](FLOW_ADD_PRODUCT.md).                                 |
-| 4      | **Khách** (Client): có **kho mặc định giao** (`default_warehouse_id`) khi dùng **Scope B** xuất theo khách | Import/map: `WAREHOUSE_MASTER_GUIDE`, `SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md`. |
+| 4      | **Khách** (Client): có **kho mặc định giao** (`default_warehouse_id`) khi dùng **Scope B** xuất theo khách | Import/map: `WAREHOUSE_MASTER_GUIDE`, `SCHEMATIC_USERS_CLIENT_1_1_VI.md`. |
 
 ---
 

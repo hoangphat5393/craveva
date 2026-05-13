@@ -6,7 +6,7 @@
 | **Không phải** | Kịch bản marketing + AI trong `PROJECT BIOMIXING/BIOMIXING_DEMO_SCRIPT.md` (ERP+AI storytelling thay Production module); dùng file đó chỉ làm overlay nội dung khách hàng nếu cần.           |
 | **Cập nhật**   | 2026-05-09                                                                                                                                                                                   |
 
-Đọc thêm khái niệm RM/FG: `BIOMIXING_PRODUCTION_FLOW_CONCEPTS_VI.md`. Checklist ERP 3 luồng cơ bản: `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`.
+Đọc thêm khái niệm RM/FG: `BIOMIXING_FLOW_CONCEPTS_VI.md`. Checklist ERP 3 luồng cơ bản: `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`.
 
 ---
 
@@ -98,7 +98,7 @@ Chi tiết policy FG (controlled / variance): **`/account/production/fg-quantity
 
 ## 4. Liên kết nhanh trong repo
 
-- Playbook Phase 0–1: `BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md`
+- Playbook Phase 0–1: `BIOMIXING_PLAYBOOK_P0P1_VI.md`
 - P0 hành động tuần: `P0_NEXT_ACTION_BIOMIXING_VI.md`
 - Demo script stakeholder (ERP+AI): `PROJECT BIOMIXING/BIOMIXING_DEMO_SCRIPT.md`
 

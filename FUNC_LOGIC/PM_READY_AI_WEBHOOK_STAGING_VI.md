@@ -1,57 +1,66 @@
-# PM Ready - AI Order Webhook (Staging)
+# PM Ready — AI Order Webhook (runbook)
+
+**Cập nhật:** 2026-05-12 — **Đã gỡ khỏi tài liệu** URL/secret tạm dùng cho test gấp (`stg-ai-order-*` trên `staging.craveva.com`). Mọi môi trường dùng **secret lấy từ ERP** (theo công ty) hoặc, khi vận hành cho phép, **fallback `.env`** do quản trị cấu hình (không đăng secret thật trong repo).
+
+---
 
 ## Trạng thái hiện tại
 
-- Webhook inbound AI đã triển khai trên staging và test thành công.
-- Migration lỗi trước đó đã được sửa và chạy thành công.
-- Endpoint đã tạo được `orders` + `order_items`.
-- Có kiểm tra idempotency cơ bản theo `external_event_id`.
+- Webhook inbound AI: **`POST /ai-order-webhook/{hash}`** — tạo `orders` + `order_items`.
+- Xác thực: **`{hash}` trong URL** = **`X-AI-Webhook-Secret`** (so khớp `hash_equals`).
+- Ringfence: secret **theo công ty** (`companies.ai_order_webhook_secret`) + `company_id` trong body phải khớp khi dùng secret đó.
+- Idempotency cơ bản: `external_event_id` (tra cứu qua tag trong `note`).
+- Chi tiết secret / `client_code` / `client_id`: [`AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md`](AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md).
 
 ---
 
-## 1) Thông tin webhook để setup
+## 1) Lấy URL và secret (không copy secret từ tài liệu này)
 
-**Environment:** Staging  
-**Base URL:** `https://staging.craveva.com`
+1. Đăng nhập ERP, chọn đúng **công ty (workspace)**.
+2. **Cài đặt → Sale order settings → tab API**.
+3. Nếu chưa có secret: bấm **Tạo / tạo lại secret webhook** — copy **POST URL** và dòng **HTTP header** hiển thị trên màn hình.
+4. Dán vào hệ thống gửi webhook (LINE / AI / middleware). **Không** hardcode secret vào repo hoặc ticket công khai.
 
-**Webhook URL:**
-
-`POST https://staging.craveva.com/ai-order-webhook/stg-ai-order-20260329-9fA2mK`
-
-**Headers bắt buộc:**
-
-- `X-AI-Webhook-Secret: stg-ai-order-20260329-9fA2mK`
-- `Accept: application/json`
-
-> Ghi chú: đây là secret tạm cho test gấp. Sau khi PM xác nhận flow, nên rotate secret mới để UAT/production.
+**Ghi chú vận hành:** Nếu công ty chưa tạo secret nhưng server có biến **`AI_ORDER_WEBHOOK_SECRET`** trong `.env`, UI có thể hiển thị URL/header dựa trên fallback toàn instance — quyền quyết định thuộc quản trị; runbook này khuyến nghị ưu tiên **secret theo công ty**. Nếu trước đây `.env` từng chứa secret tạm đã công bố trong tài liệu cũ, nên **đổi (rotate)** giá trị đó trên server và cập nhật mọi tích hợp.
 
 ---
 
-## 2) Payload tối thiểu (khuyến nghị gửi dạng form-data hoặc x-www-form-urlencoded)
+## 2) Payload tối thiểu (form-data hoặc `x-www-form-urlencoded` hoặc JSON)
 
 Trường bắt buộc:
 
-- `company_id` (ví dụ `1`)
-- `client_id` (ví dụ `1`)
-- `external_event_id` (unique theo từng event)
-- `items[0][item_name]`
-- `items[0][quantity]`
-- `items[0][unit_price]`
+- `company_id` (integer, tồn tại trong `companies`)
+- **Khách:** ít nhất một trong hai — `client_code` **hoặc** `client_id` (xem [`AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md`](AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md))
+- `external_event_id` (khuyến nghị unique theo từng event)
+- `items[0][item_name]`, `items[0][quantity]`, `items[0][unit_price]`
 
-Ví dụ:
+### `client_code` / `client_id` — tránh 422
+
+- Phải gửi **ít nhất một** trong hai; nếu gửi cả hai thì phải cùng một user trong công ty đó.
+- `client_code` / `client_id` phải thuộc đúng **`company_id`** trong body (user **active**).
+
+### Cách test
+
+1. **Postman / curl:** URL + header lấy từ tab API; body đủ trường trên.
+2. **Test tự động (repo):** `php artisan test --compact tests/Feature/AiOrderWebhookPerCompanySecretTest.php`
+
+### Ví dụ curl (placeholder — thay bằng giá trị từ ERP)
 
 ```bash
-curl -X POST "https://staging.craveva.com/ai-order-webhook/stg-ai-order-20260329-9fA2mK" \
+curl -X POST "https://YOUR_APP_HOST/ai-order-webhook/YOUR_SECRET_HEX_FROM_SETTINGS" \
   -H "Accept: application/json" \
-  -H "X-AI-Webhook-Secret: stg-ai-order-20260329-9fA2mK" \
-  -d "company_id=1" \
-  -d "client_id=1" \
+  -H "X-AI-Webhook-Secret: YOUR_SECRET_HEX_FROM_SETTINGS" \
+  -d "company_id=YOUR_COMPANY_ID" \
+  -d "client_code=YOUR_CLIENT_CODE" \
   -d "external_event_id=line-msg-001" \
   -d "note=Order from LINE AI" \
+  -d "check_stock=0" \
   -d "items[0][item_name]=Coffee test" \
   -d "items[0][quantity]=1" \
   -d "items[0][unit_price]=10000"
 ```
+
+Có thể thay `-d "client_code=..."` bằng `-d "client_id=YOUR_USER_ID"` (user active đúng công ty). `check_stock=0` tương đương bỏ kiểm tồn khi cấu hình warehouse bật kiểm tra (tùy nhu cầu pilot).
 
 ---
 
@@ -91,57 +100,43 @@ curl -X POST "https://staging.craveva.com/ai-order-webhook/stg-ai-order-20260329
 }
 ```
 
-### Lỗi dữ liệu (422)
+### Lỗi dữ liệu (422) — hình dạng tham khảo
 
 ```json
 {
     "message": "The given data was invalid.",
     "errors": {
         "company_id": ["The company id field is required."],
-        "client_id": ["The client id field is required."],
+        "client_code": ["…"],
         "items": ["The items field is required."]
     }
 }
 ```
 
+Thông điệp cụ thể phụ thuộc locale và rule trong `StoreAiOrderWebhookRequest`.
+
 ---
 
 ## 4) Checklist test cho PM
 
-1. Gọi webhook với payload hợp lệ -> nhận `201`.
-2. Kiểm tra màn hình Orders trên staging -> có đơn mới.
-3. Gọi lại đúng `external_event_id` cũ -> nhận `duplicate: true`.
-4. Đổi secret sai -> nhận `401`.
+1. Gọi webhook với payload hợp lệ → nhận **201**.
+2. Kiểm tra màn **Orders** → có đơn mới, `client_id` đúng khách.
+3. Gọi lại đúng `external_event_id` cũ → nhận **`duplicate: true`**.
+4. Sai secret (URL hoặc header) → **401**.
 
 ---
 
-## 5) Scope hiện tại và bước tiếp theo
+## 5) Bước tiếp theo (sản phẩm / kỹ thuật)
 
-### Đã có
+- Thêm bảng log inbound (`ai_order_webhook_logs`) nếu cần audit chi tiết.
+- Mapping `line_user_id → client_code` tự động (tùy nghiệp vụ).
+- Cân nhắc chữ ký **HMAC** thay cho shared secret đơn (tài liệu cải tiến: [`../FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md#part-3-api-tab--ringfence-prompt`](../FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md#part-3-api-tab--ringfence-prompt)).
 
-- Nhận webhook từ AI.
-- Tạo order + items.
-- Xử lý trùng event cơ bản.
+---
 
-### Đề xuất bước tiếp theo
+## Liên kết
 
-- Rotate secret mới sau khi PM test xong.
-- Thêm bảng log inbound riêng (`ai_order_webhook_logs`) để audit chi tiết.
-- Tách mapping `line_user_id -> client_id` tự động (không gửi `client_id` thủ công).
-- Nâng cấp chữ ký HMAC chuẩn thay vì shared secret đơn.
+- Secret DB + client: [`AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md`](AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md)
+- Audit API: [`AUDIT_AI_ORDER_INBOUND_SO_API_VI.md`](AUDIT_AI_ORDER_INBOUND_SO_API_VI.md)
 
-**Prompt triển khai UI + ringfence theo company (Cursor):** [`../FUNC_IMPROVE/15_SALE_ORDER_AI_SETTINGS_GUIDE_AND_RINGFENCE_PROMPT_VI.md`](../FUNC_IMPROVE/15_SALE_ORDER_AI_SETTINGS_GUIDE_AND_RINGFENCE_PROMPT_VI.md).
-
-Dữ liệu mãu
-
-curl -X POST "https://staging.craveva.com/ai-order-webhook/stg-ai-order-20260329-9fA2mK" \
- -H "Accept: application/json" \
- -H "X-AI-Webhook-Secret: stg-ai-order-20260329-9fA2mK" \
- -d "company_id=20" \
- -d "client_id=345" \
- -d "external_event_id=line-company20-20260329-001" \
- -d "note=LINE order test for company 20" \
- -d "items[0][item_name]=Coffee Arabica 250g" \
- -d "items[0][quantity]=2" \
- -d "items[0][unit_price]=120000" \
- -d "items[0][sku]=COF-250"
+_Chỉ mục:_ [`INDEX.md`](INDEX.md).

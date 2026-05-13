@@ -1,6 +1,6 @@
 # AI.Craveva → MySQL (`136.110.52.19:3306`) — Engineering questionnaire
 
-**Superseded for leadership reporting:** use **`ENG_AI_MYSQL_CONNECTIVITY_BOSS_REPORT.md`** — it includes this checklist, investigation findings, and hub vs staging clarification.
+**Ghi chú:** bản “boss report” tách riêng không còn trong repo; dùng file này làm bản đầy đủ checklist + ngữ cảnh hub/staging.
 
 ---
 
@@ -49,4 +49,4 @@ Screenshots or CLI output are fine. We need clarity on the **DB allowlist / netw
 
 ---
 
-See **`ENG_AI_MYSQL_CONNECTIVITY_BOSS_REPORT.md`** for GCP verification notes and answers for management.
+See các mục checklist trên và runbook `docs/SERVER_RUNBOOK_VI.md` cho xác minh GCP / allowlist.

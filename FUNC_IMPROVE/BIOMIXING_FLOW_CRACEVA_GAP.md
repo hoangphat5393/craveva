@@ -3,7 +3,7 @@
 **Nguồn sơ đồ:** `manual_mixing_250kg_flowchart.mmd` / PDF 加工流程圖 2025.09.08 (manual mix 250KG).  
 **Mục đích:** Liệt kê chức năng trong flow khách hàng, so với Craveva hiện tại, và gợi ý cách đóng gói module.
 
-> **2026-04:** Một số ô “Craveva có?” (đặc biệt **kho / batch / Sales DO**) đã **được cập nhật** trong file (dòng #28, §“Đã có”, footer). **Chuẩn đối chiếu** vẫn là **`BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md` §3** khi lên kế hoạch **Production**. Các bước **HACCP / CCP / BOM / rework** trong bảng vẫn dùng được.
+> **2026-04:** Một số ô “Craveva có?” (đặc biệt **kho / batch / Sales DO**) đã **được cập nhật** trong file (dòng #28, §“Đã có”, footer). **Chuẩn đối chiếu** vẫn là **`BIOMIXING_BASELINE_PREP_2026_VI.md` §3** khi lên kế hoạch **Production**. Các bước **HACCP / CCP / BOM / rework** trong bảng vẫn dùng được.
 
 ---
 
@@ -44,7 +44,7 @@
 | 26                            | (8) Shipping / transport                       | Vận chuyển / giao hàng                 | **Có**       | Delivery Order                                                                                                                                                                              |
 | 27                            | (9) Personnel & vehicle access control (out)   | Ra vào khi xuất                        | **Không**    | Tương tự bước 1                                                                                                                                                                             |
 | **Traceability & compliance** |
-| 28                            | Batch / lot traceability                       | Truy xuất lô nguyên liệu → TP → khách  | **Một phần** | Hub: tồn batch + Sales DO đã gắn lô/HSD (**2026**). **Chưa** khép: RM theo lệnh SX → batch TP → dòng DO (thiếu **Production**). Xem `BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md` §3. |
+| 28                            | Batch / lot traceability                       | Truy xuất lô nguyên liệu → TP → khách  | **Một phần** | Hub: tồn batch + Sales DO đã gắn lô/HSD (**2026**). **Chưa** khép: RM theo lệnh SX → batch TP → dòng DO (thiếu **Production**). Xem `BIOMIXING_BASELINE_PREP_2026_VI.md` §3. |
 | 29                            | CCP mandatory gate                             | Gate bắt buộc CCP                      | **Không**    | Chưa logic “không pack/ship nếu chưa pass CCP”                                                                                                                                              |
 | 30                            | QA release before ship                         | QA release trước khi xuất              | **Một phần** | Quality Lock theo task; chưa block theo COA/lab                                                                                                                                             |
 
@@ -117,4 +117,4 @@
 - Với khách hàng: có thể gọi là **một giải pháp “Production & traceability”** hoặc **“Production module”** (gói sản phẩm).
 - Với kiến trúc: **nên coi là một _vùng chức năng_ (domain)** gồm Production + Quality + mở rộng Warehouse/Purchase, **không** ép thành một class/module Laravel duy nhất nếu không muốn technical debt.
 
-Tham chiếu thêm: `BIOMIXING_GAP_ANALYSIS.md` (gap tổng thể; đọc notice 2026-04), **`BIOMIXING_PRODUCTION_BASELINE_AND_PREP_2026_VI.md`** (nền SO/PO/DO/kho), `FUNC_LOGIC/WAREHOUSE_INDEX.md`, `manual_mixing_250kg_flowchart.mmd` (flow đã verify PDF).
+Tham chiếu thêm: `BIOMIXING_GAP_ANALYSIS.md` (gap tổng thể; đọc notice 2026-04), **`BIOMIXING_BASELINE_PREP_2026_VI.md`** (nền SO/PO/DO/kho), `FUNC_LOGIC/WAREHOUSE_INDEX.md`, `manual_mixing_250kg_flowchart.mmd` (flow đã verify PDF).

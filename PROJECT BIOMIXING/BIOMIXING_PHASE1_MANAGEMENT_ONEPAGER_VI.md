@@ -48,15 +48,15 @@ Pham vi: doi chieu trang thai thuc te theo flow `PHASE1_TO_3_END_TO_END_FLOW.mmd
    `PROJECT BIOMIXING/PHASE3_PRODUCTION_QA.mmd`
 
 2. **Playbook + readiness table:**  
-   `FUNC_IMPROVE/BIOMIXING_PRODUCTION_IMPLEMENTATION_PLAYBOOK_PHASE0_1_VI.md` (mục 11, 13, 14)
+   `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md` (mục 11, 13, 14)
 
 3. **Kiem chung nen tang B2B + warehouse:**  
-   `FUNC_LOGIC/ERP_SO_PO_DO_INVOICE_WAREHOUSE_QA_VERIFICATION_VI.md`  
+   `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md`  
    `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`  
    `FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`
 
 4. **Ket qua test Biomixing:**  
-   `FUNC_TEST/01_BIOMIXING_PROPOSAL_TEST_CASE_MATRIX_VI.md` (40 passed / 0 failed trong cum test gan nhat; `BIO-TC-020` con Blocked/Partial)
+   `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md` (40 passed / 0 failed trong cum test gan nhat; `BIO-TC-020` con Blocked/Partial)
 
 ---
 

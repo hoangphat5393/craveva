@@ -55,8 +55,8 @@ File này lưu **kiểu việc bạn thường nhờ** để mở phiên Agent n
 **Điểm vào doc thường dùng trong repo:**
 
 - Kho / bán mua: `FUNC_LOGIC/WAREHOUSE_INDEX.md`, `FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`
-- Cải tiến / Biomixing: `FUNC_IMPROVE/INDEX.md`, `FUNC_IMPROVE/BIOMIXING_PRODUCTION_PREP_INDEX_EN.md`
-- Test matrix: `FUNC_TEST/01_BIOMIXING_PROPOSAL_TEST_CASE_MATRIX_VI.md`
+- Cải tiến / Biomixing: `FUNC_IMPROVE/INDEX.md`, `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`
+- Test matrix: `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`
 
 ---
 

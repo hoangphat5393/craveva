@@ -4,7 +4,7 @@ Navigation index for test strategy, test cases, and UAT execution evidence.
 
 ## Test Documents
 
-- `FUNC_TEST/01_BIOMIXING_PROPOSAL_TEST_CASE_MATRIX_VI.md` — ma trận UAT Bio-TC-001…021 + §7 lệnh Pest cụm Biomixing (lần chạy local **2026-05-07**: 40 passed / 8 file). **§4 MCP Browser (cùng ngày):** BIO-TC-002 / 003 / 013 ghi Pass; BIO-TC-020 Partial/Blocked (E2E chưa đủ).
+- `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md` — ma trận UAT Bio-TC-001…021 + §7 lệnh Pest cụm Biomixing (lần chạy local **2026-05-07**: 40 passed / 8 file). **§4 MCP Browser (cùng ngày):** BIO-TC-002 / 003 / 013 ghi Pass; BIO-TC-020 Partial/Blocked (E2E chưa đủ).
 
 ## Usage
 

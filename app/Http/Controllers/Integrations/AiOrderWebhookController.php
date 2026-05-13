@@ -18,10 +18,25 @@ class AiOrderWebhookController extends Controller
 {
     public function store(StoreAiOrderWebhookRequest $request, string $hash): JsonResponse
     {
-        $expectedSecret = (string) config('app.ai_order_webhook_secret', '');
         $headerSecret = (string) $request->header('X-AI-Webhook-Secret', '');
 
-        if ($expectedSecret === '' || ! hash_equals($expectedSecret, $hash) || ! hash_equals($expectedSecret, $headerSecret)) {
+        $companyForSecret = Company::withoutGlobalScopes()
+            ->whereNotNull('ai_order_webhook_secret')
+            ->where('ai_order_webhook_secret', $hash)
+            ->first();
+
+        $globalSecret = (string) config('app.ai_order_webhook_secret', '');
+
+        $authorized = false;
+
+        if ($companyForSecret !== null && hash_equals((string) $companyForSecret->ai_order_webhook_secret, $headerSecret)) {
+            $authorized = true;
+        } elseif ($globalSecret !== '' && hash_equals($globalSecret, $hash) && hash_equals($globalSecret, $headerSecret)) {
+            $authorized = true;
+            $companyForSecret = null;
+        }
+
+        if (! $authorized) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized webhook request.',
@@ -29,6 +44,21 @@ class AiOrderWebhookController extends Controller
         }
 
         $payload = $request->validated();
+        $resolvedClientId = $request->input('client_id');
+        $payload['client_id'] = is_numeric($resolvedClientId) ? (int) $resolvedClientId : null;
+
+        $mergedItems = $request->input('items');
+        if (is_array($mergedItems)) {
+            $payload['items'] = $mergedItems;
+        }
+
+        if ($companyForSecret !== null && (int) $payload['company_id'] !== (int) $companyForSecret->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'company_id must match the company for this webhook secret.',
+            ], 422);
+        }
+
         $companyId = (int) $payload['company_id'];
         $externalEventId = $payload['external_event_id'] ?? null;
 
@@ -36,7 +66,7 @@ class AiOrderWebhookController extends Controller
         if (! empty($externalEventId)) {
             $exists = Order::withoutGlobalScopes()
                 ->where('company_id', $companyId)
-                ->where('note', 'like', '%[ai_event:'.$externalEventId.']%')
+                ->where('note', 'like', '%[ai_event:' . $externalEventId . ']%')
                 ->exists();
 
             if ($exists) {
@@ -90,8 +120,8 @@ class AiOrderWebhookController extends Controller
                 ->value('id');
         }
 
-        $metaTag = ! empty($externalEventId) ? '[ai_event:'.$externalEventId.']' : '[ai_event:manual-test]';
-        $note = trim(($payload['note'] ?? '').' '.$metaTag);
+        $metaTag = ! empty($externalEventId) ? '[ai_event:' . $externalEventId . ']' : '[ai_event:manual-test]';
+        $note = trim(($payload['note'] ?? '') . ' ' . $metaTag);
 
         $order = DB::transaction(function () use ($payload, $company, $defaultAddressId, $subTotal, $total, $discountValue, $discountType, $items, $note) {
             $order = new Order;

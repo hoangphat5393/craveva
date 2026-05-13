@@ -77,6 +77,6 @@ Khi gặp các lỗi này, cần:
 
 ## 5. Đồng nhất form / bảng / trạng thái (Hub)
 
-Đặc tả UI/UX khi phát triển tính năng mới (list/create/edit, trạng thái nhị phân **và** trạng thái đa giá trị inline kiểu Orders): **`FUNC_LOGIC/DESIGN_BACKEND_UI_UX_DESIGN_SPEC_VI.md`**.
+Đặc tả UI/UX khi phát triển tính năng mới (list/create/edit, trạng thái nhị phân **và** trạng thái đa giá trị inline kiểu Orders): **`FUNC_LOGIC/DESIGN_BACKEND_UI_UX_VI.md`**.
 
 Khi có yêu cầu _đồng nhất UI/UX_ trên view mới hoặc refactor, bám file đó trước khi tự đặt class/màu riêng lẻ.

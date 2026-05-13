@@ -2,7 +2,7 @@
 
 **Phạm vi nghiệp vụ (Biomixing):** sau khi đã có **Sales Order** — lập kế hoạch sản xuất/giao hàng, kiểm BOM & tồn, mua bổ sung nếu thiếu, nhận nguyên liệu, tạo công việc (task), chuẩn bị nhãn/lô — khớp `PHASE2_PLANNING_PREPRODUCTION.mmd` và subgraph **P2** trong `PHASE1_TO_3_END_TO_END_FLOW.mmd`.
 
-**Lưu ý tên “Phase 2”:** trong `FUNC_IMPROVE/BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md`, **Phase 2** là lộ trình **kỹ thuật** (CCP, Receiving QC, Rework, Quality lock DO — tuân thủ HACCP). Tài liệu **này** mô tả **Phase 2 theo quy trình dự án Biomixing (planning / pre-production trên Hub hiện tại)**. Hai khái niệm **bổ sung** nhau: khi module Production/CCP go-live, thêm bước kiểm soát chất lượng theo playbook kỹ thuật.
+**Lưu ý tên “Phase 2”:** trong `FUNC_IMPROVE/BIOMIXING_DEV_PLAN.md`, **Phase 2** là lộ trình **kỹ thuật** (CCP, Receiving QC, Rework, Quality lock DO — tuân thủ HACCP). Tài liệu **này** mô tả **Phase 2 theo quy trình dự án Biomixing (planning / pre-production trên Hub hiện tại)**. Hai khái niệm **bổ sung** nhau: khi module Production/CCP go-live, thêm bước kiểm soát chất lượng theo playbook kỹ thuật.
 
 ---
 
@@ -41,7 +41,7 @@
 2. Đặt tên theo đơn / khách (ví dụ `FreshTea — BioMix Detox — SO xxx`).
 3. Gán **Client**, timeline, thành viên như quy trình PM nội bộ.
 4. Trong project: tạo **Tasks** tương ứng các bước tiền sản xuất (BOM check, reserve stock, PO follow-up, **in nhãn & batch**).
-    - Đây là cách Hub **hiện tại** thường mô phỏng “production planning” trước khi có module **Production** riêng (`BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` §1.2).
+    - Đây là cách Hub **hiện tại** thường mô phỏng “production planning” trước khi có module **Production** riêng (`BIOMIXING_DEV_PLAN.md` §1.2).
 
 ### 3.3 Kiểm tồn & BOM (thủ công / bán tự động)
 
@@ -68,7 +68,7 @@
 
 ## 4. Điều kiện chưa có trên Hub (để PM/BA kỳ vọng đúng)
 
-Các hạng mục sau thuộc **roadmap module Production / Quality** (xem `BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` §4 Phase 1–2 **kỹ thuật**), **chưa** nhất thiết là một nút wizard trên UI:
+Các hạng mục sau thuộc **roadmap module Production / Quality** (xem `BIOMIXING_DEV_PLAN.md` §4 Phase 1–2 **kỹ thuật**), **chưa** nhất thiết là một nút wizard trên UI:
 
 - **CCP checkpoint** cứng giữa các bước xưởng.
 - **Receiving QC** pass/fail tách biệt trên từng lô nhận.
@@ -101,6 +101,6 @@ Khi các tính năng này go-live, bổ sung mục vào runbook này hoặc tác
 - `PROJECT BIOMIXING/PHASE2_PLANNING_PREPRODUCTION.mmd`
 - `PROJECT BIOMIXING/PHASE1_TO_3_END_TO_END_FLOW.mmd`
 - `PROJECT BIOMIXING/UI_RUNBOOK_PHASE1_QUOTATION_TO_SO_VI.md`
-- `FUNC_IMPROVE/BIOMIXING_PRODUCTION_DEVELOPMENT_PLAN.md` (roadmap kỹ thuật Phase 1–2 HACCP)
+- `FUNC_IMPROVE/BIOMIXING_DEV_PLAN.md` (roadmap kỹ thuật Phase 1–2 HACCP)
 
 _Cập nhật: 2026-05-09._

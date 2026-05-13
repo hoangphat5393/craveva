@@ -20,6 +20,8 @@ This file is the root navigation layer only. Detailed business flow and module l
 | `FUNC_LOGIC`   | Master business logic, functional flow, audits, cross-module references | `FUNC_LOGIC/INDEX.md`   |
 | `FUNC_TEST`    | Test strategy, test cases, UAT execution matrix                         | `FUNC_TEST/INDEX.md`    |
 
+**Báo cáo số dòng code (không thuộc nhóm FUNC\_\*):** `LOG_REPORT/README.md` — thư mục **`LOG_REPORT/`** (đổi tên từ `LOC_REPORT/`, 2026-05-12). Mục lục / audit gọn file: `LOG_REPORT/INDEX.md`, `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`.
+
 ## 2) Module Master Guides (Single source per module)
 
 Use one master guide per module/domain, then link detailed files under that master:
@@ -32,13 +34,14 @@ When a module needs deep details (product/client/production integrations), keep 
 
 ## 3) Group Index Files (Level 2 navigation)
 
-- `FUNC_BUG/INDEX.md`
-- `FUNC_IMPORT/INDEX.md`
-- `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **audit tài liệu nhóm:** `FUNC_IMPROVE/DOCUMENTATION_AUDIT_2026_VI.md`
-- `FUNC_LOGIC/INDEX.md` — **audit tài liệu nhóm:** `FUNC_LOGIC/DOCUMENTATION_AUDIT_FUNC_LOGIC_2026_VI.md`
+- `FUNC_BUG/INDEX.md` — **audit nhóm bug/incident:** `FUNC_BUG/AUDIT_BUG_2026_VI.md`
+- `FUNC_IMPORT/INDEX.md` — **audit nhóm import:** `FUNC_IMPORT/AUDIT_IMPORT_2026_VI.md`
+- `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **audit tài liệu nhóm:** `FUNC_IMPROVE/AUDIT_IMPROVE_2026_VI.md`
+- `FUNC_LOGIC/INDEX.md` — **audit tài liệu nhóm:** `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md`
 - `FUNC_TEST/INDEX.md`
-
-## 4) Working Rules
+- `docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md` — audit thư mục `docs/` (runbook, staging, axios-migration; không gộp 40+ file tracker)
+- `LOG_REPORT/INDEX.md` — snapshot LOC backend; **audit:** `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`
+- `SPECIFICATION/INDEX.md` — spec + snapshot infra; **audit:** `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`
 
 1. Keep this index updated when adding new major doc groups or new module master guides.
 2. Do not duplicate full content here; only route users to source documents.

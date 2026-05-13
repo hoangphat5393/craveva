@@ -293,7 +293,7 @@ Chuẩn hóa nghiệp vụ kho theo 2 lớp dữ liệu:
 
 ## Tai lieu canonical cho demo nhanh
 
-- Tai lieu theo doi implementation + test moi nhat: `FUNC_IMPORT/SO_PO_INVENTORY_IMPLEMENTATION_TRACKER.md`.
+- Tài liệu theo dõi implementation + test mới nhất: `FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md` (Phụ lục A).
 - File nay giu vai tro business direction va quyet dinh UI/UX; khi can ket qua test staging thi uu tien tracker ben tren.
 
 ---

@@ -61,30 +61,6 @@ class Handler extends ExceptionHandler
 
     public function report(Throwable $exception)
     {
-        // #region agent log
-        @file_put_contents(
-            base_path('debug-0fea0f.log'),
-            json_encode([
-                'sessionId' => '0fea0f',
-                'runId' => 'initial',
-                'hypothesisId' => 'H6',
-                'location' => 'Handler.php:report',
-                'message' => 'Exception reported by Laravel handler',
-                'data' => [
-                    'exceptionClass' => get_class($exception),
-                    'exceptionMessage' => (string) $exception->getMessage(),
-                    'exceptionFile' => (string) $exception->getFile(),
-                    'exceptionLine' => (int) $exception->getLine(),
-                    'traceTop' => array_slice(explode("\n", (string) $exception->getTraceAsString()), 0, 4),
-                    'requestPath' => request()?->path(),
-                    'requestMethod' => request()?->method(),
-                ],
-                'timestamp' => (int) round(microtime(true) * 1000),
-            ], JSON_UNESCAPED_UNICODE).PHP_EOL,
-            FILE_APPEND
-        );
-        // #endregion
-
         if (app()->bound('sentry') && $this->shouldReport($exception) && config('services.sentry.enabled')) {
             app('sentry')->captureException($exception);
         }

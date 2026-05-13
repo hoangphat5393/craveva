@@ -163,7 +163,7 @@
                                     <td class="border-bottom-0">
                                         <input type="number" min="1" class="form-control f-14 border-0 w-100 text-right quantity mt-3" value="{{ $item->quantity }}" name="quantity[]">
                                         @if (!is_null($item->product_id) && $item->product_id != 0)
-                                            <span class="text-dark-grey float-right border-0 f-12">{{ $item->unit->unit_type }}</span>
+                                            <span class="text-dark-grey float-right border-0 f-12">{{ $item->unit?->unit_type }}</span>
                                             <input type="hidden" name="product_id[]" value="{{ $item->product_id }}">
                                             <input type="hidden" name="unit_id[]" value="{{ $item->unit_id }}">
                                         @else

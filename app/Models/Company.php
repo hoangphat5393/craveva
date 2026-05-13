@@ -273,6 +273,10 @@ use Laravel\Cashier\Billable;
  *
  * @property int $employee_can_export_data
  * @property string|null $ai_order_webhook_secret
+ * @property bool $ai_order_integration_allow_create
+ * @property bool $ai_order_integration_allow_read
+ * @property bool $ai_order_integration_allow_update
+ * @property bool $ai_order_integration_allow_delete
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereEmployeeCanExportData($value)
  *
@@ -311,6 +315,10 @@ class Company extends BaseModel
 
     protected $casts = [
         'google_calendar_status' => 'string',
+        'ai_order_integration_allow_create' => 'boolean',
+        'ai_order_integration_allow_read' => 'boolean',
+        'ai_order_integration_allow_update' => 'boolean',
+        'ai_order_integration_allow_delete' => 'boolean',
     ];
 
     protected $appends = [

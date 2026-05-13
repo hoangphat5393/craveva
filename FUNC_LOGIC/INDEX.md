@@ -31,6 +31,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`
 - `FUNC_LOGIC/API_DATA_TYPE_LIST_VI.md` — canonical (đã gộp nội dung trùng từ bản EN 2026-05)
 - `FUNC_LOGIC/Libraries_And_Module_Names.md`
+- `docs/AI_ORDER_INTEGRATION_REST.md` — REST AI order (`/api/integrations/orders`), auth, method toggles, troubleshooting 404
 
 ## Audit and Review Documents
 

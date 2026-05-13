@@ -20,6 +20,7 @@ Mục tiêu:
 
 ## 3) Staging archive (FUNC_BUG)
 
+- **`FUNC_BUG/STAGING_SSH_GCLOUD_METADATA_AND_DEPLOY_SCRIPT_VI.md`** — SSH/metadata GCP + `upload_staging.ps1` (2026-05-13).
 - **`FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md`** — nội dung các file `STAGING_*.md` đã gộp (2026-05-12). Dùng khi cần ngữ cảnh incident cụ thể; không thay runbook `docs/`.
 
 ## 4) Gợi ý dọn dẹp (không tự động)

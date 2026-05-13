@@ -1,6 +1,12 @@
-# Git-based deploy for Staging. SSH Host must exist in ~/.ssh/config.
-# Luồng mặc định: trên máy local -> git add -A -> commit (nếu có thay đổi) -> push origin/<Branch>,
-# sau đó SSH vào server -> pull + migrate/optimize. Dùng -SkipLocalGit để chỉ deploy pull trên server.
+# Git-based deploy for Staging. SSH Host phải có trong ~/.ssh/config.
+#
+# Mặc định: KHÔNG chạy git add/commit/push trên máy dev — chỉ SSH lên server → pull + migrate/optimize.
+#         (Code đã có trên origin do máy khác/CI push; hoặc bạn push tay trước đó.)
+# Nếu cần luồng “commit + push từ máy này rồi mới deploy”: chạy với -SkipLocalGit:$false
+#
+# Quyền trên server: thư mục .git thuộc user RemoteGitUser. Đăng nhập SSH bằng Admin rồi `git pull` trực tiếp
+# thường báo Permission denied trên .git/FETCH_HEAD — phải chạy git với đúng owner, ví dụ:
+#   cd /var/www/craveva-staging/current/craveva && sudo -u hoangphat5393 git pull origin main
 #
 # Nếu trên server `git pull` báo "could not read Password" (HTTPS + không có TTY):
 # - Khuyến nghị lâu dài: đổi origin sang SSH + deploy key trên server.
@@ -8,15 +14,15 @@
 #   scripts/deploy-secrets.local.ps1 (copy từ deploy-secrets.local.ps1.example). Không commit token.
 
 param(
-    [bool]$GitPull = $true, # Mặc định là pull code
+    [bool]$GitPull = $true, # Mặc định là pull code trên server
     [string]$Branch = "main",
     [string]$GitHubToken = "", # Tùy chọn; nếu rỗng dùng env CRAVEVA_GITHUB_DEPLOY_TOKEN
-    [string]$CommitMessage = "", # Nếu rỗng và có commit: dùng message mặc định có timestamp
-    [switch]$SkipLocalGit = $false # Bật: bỏ qua add/commit/push local, chỉ SSH pull như cũ
+    [string]$CommitMessage = "", # Khi bật push local: nếu rỗng và có commit — dùng message mặc định có timestamp
+    [bool]$SkipLocalGit = $true # $true (mặc định): bỏ qua add/commit/push local, chỉ SSH deploy. $false: push từ máy này trước.
 )
 
 $ErrorActionPreference = "Stop"
-$StagingHost = "craveva-staging"
+$StagingHost = "craveva-staging" # Phải khớp Host trong ~/.ssh/config — user SSH thường là Admin (GCP), không phải hoangphat5393 (owner git trên disk).
 $StagingPath = "/var/www/craveva-staging/current/craveva"
 # Unix user that owns repo + .git on server (cron/deploy). SSH may be Admin; git must still run as this user.
 $RemoteGitUser = "hoangphat5393"
@@ -93,34 +99,53 @@ if ($resolvedToken) {
 $remoteGitUserEscaped = Escape-BashSingleQuotedString $RemoteGitUser
 $gitPullFlag = if ($GitPull) { '1' } else { '0' }
 
+$gitAuthHeaderB64 = ""
+if ($resolvedToken) {
+    $gitAuthPlain = "AUTHORIZATION: Bearer " + $resolvedToken
+    $gitAuthHeaderB64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($gitAuthPlain))
+}
+
 $remoteBashTemplate = @'
 set -euo pipefail
 
 cd '__RB_PATH__'
 
 if [ '__RB_GITPULL__' -eq 1 ]; then
+  # Git user must own the tree so reset can replace files previously owned by www-data.
+  sudo chown -R '__RB_GITUSER__':www-data .
   if [ -n '__RB_TOKEN__' ]; then
     export GIT_TERMINAL_PROMPT=0
     export GITHUB_DEPLOY_TOKEN='__RB_TOKEN__'
-    header="AUTHORIZATION: Bearer $GITHUB_DEPLOY_TOKEN"
-
-    sudo -u '__RB_GITUSER__' git -c http.extraHeader="$header" fetch origin
+    # GIT extraHeader: decode __RB_HDR_B64__ via base64; avoid PAT literal in remote script.
+    _B64_PAD=__RB_HDR_B64__
+    _GIT_HDR=$(printf %s "$_B64_PAD" | base64 -d)
+    sudo -u '__RB_GITUSER__' env \
+      GIT_CONFIG_COUNT=1 \
+      GIT_CONFIG_KEY_0=http.extraHeader \
+      GIT_CONFIG_VALUE_0="$_GIT_HDR" \
+      git fetch origin '__RB_BRANCH__'
 
     if sudo -u '__RB_GITUSER__' git status --porcelain | grep -q .; then
-      sudo -u '__RB_GITUSER__' git stash push -u -m stash-auto-deploy
+      # Stash tracked changes only: no -u (untracked stash can hit Permission denied on www-data files).
+      sudo -u '__RB_GITUSER__' git stash push -m stash-auto-deploy
     fi
 
     sudo -u '__RB_GITUSER__' git checkout '__RB_BRANCH__'
-    sudo -u '__RB_GITUSER__' git -c http.extraHeader="$header" pull origin '__RB_BRANCH__'
+    sudo -u '__RB_GITUSER__' env \
+      GIT_CONFIG_COUNT=1 \
+      GIT_CONFIG_KEY_0=http.extraHeader \
+      GIT_CONFIG_VALUE_0="$_GIT_HDR" \
+      git reset --hard "origin/__RB_BRANCH__"
   else
     sudo -u '__RB_GITUSER__' git fetch origin '__RB_BRANCH__'
 
     if sudo -u '__RB_GITUSER__' git status --porcelain | grep -q .; then
-      sudo -u '__RB_GITUSER__' git stash push -u -m stash-auto-deploy
+      # Stash tracked changes only: no -u (untracked stash can hit Permission denied on www-data files).
+      sudo -u '__RB_GITUSER__' git stash push -m stash-auto-deploy
     fi
 
     sudo -u '__RB_GITUSER__' git checkout '__RB_BRANCH__'
-    sudo -u '__RB_GITUSER__' git pull origin '__RB_BRANCH__'
+    sudo -u '__RB_GITUSER__' git reset --hard "origin/__RB_BRANCH__"
   fi
 fi
 
@@ -152,9 +177,10 @@ $remoteBash = $remoteBashTemplate.
     Replace('__RB_GITPULL__', $gitPullFlag).
     Replace('__RB_TOKEN__', $remoteTokenEscaped).
     Replace('__RB_GITUSER__', $remoteGitUserEscaped).
-    Replace('__RB_BRANCH__', $remoteBranchEscaped)
-# Chuẩn hóa LF: CRLF từ Windows có thể làm bash trên Linux parse sai.
-$remoteBash = $remoteBash -replace "`r`n", "`n"
+    Replace('__RB_BRANCH__', $remoteBranchEscaped).
+    Replace('__RB_HDR_B64__', $gitAuthHeaderB64)
+# Chuẩn hóa EOL: mọi CR (kể cả CR đơn không kèm LF) tránh bash parse gãy dòng (Bearer: command not found).
+$remoteBash = ($remoteBash -replace "`r`n", "`n") -replace "`r", ""
 
 $remoteBashEscaped = Escape-BashSingleQuotedString $remoteBash
 ssh $StagingHost "bash -lc '$remoteBashEscaped'"

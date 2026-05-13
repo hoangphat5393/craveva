@@ -120,6 +120,8 @@ sudo journalctl -u php8.2-fpm -n 30 --no-pager
 
 ## STAGING_ACCESS_VIA_GOOGLE_CLOUD
 
+> **Cập nhật 2026-05-13:** Lỗi `Permission denied (publickey)` với `User hoangphat5393`, metadata `ssh-keys`, `Admin` vs owner git, `.git/FETCH_HEAD`, và lỗi bash trong `upload_staging.ps1` — xem **`FUNC_BUG/STAGING_SSH_GCLOUD_METADATA_AND_DEPLOY_SCRIPT_VI.md`** (canonical ngắn). Mục dưới đây giữ nguyên làm archive (Console, `gcloud compute ssh`, DNS).
+
 Khi `ssh user@staging.craveva.com` hoặc `ssh craveva-staging` bị timeout/refused, dùng một trong các cách dưới (server staging có IP 35.240.198.61, thường là VM Google Compute Engine).
 
 ---

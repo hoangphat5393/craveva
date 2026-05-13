@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Models\ClientDetails;
 use App\Models\Company;
 use App\Models\ModuleSetting;
 use App\Models\Permission;
+use App\Models\Product;
 use App\Models\User;
 use App\Models\UserAuth;
 use App\Models\UserPermission;
@@ -20,6 +22,7 @@ uses(DatabaseTransactions::class);
 it('registers the sales order settings routes', function (): void {
     expect(Route::has('sales-order-settings.index'))->toBeTrue();
     expect(Route::has('sales-order-settings.regenerate-webhook-secret'))->toBeTrue();
+    expect(Route::has('sales-order-settings.update-integration-permissions'))->toBeTrue();
 });
 
 /**
@@ -107,6 +110,43 @@ it('shows company id on sales order settings for authorized user', function (): 
         return;
     }
 
+    if (Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
+        Company::withoutGlobalScopes()->where('id', $fix['company']->id)->update([
+            'ai_order_webhook_secret' => 'test-secret-sales-order-settings-page',
+        ]);
+    }
+
+    $userIdsInCompany = User::withoutGlobalScopes()->where('company_id', $fix['company']->id)->pluck('id');
+
+    $expectedClientCode = 'YOUR_CLIENT_CODE';
+    if (Schema::hasTable('client_details') && $userIdsInCompany->isNotEmpty()) {
+        $foundClientCode = ClientDetails::withoutGlobalScopes()
+            ->whereNotNull('client_code')
+            ->where('client_code', '!=', '')
+            ->where(function ($query) use ($fix, $userIdsInCompany): void {
+                $query->where('client_details.company_id', $fix['company']->id)
+                    ->orWhereIn('client_details.user_id', $userIdsInCompany);
+            })
+            ->orderBy('client_details.id')
+            ->value('client_code');
+        if (is_string($foundClientCode) && trim($foundClientCode) !== '') {
+            $expectedClientCode = trim($foundClientCode);
+        }
+    }
+
+    $expectedItemName = 'Exact product name from catalog';
+    if (Schema::hasTable('products')) {
+        $foundProductName = Product::withoutGlobalScopes()
+            ->where('company_id', $fix['company']->id)
+            ->whereNotNull('name')
+            ->where('name', '!=', '')
+            ->orderBy('id')
+            ->value('name');
+        if (is_string($foundProductName) && $foundProductName !== '') {
+            $expectedItemName = $foundProductName;
+        }
+    }
+
     $response = $this->actingAs($fix['userAuth'], 'web')
         ->withSession([
             'company' => $fix['company'],
@@ -118,8 +158,26 @@ it('shows company id on sales order settings for authorized user', function (): 
     $response->assertOk();
     $response->assertSee((string) $fix['company']->id, false);
     $response->assertSee('btn-copy', false);
-    $response->assertSee(__('modules.orders.apiFillAiTitle'), false);
-    $response->assertSee(__('modules.orders.apiRingfenceTitle'), false);
+    $response->assertSee(__('modules.orders.apiIntegrationIntro'), false);
+    $response->assertSee(__('modules.orders.apiBaseUrl'), false);
+    if (Schema::hasColumn('companies', 'ai_order_webhook_secret')) {
+        $response->assertSee(__('modules.orders.apiRestMethodsTitle'), false);
+        $response->assertSee(__('modules.orders.apiRestMethodPanelsHint'), false);
+        $response->assertSee(__('modules.orders.apiRestPostmanManualNote'), false);
+        $response->assertSee(__('modules.orders.apiWebhookPathSpellingNote'), false);
+        $response->assertSee('YOUR_ORDER_ID', false);
+        $response->assertSee('ai_rest_copy_post', false);
+        $response->assertSee('ai_rest_tpl_post', false);
+        $response->assertSee('ai_rest_curl_post', false);
+        $response->assertSee('curl -X POST', false);
+        $response->assertSee('Content-Type: application/json', false);
+        $response->assertSee('&quot;company_id&quot;', false);
+        $response->assertSee('&quot;client_code&quot;', false);
+        $response->assertSee($expectedItemName, false);
+        $response->assertSee($expectedClientCode, false);
+        $response->assertSee('X-AI-Webhook-Secret: test-secret-sales-order-settings-page', false);
+        $response->assertSee(__('modules.orders.apiRestPostmanSectionHeaders'), false);
+    }
     if ($fix['company']->company_name !== '') {
         $response->assertSee($fix['company']->company_name, false);
     }

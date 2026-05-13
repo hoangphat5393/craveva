@@ -11,7 +11,8 @@ Navigation index for bug, incident, and troubleshooting documents.
 
 ## Staging & infrastructure (archive trong FUNC_BUG)
 
-- **`FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md`** — gộp các ghi chép `STAGING_*` cũ (lệnh SSH, nginx timeout, PHP upload, module missing, …). **Ưu tiên đọc:** `docs/SERVER_RUNBOOK_VI.md`, `docs/STAGING_OPERATIONS.md`.
+- **`FUNC_BUG/STAGING_SSH_GCLOUD_METADATA_AND_DEPLOY_SCRIPT_VI.md`** — SSH staging + GCP `ssh-keys` + `upload_staging.ps1` (Permission denied, Admin vs hoangphat5393, FETCH_HEAD, lỗi bash deploy). **Cập nhật 2026-05.**
+- **`FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md`** — gộp các ghi chép `STAGING_*` cũ (lệnh SSH, nginx timeout, PHP upload, module missing, …). **Ưu tiên đọc:** `docs/SERVER_RUNBOOK_VI.md`, `docs/STAGING_OPERATIONS.md`. Mục SSH cũ trong file này có thể lệch thời điểm so với file SSH ở trên.
 
 ## Module, permissions, and behavior
 

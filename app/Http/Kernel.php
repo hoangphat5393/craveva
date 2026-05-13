@@ -2,15 +2,39 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AdminOrSuperAdmin;
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\AuthenticateAiOrderIntegration;
+use App\Http\Middleware\AutoLogout;
+use App\Http\Middleware\CheckCompanyPackage;
 use App\Http\Middleware\DisableFrontend;
 use App\Http\Middleware\EmailVerified;
+use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\EnsureAiOrderIntegrationMethodAllowed;
+use App\Http\Middleware\EnsureTranslationToken;
 use App\Http\Middleware\MultiCompanySelect;
+use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\SuperAdmin;
 use App\Http\Middleware\TrimStrings;
+use App\Http\Middleware\TrustProxies;
+use App\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
+use Illuminate\Auth\Middleware\Authorize;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
+use Illuminate\Auth\Middleware\RequirePassword;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Http\Middleware\SetCacheHeaders;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Routing\Middleware\ValidateSignature;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 class Kernel extends HttpKernel
 {
@@ -22,8 +46,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \App\Http\Middleware\TrustProxies::class,
-        \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
+        TrustProxies::class,
+        PreventRequestsDuringMaintenance::class,
         ValidatePostSize::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
@@ -37,19 +61,19 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \Illuminate\Session\Middleware\StartSession::class,
-            \App\Http\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':web',
+            StartSession::class,
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
+            SubstituteBindings::class,
+            ThrottleRequests::class.':web',
         ],
 
         'api' => [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            EnsureFrontendRequestsAreStateful::class,
+            ThrottleRequests::class.':api',
+            SubstituteBindings::class,
         ],
     ];
 
@@ -59,23 +83,25 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $middlewareAliases = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
-        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'auth' => Authenticate::class,
+        'auth.basic' => AuthenticateWithBasicAuth::class,
+        'cache.headers' => SetCacheHeaders::class,
+        'can' => Authorize::class,
+        'guest' => RedirectIfAuthenticated::class,
+        'password.confirm' => RequirePassword::class,
+        'signed' => ValidateSignature::class,
+        'throttle' => ThrottleRequests::class,
+        'verified' => EnsureEmailIsVerified::class,
         'email_verified' => EmailVerified::class,
 
         'super-admin' => SuperAdmin::class,
         'multi-company-select' => MultiCompanySelect::class,
         'disable-frontend' => DisableFrontend::class,
-        'admin-or-super-admin' => \App\Http\Middleware\AdminOrSuperAdmin::class,
-        'translation' => \App\Http\Middleware\EnsureTranslationToken::class,
-        'check-company-package' => \App\Http\Middleware\CheckCompanyPackage::class,
-        'auto-logout' => \App\Http\Middleware\AutoLogout::class,
+        'admin-or-super-admin' => AdminOrSuperAdmin::class,
+        'translation' => EnsureTranslationToken::class,
+        'check-company-package' => CheckCompanyPackage::class,
+        'auto-logout' => AutoLogout::class,
+        'ai.integration.auth' => AuthenticateAiOrderIntegration::class,
+        'ai.integration.method' => EnsureAiOrderIntegrationMethodAllowed::class,
     ];
 }

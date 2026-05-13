@@ -498,6 +498,7 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::resource('orders', OrderController::class);
     Route::get('sales-order-settings', [SalesOrderSettingsController::class, 'index'])->name('sales-order-settings.index');
     Route::post('sales-order-settings/regenerate-webhook-secret', [SalesOrderSettingsController::class, 'regenerateWebhookSecret'])->name('sales-order-settings.regenerate-webhook-secret');
+    Route::post('sales-order-settings/integration-permissions', [SalesOrderSettingsController::class, 'updateIntegrationPermissions'])->name('sales-order-settings.update-integration-permissions');
 
     /* NOTICE */
     Route::post('notices/apply-quick-action', [NoticeController::class, 'applyQuickAction'])->name('notices.apply_quick_action');

@@ -1,0 +1,14 @@
+# Snippet cho %USERPROFILE%\.ssh\config — Host craveva-staging (GCP VM staging).
+#
+# B1 — Đồng bộ pubkey lên VM (một lần / VM mới): từ repo chạy
+#   .\scripts\gcloud_staging_ssh_key_sync.ps1
+# Hoặc: gcloud compute config-ssh --project=craveva-org-55934-project
+#
+# B2 — SSH bằng user Linux hoangphat5393 + private key trùng id_rsa_gcp.pub:
+
+Host craveva-staging
+    HostName 35.240.198.61
+    User hoangphat5393
+    IdentityFile ~/.ssh/id_rsa_gcp
+    IdentitiesOnly yes
+    StrictHostKeyChecking no

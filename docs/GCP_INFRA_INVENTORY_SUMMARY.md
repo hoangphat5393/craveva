@@ -1,9 +1,11 @@
 ﻿# GCP Infrastructure Inventory Summary
 
 **Generated at:** 2026-03-31  
-**Updated at:** 2026-05-05 (after staging zone migration)  
+**Updated at:** 2026-05-14 (Cloud SQL staging backup policy documented)  
 **Project:** `craveva-org-55934-project`  
 **Scope:** Active `gcloud` account/project context on this machine
+
+**Sao lưu Cloud SQL staging (`craveva-staging-db`):** lịch backup hằng ngày, giữ 7 bản, xoay vòng và PITR 7 ngày — xem [`STAGING_CLOUD_SQL_BACKUP_POLICY_VI.md`](STAGING_CLOUD_SQL_BACKUP_POLICY_VI.md).
 
 ---
 

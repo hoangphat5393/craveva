@@ -66,7 +66,7 @@ sudo -u www-data php artisan optimize:clear
 sudo supervisorctl restart craveva-queue-all:*
 ```
 
-**Quyền sau deploy:** xem [mục 4](#4-quyền-storage-queue-supervisor--systemd). Chi tiết zip `upload_staging.ps1` → `docs/STAGING_OPERATIONS.md`.
+**Quyền sau deploy:** xem [mục 4](#4-quyền-storage-queue-supervisor--systemd). Chi tiết zip `upload_staging.ps1` → `docs/STAGING_OPERATIONS.md`. **Sao lưu Cloud SQL** (`craveva-staging-db`: lịch, 7 bản, xoay vòng, PITR) → `docs/STAGING_CLOUD_SQL_BACKUP_POLICY_VI.md`.
 
 ---
 

@@ -3,9 +3,11 @@
 Ngày: **\_\_\_\_**  
 Tenant / công ty pilot: **\_\_\_\_**  
 Người thực hiện: **\_\_\_\_**  
-Môi trường: `local` / `staging` / URL: ******\_\_\_\_******
+Môi trường: `local` / `staging` / URL: **\*\***\_\_\_\_**\*\***
 
 Hướng dẫn: đánh dấu **Pass / Fail / N/A**; ghi **ISS-xxx** nếu lỗi; mức độ **S1–S3** (S1 = chặn go-live).
+
+**Trước khi chạy UI (Dev):** smoke route + wiring hai chiều trace — `php artisan test --compact tests/Feature/P0BiomixingAutomatedEvidenceTest.php` (không thay biên bản Pass/Fail thủ công dưới đây).
 
 ---
 

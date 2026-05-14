@@ -242,6 +242,90 @@ it('posts RM consumption then FG receipt via warehouse stock movements', functio
         ->and($order->fresh()->completed_at)->not->toBeNull();
 });
 
+it('defers batch receipt and order completion until every output line on the batch is posted', function (): void {
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v1',
+        'code' => 'BOM-FG2-SPLIT',
+        'is_default' => true,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 0.5,
+        'sort_order' => 0,
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 100,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-SPLIT-FG',
+    ]);
+
+    ProductionBatchConsumption::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'component_product_id' => 1,
+        'warehouse_product_batch_id' => 1,
+        'planned_quantity' => 50,
+        'actual_quantity' => null,
+        'line_order' => 0,
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->releaseOrder($order);
+    $service->postConsumptionsForBatch($batch->fresh());
+
+    $outputA = ProductionBatchOutput::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'output_product_id' => 2,
+        'quantity' => 60,
+        'batch_number' => 'FG-SPLIT-A',
+        'expiration_date' => null,
+        'manufacturing_date' => null,
+        'warehouse_id' => 1,
+    ]);
+
+    $outputB = ProductionBatchOutput::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'output_product_id' => 2,
+        'quantity' => 40,
+        'batch_number' => 'FG-SPLIT-B',
+        'expiration_date' => null,
+        'manufacturing_date' => null,
+        'warehouse_id' => 1,
+    ]);
+
+    $service->postFinishedGoodsReceipt($outputA->fresh());
+
+    expect($batch->fresh()->posted_receipt_at)->toBeNull()
+        ->and($batch->fresh()->completed_at)->toBeNull()
+        ->and($order->fresh()->status)->toBe(ProductionOrder::STATUS_IN_PROGRESS)
+        ->and($order->fresh()->completed_at)->toBeNull();
+
+    $service->postFinishedGoodsReceipt($outputB->fresh());
+
+    expect($batch->fresh()->posted_receipt_at)->not->toBeNull()
+        ->and($batch->fresh()->completed_at)->not->toBeNull()
+        ->and($order->fresh()->status)->toBe(ProductionOrder::STATUS_COMPLETED)
+        ->and($order->fresh()->completed_at)->not->toBeNull();
+});
+
 it('throws when posting consumptions with no consumption lines', function (): void {
     $order = ProductionOrder::query()->create([
         'company_id' => 1,

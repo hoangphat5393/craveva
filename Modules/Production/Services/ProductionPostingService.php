@@ -189,6 +189,9 @@ class ProductionPostingService
     /**
      * Posts FG inbound for a prepared {@see ProductionBatchOutput} row (posted_at still null).
      *
+     * When a batch has multiple output lines, {@see ProductionBatch::$posted_receipt_at} and
+     * {@see ProductionBatch::$completed_at} are set only after every output row is posted.
+     *
      * @throws InvalidArgumentException
      */
     public function postFinishedGoodsReceipt(ProductionBatchOutput $output): void
@@ -237,7 +240,7 @@ class ProductionPostingService
             'manufacturing_date' => $output->manufacturing_date?->format('Y-m-d'),
             'reference_type' => ProductionBatch::class,
             'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-fg-receipt:' . $output->id,
+            'idempotency_key' => 'production-fg-receipt:'.$output->id,
         ];
 
         DB::transaction(function () use ($payload, $output, $batch, $order): void {
@@ -246,9 +249,14 @@ class ProductionPostingService
             $output->posted_at = now();
             $output->save();
 
-            $batch->posted_receipt_at = now();
-            $batch->completed_at = now();
-            $batch->save();
+            $batch->refresh();
+            $hasUnpostedOutputs = $batch->outputs()->whereNull('posted_at')->exists();
+
+            if (! $hasUnpostedOutputs) {
+                $batch->posted_receipt_at = now();
+                $batch->completed_at = now();
+                $batch->save();
+            }
 
             $hasPendingBatches = $order->batches()
                 ->where(function ($query): void {
@@ -305,7 +313,7 @@ class ProductionPostingService
                 'batch_id' => (int) $allocation['batch_id'],
                 'reference_type' => ProductionBatch::class,
                 'reference_id' => (int) $batch->id,
-                'idempotency_key' => 'production-consume:' . $consumption->id . ':' . $index,
+                'idempotency_key' => 'production-consume:'.$consumption->id.':'.$index,
             ];
 
             $this->stockMovementService->recordOutbound($payload);
@@ -355,7 +363,7 @@ class ProductionPostingService
             ->where('warehouse_id', $rmWarehouseId)
             ->where('product_id', (int) $consumption->component_product_id)
             ->where('quantity', '>', 0)
-            ->when($preferredBatchId !== null, fn($query) => $query->where('id', '!=', (int) $preferredBatchId))
+            ->when($preferredBatchId !== null, fn ($query) => $query->where('id', '!=', (int) $preferredBatchId))
             ->orderByDesc('quantity')
             ->orderBy('id')
             ->get(['id', 'quantity', 'reserved_quantity']);

@@ -185,6 +185,22 @@ Dùng bảng này khi đánh dấu `Done`/`Partial` theo quy tắc `FUNC_IMPROVE
 | WUP-09 | Backlog                         | —                                                                                                        | —                                                                                 | —                                              |
 | WUP-10 | Backlog                         | —                                                                                                        | —                                                                                 | Chờ spec guard invoice                         |
 
+### 2.1.1 Mẫu điền cột UAT (P0-07 — copy vào biên bản hoặc thay `—` trong ticket)
+
+Mỗi dòng WUP-01…07: khi pilot chạy xong mục runbook tương ứng, điền **ngày**, **tester**, **Pass/Fail**, **link** (file ảnh, Google Doc, ticket).
+
+| Mã WUP | Ngày UAT | Tester | Kết quả | Link biên bản / ghi chú |
+| ------ | -------- | ------ | ------- | ----------------------- |
+| WUP-01 | —        | —      | —       | —                       |
+| WUP-02 | —        | —      | —       | —                       |
+| WUP-03 | —        | —      | —       | —                       |
+| WUP-04 | —        | —      | —       | —                       |
+| WUP-05 | —        | —      | —       | —                       |
+| WUP-06 | —        | —      | —       | —                       |
+| WUP-07 | —        | —      | —       | —                       |
+
+Sau khi điền, **copy một dòng tóm tắt** vào cột **UAT / Runbook** của bảng §2.1 (ví dụ: `UAT 2026-05-20 Pass — see DOC-123`) hoặc giữ bảng chi tiết tại wiki nội bộ và chỉ ghi link ngắn.
+
 ---
 
 ## 3) Kế hoạch triển khai đề xuất

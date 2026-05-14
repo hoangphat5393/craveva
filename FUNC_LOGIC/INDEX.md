@@ -8,6 +8,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 - Warehouse hub: `FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`
 - Maolin hub: `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`
 - Sales fulfillment hub: `FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`
+- **Biomixing pilot — test & UAT (một cửa, tiếng Việt):** `FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md` — chỉ mục đầy đủ runbook + `php artisan test`; **hàng đợi bước tiếp theo P0:** `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`
 
 ## Domain Index Files
 
@@ -28,6 +29,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 ## Technical and Data References
 
 - `FUNC_LOGIC/SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md`
+- `docs/STAGING_CLOUD_SQL_BACKUP_POLICY_VI.md` — staging DB trên GCP: automated backup (hằng ngày), giữ 7 bản, xoay vòng bản cũ, binary log / PITR 7 ngày
 - `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`
 - `FUNC_LOGIC/API_DATA_TYPE_LIST_VI.md` — canonical (đã gộp nội dung trùng từ bản EN 2026-05)
 - `FUNC_LOGIC/Libraries_And_Module_Names.md`

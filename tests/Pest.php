@@ -1,5 +1,7 @@
 <?php
 
+use Tests\TestCase;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -12,11 +14,11 @@
 */
 
 uses(
-    Tests\TestCase::class,
+    TestCase::class,
     // Illuminate\Foundation\Testing\RefreshDatabase::class,
 )->in('Feature');
 
-uses(Tests\TestCase::class)->in('Unit');
+uses(TestCase::class)->in('Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +46,4 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
-{
-    // ..
-}
+require_once __DIR__.'/Support/ProductionTenantFlowFixtures.php';

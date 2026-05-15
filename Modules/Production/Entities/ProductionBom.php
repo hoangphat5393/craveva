@@ -74,6 +74,6 @@ class ProductionBom extends BaseModel
             return $fgName . ' — ' . $code;
         }
 
-        return $fgName . ' (BOM #' . $this->id . ')';
+        return $fgName . ' ' . __('production::app.bomSelectIdLabel', ['id' => $this->id]);
     }
 }

@@ -28,6 +28,38 @@ class DbAccessPolicyTest extends TestCase
         $this->assertContains('warehouse', $modules);
     }
 
+    public function test_production_module_includes_core_and_warehouse_dependencies(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $modules = $policy->normalizeRequestedModules(['production']);
+
+        $this->assertContains('production', $modules);
+        $this->assertContains('core', $modules);
+        $this->assertContains('warehouse', $modules);
+    }
+
+    public function test_production_module_matches_production_prefixed_tables(): void
+    {
+        $policy = new DbAccessPolicy;
+
+        $schemaTables = [
+            'production_boms',
+            'production_bom_items',
+            'production_orders',
+            'production_batches',
+            'production_batch_consumptions',
+            'production_batch_outputs',
+            'production_rework_orders',
+            'products',
+        ];
+        $matched = $policy->matchTablesByPatterns($schemaTables, ['production_%']);
+
+        $this->assertContains('production_orders', $matched);
+        $this->assertContains('production_rework_orders', $matched);
+        $this->assertNotContains('products', $matched);
+    }
+
     public function test_available_modules_includes_inventory(): void
     {
         $policy = new DbAccessPolicy;
@@ -46,6 +78,7 @@ class DbAccessPolicyTest extends TestCase
 
         $this->assertArrayNotHasKey('custom_fields', $forUi);
         $this->assertArrayHasKey('inventory', $forUi);
+        $this->assertArrayHasKey('production', $forUi);
     }
 
     public function test_custom_fields_module_and_join_view_are_configured(): void

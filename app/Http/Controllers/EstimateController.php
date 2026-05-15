@@ -279,7 +279,7 @@ class EstimateController extends AccountBaseController
 
     public function show($id)
     {
-        $this->invoice = Estimate::with('sign', 'client', 'unit', 'clientdetails')->findOrFail($id)->withCustomFields();
+        $this->invoice = Estimate::with('sign', 'client', 'unit', 'clientdetails', 'presidentReviewer', 'vpPricingReviewer')->findOrFail($id)->withCustomFields();
         $this->viewPermission = user()->permission('view_estimates');
         $userId = UserService::getUserId();
 

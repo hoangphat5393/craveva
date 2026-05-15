@@ -66,6 +66,13 @@ return [
                     'stock_%',
                 ],
             ],
+            'production' => [
+                'label' => 'Production (BOM / orders / batches)',
+                'depends_on' => ['core', 'warehouse'],
+                'table_patterns' => [
+                    'production_%',
+                ],
+            ],
             'inventory' => [
                 'label' => 'Inventory (Purchase inventory / adjustments)',
                 'depends_on' => ['core', 'warehouse'],

@@ -105,4 +105,17 @@ In: trạng thái module nwidart, số bản ghi `module_settings` (developertoo
 
 ---
 
-_Cập nhật: flow + audit Developer Tools; semantic layer chặn CREATE là hành vi mong đợi._
+## 7. Rà soát lại (2026-05-15) — module **Production** trong Credentials
+
+| Hạng mục | Kết quả |
+| -------- | ------- |
+| **Nguyên nhân UI** | Checkbox **Allowed modules** lấy từ `DbAccessPolicy::availableModulesForUi()` → chỉ hiện các key trong `config('developertools.db_access.modules')` không có `internal_only`. Trước đây không có key `production` nên không có ô **Production**. |
+| **Cấu hình** | Thêm (và duy trì) module gateway `production`: label **Production (BOM / orders / batches)**, `depends_on` = `core`, `warehouse`; `table_patterns` = `production_%` (khớp `production_boms`, `production_orders`, `production_batches`, `production_rework_orders`, …). |
+| **Blade / API** | `Modules/DeveloperTools/Resources/views/index.blade.php` đã `@foreach ($availableModules)` — không cần sửa view. `StoreDeveloperToolsCredentialRequest` dùng `Rule::in(array_keys(availableModulesForUi()))` — chấp nhận `production` tự động. |
+| **Kiểm thử** | `tests/Unit/DbAccessPolicyTest.php`: dependency + pattern `production_%`. |
+
+Sau khi deploy: hard refresh trang Developer Tools; tick **Production** khi cần expose view gateway cho dữ liệu sản xuất.
+
+---
+
+_Cập nhật: flow + audit Developer Tools; semantic layer chặn CREATE là hành vi mong đợi. **2026-05-15:** mục 7 — module Production trong gateway credentials._

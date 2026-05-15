@@ -46,6 +46,10 @@
     @endif
 @endif
 
+@if (!in_array('client', user_roles()))
+    @include('estimates.partials.internal-review-banner', ['estimate' => $invoice])
+@endif
+
 <!-- INVOICE CARD START -->
 
 <div class="card border-0 invoice">

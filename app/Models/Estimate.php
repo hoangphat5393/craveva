@@ -120,6 +120,8 @@ class Estimate extends BaseModel
         'header_total_quantity' => 'decimal:4',
         'total_gross_weight_kg' => 'decimal:4',
         'total_volume' => 'decimal:4',
+        'president_reviewed_at' => 'datetime',
+        'vp_pricing_reviewed_at' => 'datetime',
     ];
 
     protected $appends = ['total_amount', 'valid_date'];
@@ -168,9 +170,19 @@ class Estimate extends BaseModel
         return $this->hasOne(AcceptEstimate::class, 'estimate_id');
     }
 
+    public function presidentReviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'president_reviewed_by')->withoutGlobalScope(ActiveScope::class);
+    }
+
+    public function vpPricingReviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'vp_pricing_reviewed_by')->withoutGlobalScope(ActiveScope::class);
+    }
+
     public function getTotalAmountAttribute()
     {
-        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol.$this->total : '';
+        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol . $this->total : '';
     }
 
     public function getValidDateAttribute()

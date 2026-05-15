@@ -120,6 +120,7 @@ class PackageModulesCommand extends Command
         return AppModule::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
+            ->where('module_name', '<>', 'discount')
             ->whereNotIn('module_name', AppModule::disabledModuleArray())
             ->orderBy('module_name')
             ->pluck('module_name')

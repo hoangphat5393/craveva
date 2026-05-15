@@ -2,6 +2,7 @@
 
 namespace Modules\Production\Http\Requests;
 
+use App\Models\Order;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Production\Entities\ProductionBom;
@@ -54,7 +55,10 @@ class StoreProductionOrderRequest extends FormRequest
             'sales_order_id' => [
                 'nullable',
                 'integer',
-                Rule::exists('orders', 'id')->where('company_id', $companyId),
+                Rule::exists('orders', 'id')->where(function ($query) use ($companyId): void {
+                    $query->where('company_id', $companyId)
+                        ->whereNotIn('status', Order::STATUSES_CLOSED_FOR_PRODUCTION_ORDER_LINK);
+                }),
             ],
             'project_id' => [
                 'nullable',
@@ -91,6 +95,7 @@ class StoreProductionOrderRequest extends FormRequest
         return [
             'output_product_id.required' => __('validation.required', ['attribute' => __('production::app.fgProduct')]),
             'planned_quantity.min' => __('validation.min.numeric', ['attribute' => __('production::app.plannedQty'), 'min' => '0.0001']),
+            'sales_order_id.exists' => __('production::app.salesOrderMustBeOpen'),
         ];
     }
 }

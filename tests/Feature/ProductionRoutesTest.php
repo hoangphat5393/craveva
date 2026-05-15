@@ -15,6 +15,7 @@ it('registers core production routes', function (): void {
         'production.orders.show',
         'production.orders.release',
         'production.batches.show',
+        'production.batches.print-label-slip',
         'production.batches.trace',
         'production.fg-quantity-policy.index',
     ];

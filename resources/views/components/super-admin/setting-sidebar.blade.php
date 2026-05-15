@@ -72,6 +72,14 @@
             <x-setting-menu-item :active="$activeMenu" menu="database_backup_settings" :href="route('database-backup-settings.index')" :text="__('app.menu.databaseBackupSetting')" />
         @endif
 
+        @if (user_can_access_developertools_module() && \Route::has('developertools.index'))
+            <x-setting-menu-item :active="$activeMenu" menu="developertools" :href="route('developertools.index')" text="Developer Tools" />
+        @endif
+
+        @if (user_can_access_developertools_module() && \Route::has('developertools.codemap'))
+            <x-setting-menu-item :active="$activeMenu" menu="codemap" :href="route('developertools.codemap')" text="CodeMap" />
+        @endif
+
 
     </ul>
     <!-- SETTINGS MENU END -->

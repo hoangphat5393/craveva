@@ -1,4 +1,9 @@
-"""Second pass: translate ```text blocks that still contain Vietnamese."""
+"""Legacy second pass (Google) for Vietnamese leftovers in ```text fences.
+
+For new workflows use ``bulk_translate_file.py`` instead, e.g. re-run with
+``--engine google`` on the same file, or translate ``md-whole`` once with Argos.
+
+Second pass: translate ```text blocks that still contain Vietnamese."""
 
 from __future__ import annotations
 

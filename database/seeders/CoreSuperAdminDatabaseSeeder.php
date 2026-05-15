@@ -85,6 +85,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
         $packageModules = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
+            ->where('module_name', '<>', 'discount')
             ->whereNotIn('module_name', Module::disabledModuleArray())
             ->pluck('module_name')
             ->toJson();
@@ -107,6 +108,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
         $packageModules = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
+            ->where('module_name', '<>', 'discount')
             ->whereNotIn('module_name', Module::disabledModuleArray())
             ->pluck('module_name')
             ->toJson();

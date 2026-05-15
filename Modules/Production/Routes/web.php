@@ -41,6 +41,7 @@ Route::group([
     Route::post('orders/{order}/cancel', [ProductionOrderController::class, 'cancel'])->name('orders.cancel');
 
     Route::get('batches/{batch}', [ProductionBatchController::class, 'show'])->name('batches.show');
+    Route::get('batches/{batch}/print-label-slip', [ProductionBatchController::class, 'printLabelSlip'])->name('batches.print-label-slip');
     Route::get('batches/{batch}/trace', [ProductionBatchController::class, 'trace'])->name('batches.trace');
     Route::post('batches/{batch}/apply-planned-from-bom-snapshot', [ProductionBatchController::class, 'applyPlannedFromBomSnapshot'])->name('batches.apply-planned-from-bom-snapshot');
     Route::post('batches/{batch}/consumptions', [ProductionBatchController::class, 'storeConsumption'])->name('batches.consumptions.store');

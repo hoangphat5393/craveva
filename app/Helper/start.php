@@ -37,6 +37,7 @@ use App\Models\SocialAuthSetting;
 use App\Models\StorageSetting;
 use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\SuperAdmin\GlobalInvoiceSetting;
+use App\Models\SuperAdmin\Package;
 use App\Models\ThemeSetting;
 use App\Models\User;
 use App\Models\UserPermission;
@@ -294,11 +295,11 @@ if (! function_exists('language_setting_locale')) {
     // @codingStandardsIgnoreLine
     function language_setting_locale($locale)
     {
-        if (! cache()->has('language_setting_' . $locale)) {
-            cache(['language_setting_' . $locale => LanguageSetting::where('language_code', $locale)->first()]);
+        if (! cache()->has('language_setting_'.$locale)) {
+            cache(['language_setting_'.$locale => LanguageSetting::where('language_code', $locale)->first()]);
         }
 
-        return cache('language_setting_' . $locale);
+        return cache('language_setting_'.$locale);
     }
 }
 
@@ -368,7 +369,7 @@ if (! function_exists('asset_url')) {
     // @codingStandardsIgnoreLine
     function asset_url($path)
     {
-        $path = Files::UPLOAD_FOLDER . '/' . $path;
+        $path = Files::UPLOAD_FOLDER.'/'.$path;
         $storageUrl = $path;
 
         if (! Str::startsWith($storageUrl, 'http')) {
@@ -394,8 +395,8 @@ if (! function_exists('user_modules')) {
             return [];
         }
 
-        if (cache()->has('user_modules_' . $user->id)) {
-            return cache('user_modules_' . $user->id);
+        if (cache()->has('user_modules_'.$user->id)) {
+            return cache('user_modules_'.$user->id);
         }
 
         $module = ModuleSetting::where('is_allowed', 1);
@@ -418,7 +419,7 @@ if (! function_exists('user_modules')) {
             $moduleArray[] = array_values($item)[0];
         }
 
-        cache()->put('user_modules_' . $user->id, $moduleArray);
+        cache()->put('user_modules_'.$user->id, $moduleArray);
 
         return $moduleArray;
     }
@@ -429,27 +430,21 @@ if (! function_exists('user_can_access_developertools_module')) {
     /**
      * Developer Tools / CodeMap: tenant users with admin role OR full "manage_module_setting",
      * when the company package includes developertools and module_settings has it active.
-     * Super admins do not use this feature (no menu / no direct URL access).
+     *
+     * Super admins: allowed when a company context exists and the same tenant gates pass (support /
+     * workspace switch). They use the super-admin settings sidebar, which also lists these links when true.
      */
     function user_can_access_developertools_module(): bool
     {
         $user = user();
 
-        if (! $user || $user->is_superadmin) {
-            return false;
-        }
-
-        $roles = user_roles() ?? [];
-        $hasAdminRole = in_array('admin', $roles, true);
-        $canManageModuleSettings = user()->permission('manage_module_setting') == 'all';
-
-        if (! $hasAdminRole && ! $canManageModuleSettings) {
+        if (! $user) {
             return false;
         }
 
         $company = company();
 
-        if (! $company || ! $company->package) {
+        if (! $company) {
             return false;
         }
 
@@ -457,18 +452,42 @@ if (! function_exists('user_can_access_developertools_module')) {
             return false;
         }
 
-        $namesInPackage = CompanyObserver::packageModuleNamesFromJson($company->package->module_in_package ?? '[]');
+        $package = $company->package;
+        if (! $package && $company->package_id) {
+            $package = Package::query()->find($company->package_id);
+        }
+
+        if (! $package) {
+            return false;
+        }
+
+        $namesInPackage = CompanyObserver::packageModuleNamesFromJson($package->module_in_package ?? '[]');
+
         if (! in_array('developertools', $namesInPackage, true)) {
             return false;
         }
 
-        return ModuleSetting::withoutGlobalScope(CompanyScope::class)
+        $moduleActive = ModuleSetting::withoutGlobalScope(CompanyScope::class)
             ->where('company_id', $company->id)
             ->where('module_name', 'developertools')
             ->where('type', 'admin')
             ->where('status', 'active')
             ->where('is_allowed', 1)
             ->exists();
+
+        if (! $moduleActive) {
+            return false;
+        }
+
+        if ($user->is_superadmin) {
+            return true;
+        }
+
+        $roles = user_roles() ?? [];
+        $hasAdminRole = in_array('admin', $roles, true);
+        $canManageModuleSettings = $user->permission('manage_module_setting') == 'all';
+
+        return $hasAdminRole || $canManageModuleSettings;
     }
 }
 
@@ -535,18 +554,18 @@ if (! function_exists('asset_url_local_s3')) {
     {
         if (in_array(config('filesystems.default'), StorageSetting::S3_COMPATIBLE_STORAGE)) {
             // Check if the URL is already cached
-            if (Cache::has(config('filesystems.default') . '-' . $path)) {
-                $temporaryUrl = Cache::get(config('filesystems.default') . '-' . $path);
+            if (Cache::has(config('filesystems.default').'-'.$path)) {
+                $temporaryUrl = Cache::get(config('filesystems.default').'-'.$path);
             } else {
                 // Generate a new temporary URL and cache it
                 $temporaryUrl = Storage::disk(config('filesystems.default'))->temporaryUrl($path, now()->addMinutes(StorageSetting::HASH_TEMP_FILE_TIME));
-                Cache::put(config('filesystems.default') . '-' . $path, $temporaryUrl, StorageSetting::HASH_TEMP_FILE_TIME * 60);
+                Cache::put(config('filesystems.default').'-'.$path, $temporaryUrl, StorageSetting::HASH_TEMP_FILE_TIME * 60);
             }
 
             return $temporaryUrl;
         }
 
-        $fullPath = Files::UPLOAD_FOLDER . '/' . $path;
+        $fullPath = Files::UPLOAD_FOLDER.'/'.$path;
         $storageUrl = $fullPath;
 
         if (config('filesystems.default') === 'local') {
@@ -573,10 +592,10 @@ if (! function_exists('download_local_s3')) {
             return Storage::disk(config('filesystems.default'))->download($path, basename($file->filename));
         }
 
-        $path = Files::UPLOAD_FOLDER . '/' . $path;
+        $path = Files::UPLOAD_FOLDER.'/'.$path;
         $ext = pathinfo($file->filename, PATHINFO_EXTENSION);
 
-        $filename = $file->name ? $file->name . '.' . $ext : $file->filename;
+        $filename = $file->name ? $file->name.'.'.$ext : $file->filename;
         try {
             return response()->download($path, $filename);
         } catch (Exception $e) {
@@ -708,12 +727,12 @@ if (! function_exists('currency_format_setting')) {
     // @codingStandardsIgnoreLine
     function currency_format_setting($currencyId = null)
     {
-        if (! session()->has('currency_format_setting' . $currencyId)) {
+        if (! session()->has('currency_format_setting'.$currencyId)) {
             $setting = $currencyId == null ? Currency::first() : Currency::where('id', $currencyId)->first();
-            session(['currency_format_setting' . $currencyId => $setting]);
+            session(['currency_format_setting'.$currencyId => $setting]);
         }
 
-        return session('currency_format_setting' . $currencyId);
+        return session('currency_format_setting'.$currencyId);
     }
 }
 
@@ -743,10 +762,10 @@ if (! function_exists('currency_format')) {
         $amount = number_format($amount, $no_of_decimal, $decimal_separator, $thousand_separator);
 
         $amount = match ($currency_position) {
-            'right' => $amount . $currency_symbol,
-            'left_with_space' => $currency_symbol . ' ' . $amount,
-            'right_with_space' => $amount . ' ' . $currency_symbol,
-            default => $currency_symbol . $amount,
+            'right' => $amount.$currency_symbol,
+            'left_with_space' => $currency_symbol.' '.$amount,
+            'right_with_space' => $amount.' '.$currency_symbol,
+            default => $currency_symbol.$amount,
         };
 
         return $amount;
@@ -924,7 +943,7 @@ if (! function_exists('sidebar_user_perms')) {
     // @codingStandardsIgnoreLine
     function sidebar_user_perms()
     {
-        if (! cache()->has('sidebar_user_perms_' . user()->id)) {
+        if (! cache()->has('sidebar_user_perms_'.user()->id)) {
 
             $sidebarPermissionsArray = [
                 'view_clients',
@@ -1003,10 +1022,10 @@ if (! function_exists('sidebar_user_perms')) {
                 $sidebarUserPermissions[$item->name] = 5;
             }
 
-            cache(['sidebar_user_perms_' . user()->id => $sidebarUserPermissions]);
+            cache(['sidebar_user_perms_'.user()->id => $sidebarUserPermissions]);
         }
 
-        return cache('sidebar_user_perms_' . user()->id);
+        return cache('sidebar_user_perms_'.user()->id);
     }
 }
 
@@ -1074,7 +1093,7 @@ if (! function_exists('mb_ucfirst')) {
         $firstChar = mb_substr($string, 0, 1, $encoding);
         $then = mb_substr($string, 1, null, $encoding);
 
-        return mb_strtoupper($firstChar, $encoding) . $then;
+        return mb_strtoupper($firstChar, $encoding).$then;
     }
 }
 
@@ -1165,7 +1184,7 @@ if (! function_exists('getDomainSpecificUrl')) {
 
         // If company specific
         if ($company) {
-            $companyUrl = (config('app.redirect_https') ? 'https' : 'http') . '://' . $company->sub_domain;
+            $companyUrl = (config('app.redirect_https') ? 'https' : 'http').'://'.$company->sub_domain;
 
             config(['app.url' => $companyUrl]);
             // Removed Illuminate\Support\Facades\URL::forceRootUrl($companyUrl);
@@ -1300,7 +1319,7 @@ if (! function_exists('trim_editor')) {
     // @codingStandardsIgnoreLine
     function trim_editor($text)
     {
-        $search = '/' . preg_quote('<p><br></p>', '/') . '/';
+        $search = '/'.preg_quote('<p><br></p>', '/').'/';
 
         return preg_replace($search, '', trim($text), 1);
     }
@@ -1440,12 +1459,12 @@ if (! function_exists('global_currency_format_setting')) {
     // @codingStandardsIgnoreLine
     function global_currency_format_setting($currencyId = null)
     {
-        if (! cache()->has('global_currency_format_setting' . $currencyId)) {
+        if (! cache()->has('global_currency_format_setting'.$currencyId)) {
             $setting = $currencyId == null ? GlobalCurrency::first() : GlobalCurrency::withTrashed()->where('id', $currencyId)->first();
-            cache(['global_currency_format_setting' . $currencyId => $setting]);
+            cache(['global_currency_format_setting'.$currencyId => $setting]);
         }
 
-        return cache('global_currency_format_setting' . $currencyId);
+        return cache('global_currency_format_setting'.$currencyId);
     }
 }
 
@@ -1471,10 +1490,10 @@ if (! function_exists('global_currency_format')) {
         $amount = number_format($amount, $no_of_decimal, $decimal_separator, $thousand_separator);
 
         $amount = match ($currency_position) {
-            'right' => $amount . $currency_symbol,
-            'left_with_space' => $currency_symbol . ' ' . $amount,
-            'right_with_space' => $amount . ' ' . $currency_symbol,
-            default => $currency_symbol . $amount,
+            'right' => $amount.$currency_symbol,
+            'left_with_space' => $currency_symbol.' '.$amount,
+            'right_with_space' => $amount.' '.$currency_symbol,
+            default => $currency_symbol.$amount,
         };
 
         return $amount;
@@ -1547,7 +1566,7 @@ if (! function_exists('checkCompanyPackageIsValid')) {
             return true;
         }
 
-        return cache()->rememberForever('company_' . $companyId . '_valid_package', function () use ($companyId) {
+        return cache()->rememberForever('company_'.$companyId.'_valid_package', function () use ($companyId) {
             $company = Company::with('package')->withCount('employees')->find($companyId);
 
             return $company->employees_count <= $company->package->max_employees;
@@ -1564,7 +1583,7 @@ if (! function_exists('checkCompanyCanAddMoreEmployees')) {
             return true;
         }
 
-        return cache()->rememberForever('company_' . $companyId . '_can_add_more_employees', function () use ($companyId) {
+        return cache()->rememberForever('company_'.$companyId.'_can_add_more_employees', function () use ($companyId) {
             $company = Company::with('package')->withCount('employees')->find($companyId);
 
             if (! $company || ! $company->package) {
@@ -1584,7 +1603,7 @@ if (! function_exists('checkActiveCompany')) {
             return true;
         }
 
-        return cache()->rememberForever('user_' . $companyId . '_is_active', function () use ($companyId) {
+        return cache()->rememberForever('user_'.$companyId.'_is_active', function () use ($companyId) {
             return Company::where('status', 'inactive')->where('id', $companyId)->exists();
         });
     }
@@ -1599,7 +1618,7 @@ if (! function_exists('clearCompanyValidPackageCache')) {
             return true;
         }
 
-        cache()->forget('company_' . $companyId . '_valid_package');
-        cache()->forget('company_' . $companyId . '_can_add_more_employees');
+        cache()->forget('company_'.$companyId.'_valid_package');
+        cache()->forget('company_'.$companyId.'_can_add_more_employees');
     }
 }

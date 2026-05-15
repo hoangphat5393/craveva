@@ -77,7 +77,7 @@
                     <span class="font-weight-normal">
                         @if ($order->sales_order_id)
                             #{{ $order->sales_order_id }} @if ($order->salesOrder)
-                                ({{ $order->salesOrder->order_number }})
+                                ({{ $order->salesOrder->order_number }} — {{ __('modules.invoices.'.$order->salesOrder->status) }})
                             @endif
                         @else
                             —

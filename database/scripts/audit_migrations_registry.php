@@ -13,22 +13,22 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Finder\Finder;
 
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__.'/../../vendor/autoload.php';
 
-$app = require_once __DIR__ . '/../../bootstrap/app.php';
+$app = require_once __DIR__.'/../../bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
 
-$root = realpath(__DIR__ . '/../..');
+$root = realpath(__DIR__.'/../..');
 if ($root === false) {
     fwrite(STDERR, "Cannot resolve project root.\n");
     exit(1);
 }
 
 $paths = [
-    $root . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'migrations',
+    $root.DIRECTORY_SEPARATOR.'database'.DIRECTORY_SEPARATOR.'migrations',
 ];
 
-foreach (glob($root . DIRECTORY_SEPARATOR . 'Modules' . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'Database' . DIRECTORY_SEPARATOR . 'Migrations', GLOB_ONLYDIR) ?: [] as $moduleMigrations) {
+foreach (glob($root.DIRECTORY_SEPARATOR.'Modules'.DIRECTORY_SEPARATOR.'*'.DIRECTORY_SEPARATOR.'Database'.DIRECTORY_SEPARATOR.'Migrations', GLOB_ONLYDIR) ?: [] as $moduleMigrations) {
     $paths[] = $moduleMigrations;
 }
 
@@ -47,7 +47,7 @@ foreach ($paths as $dir) {
     }
 }
 
-$duplicates = array_filter($basenameToFiles, fn(array $files): bool => count($files) > 1);
+$duplicates = array_filter($basenameToFiles, fn (array $files): bool => count($files) > 1);
 
 $dbNames = DB::table('migrations')->orderBy('id')->pluck('migration')->all();
 $dbSet = array_flip($dbNames);
@@ -55,14 +55,14 @@ $dbSet = array_flip($dbNames);
 $diskNames = array_keys($basenameToFiles);
 $diskSet = array_flip($diskNames);
 
-$inDbNotOnDisk = array_values(array_filter($dbNames, fn(string $n): bool => ! isset($diskSet[$n])));
-$onDiskNotInDb = array_values(array_filter($diskNames, fn(string $n): bool => ! isset($dbSet[$n])));
+$inDbNotOnDisk = array_values(array_filter($dbNames, fn (string $n): bool => ! isset($diskSet[$n])));
+$onDiskNotInDb = array_values(array_filter($diskNames, fn (string $n): bool => ! isset($dbSet[$n])));
 
 $exit = 0;
 fwrite(STDOUT, "=== Migration registry audit ===\n");
-fwrite(STDOUT, 'DB connection: ' . config('database.default') . "\n");
-fwrite(STDOUT, 'Rows in `migrations` table: ' . count($dbNames) . "\n");
-fwrite(STDOUT, 'Migration files found: ' . count($diskNames) . "\n\n");
+fwrite(STDOUT, 'DB connection: '.config('database.default')."\n");
+fwrite(STDOUT, 'Rows in `migrations` table: '.count($dbNames)."\n");
+fwrite(STDOUT, 'Migration files found: '.count($diskNames)."\n\n");
 
 if ($duplicates !== []) {
     $exit = 1;
@@ -70,7 +70,7 @@ if ($duplicates !== []) {
     foreach ($duplicates as $base => $files) {
         fwrite(STDOUT, "  {$base}\n");
         foreach ($files as $path) {
-            fwrite(STDOUT, '    - ' . str_replace($root . DIRECTORY_SEPARATOR, '', $path) . "\n");
+            fwrite(STDOUT, '    - '.str_replace($root.DIRECTORY_SEPARATOR, '', $path)."\n");
         }
     }
     fwrite(STDOUT, "\n");
@@ -79,12 +79,12 @@ if ($duplicates !== []) {
 }
 
 if ($inDbNotOnDisk !== []) {
-    fwrite(STDOUT, '[INFO] In DB but no matching file on disk (' . count($inDbNotOnDisk) . ") — historical SaaS / removed files; normal for long-lived apps. Rollback of these names is not possible from this repo snapshot.\n");
+    fwrite(STDOUT, '[INFO] In DB but no matching file on disk ('.count($inDbNotOnDisk).") — historical SaaS / removed files; normal for long-lived apps. Rollback of these names is not possible from this repo snapshot.\n");
     foreach (array_slice($inDbNotOnDisk, 0, 15) as $name) {
         fwrite(STDOUT, "  - {$name}\n");
     }
     if (count($inDbNotOnDisk) > 15) {
-        fwrite(STDOUT, '  ... and ' . (count($inDbNotOnDisk) - 15) . " more (omit full list)\n");
+        fwrite(STDOUT, '  ... and '.(count($inDbNotOnDisk) - 15)." more (omit full list)\n");
     }
     fwrite(STDOUT, "\n");
 } else {
@@ -92,12 +92,12 @@ if ($inDbNotOnDisk !== []) {
 }
 
 if ($onDiskNotInDb !== []) {
-    fwrite(STDOUT, '[INFO] On disk but not in DB (' . count($onDiskNotInDb) . ") — pending `php artisan migrate`:\n");
+    fwrite(STDOUT, '[INFO] On disk but not in DB ('.count($onDiskNotInDb).") — pending `php artisan migrate`:\n");
     foreach (array_slice($onDiskNotInDb, 0, 30) as $name) {
         fwrite(STDOUT, "  - {$name}\n");
     }
     if (count($onDiskNotInDb) > 30) {
-        fwrite(STDOUT, '  ... and ' . (count($onDiskNotInDb) - 30) . " more\n");
+        fwrite(STDOUT, '  ... and '.(count($onDiskNotInDb) - 30)." more\n");
     }
     fwrite(STDOUT, "\n");
 } else {
@@ -116,23 +116,36 @@ foreach ($batches as $batch => $rows) {
     }
 }
 if ($batchIssues !== []) {
-    fwrite(STDOUT, '[INFO] Batches where migration names are not lexicographically sorted (unusual but not always wrong): ' . count($batchIssues) . " batch(es).\n\n");
+    fwrite(STDOUT, '[INFO] Batches where migration names are not lexicographically sorted (unusual but not always wrong): '.count($batchIssues)." batch(es).\n\n");
 }
 
 fwrite(STDOUT, "Run `php artisan migrate:status` for full Pending/Ran list.\n");
 fwrite(STDOUT, "Run `php artisan migrate --pretend` to preview SQL for pending migrations.\n\n");
 
-$criticalTables = ['migrations', 'sales_dos', 'sales_do_items', 'grns', 'grn_items'];
-$missingTables = [];
-foreach ($criticalTables as $table) {
+$coreTables = ['migrations'];
+$missingCore = [];
+foreach ($coreTables as $table) {
     if (! Schema::hasTable($table)) {
-        $missingTables[] = $table;
+        $missingCore[] = $table;
     }
 }
-if ($missingTables !== []) {
-    fwrite(STDERR, '[FAIL] Missing expected tables (run migrations or repair DB): ' . implode(', ', $missingTables) . "\n");
+if ($missingCore !== []) {
+    fwrite(STDERR, '[FAIL] Missing core tables (run migrations or repair DB): '.implode(', ', $missingCore)."\n");
     exit(2);
 }
-fwrite(STDOUT, '[OK] Critical warehouse / Sales DO / GRN tables exist: ' . implode(', ', $criticalTables) . ".\n");
+fwrite(STDOUT, '[OK] Core tables exist: '.implode(', ', $coreTables).".\n");
+
+$optionalBusinessTables = ['sales_dos', 'sales_do_items', 'grns', 'grn_items'];
+$missingOptional = [];
+foreach ($optionalBusinessTables as $table) {
+    if (! Schema::hasTable($table)) {
+        $missingOptional[] = $table;
+    }
+}
+if ($missingOptional !== []) {
+    fwrite(STDOUT, '[WARN] Optional module tables not present (migrate if you use Sales DO / GRN): '.implode(', ', $missingOptional).".\n");
+} else {
+    fwrite(STDOUT, '[OK] Sales DO + GRN tables exist: '.implode(', ', $optionalBusinessTables).".\n");
+}
 
 exit($exit);

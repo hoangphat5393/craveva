@@ -63,14 +63,15 @@
                         <input type="number" step="0.0001" min="0.0001" name="planned_quantity" id="planned_quantity" class="form-control height-35 f-14" value="{{ old('planned_quantity', 1) }}" required>
                     </div>
 
-                    <x-forms.select fieldId="sales_order_id" :fieldLabel="__('production::app.linkedSalesOrder')" fieldName="sales_order_id" :fieldRequired="false">
+                    <x-forms.select fieldId="sales_order_id" :search="true" :fieldLabel="__('production::app.linkedSalesOrder')" fieldName="sales_order_id" :fieldRequired="false">
                         <option value="">—</option>
                         @foreach ($recentSalesOrders as $so)
                             <option value="{{ $so->id }}" @selected(old('sales_order_id') == $so->id)>
-                                #{{ $so->id }} — {{ $so->order_number }}
+                                #{{ $so->id }} — {{ $so->order_number }} — {{ __('modules.invoices.'.$so->status) }}
                             </option>
                         @endforeach
                     </x-forms.select>
+                    <p class="f-12 text-muted mt-12 mb-0">@lang('production::app.linkedSalesOrderHint')</p>
 
                     <x-forms.select fieldId="project_id" :fieldLabel="__('production::app.linkedProject')" fieldName="project_id" :fieldRequired="false">
                         <option value="">—</option>

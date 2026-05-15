@@ -54,7 +54,7 @@ class ProductionOrderController extends AccountBaseController
         $this->orders = $query->paginate(25)->withQueryString();
 
         $pageOutputProducts = $this->orders->getCollection()
-            ->map(static fn(ProductionOrder $order): ?Product => $order->outputProduct)
+            ->map(static fn (ProductionOrder $order): ?Product => $order->outputProduct)
             ->filter()
             ->unique('id')
             ->values();
@@ -123,7 +123,7 @@ class ProductionOrderController extends AccountBaseController
 
         $this->pageTitle = __('production::app.saveDraft');
         $this->order = $order;
-        $this->addProductData();
+        $this->addProductData($order);
 
         return view('production::orders.edit', $this->data);
     }
@@ -158,7 +158,7 @@ class ProductionOrderController extends AccountBaseController
                 ProductionBatch::query()->create([
                     'company_id' => $order->company_id,
                     'production_order_id' => $order->id,
-                    'batch_code' => 'PB-' . $order->id . '-' . strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
+                    'batch_code' => 'PB-'.$order->id.'-'.strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
                 ]);
             }
         } catch (\Throwable $e) {
@@ -182,7 +182,7 @@ class ProductionOrderController extends AccountBaseController
         return back()->with('success', __('messages.updateSuccess'));
     }
 
-    protected function addProductData(): void
+    protected function addProductData(?ProductionOrder $draftOrderBeingEdited = null): void
     {
         $companyId = (int) company()->id;
 
@@ -205,11 +205,31 @@ class ProductionOrderController extends AccountBaseController
             ->orderBy('name')
             ->get();
 
-        $this->recentSalesOrders = Order::query()
+        $recentSalesOrders = Order::query()
             ->where('company_id', $companyId)
+            ->eligibleForProductionOrderLink()
             ->orderByDesc('id')
             ->limit(250)
-            ->get(['id', 'order_number']);
+            ->get(['id', 'order_number', 'status']);
+
+        if ($draftOrderBeingEdited !== null && $draftOrderBeingEdited->sales_order_id !== null) {
+            $linkedSalesOrder = Order::query()
+                ->where('company_id', $companyId)
+                ->whereKey($draftOrderBeingEdited->sales_order_id)
+                ->first(['id', 'order_number', 'status']);
+
+            if ($linkedSalesOrder !== null && ! $recentSalesOrders->contains(
+                static fn (Order $row): bool => (int) $row->id === (int) $linkedSalesOrder->id
+            )) {
+                $recentSalesOrders = $recentSalesOrders
+                    ->prepend($linkedSalesOrder)
+                    ->unique(static fn (Order $row): int => (int) $row->id)
+                    ->sortByDesc(static fn (Order $row): int => (int) $row->id)
+                    ->values();
+            }
+        }
+
+        $this->recentSalesOrders = $recentSalesOrders;
 
         $this->projects = Project::query()
             ->where('company_id', $companyId)

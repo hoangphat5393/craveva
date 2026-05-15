@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Models\Company;
 use Carbon\Carbon;
 use Froiden\Envato\Traits\AppBoot;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -62,6 +63,9 @@ class Controller extends BaseController
 
             $this->socialAuthSettings = social_auth_setting();
 
+            $activeTenant = company();
+            $hasTenantCompany = $activeTenant instanceof Company;
+
             // Super Admin panel: luôn dùng global_app_name cho sidebar (Theme Settings)
             // Tránh trường hợp auto-set company khiến hiển thị sai tên
             // Dùng route check vì user() có thể trả về company user (is_superadmin=0) khi session có company
@@ -71,13 +75,21 @@ class Controller extends BaseController
             if ($isSuperAdminRoute && auth()->check()) {
                 $this->companyName = $this->global->global_app_name;
                 $this->appName = $this->global->global_app_name;
+            } elseif ($hasTenantCompany) {
+                // Superadmin không có company_id vẫn có thể vào tenant qua session('company');
+                // companyOrGlobalSetting() lúc đó là GlobalSetting — phải lấy tên từ model Company trong session.
+                $this->companyName = $activeTenant->company_name;
+                $app = $activeTenant->app_name;
+                $this->appName = (is_string($app) && $app !== '') ? $app : $activeTenant->company_name;
             } else {
-                $this->companyName = company() ? $this->company->company_name : $this->global->global_app_name;
-                $this->appName = company() ? $this->company->app_name : $this->global->global_app_name;
+                $this->companyName = $this->global->global_app_name;
+                $this->appName = $this->global->global_app_name;
             }
-            $this->locale = session('locale') ? session('locale') : (company() ? $this->company->locale : $this->global->locale);
+            $this->locale = session('locale') ? session('locale') : ($hasTenantCompany ? $activeTenant->locale : $this->global->locale);
 
-            $this->taskBoardColumnLength = $this->company ? $this->company->taskboard_length : 10;
+            $this->taskBoardColumnLength = $hasTenantCompany
+                ? $activeTenant->taskboard_length
+                : ($this->company?->taskboard_length ?? 10);
 
             config(['app.name' => $this->companyName]);
             config(['app.url' => url('/')]);
@@ -85,7 +97,7 @@ class Controller extends BaseController
             App::setLocale($this->locale);
             Carbon::setLocale($this->locale);
 
-            setlocale(LC_TIME, $this->locale.'_'.mb_strtoupper($this->locale));
+            setlocale(LC_TIME, $this->locale . '_' . mb_strtoupper($this->locale));
 
             // config(['app.debug' => $this->global->app_debug]);
 

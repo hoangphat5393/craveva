@@ -38,7 +38,9 @@ beforeEach(function () {
         $table->decimal('quantity_ordered', 20, 4)->default(0);
         $table->decimal('quantity_shipped', 20, 4)->default(0);
         $table->unsignedBigInteger('unit_id')->nullable();
+        $table->unsignedBigInteger('warehouse_batch_id')->nullable();
         $table->string('batch_number')->nullable();
+        $table->date('expiration_date')->nullable();
         $table->timestamps();
     });
 });

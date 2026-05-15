@@ -38,6 +38,7 @@ use App\Traits\SuperAdmin\PaystackSettings;
 use App\Traits\SuperAdmin\StripeSettings;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -51,14 +52,18 @@ use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Laravel\Cashier\Payment;
 use Mollie\Laravel\Facades\Mollie;
+use net\authorize\api\constants\ANetEnvironment;
 use PayPal\Api\Agreement;
 use PayPal\Api\AgreementStateDescriptor;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Rest\ApiContext;
 use Razorpay\Api\Api;
+use Stripe\Exception\InvalidRequestException;
 use Stripe\PaymentIntent;
 use Stripe\PaymentIntent as StripePaymentIntent;
 use Stripe\Stripe;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Unicodeveloper\Paystack\Paystack;
 
 class BillingController extends AccountBaseController
@@ -254,7 +259,7 @@ class BillingController extends AccountBaseController
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|\Illuminate\Contracts\View\View
      */
     public function upgradePlan(Request $request)
     {
@@ -271,12 +276,14 @@ class BillingController extends AccountBaseController
         $this->modulesData = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
+            ->where('module_name', '<>', 'discount')
             ->whereNotIn('module_name', Module::disabledModuleArray())
             ->get();
 
         $this->packageFeaturesModuleData = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
+            ->where('module_name', '<>', 'discount')
             ->whereNotIn('module_name', Module::disabledModuleArray())
             ->get();
 
@@ -306,7 +313,7 @@ class BillingController extends AccountBaseController
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|\Illuminate\Contracts\View\View
      */
     public function packages()
     {
@@ -314,6 +321,7 @@ class BillingController extends AccountBaseController
         $this->modulesData = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
+            ->where('module_name', '<>', 'discount')
             ->whereNotIn('module_name', Module::disabledModuleArray())
             ->get();
 
@@ -374,15 +382,15 @@ class BillingController extends AccountBaseController
 
         try {
             $this->intent = $this->company->createSetupIntent([
-                'description' => $this->package->name . $request->type . ' Payment',
+                'description' => $this->package->name.$request->type.' Payment',
                 'metadata' => [
                     'integration_check' => 'accept_a_payment',
                 ],
             ]);
-        } catch (\Stripe\Exception\InvalidRequestException $e) {
+        } catch (InvalidRequestException $e) {
             if (str_contains($e->getMessage(), 'No such customer')) {
                 // Smart Self-Healing Logic (Lock -> Search -> Link/Reset -> Log)
-                $lock = Cache::lock('stripe_fixing_company_' . $this->company->id, 10);
+                $lock = Cache::lock('stripe_fixing_company_'.$this->company->id, 10);
 
                 if ($lock->get()) {
                     try {
@@ -410,13 +418,13 @@ class BillingController extends AccountBaseController
 
                         // Retry Intent Creation after fixing
                         $this->intent = $this->company->createSetupIntent([
-                            'description' => $this->package->name . $request->type . ' Payment',
+                            'description' => $this->package->name.$request->type.' Payment',
                             'metadata' => [
                                 'integration_check' => 'accept_a_payment',
                             ],
                         ]);
                     } catch (\Exception $ex) {
-                        Log::error('Stripe Self-Healing Failed: ' . $ex->getMessage());
+                        Log::error('Stripe Self-Healing Failed: '.$ex->getMessage());
                         throw $e; // Throw original error if healing fails
                     } finally {
                         $lock->release();
@@ -428,7 +436,7 @@ class BillingController extends AccountBaseController
                     $this->company->refresh(); // Refresh model to get updated stripe_id
 
                     $this->intent = $this->company->createSetupIntent([
-                        'description' => $this->package->name . $request->type . ' Payment',
+                        'description' => $this->package->name.$request->type.' Payment',
                         'metadata' => [
                             'integration_check' => 'accept_a_payment',
                         ],
@@ -490,7 +498,7 @@ class BillingController extends AccountBaseController
         if ($subscriptionCancel) {
 
             if ($plan->max_employees < $this->company->employees->count()) {
-                \session()->put('error', 'You can\'t downgrade package because your employees length is ' . $this->company->employees->count() . ' and package max employees count is ' . $plan->max_employees);
+                \session()->put('error', 'You can\'t downgrade package because your employees length is '.$this->company->employees->count().' and package max employees count is '.$plan->max_employees);
 
                 return redirect()->route('billing.upgrade_plan');
             }
@@ -501,9 +509,9 @@ class BillingController extends AccountBaseController
 
             try {
                 if ($subscription->count() > 0) {
-                    $company->subscription('primary')->swap($plan->{'stripe_' . $request->type . '_plan_id'});
+                    $company->subscription('primary')->swap($plan->{'stripe_'.$request->type.'_plan_id'});
                 } else {
-                    $company->newSubscription('primary', $plan->{'stripe_' . $request->type . '_plan_id'})->create($token, ['email' => $email]);
+                    $company->newSubscription('primary', $plan->{'stripe_'.$request->type.'_plan_id'})->create($token, ['email' => $email]);
                 }
 
                 $subscription = new GlobalSubscription;
@@ -632,7 +640,7 @@ class BillingController extends AccountBaseController
             $plan = Package::with('currency')->find($request->plan_id);
             $type = $request->type;
 
-            $expectedSignature = hash_hmac('sha256', $paymentId . '|' . $subscriptionId, $secretKey);
+            $expectedSignature = hash_hmac('sha256', $paymentId.'|'.$subscriptionId, $secretKey);
         } catch (\Exception $e) {
             \session()->put('error', $e->getMessage());
 
@@ -642,7 +650,7 @@ class BillingController extends AccountBaseController
         if ($expectedSignature === $razorpaySignature) {
 
             if ($plan->max_employees < $this->company->employees->count()) {
-                \session()->put('error', 'You can\'t downgrade package because your employees length is ' . $this->company->employees->count() . ' and package max employees count is ' . $plan->max_employees);
+                \session()->put('error', 'You can\'t downgrade package because your employees length is '.$this->company->employees->count().' and package max employees count is '.$plan->max_employees);
 
                 return Reply::redirect(route('billing.upgrade_plan'));
             }
@@ -746,7 +754,7 @@ class BillingController extends AccountBaseController
                     $subData = $api->subscription->fetch($subscriptionData->subscription_id)->cancel(['cancel_at_cycle_end' => 0]);
 
                     // Plan will be end on this date
-                    $subscriptionData->ends_at = \Carbon\Carbon::createFromTimestamp($subData->end_at)->format('Y-m-d');
+                    $subscriptionData->ends_at = Carbon::createFromTimestamp($subData->end_at)->format('Y-m-d');
                     $subscriptionData->save();
                 }
             } catch (\Exception $ex) {
@@ -812,7 +820,7 @@ class BillingController extends AccountBaseController
                         $subData = $api->subscription->fetch($subscriptionData->subscription_id)->cancel(['cancel_at_cycle_end' => 1]);
 
                         // Plan will be end on this date
-                        $subscriptionData->ends_at = \Carbon\Carbon::createFromTimestamp($subData->end_at)->format('Y-m-d');
+                        $subscriptionData->ends_at = Carbon::createFromTimestamp($subData->end_at)->format('Y-m-d');
                         $subscriptionData->save();
                     }
                 } catch (\Exception $ex) {
@@ -879,7 +887,7 @@ class BillingController extends AccountBaseController
                     $merchantAuthentication->setTransactionKey($credential->authorize_transaction_key);
 
                     // Set the transaction's refId
-                    $refId = 'ref' . time();
+                    $refId = 'ref'.time();
 
                     $request = new AnetAPI\ARBCancelSubscriptionRequest;
                     $request->setMerchantAuthentication($merchantAuthentication);
@@ -889,9 +897,9 @@ class BillingController extends AccountBaseController
                     $controller = new AnetController\ARBCancelSubscriptionController($request);
 
                     if ($credential->authorize_environment == 'sandbox') {
-                        $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+                        $response = $controller->executeWithApiResponse(ANetEnvironment::SANDBOX);
                     } else {
-                        $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::PRODUCTION);
+                        $response = $controller->executeWithApiResponse(ANetEnvironment::PRODUCTION);
                     }
 
                     if (($response != null) && ($response->getMessages()->getResultCode() == 'Ok')) {
@@ -918,7 +926,7 @@ class BillingController extends AccountBaseController
                 $client = new Client;
                 $res = $client->request(
                     'PUT',
-                    'https://sandbox.payfast.co.za/subscriptions/' . $payfastInvoice->token . '/cancel',
+                    'https://sandbox.payfast.co.za/subscriptions/'.$payfastInvoice->token.'/cancel',
                     ['merchant-id' => $credential->payfast_key, 'version' => 'v1', 'timestamp' => $date->toDateTimeString(), 'signature' => $payfastInvoice->signature]
                 );
 
@@ -1060,12 +1068,12 @@ class BillingController extends AccountBaseController
 
     /**
      * @param  int  $id
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+     * @return BinaryFileResponse|StreamedResponse
      */
     public function offlineFileDownload($id)
     {
         $file = OfflinePlanChange::whereRaw('md5(id) = ?', $id)->firstOrFail();
 
-        return download_local_s3($file, OfflinePlanChange::FILE_PATH . '/' . $file->file_name);
+        return download_local_s3($file, OfflinePlanChange::FILE_PATH.'/'.$file->file_name);
     }
 }

@@ -110,6 +110,24 @@ class ProductionBatchController extends AccountBaseController
         return back()->with('success', __('messages.updateSuccess'));
     }
 
+    /**
+     * Printable slip for shop floor: batch code + order context (Biomixing Phase 3 — "Print Labels & Batch #").
+     */
+    public function printLabelSlip(ProductionBatch $batch): View
+    {
+        $this->assertViewProductionOrders();
+        $this->assertBatchInCompany($batch);
+
+        $batch->load(['order.outputProduct']);
+
+        return view('production::batches.print-label-slip', [
+            'batch' => $batch,
+            'order' => $batch->order,
+            'companyName' => company()->company_name ?? '—',
+            'printedAt' => now(),
+        ]);
+    }
+
     public function trace(ProductionBatch $batch): View
     {
         $this->assertViewProductionOrders();

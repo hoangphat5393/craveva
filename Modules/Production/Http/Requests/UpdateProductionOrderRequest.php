@@ -2,6 +2,7 @@
 
 namespace Modules\Production\Http\Requests;
 
+use App\Models\Order;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Production\Entities\ProductionBom;
@@ -39,6 +40,11 @@ class UpdateProductionOrderRequest extends FormRequest
     public function rules(): array
     {
         $companyId = (int) (company()?->id ?? 0);
+        /** @var ProductionOrder|null $productionOrder */
+        $productionOrder = $this->route('order');
+        $retainableSalesOrderId = $productionOrder instanceof ProductionOrder
+            ? $productionOrder->sales_order_id
+            : null;
 
         return [
             'output_product_id' => ['required', 'integer', Rule::exists('products', 'id')->where('company_id', $companyId)],
@@ -55,7 +61,15 @@ class UpdateProductionOrderRequest extends FormRequest
             'sales_order_id' => [
                 'nullable',
                 'integer',
-                Rule::exists('orders', 'id')->where('company_id', $companyId),
+                Rule::exists('orders', 'id')->where(function ($query) use ($companyId, $retainableSalesOrderId): void {
+                    $query->where('company_id', $companyId)
+                        ->where(function ($inner) use ($retainableSalesOrderId): void {
+                            $inner->whereNotIn('status', Order::STATUSES_CLOSED_FOR_PRODUCTION_ORDER_LINK);
+                            if ($retainableSalesOrderId !== null) {
+                                $inner->orWhere('id', (int) $retainableSalesOrderId);
+                            }
+                        });
+                }),
             ],
             'project_id' => [
                 'nullable',
@@ -88,5 +102,15 @@ class UpdateProductionOrderRequest extends FormRequest
                 $validator->errors()->add('production_bom_id', __('production::app.bomOutputMismatch'));
             }
         });
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'sales_order_id.exists' => __('production::app.salesOrderMustBeOpen'),
+        ];
     }
 }

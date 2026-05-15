@@ -6,6 +6,7 @@ use App\Helper\NumberFormat;
 use App\Scopes\ActiveScope;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -76,6 +77,7 @@ use Modules\Purchase\Entities\SalesShipment;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereCompanyAddressId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereOrderNumber($value)
+ * @method static Builder|Order eligibleForProductionOrderLink()
  *
  * @property-read UnitType $unit
  * @property int|null $unit_id
@@ -94,6 +96,22 @@ class Order extends BaseModel
     use CustomFieldsTrait, HasCompany;
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Order';
+
+    /**
+     * Commercially closed sales order rows: not offered as new links on production order headers.
+     *
+     * @var list<string>
+     */
+    public const STATUSES_CLOSED_FOR_PRODUCTION_ORDER_LINK = ['completed', 'canceled', 'refunded'];
+
+    /**
+     * @param  Builder<Order>  $query
+     * @return Builder<Order>
+     */
+    public function scopeEligibleForProductionOrderLink(Builder $query): Builder
+    {
+        return $query->whereNotIn('status', self::STATUSES_CLOSED_FOR_PRODUCTION_ORDER_LINK);
+    }
 
     public function client(): BelongsTo
     {

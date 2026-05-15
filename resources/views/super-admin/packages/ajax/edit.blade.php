@@ -338,11 +338,43 @@
             $.easyBlockUI('#update-package-data-form');
             $pkgBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
             window.apiHttp.postUrlEncoded(pkgUrl, $('#update-package-data-form').serialize())
-                .then(function() {
+                .then(function(response) {
+                    if (response && response.status === 'success') {
+                        if (typeof Swal !== 'undefined' && response.message) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 2500,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    confirmButton: 'btn btn-primary'
+                                },
+                                showClass: {
+                                    popup: 'swal2-noanimation',
+                                    backdrop: 'swal2-noanimation'
+                                }
+                            });
+                        }
+                        if (response.action === 'redirect' && response.url) {
+                            window.setTimeout(function() {
+                                window.location.href = response.url;
+                            }, response.message ? 600 : 0);
+
+                            return;
+                        }
+                    }
                     showTable();
+                    if (typeof closeTaskDetail === 'function') {
+                        closeTaskDetail();
+                    }
                 })
-                .catch(function (err) { $.handleApiFormError(err); })
-                .finally(function () {
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
                     $.easyUnblockUI('#update-package-data-form');
                     $pkgBtn.prop('disabled', false).html(pkgPrev);
                 });

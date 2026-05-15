@@ -56,10 +56,10 @@ Tài liệu rà soát module **DeveloperTools** (gateway DB, view, quyền UI), 
 
 **Điều kiện vào UI (tóm tắt):**
 
-1. User **không** phải superadmin.
-2. Role **admin** hoặc quyền **`manage_module_setting` = all** (logic chi tiết trong `user_can_access_developertools_module()`).
-3. `company.package` hợp lệ; JSON gói có **`developertools`** (chuẩn hóa qua `CompanyObserver::packageModuleNamesFromJson`).
-4. `module_settings`: `module_name = developertools`, `type = admin`, `status = active`, `is_allowed = 1`.
+1. **Super admin:** được phép khi có **company context** (`company()` từ session) và các điều kiện tenant (gói + `module_settings`) thỏa — không cần role `admin`. **User tenant:** không phải super admin; cần role **admin** hoặc **`manage_module_setting` = all** (chi tiết trong `user_can_access_developertools_module()`).
+2. `company` + **package** hợp lệ (nếu quan hệ `package` null nhưng còn `package_id`, helper tải lại `Package`); JSON gói có **`developertools`** (chuẩn hóa qua `CompanyObserver::packageModuleNamesFromJson`).
+3. `module_settings`: `module_name = developertools`, `type = admin`, `status = active`, `is_allowed = 1`.
+4. `checkCompanyPackageIsValid(company_id)` (cache `company_{id}_valid_package`).
 5. Module **nwidart** `DeveloperTools` **enabled** (`modules_statuses.json` / `Module::find('DeveloperTools')->isEnabled()`).
 
 ---

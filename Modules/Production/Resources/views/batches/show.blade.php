@@ -25,6 +25,15 @@
             <div class="alert alert-danger mt-3 mb-0">{{ session('error') }}</div>
         @endif
 
+        <div class="bg-white rounded p-4 mt-3 mb-3 border-left border-primary border-width-3" style="border-left-width: 4px !important;">
+            <h5 class="f-14 text-dark-grey font-weight-bold mb-2">@lang('production::app.printLabelSlipCardHeading')</h5>
+            <p class="f-20 font-weight-bold text-dark mb-2">{{ $batch->batch_code }}</p>
+            <a href="{{ route('production.batches.print-label-slip', $batch) }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm rounded f-13 mb-2">
+                <i class="fa fa-print mr-1"></i>@lang('production::app.printLabelSlipOpen')
+            </a>
+            <p class="text-muted f-12 mb-0">@lang('production::app.printLabelSlipCardHelp')</p>
+        </div>
+
         <div class="bg-white rounded p-4 mt-3 mb-4">
             <div class="row f-14">
                 <div class="col-md-4 mb-3">
@@ -107,7 +116,7 @@
                                 @elseif ($line->warehouse_product_batch_id === null)
                                     <span class="text-muted f-12">@lang('production::app.rmBatchAssignPermission')</span>
                                 @else
-                                    —
+                                    <span class="text-muted f-12">@lang('production::app.rmBatchAlreadyAssigned', ['id' => $line->warehouse_product_batch_id])</span>
                                 @endif
                             </td>
                         </tr>

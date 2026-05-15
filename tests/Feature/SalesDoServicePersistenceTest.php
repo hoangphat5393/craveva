@@ -12,6 +12,79 @@ beforeEach(function () {
     DB::purge('sqlite');
     DB::reconnect('sqlite');
 
+    Schema::create('orders', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->timestamps();
+    });
+    DB::table('orders')->insert([
+        ['id' => 1001, 'company_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 1002, 'company_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
+    Schema::create('warehouses', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->string('name')->nullable();
+        $table->string('warehouse_type')->default('normal');
+        $table->timestamps();
+    });
+    DB::table('warehouses')->insert([
+        ['id' => 1, 'company_id' => 10, 'name' => 'WH-1', 'warehouse_type' => 'normal', 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 2, 'company_id' => 10, 'name' => 'WH-2', 'warehouse_type' => 'normal', 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 7, 'company_id' => 10, 'name' => 'WH-7', 'warehouse_type' => 'normal', 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
+    Schema::create('warehouse_product_batches', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->unsignedBigInteger('warehouse_id');
+        $table->unsignedInteger('product_id');
+        $table->string('batch_number')->nullable();
+        $table->date('expiration_date')->nullable();
+        $table->decimal('quantity', 15, 4)->default(0);
+        $table->decimal('reserved_quantity', 15, 4)->default(0);
+        $table->timestamps();
+    });
+    DB::table('warehouse_product_batches')->insert([
+        [
+            'company_id' => 10,
+            'warehouse_id' => 2,
+            'product_id' => 202,
+            'batch_number' => 'NEW-B1',
+            'expiration_date' => null,
+            'quantity' => 1000,
+            'reserved_quantity' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'company_id' => 10,
+            'warehouse_id' => 2,
+            'product_id' => 203,
+            'batch_number' => 'NEW-B2',
+            'expiration_date' => null,
+            'quantity' => 1000,
+            'reserved_quantity' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+    ]);
+
+    Schema::create('stock_reservations', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->unsignedBigInteger('warehouse_id');
+        $table->unsignedInteger('product_id');
+        $table->string('batch_number')->nullable();
+        $table->date('expiration_date')->nullable();
+        $table->decimal('reserved_quantity', 15, 4);
+        $table->string('reference_type', 50)->nullable();
+        $table->unsignedBigInteger('reference_id')->nullable();
+        $table->string('status', 20)->default('active');
+        $table->timestamps();
+    });
+
     Schema::create('sales_dos', function ($table) {
         $table->id();
         $table->unsignedInteger('company_id')->nullable();
@@ -45,6 +118,10 @@ beforeEach(function () {
 afterEach(function () {
     Schema::dropIfExists('sales_do_items');
     Schema::dropIfExists('sales_dos');
+    Schema::dropIfExists('stock_reservations');
+    Schema::dropIfExists('warehouse_product_batches');
+    Schema::dropIfExists('warehouses');
+    Schema::dropIfExists('orders');
 });
 
 it('creates sales do header and items via service', function () {

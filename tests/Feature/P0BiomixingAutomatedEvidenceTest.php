@@ -8,6 +8,16 @@ use Illuminate\Support\Facades\Route;
  * Non-UI evidence for P0 Biomixing: bidirectional trace wiring (P0-05) and
  * core hub route names touched by the P0-08 mini-UAT template (manual steps still required).
  */
+it('wires batch show to printable label slip route (Phase 3 shop floor)', function (): void {
+    $show = (string) file_get_contents(base_path('Modules/Production/Resources/views/batches/show.blade.php'));
+    expect($show)->toContain('production.batches.print-label-slip');
+});
+
+it('shows rm batch assignment helper when line already has a warehouse batch', function (): void {
+    $show = (string) file_get_contents(base_path('Modules/Production/Resources/views/batches/show.blade.php'));
+    expect($show)->toContain('rmBatchAlreadyAssigned');
+});
+
 it('keeps production trace blade wired to warehouse product batch detail', function (): void {
     $trace = (string) file_get_contents(base_path('Modules/Production/Resources/views/batches/trace.blade.php'));
     $warehouseShow = (string) file_get_contents(base_path('Modules/Warehouse/Resources/views/product-batches/show.blade.php'));

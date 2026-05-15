@@ -1,0 +1,59 @@
+%% Craveva multi-tenant: 1 tài khoản AI + 1 Company Hub / khách hàng
+%% So sánh với bản đơn giản: chat_ai_hub.mmd
+%% Xem: chat_ai_hub_mt.html
+
+flowchart TB
+    subgraph end_users["Người dùng cuối (chat)"]
+        direction TB
+        EU["Khách chat LINE / WhatsApp\n(hỏi giá, đặt hàng, …)"]
+    end
+
+    subgraph channels_tenant["Kênh chat — theo từng khách hàng doanh nghiệp"]
+        direction TB
+        LINE_N["LINE OA\n(channel riêng tenant)"]
+        WA_N["WhatsApp Business\n(số / WABA riêng tenant)"]
+        EU --> LINE_N
+        EU --> WA_N
+    end
+
+    subgraph provisioning["Provisioning — mỗi khách hàng doanh nghiệp"]
+        direction TB
+        TA["Tenant admin\n(chủ DN / IT)"]
+        TA -->|"Đăng ký / đăng nhập"| AI_ACCT["Tài khoản trên\nai.craveva.com\n(workspace / org)"]
+        TA -->|"Đăng ký / đăng nhập"| HUB_CO["Company trên\nhub.craveva.com\n(company_id = N)"]
+        AI_ACCT <-->|"Liên kết cấu hình\n(map tenant AI ↔ company N)"| HUB_CO
+        AI_ACCT --> CFG["Cấu hình tenant AI:\n• Data Source MySQL\n• Webhook LINE/WA\n• (tuỳ chọn) API secret Hub"]
+        CFG --> GW["Credential gateway\napi_gateway_N\n+ user MySQL scoped"]
+        HUB_CO --> MAIN_DB[("Hub DB chính\n(schema app, company_id = N)")]
+        GW -.->|"VIEW lọc company_id"| MAIN_DB
+    end
+
+    subgraph runtime["Runtime — khi có tin nhắn chat"]
+        direction LR
+        subgraph ai_platform["Nền tảng AI (multi-tenant)"]
+            direction TB
+            AI["ai.craveva.com\nWebhook router + Agent / LLM\n(phân giải tenant từ channel / secret)"]
+            OUT["Trả lời qua\nMessaging API"]
+            AI --> OUT
+        end
+        subgraph hub_platform["Craveva Hub (multi-company ERP)"]
+            direction TB
+            HUB["hub.craveva.com\nAPI / nghiệp vụ\nscoped company_id = N"]
+            MAIN_DB2[("Dữ liệu tenant N\nSP, giá, đơn, kho, …")]
+            HUB --> MAIN_DB2
+        end
+        AI -->|"SELECT qua gateway\nhoặc API Hub"| HUB
+        AI -.->|"Tuỳ cấu hình:\nđọc api_gateway_N"| GW
+    end
+
+    LINE_N -->|"HTTPS Webhook\n+ tenant context"| AI
+    WA_N -->|"HTTPS Webhook\n+ tenant context"| AI
+    OUT --> LINE_N
+    OUT --> WA_N
+
+    classDef provision fill:#e8f4fc,stroke:#2563eb,color:#0f172a
+    classDef runtime fill:#f0fdf4,stroke:#16a34a,color:#0f172a
+    class provisioning provision
+    class runtime runtime
+    style provisioning fill:#e8f4fc,stroke:#2563eb,stroke-width:2px
+    style runtime fill:#f0fdf4,stroke:#16a34a,stroke-width:2px

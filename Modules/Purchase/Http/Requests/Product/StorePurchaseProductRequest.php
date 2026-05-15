@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Http\Requests\Product;
 
+use App\Enums\ProductType;
 use App\Http\Requests\CoreRequest;
 use App\Traits\CustomFieldsRequestTrait;
 use Illuminate\Validation\Rule;
@@ -28,7 +29,7 @@ class StorePurchaseProductRequest extends CoreRequest
             ],
             'sku' => 'required|string|max:255',
             'track_inventory' => 'sometimes',
-            'type' => 'required|in:goods,service',
+            'type' => ['required', Rule::in(ProductType::values())],
             'selling_price' => 'required|numeric',
             'purchase_information' => 'sometimes',
             'opening_stock' => 'required_if:track_inventory,1',

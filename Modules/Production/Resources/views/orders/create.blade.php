@@ -35,9 +35,7 @@
                         <option value="">—</option>
                         @foreach ($boms as $bom)
                             <option value="{{ $bom->id }}" data-output-product-id="{{ $bom->output_product_id }}" @selected(old('production_bom_id') == $bom->id)>
-                                #{{ $bom->id }} {{ $bom->version }} @if ($bom->code)
-                                    ({{ $bom->code }})
-                                @endif
+                                {{ $bom->labelForSelect() }}
                             </option>
                         @endforeach
                     </x-forms.select>
@@ -67,20 +65,22 @@
                         <option value="">—</option>
                         @foreach ($recentSalesOrders as $so)
                             <option value="{{ $so->id }}" @selected(old('sales_order_id') == $so->id)>
-                                #{{ $so->id }} — {{ $so->order_number }} — {{ __('modules.invoices.'.$so->status) }}
+                                #{{ $so->id }} — {{ $so->order_number }} — {{ __('modules.invoices.' . $so->status) }}
                             </option>
                         @endforeach
                     </x-forms.select>
                     <p class="f-12 text-muted mt-12 mb-0">@lang('production::app.linkedSalesOrderHint')</p>
 
-                    <x-forms.select fieldId="project_id" :fieldLabel="__('production::app.linkedProject')" fieldName="project_id" :fieldRequired="false">
-                        <option value="">—</option>
-                        @foreach ($projects as $proj)
-                            <option value="{{ $proj->id }}" @selected(old('project_id') == $proj->id)>
-                                #{{ $proj->id }} — {{ $proj->project_name }}
-                            </option>
-                        @endforeach
-                    </x-forms.select>
+                    @if (config('production.ui.show_linked_project_on_order_form'))
+                        <x-forms.select fieldId="project_id" :fieldLabel="__('production::app.linkedProject')" fieldName="project_id" :fieldRequired="false">
+                            <option value="">—</option>
+                            @foreach ($projects as $proj)
+                                <option value="{{ $proj->id }}" @selected(old('project_id') == $proj->id)>
+                                    #{{ $proj->id }} — {{ $proj->project_name }}
+                                </option>
+                            @endforeach
+                        </x-forms.select>
+                    @endif
 
                     <div class="w-100 border-top-grey pt-3 mt-2 d-flex flex-wrap">
                         <button type="submit" class="btn btn-primary rounded f-14 p-2 mr-3">

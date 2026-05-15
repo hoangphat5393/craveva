@@ -52,7 +52,7 @@ beforeEach(function (): void {
     ]);
 
     DB::table('products')->insert([
-        ['id' => 1, 'company_id' => 1, 'name' => 'RM-A', 'type' => 'goods', 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 1, 'company_id' => 1, 'name' => 'RM-A', 'type' => 'raw_material', 'created_at' => now(), 'updated_at' => now()],
         ['id' => 2, 'company_id' => 1, 'name' => 'FG-B', 'type' => 'goods', 'created_at' => now(), 'updated_at' => now()],
     ]);
 

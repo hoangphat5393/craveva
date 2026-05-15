@@ -56,4 +56,24 @@ class ProductionBom extends BaseModel
     {
         return $this->hasMany(ProductionOrder::class, 'production_bom_id');
     }
+
+    /**
+     * Human-readable label for production order BOM dropdowns (finished good + code).
+     */
+    public function labelForSelect(): string
+    {
+        $fgName = trim((string) ($this->outputProduct?->name ?? ''));
+
+        if ($fgName === '') {
+            $fgName = __('production::app.fgProduct') . ' #' . $this->output_product_id;
+        }
+
+        $code = trim((string) ($this->code ?? ''));
+
+        if ($code !== '') {
+            return $fgName . ' — ' . $code;
+        }
+
+        return $fgName . ' (BOM #' . $this->id . ')';
+    }
 }

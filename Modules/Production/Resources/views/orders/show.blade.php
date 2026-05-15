@@ -77,23 +77,25 @@
                     <span class="font-weight-normal">
                         @if ($order->sales_order_id)
                             #{{ $order->sales_order_id }} @if ($order->salesOrder)
-                                ({{ $order->salesOrder->order_number }} — {{ __('modules.invoices.'.$order->salesOrder->status) }})
+                                ({{ $order->salesOrder->order_number }} — {{ __('modules.invoices.' . $order->salesOrder->status) }})
                             @endif
                         @else
                             —
                         @endif
                     </span>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.linkedProject')</span>
-                    <span class="font-weight-normal">
-                        @if ($order->project_id)
-                            {{ $order->project?->project_name ?? '#' . $order->project_id }}
-                        @else
-                            —
-                        @endif
-                    </span>
-                </div>
+                @if (config('production.ui.show_linked_project_on_order_form') || $order->project_id)
+                    <div class="col-md-6 mb-3">
+                        <span class="text-dark-grey d-block mb-1">@lang('production::app.linkedProject')</span>
+                        <span class="font-weight-normal">
+                            @if ($order->project_id)
+                                {{ $order->project?->project_name ?? '#' . $order->project_id }}
+                            @else
+                                —
+                            @endif
+                        </span>
+                    </div>
+                @endif
                 @if ($order->bom_snapshot_at)
                     <div class="col-12 mb-2">
                         <span class="text-dark-grey d-block mb-1">@lang('production::app.bomSnapshotTitle')</span>

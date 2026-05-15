@@ -85,6 +85,7 @@ return [
         'contacts' => 'Contacts',
         'notes' => 'Notes',
         'orders' => 'Orders',
+        'saleOrderSettings' => 'Sale order settings',
         'saleOrders' => 'Sale Orders',
         'salesHistory' => 'Sales history',
         'gdpr' => 'GDPR',

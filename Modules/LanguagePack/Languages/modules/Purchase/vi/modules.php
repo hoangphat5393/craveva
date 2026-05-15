@@ -4,6 +4,10 @@ return [
     'product' => [
         'type' => 'Kiểu',
         'goods' => 'Các mặt hàng',
+        'finishedGoods' => 'Thành phẩm',
+        'rawMaterial' => 'Nguyên liệu',
+        'semiFinished' => 'Bán thành phẩm',
+        'packaging' => 'Bao bì',
         'images' => 'Hình ảnh',
         'service' => 'Dịch vụ',
         'addImages' => 'Thêm hình ảnh',

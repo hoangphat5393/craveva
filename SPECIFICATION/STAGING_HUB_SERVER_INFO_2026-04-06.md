@@ -1,17 +1,26 @@
-# Staging & Hub — inventory tài nguyên & PHP (snapshot)
+# Staging, Hub & AI — inventory tài nguyên & PHP (snapshot)
 
-**Bảng IP VM / Cloud SQL (snapshot GCP):** `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md` (đối chiếu với bảng dưới khi cần).
+**Bảng IP VM / Cloud SQL (snapshot GCP):** `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`, `docs/GCP_INFRA_INVENTORY_SUMMARY.md` (đối chiếu khi cần).
 
-**Thu thập:** 2026-04-06 (SSH read-only). Giá trị **thay đổi theo thời gian** — cần `free -h`, `uptime` khi điều tra sự cố.
+**Thu thập:** 2026-04-06 (SSH read-only staging/hub). **Cập nhật 2026-05-15:** quét read-only **`gcloud`** + SSH (staging/hub alias; **AI** qua `gcloud compute ssh`). Giá trị **thay đổi theo thời gian** — dùng `free -h`, `uptime` khi điều tra sự cố.
 
-**Hai server — SSH & thư mục app (cấu hình `~/.ssh/config` trên máy dev):**
+**Ba VM app — SSH & thư mục code:**
 
-| Máy         | Host SSH (`ssh …`)   | Đường dẫn code (deploy script)             | Ghi chú                      |
-| ----------- | -------------------- | ------------------------------------------ | ---------------------------- |
-| **Staging** | `craveva-staging`    | `/var/www/craveva-staging/current/craveva` | `scripts/upload_staging.ps1` |
-| **Hub**     | `craveva-hub-server` | `/var/www/hub.craveva.com`                 | `scripts/upload_hub.ps1`     |
+| Máy         | Host SSH (`ssh …`)   | Đường dẫn code / app                       | Ghi chú                                                                  |
+| ----------- | -------------------- | ------------------------------------------ | ------------------------------------------------------------------------ |
+| **Staging** | `craveva-staging`    | `/var/www/craveva-staging/current/craveva` | `scripts/upload_staging.ps1`                                             |
+| **Hub**     | `craveva-hub-server` | `/var/www/hub.craveva.com`                 | `scripts/upload_hub.ps1`                                                 |
+| **AI**      | xem cột dưới         | `/var/www/ai-app`                          | **https://ai.craveva.com** — Docker Compose; không có script upload repo |
 
-Sau khi đổi RAM / FPM, chạy lại các lệnh ở **mục 7** trên **từng** máy và cập nhật bảng **mục 1** trong file này.
+**SSH AI:** trên máy dev, `ssh craveva-ai` có thể **Permission denied (publickey)** nếu chưa gắn key GCP. Dùng read-only:
+
+```bash
+gcloud compute ssh craveva-ai --zone=asia-southeast1-a --command="hostname; free -h; uptime"
+```
+
+Alias tùy chọn (cùng IP): `craveva-ai.asia-southeast1-a.craveva-org-55934-project` → `136.110.35.154`.
+
+Sau khi đổi RAM / FPM (staging/hub), chạy lại các lệnh ở **mục 7** trên **từng** máy và cập nhật bảng **mục 1** trong file này.
 
 **Cập nhật 2026-04-07 (Hub):** file FPM **`/etc/php/8.3/fpm/conf.d/99-hub-match-aapanel82.ini`** — `memory_limit` **128M → 256M**; `post_max_size` / `upload_max_filesize` **50M** (giữ); `php8.3-fpm` reload OK — chi tiết **mục 3 Hub → Drop-in aaPanel**.
 
@@ -41,20 +50,26 @@ Sau khi đổi RAM / FPM, chạy lại các lệnh ở **mục 7** trên **từn
 
 ## 1. Tóm tắt nhanh
 
-| Máy                    | RAM          | Swap                                                 | CPU (vCPU)              | Ổ `/`            | Ghi chú FPM (mục tiêu)                                                                                                                                                                      |
-| ---------------------- | ------------ | ---------------------------------------------------- | ----------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **craveva-staging**    | **~7.8 GiB** | 2 GiB (file `/swapfile`, lúc quét: **~114MiB dùng**) | 2 × Intel Xeon @ 2.2GHz | 20G (~62% used)  | **`1024M` + `pm.max_children = 4` + `pm.max_spare_servers = 4`** (**2026-04-08**). **Supervisor** `craveva-queue-all`.                                                                      |
-| **craveva-hub-server** | **~15 GiB**  | 2 GiB (lúc quét: **~811MiB đã dùng**)                | 4 × Intel Xeon @ 2.2GHz | 194G (~29% used) | **`memory_limit` FPM hiệu lực 1024M** (drop-in **2026-04-08**) + **`pm.max_children = 8` + `pm.max_spare_servers = 8`**. Đã xóa bản backup thư mục `.bak-20251210152231`. Swap — mục **5**. |
+**GCP (2026-05-15, `gcloud compute instances list`):** project `craveva-org-55934-project`, zone **`asia-southeast1-a`** cho cả ba VM.
 
-### Redis — Local / Staging / Hub (kiểm **2026-04-08**)
+| Máy                    | Loại VM (GCP)       | IP ngoài         | IP nội        | RAM (quét)   | Swap (quét)               | vCPU | Ổ `/` (quét)    | Ghi chú runtime                                                                                                                                                                             |
+| ---------------------- | ------------------- | ---------------- | ------------- | ------------ | ------------------------- | ---- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **craveva-staging**    | `n2-standard-2`     | `35.240.198.61`  | `10.148.0.16` | **~7.8 GiB** | 2 GiB (**0** dùng)        | 2    | 20G (**~83%**)  | Laravel + **PHP 8.3 FPM** + Nginx. **`1024M`**, `pm.max_children = 4` (**2026-04-08**). **Supervisor** `craveva-queue-all`. Load **~0.16** (2026-05-15).                                    |
+| **craveva-hub-server** | `e2-standard-4`     | `34.126.124.196` | `10.1.0.5`    | **~15 GiB**  | 2 GiB (**~673 MiB** dùng) | 4    | 194G (**~29%**) | Laravel + **PHP 8.3 FPM** (aaPanel). Drop-in **1024M**, `pm.max_children = 8` (**2026-04-08**). Load **~0.34** (2026-05-15).                                                                |
+| **craveva-ai**         | `e2-custom-8-16384` | `136.110.35.154` | `10.148.0.7`  | **~15 GiB**  | 2 GiB (**~13 MiB** dùng)  | 8    | 97G (**~38%**)  | **https://ai.craveva.com** — **Docker Compose** (`/var/www/ai-app`), **không** PHP-FPM/Nginx trên host. Load **~6.6–8.5** lúc quét (đang `docker-compose` / `npm ci`). Chi tiết **mục 3b**. |
 
-| Môi trường      | Redis server                                                          | PHP **phpredis**   | `redis-cli ping`                                                                                                           | `systemctl` boot           |
-| --------------- | --------------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| **Local (dev)** | Tùy máy — thường **chưa cài**; queue/cache có thể `database` / `file` | Tùy cài đặt        | N/A                                                                                                                        | N/A                        |
-| **Staging**     | **`redis-server` (apt)** — **active**, **enabled**                    | **Có** (CLI + FPM) | **PONG**                                                                                                                   | `redis-server` **enabled** |
-| **Hub**         | **aaPanel** `redis.service` — **active**, **enabled**                 | **Có** (CLI + FPM) | **PONG** (thường cần **`sudo redis-cli ping`** — thư mục `/www/server/redis` hạn quyền; **Laravel không cần** `redis-cli`) | **enabled**                |
+**Staging — ổ đĩa:** quét **2026-05-15** ~**83%** `/` (20G) — cao hơn snapshot **2026-04-06** (~62%); cân nhắc dọn log/backup trước khi full.
 
-**Không cần cài thêm** trên staging/hub tại thời điểm kiểm — dịch vụ đã chạy.
+### Redis — Local / Staging / Hub / AI (kiểm **2026-04-08**; AI host **2026-05-15**)
+
+| Môi trường      | Redis server                                                          | PHP **phpredis**   | `redis-cli ping`                                                                                                           | `systemctl` boot                                               |
+| --------------- | --------------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Local (dev)** | Tùy máy — thường **chưa cài**; queue/cache có thể `database` / `file` | Tùy cài đặt        | N/A                                                                                                                        | N/A                                                            |
+| **Staging**     | **`redis-server` (apt)** — **active**, **enabled**                    | **Có** (CLI + FPM) | **PONG**                                                                                                                   | `redis-server` **enabled**                                     |
+| **Hub**         | **aaPanel** `redis.service` — **active**, **enabled**                 | **Có** (CLI + FPM) | **PONG** (thường cần **`sudo redis-cli ping`** — thư mục `/www/server/redis` hạn quyền; **Laravel không cần** `redis-cli`) | **enabled**                                                    |
+| **AI**          | **Không** có `redis-server` trên host (quét **2026-05-15**)           | N/A (stack Node)   | N/A                                                                                                                        | Cache/queue trong **container** hoặc DB ngoài — xem **mục 3b** |
+
+**Không cần cài thêm** Redis trên staging/hub tại thời điểm kiểm **2026-04-08** — dịch vụ đã chạy.
 
 **Git chung 3 nguồn:** Trong repo có `config/database.php` và **`.env.example`**; **`.env`** mỗi máy **không** commit — không làm lệch code. Đồng bộ **tên biến** `REDIS_*`, `QUEUE_CONNECTION`, `IMPORT_BATCH_QUEUE_CONNECTION`. Prefix key Laravel gắn `APP_NAME` — **khác `APP_NAME`** hoặc set **`REDIS_PREFIX`** nếu hai app dùng chung một Redis.
 
@@ -215,6 +230,108 @@ Và khớp với Nginx: `grep -R fastcgi_pass /www/server/panel/vhost/nginx/*.co
 
 ---
 
+## 3b. AI (`craveva-ai`) — chi tiết
+
+> **Quét read-only:** 2026-05-15 (`gcloud compute instances describe` + `gcloud compute ssh` — **không** sửa cấu hình, **không** đọc nội dung `.env`).
+
+### Vai trò & URL
+
+- **Production AI / webhook:** [https://ai.craveva.com](https://ai.craveva.com) (LINE/WhatsApp webhook, tích hợp đọc DB hub theo kiến trúc dự án).
+- **Khác staging/hub:** không phải Laravel PHP-FPM trên host; app **Node** trong **Docker Compose**.
+
+### Hệ điều hành & kernel
+
+- **Hostname:** `craveva-ai`
+- **OS:** Ubuntu **24.04.4 LTS**
+- **Kernel:** `Linux 6.17.0-1012-gcp` (x86_64, GCP)
+- **Uptime (quét):** ~**10 ngày**; **7** phiên user đăng nhập
+
+### Bộ nhớ & swap (`free -h`, 2026-05-15)
+
+|          | Total   | Used     | Available    |
+| -------- | ------- | -------- | ------------ |
+| **Mem**  | ~15 GiB | ~1.3 GiB | **~14 GiB**  |
+| **Swap** | 2.0 GiB | ~13 MiB  | ~2.0 GiB còn |
+
+- **Swap device:** `/swapfile` 2G (prio -2)
+
+### CPU & load
+
+- **vCPU (GCP):** **8** (`e2-custom-8-16384`)
+- **Load (lúc quét):** `6.65, 6.11, 5.50` → sau đó **~8.45** khi có **`docker-compose build`** / **`npm ci`** — không phản ánh steady-state; kiểm tra lại khi không deploy.
+
+### Disk
+
+- **`/`:** **97G** total, **~37G** used, **~61G** avail (**~38%**)
+- **`/var/www/ai-app`:** ~**1.5G** (thư mục app)
+
+### Mạng (GCP)
+
+| Trường       | Giá trị             |
+| ------------ | ------------------- |
+| **Zone**     | `asia-southeast1-a` |
+| **External** | `136.110.35.154`    |
+| **Internal** | `10.148.0.7`        |
+| **Status**   | `RUNNING`           |
+
+Egress VM này thường được **allow** trên authorized networks Cloud SQL hub (`136.110.35.154/32` — xem `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`).
+
+### Thư mục trên VM (`/var/www`)
+
+| Đường dẫn             | Ghi chú                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| **`/var/www/ai-app`** | App chính — `docker-compose.yml`, `backend/`, `package.json` (`ai-enterprise-business`) |
+| `ai-app-backup-`      | Backup code (tên thư mục cắt)                                                           |
+| `ai-app-backups`      | Backup (user `issac`)                                                                   |
+| `certbot`             | Certbot / webroot                                                                       |
+| `html`                | Mặc định                                                                                |
+
+- **`.env`:** có tại `/var/www/ai-app/.env` (nội dung **không** ghi trong tài liệu này).
+- **Git:** không có `.git` tại root app (quét **2026-05-15**).
+
+### Runtime (host)
+
+| Thành phần       | Trạng thái (quét)                             |
+| ---------------- | --------------------------------------------- |
+| **nginx** (host) | **inactive**                                  |
+| **apache2**      | **inactive**                                  |
+| **docker**       | **active** (`dockerd`)                        |
+| **supervisor**   | **inactive**                                  |
+| **pm2**          | không cài / không dùng                        |
+| **PHP-FPM**      | **không** (không áp dụng mục FPM staging/hub) |
+| **Node (host)**  | **v20.20.0**                                  |
+| **Python**       | **3.12.3**                                    |
+
+### Docker Compose (`/var/www/ai-app/docker-compose.yml`)
+
+| Service (compose) | Container (tên trong file) | Image / stack  | Port host (khi stack up) |
+| ----------------- | -------------------------- | -------------- | ------------------------ |
+| `frontend`        | `craveva-frontend`         | build Node     | **3000:3000**            |
+| `backend`         | `craveva-backend`          | build Node     | **5000:5000**            |
+| `nginx`           | `craveva-nginx`            | `nginx:alpine` | **80:80**                |
+| `nginx-cache`     | (volume/cache)             | —              | —                        |
+
+- **Network:** `craveva-network`
+- **Trạng thái lúc quét:** stack đang **build/up** (process `docker-compose`, `npm ci`); `docker ps` có thể chỉ thấy container tạm — xác nhận khi ổn định: `cd /var/www/ai-app && sudo docker compose ps`
+
+### Cloud SQL liên quan AI (snapshot GCP, không đổi VM)
+
+| Instance                  | Engine        | Public IP (snapshot)                       | Vai trò            |
+| ------------------------- | ------------- | ------------------------------------------ | ------------------ |
+| **`craveva-ai-db`**       | MySQL 8.0     | `34.158.38.112`                            | DB module AI       |
+| **`craveva-ai-pgvector`** | PostgreSQL 15 | `136.110.25.28` (+ IP phụ trong inventory) | Vector / embedding |
+
+Chi tiết tier, private IP, firewall: `docs/GCP_INFRA_INVENTORY_SUMMARY.md`.
+
+### Lệnh tái kiểm tra (read-only)
+
+```bash
+gcloud compute ssh craveva-ai --zone=asia-southeast1-a --command="hostname; free -h; df -h /; uptime"
+gcloud compute ssh craveva-ai --zone=asia-southeast1-a --command="cd /var/www/ai-app && sudo docker compose ps"
+```
+
+---
+
 ## 4. Liên quan tới import / `max_execution_time` / upload — vì sao “server die / load liên tục”?
 
 1. **`max_execution_time = 300`** không làm **mỗi request ăn thêm RAM cố định**, nhưng cho phép request **sống lâu hơn** → **worker FPM bị giữ lâu hơn** → dễ có **nhiều request nặng đồng thời** → tổng RAM PHP + MySQL client + Opcache tăng.
@@ -300,6 +417,7 @@ sudo php-fpm8.3 -t && sudo systemctl restart php8.3-fpm
 
 ## 8. Liên quan trong repo
 
+- GCP inventory (gồm AI VM + Cloud SQL): `docs/GCP_INFRA_INVENTORY_SUMMARY.md`
 - Scale FPM pool (staging 4 / hub 8): `scripts/fpm_scale_pool_apply.sh`
 - PHP ini tuning script: `scripts/tune_php83_import_limits.sh`
 - Staging vận hành (Supervisor, deploy): `docs/SERVER_RUNBOOK_VI.md`; rehearsal/zip: `docs/STAGING_OPERATIONS.md`

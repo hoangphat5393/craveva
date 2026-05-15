@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE / WhatsApp → AI → Hub — Kiến trúc multi-tenant</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 32,
+                nodeSpacing: 70,
+                rankSpacing: 80,
+            },
+            sequence: {
+                mirrorActors: false,
+                useMaxWidth: true,
+                wrap: true,
+                actorMargin: 56,
+                messageMargin: 38,
+                noteMargin: 12,
+                boxMargin: 8,
+                actorFontSize: 14,
+                noteFontSize: 13,
+                messageFontSize: 14,
+            },
+        });
+    </script>
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, sans-serif;
+            line-height: 1.5;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.25rem 1.5rem 3rem;
+        }
+
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 650;
+            margin: 0 0 0.35rem;
+        }
+
+        .meta {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin: 2rem 0 0.75rem;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.25rem;
+        }
+
+        .mermaid {
+            margin: 1rem 0 1.5rem;
+            overflow-x: auto;
+        }
+
+        /* Cách 1: font lớn chỉ cho flowchart (§1); sequence (§2–3) dùng cỡ riêng tránh vỡ layout */
+        .mermaid-flowchart svg text,
+        .mermaid-flowchart svg tspan {
+            font-size: 18px !important;
+        }
+
+        .mermaid-flowchart foreignObject div,
+        .mermaid-flowchart .nodeLabel,
+        .mermaid-flowchart .labelText,
+        .mermaid-flowchart .edgeLabel {
+            font-size: 18px !important;
+        }
+
+        .diagram-seq-wrap {
+            max-width: 1000px;
+            margin: 0 auto 1.5rem;
+            overflow-x: auto;
+        }
+
+        .mermaid-sequence svg {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .note {
+            background: #f4f6f9;
+            border-left: 4px solid #2563eb;
+            padding: 0.85rem 1rem;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .compare {
+            background: #fffbeb;
+            border-left: 4px solid #d97706;
+            padding: 0.85rem 1rem;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        table.compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 0.75rem 0;
+        }
+
+        table.compare-table th,
+        table.compare-table td {
+            border: 1px solid #ccc;
+            padding: 0.45rem 0.6rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        table.compare-table th {
+            background: #f4f6f9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .note {
+                background: #1e2939;
+                border-color: #60a5fa;
+            }
+
+            .compare {
+                background: #292524;
+                border-color: #fbbf24;
+            }
+
+            .meta {
+                color: #a8b0bd;
+            }
+
+            table.compare-table th {
+                background: #1e2939;
+            }
+
+            table.compare-table th,
+            table.compare-table td {
+                border-color: #444;
+            }
+        }
+
+        ul.tight {
+            margin: 0.35rem 0 0;
+            padding-left: 1.25rem;
+        }
+
+        code {
+            font-size: 0.88em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Kiến trúc multi-tenant: LINE / WhatsApp → Craveva AI → Hub</h1>
+    <p class="meta">
+        Mỗi <strong>khách hàng doanh nghiệp</strong> có <strong>1 tài khoản</strong> trên
+        <strong>https://ai.craveva.com</strong> và <strong>1 company</strong> trên
+        <strong>hub.craveva.com</strong> (dữ liệu ERP theo <code>company_id</code>).
+        Người chat trên LINE/WhatsApp là <strong>người dùng cuối</strong>, khác với tenant admin cấu hình tích hợp.
+        Chart dùng <strong>Cách 1</strong> (CSS font <code>18px</code>);
+        vùng <span style="background:#e8f4fc;padding:0 4px">Provisioning</span> xanh dương,
+        <span style="background:#f0fdf4;padding:0 4px">Runtime</span> xanh lá.
+    </p>
+
+    <div class="compare">
+        <strong>So sánh nhanh:</strong> Bản đơn giản (một AI, một Hub, một DB) —
+        <a href="chat_ai_hub.html">chat_ai_hub.html</a>.
+        File này bổ sung provisioning, map tenant, gateway DB và kênh chat theo từng khách.
+    </div>
+
+    <h2>0. Bảng so sánh hai bản diagram</h2>
+    <table class="compare-table">
+        <thead>
+            <tr>
+                <th>Chủ đề</th>
+                <th>Bản đơn giản</th>
+                <th>Bản multi-tenant (file này)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Tài khoản AI</td>
+                <td>Một khối <code>ai.craveva.com</code></td>
+                <td>Nhiều workspace / org; map ↔ <code>company_id</code> Hub</td>
+            </tr>
+            <tr>
+                <td>Hub ERP</td>
+                <td>Một <code>hub</code> + một DB</td>
+                <td>Nhiều <strong>company</strong>; dữ liệu tách <code>company_id</code></td>
+            </tr>
+            <tr>
+                <td>Đọc dữ liệu</td>
+                <td>API Hub hoặc DB chung</td>
+                <td><code>api_gateway_N</code> (VIEW) và/hoặc API + secret theo company</td>
+            </tr>
+            <tr>
+                <td>LINE / WhatsApp</td>
+                <td>Một OA / một WABA (minh hoạ)</td>
+                <td>Channel / webhook <strong>theo tenant</strong></td>
+            </tr>
+            <tr>
+                <td>Người dùng</td>
+                <td>Chỉ “người chat”</td>
+                <td>Tách <strong>end-user chat</strong> vs <strong>tenant admin</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>1. Sơ đồ thành phần (provisioning + runtime)</h2>
+    <div class="mermaid mermaid-flowchart">
+        flowchart TB
+        subgraph end_users["Người dùng cuối (chat)"]
+        direction TB
+        EU["Khách chat LINE / WhatsApp\n(hỏi giá, đặt hàng, …)"]
+        end
+
+        subgraph channels_tenant["Kênh chat — theo từng khách hàng doanh nghiệp"]
+        direction TB
+        LINE_N["LINE OA\n(channel riêng tenant)"]
+        WA_N["WhatsApp Business\n(số / WABA riêng tenant)"]
+        EU --> LINE_N
+        EU --> WA_N
+        end
+
+        subgraph provisioning["Provisioning — mỗi khách hàng doanh nghiệp"]
+        direction TB
+        TA["Tenant admin\n(chủ DN / IT)"]
+        TA -->|"Đăng ký / đăng nhập"| AI_ACCT["Tài khoản trên\nai.craveva.com\n(workspace / org)"]
+        TA -->|"Đăng ký / đăng nhập"| HUB_CO["Company trên\nhub.craveva.com\n(company_id = N)"]
+        AI_ACCT <-->|"Liên kết cấu hình\n(map tenant AI ↔ company N)"| HUB_CO
+            AI_ACCT --> CFG["Cấu hình tenant AI:\n• Data Source MySQL\n• Webhook LINE/WA\n• (tuỳ chọn) API secret Hub"]
+            CFG --> GW["Credential gateway\napi_gateway_N\n+ user MySQL scoped"]
+            HUB_CO --> MAIN_DB[("Hub DB chính\n(schema app, company_id = N)")]
+            GW -.->|"VIEW lọc company_id"| MAIN_DB
+            end
+
+            subgraph runtime["Runtime — khi có tin nhắn chat"]
+            direction LR
+            subgraph ai_platform["Nền tảng AI (multi-tenant)"]
+            direction TB
+            AI["ai.craveva.com\nWebhook router + Agent / LLM\n(phân giải tenant từ channel / secret)"]
+            OUT["Trả lời qua\nMessaging API"]
+            AI --> OUT
+            end
+            subgraph hub_platform["Craveva Hub (multi-company ERP)"]
+            direction TB
+            HUB["hub.craveva.com\nAPI / nghiệp vụ\nscoped company_id = N"]
+            MAIN_DB2[("Dữ liệu tenant N\nSP, giá, đơn, kho, …")]
+            HUB --> MAIN_DB2
+            end
+            AI -->|"SELECT qua gateway\nhoặc API Hub"| HUB
+            AI -.->|"Tuỳ cấu hình:\nđọc api_gateway_N"| GW
+            end
+
+            LINE_N -->|"HTTPS Webhook\n+ tenant context"| AI
+            WA_N -->|"HTTPS Webhook\n+ tenant context"| AI
+            OUT --> LINE_N
+            OUT --> WA_N
+
+            classDef provision fill:#e8f4fc,stroke:#2563eb,color:#0f172a
+            classDef runtime fill:#f0fdf4,stroke:#16a34a,color:#0f172a
+            class provisioning provision
+            class runtime runtime
+            style provisioning fill:#e8f4fc,stroke:#2563eb,stroke-width:2px
+            style runtime fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+    </div>
+
+    <div class="note">
+        <strong>Gateway DB (Hub):</strong> Developer Tools tạo schema <code>api_gateway_{company_id}</code>,
+        user MySQL chỉ trên schema đó, VIEW lọc theo <code>company_id</code> — phù hợp khi AI kết nối MySQL
+        (allowlist IP egress <code>ai.craveva.com</code> trên Cloud SQL). Chi tiết:
+        <code>FUNC_LOGIC/DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md</code>.
+    </div>
+
+    <h2>2. Trình tự: onboarding tenant (1 lần / khách)</h2>
+    <div class="diagram-seq-wrap">
+        <div class="mermaid mermaid-sequence">
+            sequenceDiagram
+            autonumber
+            actor TA as Tenant admin
+            participant AI as ai.craveva.com
+            participant H as hub.craveva.com
+            participant DB as Hub DB<br />api_gateway_N
+
+            TA->>AI: Tạo tài khoản / workspace
+            TA->>H: Tạo company (company_id = N)
+            TA->>AI: Cấu hình map → company N
+            TA->>H: Developer Tools: credential
+            H->>DB: api_gateway_N, VIEW, user MySQL
+            TA->>AI: Data Source (MySQL gateway)
+            TA->>AI: Webhook LINE / WhatsApp
+        </div>
+    </div>
+    <p class="meta" style="margin-top: -0.75rem;">
+        Tuỳ chọn: secret API đặt hàng theo company — <code>companies.ai_order_webhook_secret</code>.
+    </p>
+
+    <h2>3. Trình tự: chat runtime (mỗi tin nhắn)</h2>
+    <div class="diagram-seq-wrap">
+        <div class="mermaid mermaid-sequence">
+            sequenceDiagram
+            autonumber
+            actor EU as End-user chat
+            participant C as LINE / WA
+            participant AI as ai.craveva.com
+            participant GW as Gateway / API
+            participant H as hub.craveva.com
+
+            EU->>C: Tin nhắn (giá, SKU, …)
+            C->>AI: Webhook + channel / signature
+            activate AI
+            AI->>AI: Resolve tenant → company N
+            alt MySQL gateway
+            AI->>GW: SELECT VIEW (scoped N)
+            GW-->>AI: Rows
+            else API Hub
+            AI->>H: API + secret company N
+            H-->>AI: JSON
+            end
+            AI-->>C: Trả lời
+            deactivate AI
+            C-->>EU: Hiển thị chat
+        </div>
+    </div>
+
+    <h2>4. Điểm vận hành &amp; bảo mật</h2>
+    <ul class="tight">
+        <li><strong>Tách tenant:</strong> Mọi truy vấn runtime phải gắn đúng <code>company_id = N</code> (gateway VIEW
+            hoặc API + secret).</li>
+        <li><strong>Webhook:</strong> URL/secret LINE hoặc Meta theo channel; AI route về đúng workspace.</li>
+        <li><strong>Cloud SQL:</strong> Allowlist egress IP production AI (<code>136.110.35.154/32</code>) nếu dùng
+            public IP.</li>
+        <li><strong>Staging vs production:</strong> Tách <code>ai</code>, <code>hub</code>, DB và credential — không
+            dùng chung gateway user.</li>
+        <li><strong>Ghi đơn:</strong> Ưu tiên API Hub (<code>AI_ORDER_INTEGRATION_REST</code>) thay vì INSERT trực tiếp
+            DB ERP.</li>
+    </ul>
+
+    <p class="meta" style="margin-top: 2rem;">
+        Nguồn Mermaid: <code>chat_ai_hub_mt.mmd</code> —
+        Cập nhật: 2026-05-15
+    </p>
+</body>
+
+</html>

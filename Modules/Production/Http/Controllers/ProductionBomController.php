@@ -47,7 +47,7 @@ class ProductionBomController extends AccountBaseController
         $this->boms = $query->paginate(25)->withQueryString();
 
         $pageOutputProducts = $this->boms->getCollection()
-            ->map(static fn(ProductionBom $bom): ?Product => $bom->outputProduct)
+            ->map(static fn (ProductionBom $bom): ?Product => $bom->outputProduct)
             ->filter()
             ->unique('id')
             ->values();
@@ -58,7 +58,7 @@ class ProductionBomController extends AccountBaseController
 
         $this->finishedGoodsFilter = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->where('type', 'goods')
+            ->forBomOutput()
             ->orderBy('name')
             ->get(['id', 'name']);
 
@@ -123,9 +123,9 @@ class ProductionBomController extends AccountBaseController
         $this->assertViewProductionBoms();
         $this->assertBomInCompany($bom);
 
-        $bom->load(['items.componentProduct', 'outputProduct']);
+        $bom->load(['items.componentProduct.unit', 'outputProduct.unit']);
 
-        $this->pageTitle = __('production::app.bomDetail') . ' ' . $bom->version;
+        $this->pageTitle = __('production::app.bomDetail').' '.$bom->version;
         $this->bom = $bom;
 
         return view('production::boms.show', $this->data);
@@ -251,17 +251,20 @@ class ProductionBomController extends AccountBaseController
 
         $this->finishedGoods = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->where('type', 'goods')
+            ->forBomOutput()
             ->with('unit:id,unit_type')
             ->orderBy('name')
             ->get(['id', 'name', 'unit_id']);
 
         $this->componentProducts = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->where('type', 'goods')
+            ->forBomComponents()
             ->with('unit:id,unit_type')
+            ->orderBy('type')
             ->orderBy('name')
-            ->get(['id', 'name', 'unit_id']);
+            ->get(['id', 'name', 'unit_id', 'type']);
+
+        $this->componentProductsByType = $this->componentProducts->groupBy('type');
 
         $this->bomFgUnitByProductId = ProductionProductUnitLabelMap::forProducts($this->finishedGoods, $companyId);
         $this->bomComponentUnitByProductId = ProductionProductUnitLabelMap::forProducts($this->componentProducts, $companyId);

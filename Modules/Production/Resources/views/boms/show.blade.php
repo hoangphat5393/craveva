@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @php
+    use App\Enums\ProductType;
+
     $formatQuantity = static fn($value): string => rtrim(rtrim(number_format((float) $value, 4, '.', ''), '0'), '.');
     $bom->loadCount('productionOrders');
     $editable = $bom->production_orders_count === 0;
@@ -80,6 +82,7 @@
                     <tr>
                         <th class="f-14 text-dark-grey">#</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.componentProduct')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.bomComponentUom')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomComponentQty')</th>
                     </tr>
                 </thead>
@@ -87,12 +90,18 @@
                     @forelse ($bom->items as $idx => $line)
                         <tr>
                             <td class="f-14">{{ $idx + 1 }}</td>
-                            <td class="f-14">{{ $line->componentProduct?->name ?? $line->component_product_id }}</td>
+                            <td class="f-14">
+                                {{ $line->componentProduct?->name ?? $line->component_product_id }}
+                                @if ($line->componentProduct?->type)
+                                    <span class="text-dark-grey f-12 d-block">{{ ProductType::labelFor($line->componentProduct->type) }}</span>
+                                @endif
+                            </td>
+                            <td class="f-14">{{ $line->componentProduct?->unit?->unit_type ?? '—' }}</td>
                             <td class="f-14">{{ $formatQuantity($line->quantity) }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="p-5">
+                            <td colspan="4" class="p-5">
                                 <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>

@@ -39,20 +39,24 @@ function productionTenantFlowFixtures(): ?array
 
     $companyId = (int) $company->id;
 
-    $goods = Product::withoutGlobalScopes()
+    $fg = Product::withoutGlobalScopes()
         ->where('company_id', $companyId)
-        ->where('type', 'goods')
+        ->forBomOutput()
         ->orderBy('id')
-        ->limit(5)
-        ->get(['id', 'name']);
+        ->first(['id', 'name']);
 
-    if ($goods->count() < 2) {
-        test()->markTestSkipped('Need at least two goods products in company for BOM + FG/RM fixtures.');
+    $rm = Product::withoutGlobalScopes()
+        ->where('company_id', $companyId)
+        ->forBomComponents()
+        ->orderBy('id')
+        ->first(['id', 'name']);
+
+    if ($fg === null || $rm === null) {
+        test()->markTestSkipped('Need at least one finished goods (type=goods) and one BOM component product (raw/semi/packaging) in company.');
 
         return null;
     }
 
-    [$fg, $rm] = [$goods->get(0), $goods->get(1)];
     if ((int) $fg->id === (int) $rm->id) {
         test()->markTestSkipped('Distinct FG and RM product rows required.');
 

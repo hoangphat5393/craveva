@@ -229,5 +229,5 @@ Trong **`purchase::sections.sidebar`** (menu **Operations**), khi module **Wareh
 | ----------------------- | -------------------------------------------------------------------- |
 | Mục lục Warehouse       | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)                           |
 | Index Sales/Fulfillment | [`SALES_FULFILLMENT_DOCS_INDEX.md`](SALES_FULFILLMENT_DOCS_INDEX.md) |
-| Sơ đồ E2E               | `DIAGRAM/Purchasing - Inventory - Sales End-to-End Current Flow.mmd` |
+| Sơ đồ E2E               | `DIAGRAM/pis_e2e_current.mmd`                                        |
 | Legacy checklist        | Da loai bo; su dung duy nhat file UAT nay                            |

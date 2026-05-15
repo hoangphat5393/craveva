@@ -182,6 +182,7 @@ return [
         'event' => 'Sự kiện',
         'products' => 'Danh mục sản phẩm',
         'orders' => 'Đơn bán hàng - SO',
+        'saleOrderSettings' => 'Cài đặt đơn bán (API)',
         'salesHistory' => 'Lịch sử bán hàng',
         'profileSettings' => 'Cài đặt cấu hình',
         'twoFactorAuthentication' => 'Xác thực hai yếu tố',

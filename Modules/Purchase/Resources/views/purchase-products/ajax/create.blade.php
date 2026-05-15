@@ -38,17 +38,7 @@
                             <input type="hidden" value="" name="purchase_vendor_id">
 
                             <div class="col-lg-4 col-md-6">
-                                <x-forms.label class="my-3" fieldId="product_type" :fieldLabel="__('purchase::modules.product.type')">
-                                </x-forms.label><sup class="text-red f-14 mr-1">*</sup>
-                                <div class="form-group">
-                                    <div class="d-flex">
-                                        <x-forms.radio fieldId="goods_type" class="product_type" :fieldLabel="__('purchase::modules.product.goods')" fieldName="type" fieldValue="goods" :checked="$product && $product->type == 'goods' ? 'true' : 'true'">
-                                        </x-forms.radio>
-
-                                        <x-forms.radio class="product_type" fieldId="service_type" :fieldLabel="__('purchase::modules.product.service')" fieldValue="service" fieldName="type" :checked="$product && $product->type == 'service' ? 'true' : ''">
-                                        </x-forms.radio>
-                                    </div>
-                                </div>
+                                @include('purchase::partials.product-type-select', ['product' => $product ?? null])
                             </div>
 
                             <div class="col-lg-4 col-md-6">
@@ -400,18 +390,25 @@
                 });
         });
 
-        $(".product_type").click(function() {
-            var type = $(this).val();
-            if (type == 'service') {
+        function togglePurchaseProductTypeFields(type) {
+            if (type === 'service') {
+                $('#sku_id').addClass('d-none');
                 $('.track_inventory_div').addClass('d-none');
                 $('.track_inventory').addClass('d-none');
             } else {
+                $('#sku_id').removeClass('d-none');
                 $('.track_inventory_div').removeClass('d-none');
-                if ($('#track_inventory').prop('checked') == true) {
+                if ($('#track_inventory').prop('checked') === true) {
                     $('.track_inventory').removeClass('d-none');
                 }
             }
+        }
+
+        $('#type').on('change', function() {
+            togglePurchaseProductTypeFields($(this).val());
         });
+
+        togglePurchaseProductTypeFields($('#type').val());
 
         $('#track_inventory').click(function() {
             if ($(this).prop('checked') == true) {

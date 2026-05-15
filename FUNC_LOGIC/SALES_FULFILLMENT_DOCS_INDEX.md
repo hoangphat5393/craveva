@@ -15,7 +15,7 @@ Dùng file này để vào nhanh tài liệu mới nhất, tránh đọc nhầm 
 8. `FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE_VI.md` (runbook + WUP; **§6** — batch kho, đối soát snapshot, WUP-07)
 9. **`FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`** — checklist nghiệm thu Mua · Bán · Kho (E2E + phụ lục Warehouse)
 
-**Sơ đồ:** `DIAGRAM/Purchasing - Inventory - Sales End-to-End Current Flow.mmd` (đầy đủ) · `DIAGRAM/Purchasing - Inventory - Sales End-to-End Flow.mmd` (rút gọn).
+**Sơ đồ:** `DIAGRAM/pis_e2e_current.mmd` (đầy đủ) · `DIAGRAM/pis_e2e.mmd` (rút gọn).
 
 ## Legacy files
 

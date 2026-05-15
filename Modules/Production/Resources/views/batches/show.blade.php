@@ -41,17 +41,17 @@
                     <span class="font-weight-normal">{{ ucfirst(str_replace('_', ' ', $batch->order->status)) }}</span>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.postedAt') (RM)</span>
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.rawMaterialsDeductedAt')</span>
                     <span class="font-weight-normal">{{ $batch->posted_consumptions_at ?? '—' }}</span>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.postedAt') (FG)</span>
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.finishedGoodsPostedAt')</span>
                     <span class="font-weight-normal">{{ $batch->posted_receipt_at ?? '—' }}</span>
                 </div>
             </div>
         </div>
 
-        <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.consumptions')</h5>
+        <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.rawMaterialsUsed')</h5>
         @if (!empty($canApplyBomSnapshotPlanned) && $canApplyBomSnapshotPlanned)
             <div class="bg-white rounded p-3 mb-3 f-14">
                 <form method="post" action="{{ route('production.batches.apply-planned-from-bom-snapshot', $batch) }}" class="mb-2">
@@ -67,11 +67,11 @@
             <table class="table table-hover border-0 w-100 mb-0">
                 <thead>
                     <tr>
-                        <th class="f-14 text-dark-grey">@lang('production::app.componentProduct')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.warehouseBatchId')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.plannedConsumption')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.plannedConsumptionShadow')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.rmBatchAssignment')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.rawMaterialProduct')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.rawMaterialBatchId')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.plannedQuantityLine')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.plannedQuantityLineShadow')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.rawMaterialBatch')</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,18 +99,23 @@
                                     @if ($wbForComponent->isEmpty())
                                         <span class="text-muted f-12">@lang('production::app.noRmWarehouseBatchForComponent')</span>
                                     @else
-                                        <form method="post" action="{{ route('production.batches.consumptions.assign-warehouse-batch', [$batch, $line]) }}" class="form-inline d-flex flex-wrap align-items-end">
+                                        <form method="post" action="{{ route('production.batches.consumptions.assign-warehouse-batch', [$batch, $line]) }}" class="d-flex flex-wrap align-items-end">
                                             @csrf
-                                            <select name="warehouse_product_batch_id" class="form-control form-control-sm f-14 mr-2" style="max-width: 220px;">
-                                                @foreach ($wbForComponent as $wb)
-                                                    <option value="{{ $wb->id }}">
-                                                        #{{ $wb->id }} @if ($wb->batch_number)
-                                                            ({{ $wb->batch_number }})
-                                                        @endif — @lang('app.quantity'): {{ $formatQuantity($wb->quantity) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <button type="submit" class="btn btn-sm btn-secondary rounded f-13">@lang('production::app.assignRmBatch')</button>
+                                            <div class="form-group mb-0 mr-2 flex-grow-1" style="min-width: 180px; max-width: 220px;">
+                                                <label class="sr-only" for="assign_batch_{{ $line->id }}">@lang('production::app.rawMaterialBatch')</label>
+                                                <select name="warehouse_product_batch_id" id="assign_batch_{{ $line->id }}" class="form-control form-control-sm f-14 select-picker" data-size="8" data-container="body" required>
+                                                    @foreach ($wbForComponent as $wb)
+                                                        <option value="{{ $wb->id }}">
+                                                            #{{ $wb->id }} @if ($wb->batch_number)
+                                                                ({{ $wb->batch_number }})
+                                                            @endif — @lang('app.quantity'): {{ $formatQuantity($wb->quantity) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group mb-0">
+                                                <button type="submit" class="btn btn-sm btn-secondary rounded f-13 height-35">@lang('production::app.assignRmBatch')</button>
+                                            </div>
                                         </form>
                                     @endif
                                 @elseif ($line->warehouse_product_batch_id === null)
@@ -127,11 +132,11 @@
 
         @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at === null && in_array($batch->order->status, [\Modules\Production\Entities\ProductionOrder::STATUS_RELEASED, \Modules\Production\Entities\ProductionOrder::STATUS_IN_PROGRESS], true))
             <div class="bg-white rounded p-4 mb-4">
-                <h6 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.addConsumptionLine')</h6>
+                <h6 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.addRawMaterialUsedLine')</h6>
                 <form method="post" action="{{ route('production.batches.consumptions.store', $batch) }}" class="form-row align-items-end">
                     @csrf
                     <div class="form-group col-md-4">
-                        <x-forms.label fieldId="component_product_id" :fieldLabel="__('production::app.componentProduct')" fieldRequired="true" />
+                        <x-forms.label fieldId="component_product_id" :fieldLabel="__('production::app.rawMaterialProduct')" fieldRequired="true" />
                         <select name="component_product_id" id="component_product_id" class="form-control select-picker" data-size="8" data-container="body" required>
                             @foreach ($componentProducts as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -139,9 +144,9 @@
                         </select>
                     </div>
                     <div class="form-group col-md-4">
-                        <x-forms.label fieldId="warehouse_product_batch_id" :fieldLabel="__('production::app.warehouseBatchId')" fieldRequired="true" />
+                        <x-forms.label fieldId="warehouse_product_batch_id" :fieldLabel="__('production::app.rawMaterialBatchId')" fieldRequired="true" />
                         <select name="warehouse_product_batch_id" id="warehouse_product_batch_id" class="form-control select-picker" data-size="8" data-container="body" required>
-                            <option value="">@lang('app.select') @lang('production::app.warehouseBatchId')</option>
+                            <option value="">@lang('app.select') @lang('production::app.rawMaterialBatchId')</option>
                             @foreach ($rmBatches as $wb)
                                 <option value="{{ $wb->id }}" data-product-id="{{ $wb->product_id }}">
                                     #{{ $wb->id }} — {{ $componentProductNames[$wb->product_id] ?? $wb->product_id }} qty {{ $formatQuantity($wb->quantity) }} @if ($wb->batch_number)
@@ -152,7 +157,7 @@
                         </select>
                     </div>
                     <div class="form-group col-md-2">
-                        <x-forms.label fieldId="planned_quantity_line" :fieldLabel="__('production::app.plannedConsumption')" fieldRequired="true" />
+                        <x-forms.label fieldId="planned_quantity_line" :fieldLabel="__('production::app.plannedQuantityLine')" fieldRequired="true" />
                         <input type="number" step="0.0001" min="0.0001" name="planned_quantity" id="planned_quantity_line" class="form-control height-35 f-14" required>
                     </div>
                     <div class="form-group col-md-2">
@@ -167,7 +172,7 @@
             <form method="post" action="{{ route('production.batches.post-consumptions', $batch) }}" class="mb-4" onsubmit="return confirm(@json(__('app.areYouSure')));">
                 @csrf
                 <button type="submit" class="btn btn-warning rounded f-14 p-2 text-white border-0" @disabled($batch->consumptions->isEmpty())>
-                    <i class="fa fa-share mr-1"></i>@lang('production::app.postConsumption')
+                    <i class="fa fa-share mr-1"></i>@lang('production::app.postRawMaterialUsage')
                 </button>
             </form>
         @endif

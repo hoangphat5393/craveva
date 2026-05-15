@@ -4,6 +4,10 @@ return [
     'product' => [
         'type' => 'Type',
         'goods' => 'Goods',
+        'finishedGoods' => 'Finished Goods',
+        'rawMaterial' => 'Raw Material',
+        'semiFinished' => 'Semi Finished',
+        'packaging' => 'Packaging',
         'images' => 'Images',
         'service' => 'Service',
         'addImages' => 'Add Images',

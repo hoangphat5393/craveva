@@ -61,7 +61,7 @@ class ProductionBatchController extends AccountBaseController
 
         $this->componentProducts = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->where('type', 'goods')
+            ->forBomComponents()
             ->orderBy('name')
             ->get(['id', 'name']);
 
@@ -161,7 +161,7 @@ class ProductionBatchController extends AccountBaseController
             $inboundWarehouseBatchIds[$movement->id] = $this->resolveWarehouseProductBatchIdForMovement($movement, 'inbound', $companyId);
         }
 
-        $this->pageTitle = __('production::app.traceability');
+        $this->pageTitle = __('production::app.traceabilityRawMaterials');
         $this->batch = $batch;
         $this->outboundMovements = $outboundMovements;
         $this->inboundMovements = $inboundMovements;

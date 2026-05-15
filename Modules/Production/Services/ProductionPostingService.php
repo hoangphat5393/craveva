@@ -168,7 +168,7 @@ class ProductionPostingService
         $batch->loadMissing(['consumptions.warehouseProductBatch']);
 
         if ($batch->consumptions->isEmpty()) {
-            throw new InvalidArgumentException(__('production::app.postConsumptionRequiresLines'));
+            throw new InvalidArgumentException(__('production::app.postRawMaterialUsageRequiresLines'));
         }
 
         DB::transaction(function () use ($batch, $order): void {

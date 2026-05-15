@@ -136,7 +136,7 @@ Giữ bối cảnh mục **6.1**. Luồng **trước SO** như sau:
 3. **QC** → cấp **COA / chứng nhận** đúng cam kết.
 4. **In nhãn lô** rồi mới giao — khớp phần “COA + batch label” trong mục 6.1.
 
-**3) LINE / WhatsApp + AI** (file `line_whatsapp_ai_hub_architecture…`)  
+**3) LINE / WhatsApp + AI** (file `chat_ai_hub…`)  
 Là **kênh hỏi đáp**; **duyệt chính thức** vẫn nằm trên **Estimate trong Hub** như mục 6.3.
 
 **Gợi ý khi đọc sơ đồ:** _“FreshTea: President = ô chiến lược; VP = ô giá; Convert = ô ra SO.”_
@@ -146,7 +146,7 @@ Là **kênh hỏi đáp**; **duyệt chính thức** vẫn nằm trên **Estimat
 Cùng nền ERP nhưng **không trộn** khi lên backlog:
 
 - **`PHASE1_TO_3_END_TO_END_FLOW.mmd`** — sau **báo giá & duyệt** đến **SO**, rồi planning → xưởng → QA (ví dụ: lô 2.000 chai, QC, nhãn lô).
-- **`line_whatsapp_ai_hub_architecture.mmd`** (+ file `.html` cho sequence) — **LINE/WA → AI → Hub/DB**; trả lời chat qua API kênh.
+- **`chat_ai_hub.mmd`** (+ file `.html` cho sequence) — **LINE/WA → AI → Hub/DB**; trả lời chat qua API kênh.
 
 **Dễ lệch tên:** trong proposal, **“Phase 1”** thường là **báo giá & duyệt → SO**; trong playbook nội bộ repo có thể có chỗ gọi “Phase 1” **khác** (MVP production). Khi lên kế hoạch, **viết đầy đủ nhãn**, ví dụ _Phase 1 — Quotation (PDF)_ và tách _MVP Production (playbook)_.
 
@@ -167,5 +167,5 @@ Cùng nền ERP nhưng **không trộn** khi lên backlog:
 - `PROJECT BIOMIXING/PHASE2_PLANNING_PREPRODUCTION.mmd`
 - `PROJECT BIOMIXING/PHASE3_PRODUCTION_QA.mmd`
 - `PROJECT BIOMIXING/PHASE1_TO_3_END_TO_END_FLOW.mmd`
-- `DIAGRAM/line_whatsapp_ai_hub_architecture.mmd` và `DIAGRAM/line_whatsapp_ai_hub_architecture.html`
+- `DIAGRAM/chat_ai_hub.mmd` và `DIAGRAM/chat_ai_hub.html`
 - `PROJECT BIOMIXING/2-4-2026_Biomixing_Proposal_CravevaERP_Formatted.pdf`

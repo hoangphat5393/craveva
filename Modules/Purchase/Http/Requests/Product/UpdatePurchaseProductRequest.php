@@ -2,8 +2,10 @@
 
 namespace Modules\Purchase\Http\Requests\Product;
 
+use App\Enums\ProductType;
 use App\Http\Requests\CoreRequest;
 use App\Traits\CustomFieldsRequestTrait;
+use Illuminate\Validation\Rule;
 
 class UpdatePurchaseProductRequest extends CoreRequest
 {
@@ -20,7 +22,7 @@ class UpdatePurchaseProductRequest extends CoreRequest
             'name' => 'required|unique:products,name,'.$this->route('purchase_product').',id,company_id,'.company()->id,
             'sku' => 'required|string|max:255',
             'track_inventory' => 'sometimes',
-            'type' => 'required|in:goods,service',
+            'type' => ['required', Rule::in(ProductType::values())],
             'selling_price' => 'required|numeric',
             'purchase_information' => 'sometimes',
             'downloadable_file' => 'nullable|file',

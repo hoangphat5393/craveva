@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\ProductType;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -284,5 +286,36 @@ class Product extends BaseModel
     {
         /** @phpstan-ignore-next-line */
         return $this->hasMany(PurchaseStockAdjustment::class, 'product_id');
+    }
+
+    /**
+     * Finished goods (sellable) — stored as legacy {@see ProductType::Goods}.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeForBomOutput(Builder $query): Builder
+    {
+        return $query->where('type', ProductType::Goods->value);
+    }
+
+    /**
+     * BOM components: raw material, semi-finished, packaging.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeForBomComponents(Builder $query): Builder
+    {
+        return $query->whereIn('type', ProductType::bomComponentValues());
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeStockable(Builder $query): Builder
+    {
+        return $query->where('type', '!=', ProductType::Service->value);
     }
 }

@@ -57,8 +57,9 @@
             <div class="select-status d-flex">
                 <select class="form-control select-picker" name="product_type" id="product_type">
                     <option value="all">@lang('app.all')</option>
-                    <option value="goods">{{ __('purchase::modules.product.goods') }}</option>
-                    <option value="service">{{ __('purchase::modules.product.service') }}</option>
+                    @foreach (\App\Enums\ProductType::casesForUi() as $productType)
+                        <option value="{{ $productType->value }}">{{ $productType->label() }}</option>
+                    @endforeach
                 </select>
             </div>
         </div>

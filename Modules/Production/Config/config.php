@@ -2,6 +2,15 @@
 
 return [
     'name' => 'Production',
+
+    /*
+     * Temporary UI: hide optional "Project" on production order create/edit (and detail when unset).
+     * Set true when Biomixing wants project linkage on the form again.
+     */
+    'ui' => [
+        'show_linked_project_on_order_form' => false,
+    ],
+
     'phase2' => [
         /*
          * When enabled, FG outputs that exceed policy tolerances require explicit approval

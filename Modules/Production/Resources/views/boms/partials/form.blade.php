@@ -1,7 +1,12 @@
 @php
+    use App\Enums\ProductType;
+
     /** @var \Illuminate\Support\Collection<int, \App\Models\Product>|array $finishedGoods */
     /** @var \Illuminate\Support\Collection<int, \App\Models\Product>|array $componentProducts */
+    /** @var \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<int, \App\Models\Product>>|null $componentProductsByType */
     /** @var \Modules\Production\Entities\ProductionBom|null $bom */
+
+    $componentProductsByType = $componentProductsByType ?? collect($componentProducts ?? [])->groupBy('type');
 
     $lines = old('items');
     if (!is_array($lines)) {
@@ -41,6 +46,10 @@
                 <option value="{{ $p->id }}" @selected((int) old('output_product_id', isset($bom) ? $bom->output_product_id : 0) === (int) $p->id)>{{ $bomProductLabelWithUnit($p, $bomFgUnitByProductId) }}</option>
             @endforeach
         </x-forms.select>
+        <p class="f-12 text-dark-grey mb-0 mt-2">@lang('production::app.bomFgProductHelp')</p>
+        @if ($finishedGoods->isEmpty())
+            <div class="alert alert-warning f-13 mt-2 mb-0">@lang('production::app.bomNoFinishedGoods')</div>
+        @endif
     </div>
 </div>
 
@@ -73,12 +82,17 @@
     <textarea name="notes" id="notes" class="form-control f-14" rows="2" maxlength="2000">{{ old('notes', isset($bom) ? $bom->notes ?? '' : '') }}</textarea>
 </div>
 
-<h6 class="f-14 text-dark-grey font-weight-bold mb-2">@lang('production::app.bomLines')</h6>
+<h6 class="f-14 text-dark-grey font-weight-bold mb-1">@lang('production::app.bomLines')</h6>
+<p class="f-12 text-dark-grey mb-2">@lang('production::app.bomComponentHelp')</p>
+@if ($componentProducts->isEmpty())
+    <div class="alert alert-warning f-13">@lang('production::app.bomNoComponents')</div>
+@endif
 <div class="table-responsive bg-white rounded border">
     <table class="table table-sm mb-0">
         <thead>
             <tr class="f-14 text-dark-grey">
                 <th>@lang('production::app.componentProduct')</th>
+                <th style="width: 120px;">@lang('production::app.bomComponentUom')</th>
                 <th style="width: 160px;">@lang('production::app.bomComponentQty')</th>
                 <th style="width: 80px;">@lang('app.action')</th>
             </tr>
@@ -92,13 +106,19 @@
                 @endphp
                 <tr class="bom-line-row" data-row-index="{{ $i }}">
                     <td>
-                        <select name="items[{{ $i }}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8">
-                            <option value="">—</option>
-                            @foreach ($componentProducts as $p)
-                                <option value="{{ $p->id }}" @selected((string) $cid === (string) $p->id)>{{ $bomProductLabelWithUnit($p, $bomComponentUnitByProductId) }}</option>
-                            @endforeach
+                        <select name="items[{{ $i }}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8" data-unit-map='@json($bomComponentUnitByProductId->all())'>
+                            @include('production::boms.partials.component-select-options', [
+                                'selectedComponentId' => $cid,
+                                'componentProducts' => $componentProducts,
+                                'componentProductsByType' => $componentProductsByType,
+                                'bomComponentUnitByProductId' => $bomComponentUnitByProductId,
+                            ])
                         </select>
                     </td>
+                    @php
+                        $lineUom = $cid !== '' && $cid !== null ? (string) ($bomComponentUnitByProductId->get((string) $cid) ?? ($bomComponentUnitByProductId->get((int) $cid) ?? '—')) : '—';
+                    @endphp
+                    <td class="bom-line-uom f-14 text-dark-grey align-middle">{{ $lineUom }}</td>
                     <td>
                         <input type="number" step="0.0001" min="0.0001" name="items[{{ $i }}][quantity]" class="form-control height-35 f-14" value="{{ $qty }}">
                     </td>
@@ -120,6 +140,16 @@
     </button>
 </div>
 
+
+<template id="bom-component-options-template">
+    @include('production::boms.partials.component-select-options', [
+        'selectedComponentId' => '',
+        'componentProducts' => $componentProducts,
+        'componentProductsByType' => $componentProductsByType,
+        'bomComponentUnitByProductId' => $bomComponentUnitByProductId,
+    ])
+</template>
+
 @push('scripts')
     <script>
         (() => {
@@ -133,12 +163,8 @@
                 return;
             }
 
-            const componentOptionsHtml = `
-                <option value="">—</option>
-                @foreach ($componentProducts as $p)
-                    <option value="{{ $p->id }}">{{ $bomProductLabelWithUnit($p, $bomComponentUnitByProductId) }}</option>
-                @endforeach
-            `;
+            const componentOptionsTemplate = document.getElementById('bom-component-options-template');
+            const componentOptionsHtml = componentOptionsTemplate ? componentOptionsTemplate.innerHTML : '';
 
             const collectSelectOptionElements = (selectEl) => {
                 if (!selectEl || typeof selectEl.querySelectorAll !== 'function') {
@@ -172,6 +198,29 @@
                 }
             };
 
+
+            const parseUnitMap = (selectEl) => {
+                try {
+                    return JSON.parse(selectEl.getAttribute('data-unit-map') || '{}');
+                } catch (e) {
+                    return {};
+                }
+            };
+
+            const updateBomLineUom = (row) => {
+                if (!row) {
+                    return;
+                }
+                const componentSelect = row.querySelector('.bom-component-select');
+                const uomCell = row.querySelector('.bom-line-uom');
+                if (!(componentSelect instanceof HTMLSelectElement) || !uomCell) {
+                    return;
+                }
+                const unitMap = parseUnitMap(componentSelect);
+                const productId = String(componentSelect.value || '');
+                uomCell.textContent = productId !== '' && unitMap[productId] ? unitMap[productId] : '—';
+            };
+
             const applyFgRestrictionForRow = (row) => {
                 if (!row || typeof row.querySelector !== 'function') {
                     return;
@@ -200,10 +249,14 @@
                 }
 
                 refreshPicker(componentSelect);
+                updateBomLineUom(row);
             };
 
             const applyFgRestrictionAllRows = () => {
-                body.querySelectorAll('.bom-line-row').forEach((row) => applyFgRestrictionForRow(row));
+                body.querySelectorAll('.bom-line-row').forEach((row) => {
+                    applyFgRestrictionForRow(row);
+                    updateBomLineUom(row);
+                });
             };
 
             const enforceComponentNotEqualFg = (componentSelect) => {
@@ -233,15 +286,20 @@
 
             addBtn.addEventListener('click', () => {
                 const newIndex = body.querySelectorAll('.bom-line-row').length;
+                const firstComponentSelect = body.querySelector('.bom-component-select');
+                const unitMapAttr = firstComponentSelect ?
+                    (firstComponentSelect.getAttribute('data-unit-map') || '{}') :
+                    '{}';
                 const tr = document.createElement('tr');
                 tr.className = 'bom-line-row';
                 tr.dataset.rowIndex = String(newIndex);
                 tr.innerHTML = `
                     <td>
-                        <select name="items[${newIndex}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8">
+                        <select name="items[${newIndex}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8" data-unit-map='${unitMapAttr}'>
                             ${componentOptionsHtml}
                         </select>
                     </td>
+                    <td class="bom-line-uom f-14 text-dark-grey align-middle">—</td>
                     <td>
                         <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14" value="">
                     </td>
@@ -258,6 +316,7 @@
                 }
                 window.setTimeout(() => {
                     applyFgRestrictionForRow(tr);
+                    updateBomLineUom(tr);
                     syncRemoveRowButtons();
                     if (newComponentSelect instanceof HTMLSelectElement) {
                         bindBomUnitPickerListeners();

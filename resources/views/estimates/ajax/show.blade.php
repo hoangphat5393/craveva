@@ -412,7 +412,7 @@
                     <th width="50%" class="text-dark-grey font-weight-normal">@lang('modules.invoices.subTotal')
                     </th>
                     <td width="50%" class="text-dark-grey font-weight-normal">
-                        {{ currency_format($item->sub_total, $invoice->currency_id, false) }}</td>
+                        {{ currency_format($invoice->sub_total, $invoice->currency_id, false) }}</td>
                 </tr>
                 @if ($discount != 0 && $discount != '')
                     <tr>
@@ -531,23 +531,23 @@
                         @if (($editEstimatePermission == 'all' || ($editEstimatePermission == 'added' && $invoice->added_by == user()->id)) && !in_array('client', user_roles()))
                             <li>
                                 <a class="dropdown-item president-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="approved">
-                                    <i class="fa fa-user-check f-w-500 mr-2 f-11"></i> President approve
+                                    <i class="fa fa-check-circle text-success f-w-500 mr-2 f-11"></i> President approve
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item president-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="rejected">
-                                    <i class="fa fa-user-times f-w-500 mr-2 f-11"></i> President reject
+                                    <i class="fa fa-times-circle text-danger f-w-500 mr-2 f-11"></i> President reject
                                 </a>
                             </li>
                             @if ($presidentApproved)
                                 <li>
                                     <a class="dropdown-item vp-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="approved">
-                                        <i class="fa fa-check-circle f-w-500 mr-2 f-11"></i> VP pricing approve
+                                        <i class="fa fa-check-circle text-success f-w-500 mr-2 f-11"></i> VP pricing approve
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item vp-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="rejected">
-                                        <i class="fa fa-times-circle f-w-500 mr-2 f-11"></i> VP pricing reject
+                                        <i class="fa fa-times-circle text-danger f-w-500 mr-2 f-11"></i> VP pricing reject
                                     </a>
                                 </li>
                             @endif

@@ -10,14 +10,14 @@
             </div>
         </div>
 
-        <h5 class="f-14 text-dark-grey font-weight-bold mb-3 mt-3">@lang('production::app.consumptions') → @lang('production::app.warehouseBatchId') (RM)</h5>
+        <h5 class="f-14 text-dark-grey font-weight-bold mb-3 mt-3">@lang('production::app.rawMaterialsUsedTraceHeading')</h5>
         <div class="d-flex flex-column w-tables rounded mb-4 bg-white table-responsive">
             <table class="table table-hover border-0 w-100 mb-0">
                 <thead>
                     <tr>
-                        <th class="f-14 text-dark-grey">@lang('production::app.componentProduct')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.warehouseBatchId')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.plannedConsumption')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.rawMaterialProduct')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.rawMaterialBatchId')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.plannedQuantityLine')</th>
                         @if (!empty($canLinkWarehouseBatches))
                             <th class="f-14 text-dark-grey">@lang('production::app.inventoryBatchColumn')</th>
                         @endif
@@ -47,7 +47,7 @@
             </table>
         </div>
 
-        <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('warehouse::app.stockMovements') — @lang('production::app.outboundMovements') (RM)</h5>
+        <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('warehouse::app.stockMovements') — @lang('production::app.outboundRawMaterialMovements')</h5>
         <div class="d-flex flex-column w-tables rounded mb-4 bg-white table-responsive">
             <table class="table table-hover border-0 w-100 mb-0">
                 <thead>
@@ -99,7 +99,7 @@
             </table>
         </div>
 
-        <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('warehouse::app.stockMovements') — @lang('production::app.inboundMovements') (FG)</h5>
+        <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('warehouse::app.stockMovements') — @lang('production::app.inboundFinishedGoodsMovements')</h5>
         <div class="d-flex flex-column w-tables rounded bg-white table-responsive">
             <table class="table table-hover border-0 w-100 mb-0">
                 <thead>

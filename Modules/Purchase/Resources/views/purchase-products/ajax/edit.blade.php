@@ -35,15 +35,7 @@
                             <input type="hidden" id="hiddenProductId" value="{{ $product->id }}">
 
                             <div class="col-md-4">
-                                <x-forms.label class="my-3" fieldId="" :fieldLabel="__('purchase::modules.product.type')">
-                                </x-forms.label><sup class="text-red f-14 mr-1">*</sup>
-                                <div class="form-group">
-                                    <div class="d-flex">
-                                        <x-forms.radio fieldId="goods_type" class="product_type" :fieldLabel="__('purchase::modules.product.goods')" fieldName="type" fieldValue="goods" checked="true" :checked="$product->type == 'goods'">
-                                        </x-forms.radio>
-                                        <x-forms.radio class="product_type" fieldId="service_type" :fieldLabel="__('purchase::modules.product.service')" fieldValue="service" fieldName="type" :checked="$product->type == 'service'"></x-forms.radio>
-                                    </div>
-                                </div>
+                                @include('purchase::partials.product-type-select', ['product' => $product])
                             </div>
 
                             <div class="col-md-4">
@@ -486,28 +478,29 @@
 
         productDropzone.options.maxFiles = productDropzone.options.maxFiles - mockFile.length;
 
-        $('#service_type').on('click', function() {
-            $('#sku_id').addClass('d-none');
-        });
-
-        $('#goods_type').on('click', function() {
-            $('#sku_id').removeClass('d-none');
-        });
-
-        $('input[type=radio][name=type]').change(function() {
-            if (this.value == 'service') {
-                $('#track_inventory').prop('checked', true);
+        function togglePurchaseProductTypeFields(type) {
+            if (type === 'service') {
+                $('#sku_id').addClass('d-none');
                 $('#track_inventory').prop('checked', false);
-
                 $('#opening_stock, #rate_per_unit').val('');
                 $('.track_inventory').addClass('d-none');
                 $('.track_inventory_div').addClass('d-none');
-            } else if (this.value == 'goods') {
-                $('#opening_stock, #rate_per_unit').val('');
-                $('.track_inventory').addClass('d-none');
+            } else {
+                $('#sku_id').removeClass('d-none');
                 $('.track_inventory_div').removeClass('d-none');
+                if ($('#track_inventory').prop('checked') === true) {
+                    $('.track_inventory').removeClass('d-none');
+                } else {
+                    $('.track_inventory').addClass('d-none');
+                }
             }
+        }
+
+        $('#type').on('change', function() {
+            togglePurchaseProductTypeFields($(this).val());
         });
+
+        togglePurchaseProductTypeFields($('#type').val());
 
         $('#save-product-form').click(function() {
             const url = "{{ route('purchase-products.update', [$product->id]) }}";

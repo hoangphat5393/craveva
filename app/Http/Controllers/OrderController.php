@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Modules\Production\Support\ProductionTenantAccess;
 use Modules\Warehouse\Services\OrderCompletionShippedSalesDoGate;
 use Stripe\Customer;
 use Stripe\PaymentIntent;
@@ -686,6 +687,16 @@ class OrderController extends AccountBaseController
             }
 
             $this->bankDetails = $bankAccounts->get();
+        }
+
+        $this->createProductionOrderUrl = null;
+        if (
+            class_exists(ProductionTenantAccess::class)
+            && ProductionTenantAccess::tenantMayUseProduction()
+            && in_array(user()->permission('add_production_orders'), ['all', 'added', 'owned', 'both'], true)
+            && $this->order->newQuery()->whereKey($this->order->id)->eligibleForProductionOrderLink()->exists()
+        ) {
+            $this->createProductionOrderUrl = route('production.orders.create', ['sales_order_id' => $this->order->id]);
         }
 
         return view('orders.show', $this->data);

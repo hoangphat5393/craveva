@@ -88,6 +88,7 @@ class ProductionPostingService
                 'production_order_id' => $order->id,
                 'component_product_id' => (int) $item->component_product_id,
                 'quantity_per_fg_unit' => $quantityPerFgUnit,
+                'waste_percent' => max(0.0, (float) ($item->waste_percent ?? 0)),
                 'unit_id' => $unitId,
                 'yield_factor' => $yieldFactor,
                 'quantity_per_fg_unit_base_shadow' => $quantityPerFgUnitBaseShadow,

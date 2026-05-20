@@ -47,6 +47,7 @@ class StoreProductionBomRequest extends FormRequest
                 }),
             ],
             'items.*.quantity' => ['required', 'numeric', 'min:0.0001'],
+            'items.*.waste_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'items.*.unit_id' => ['nullable', 'integer', Rule::exists('unit_types', 'id')],
             'items.*.yield_factor' => ['nullable', 'numeric', 'min:0.0001'],
         ];

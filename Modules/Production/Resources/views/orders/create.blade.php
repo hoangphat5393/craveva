@@ -10,6 +10,22 @@
             </div>
         </div>
 
+        @php
+            $soPrefill = $salesOrderPrefill ?? null;
+            $defaultOutputProductId = old('output_product_id', $soPrefill['output_product_id'] ?? null);
+            $defaultBomId = old('production_bom_id', $soPrefill['production_bom_id'] ?? null);
+            $defaultPlannedQty = old('planned_quantity', $soPrefill['planned_quantity'] ?? 1);
+        @endphp
+
+        @if (!empty($soPrefill['hint']))
+            <div class="alert alert-info f-14">
+                {{ $soPrefill['hint'] }}
+                @if (!empty($soPrefill['estimate_id']))
+                    <a href="{{ route('estimates.show', $soPrefill['estimate_id']) }}" class="alert-link openRightModal ml-1">@lang('app.view') @lang('app.quotation_ui.singular')</a>
+                @endif
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0 pl-3">
@@ -27,14 +43,14 @@
                     <x-forms.select fieldId="output_product_id" :fieldLabel="__('production::app.fgProduct')" fieldName="output_product_id" fieldRequired="true">
                         <option value="">—</option>
                         @foreach ($finishedGoods as $p)
-                            <option value="{{ $p->id }}" @selected(old('output_product_id') == $p->id)>{{ $p->name }}</option>
+                            <option value="{{ $p->id }}" @selected((string) $defaultOutputProductId === (string) $p->id)>{{ $p->name }}</option>
                         @endforeach
                     </x-forms.select>
 
                     <x-forms.select fieldId="production_bom_id" :fieldLabel="__('production::app.bom') . ' (' . __('app.optional') . ')'" fieldName="production_bom_id" :fieldRequired="false">
                         <option value="">—</option>
                         @foreach ($boms as $bom)
-                            <option value="{{ $bom->id }}" data-output-product-id="{{ $bom->output_product_id }}" @selected(old('production_bom_id') == $bom->id)>
+                            <option value="{{ $bom->id }}" data-output-product-id="{{ $bom->output_product_id }}" @selected((string) $defaultBomId === (string) $bom->id)>
                                 {{ $bom->labelForSelect() }}
                             </option>
                         @endforeach
@@ -58,13 +74,13 @@
 
                     <div class="form-group my-3">
                         <x-forms.label fieldId="planned_quantity" :fieldLabel="__('production::app.plannedQty')" fieldRequired="true" />
-                        <input type="number" step="0.0001" min="0.0001" name="planned_quantity" id="planned_quantity" class="form-control height-35 f-14" value="{{ old('planned_quantity', 1) }}" required>
+                        <input type="number" step="0.0001" min="0.0001" name="planned_quantity" id="planned_quantity" class="form-control height-35 f-14" value="{{ $defaultPlannedQty }}" required>
                     </div>
 
                     <x-forms.select fieldId="sales_order_id" :search="true" :fieldLabel="__('production::app.linkedSalesOrder')" fieldName="sales_order_id" :fieldRequired="false">
                         <option value="">—</option>
                         @foreach ($recentSalesOrders as $so)
-                            <option value="{{ $so->id }}" @selected(old('sales_order_id') == $so->id)>
+                            <option value="{{ $so->id }}" @selected(old('sales_order_id', $prefillSalesOrderId ?? null) == $so->id)>
                                 #{{ $so->id }} — {{ $so->order_number }} — {{ __('modules.invoices.' . $so->status) }}
                             </option>
                         @endforeach

@@ -65,7 +65,8 @@ class ProductionPlannedConsumptionFromSnapshotService
 
             foreach ($items as $line) {
                 $lineOrder++;
-                $plannedQty = (float) $line->quantity_per_fg_unit * $effectivePlannedFg;
+                $wastePercent = max(0.0, (float) ($line->waste_percent ?? 0));
+                $plannedQty = (float) $line->quantity_per_fg_unit * (1 + ($wastePercent / 100)) * $effectivePlannedFg;
                 $plannedQtyShadow = $this->resolvePlannedQuantityShadow($order, $line, $effectivePlannedFg, $plannedQty);
 
                 ProductionBatchConsumption::query()->create([

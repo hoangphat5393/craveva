@@ -285,7 +285,6 @@ class PublicUrlController extends Controller
                     $file->save();
                 }
             }
-
         }
 
         // Log search
@@ -321,7 +320,9 @@ class PublicUrlController extends Controller
 
     public function domPdfObjectForDownload($id)
     {
-        $this->estimate = Estimate::where('hash', $id)->firstOrFail();
+        $this->estimate = Estimate::with(['bomLines.product', 'bomLines.unit'])
+            ->where('hash', $id)
+            ->firstOrFail();
         $this->company = $this->estimate->company;
         $this->invoiceSetting = $this->company->invoiceSetting;
         App::setLocale($this->invoiceSetting->locale ?? 'en');

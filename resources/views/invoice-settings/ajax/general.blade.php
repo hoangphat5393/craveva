@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="{{ asset('vendor/css/image-picker.min.css') }}">
 
 <div class="col-lg-12 col-md-12 ntfcn-tab-content-left w-100 p-4 ">
@@ -7,40 +6,29 @@
     <div class="row">
 
         <div class="col-lg-6">
-            <x-forms.file allowedFileExtensions="png jpg jpeg svg bmp" class="mr-0 mr-lg-2 mr-md-2"
-                            :fieldLabel="__('modules.invoiceSettings.logo')"
-                            fieldName="logo" fieldId="logo" :fieldValue="$invoiceSetting->masked_logo_url"
-                            :popover="__('messages.invoiceLogoTooltip')"/>
+            <x-forms.file allowedFileExtensions="png jpg jpeg svg bmp" class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.logo')" fieldName="logo" fieldId="logo" :fieldValue="$invoiceSetting->masked_logo_url" :popover="__('messages.invoiceLogoTooltip')" />
         </div>
         <div class="col-lg-6">
-            <x-forms.file allowedFileExtensions="png jpg jpeg svg bmp" class="mr-0 mr-lg-2 mr-md-2"
-                            :fieldLabel="__('modules.invoiceSettings.authorisedSignatorySignature')"
-                            fieldName="authorised_signatory_signature" fieldId="authorised_signatory_signature" :fieldValue="$invoiceSetting->masked_authorised_signatory_signature_url"
-                            :popover="__('messages.authorisedSignatorySignatureTooltip')"/>
+            <x-forms.file allowedFileExtensions="png jpg jpeg svg bmp" class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.authorisedSignatorySignature')" fieldName="authorised_signatory_signature" fieldId="authorised_signatory_signature" :fieldValue="$invoiceSetting->masked_authorised_signatory_signature_url" :popover="__('messages.authorisedSignatorySignatureTooltip')" />
         </div>
 
 
         <div class="col-lg-6">
-            <x-forms.select fieldId="locale" :fieldLabel="__('modules.accountSettings.language')"
-                            fieldName="locale" search="true">
+            <x-forms.select fieldId="locale" :fieldLabel="__('modules.accountSettings.language')" fieldName="locale" search="true">
                 @foreach ($languageSettings as $language)
-                    <option
-                            data-content="<span class='flag-icon flag-icon-{{ ($language->flag_code == 'en') ? 'gb' : $language->flag_code }} flag-icon-squared'></span> {{ $language->language_name }}"
-                            @if ($invoiceSetting->locale == $language->language_code) selected
-                            @endif value="{{ $language->language_code }}">
-                        {{ $language->language_name }}</option>
+                    <option data-content="<span class='flag-icon flag-icon-{{ $language->flag_code == 'en' ? 'gb' : $language->flag_code }} flag-icon-squared'></span> {{ $language->language_name }}" @if ($invoiceSetting->locale == $language->language_code)
+                        selected
+                @endif value="{{ $language->language_code }}">
+                {{ $language->language_name }}</option>
                 @endforeach
             </x-forms.select>
         </div>
 
         <div class="col-lg-6">
-            <x-forms.label class="mt-3" fieldId="due_after" fieldRequired="true"
-                            :fieldLabel="__('modules.invoiceSettings.dueAfter')">
+            <x-forms.label class="mt-3" fieldId="due_after" fieldRequired="true" :fieldLabel="__('modules.invoiceSettings.dueAfter')">
             </x-forms.label>
             <x-forms.input-group>
-                <input type="number" value="{{ $invoiceSetting->due_after }}" name="due_after"
-                        id="due_after"
-                        class="form-control height-35 f-14" min="0">
+                <input type="number" value="{{ $invoiceSetting->due_after }}" name="due_after" id="due_after" class="form-control height-35 f-14" min="0">
                 <x-slot name="append">
                     <span class="input-group-text height-35 bg-white border-grey">@lang('app.days')</span>
                 </x-slot>
@@ -48,12 +36,10 @@
         </div>
 
         <div class="col-lg-6">
-            <x-forms.label class="mt-3" fieldId="send_reminder" fieldRequired="false"
-                            :fieldLabel="__('app.sendReminderBefore')">
+            <x-forms.label class="mt-3" fieldId="send_reminder" fieldRequired="false" :fieldLabel="__('app.sendReminderBefore')">
             </x-forms.label>
             <x-forms.input-group>
-                <input type="number" value="{{ $invoiceSetting->send_reminder }}" name="send_reminder"
-                        id="send_reminder" class="form-control height-35 f-14" min="0">
+                <input type="number" value="{{ $invoiceSetting->send_reminder }}" name="send_reminder" id="send_reminder" class="form-control height-35 f-14" min="0">
                 <x-slot name="append">
                     <span class="input-group-text height-35 bg-white border-grey">@lang('app.days')</span>
                 </x-slot>
@@ -62,17 +48,12 @@
 
         <div class="col-lg-6 mt-5">
             <x-forms.input-group>
-                <x-forms.select class="border-right-0" fieldId="reminder" fieldLabel=""
-                                fieldName="reminder">
-                    <option
-                        {{ ($invoiceSetting->reminder == 'after') ? 'selected' : '' }} value="after">@lang('app.sendReminderAfter')</option>
-                    <option
-                        {{ ($invoiceSetting->reminder == 'every') ? 'selected' : '' }} value="every">@lang('app.sendReminderEvery')</option>
+                <x-forms.select class="border-right-0" fieldId="reminder" fieldLabel="" fieldName="reminder">
+                    <option {{ $invoiceSetting->reminder == 'after' ? 'selected' : '' }} value="after">@lang('app.sendReminderAfter')</option>
+                    <option {{ $invoiceSetting->reminder == 'every' ? 'selected' : '' }} value="every">@lang('app.sendReminderEvery')</option>
                 </x-forms.select>
 
-                <input type="number" value="{{ $invoiceSetting->send_reminder_after }}"
-                        name="send_reminder_after"
-                        id="send_reminder_after" class="form-control height-35 f-14" min="0">
+                <input type="number" value="{{ $invoiceSetting->send_reminder_after }}" name="send_reminder_after" id="send_reminder_after" class="form-control height-35 f-14" min="0">
                 <x-slot name="append">
                     <span class="input-group-text height-35 bg-white border-grey">@lang('app.days')</span>
                 </x-slot>
@@ -81,32 +62,23 @@
 
 
         <div class="col-lg-4 mt-5">
-            <x-forms.checkbox :checked="$invoiceSetting->show_gst=='yes'" :fieldLabel="__('app.showGst')"
-                                fieldName="show_gst" fieldId="show_gst"/>
+            <x-forms.checkbox :checked="$invoiceSetting->show_gst == 'yes'" :fieldLabel="__('app.showGst')" fieldName="show_gst" fieldId="show_gst" />
         </div>
 
         <div class="col-lg-4 mt-5">
-            <x-forms.checkbox :checked="$invoiceSetting->hsn_sac_code_show==1"
-                                :fieldLabel="__('app.hsnSacCodeShow')" fieldName="hsn_sac_code_show"
-                                fieldId="hsn_sac_code_show"/>
+            <x-forms.checkbox :checked="$invoiceSetting->hsn_sac_code_show == 1" :fieldLabel="__('app.hsnSacCodeShow')" fieldName="hsn_sac_code_show" fieldId="hsn_sac_code_show" />
         </div>
 
         <div class="col-lg-4 mt-5">
-            <x-forms.checkbox :checked="$invoiceSetting->tax_calculation_msg==1"
-                                :fieldLabel="__('app.showTaxCalculationMessage')"
-                                fieldName="show_tax_calculation_msg" fieldId="show_tax_calculation_msg"/>
+            <x-forms.checkbox :checked="$invoiceSetting->tax_calculation_msg == 1" :fieldLabel="__('app.showTaxCalculationMessage')" fieldName="show_tax_calculation_msg" fieldId="show_tax_calculation_msg" />
         </div>
 
         <div class="col-lg-4 mt-2">
-            <x-forms.checkbox :checked="$invoiceSetting->show_status==1"
-                                :fieldLabel="__('app.showStatus')"
-                                fieldName="show_status" fieldId="show_status" :popover="__('messages.invoiceStatusShowTooltip')"/>
+            <x-forms.checkbox :checked="$invoiceSetting->show_status == 1" :fieldLabel="__('app.showStatus')" fieldName="show_status" fieldId="show_status" :popover="__('messages.invoiceStatusShowTooltip')" />
         </div>
 
         <div class="col-lg-4 mt-2">
-            <x-forms.checkbox :checked="$invoiceSetting->authorised_signatory==1"
-                                :fieldLabel="__('app.showAuthorisedSignatory')"
-                                fieldName="show_authorised_signatory" fieldId="show_authorised_signatory" :popover="__('messages.invoiceAuthorisedSignatoryShowTooltip')"/>
+            <x-forms.checkbox :checked="$invoiceSetting->authorised_signatory == 1" :fieldLabel="__('app.showAuthorisedSignatory')" fieldName="show_authorised_signatory" fieldId="show_authorised_signatory" :popover="__('messages.invoiceAuthorisedSignatoryShowTooltip')" />
         </div>
 
         <div class="col-lg-12">
@@ -115,67 +87,54 @@
                     <h5 class="heading-h4">@lang('modules.invoiceSettings.showFieldsInInvoice')</h5>
                 </div>
                 <div class="col-lg-4">
-                    <x-forms.checkbox :checked="$invoiceSetting->show_client_name=='yes'"
-                                        :fieldLabel="__('modules.client.clientName')"
-                                        fieldName="show_client_name"
-                                        fieldId="show_client_name"/>
+                    <x-forms.checkbox :checked="$invoiceSetting->show_client_name == 'yes'" :fieldLabel="__('modules.client.clientName')" fieldName="show_client_name" fieldId="show_client_name" />
                 </div>
                 <div class="col-lg-4">
-                    <x-forms.checkbox :checked="$invoiceSetting->show_client_email=='yes'"
-                                        :fieldLabel="__('modules.client.clientEmail')"
-                                        fieldName="show_client_email"
-                                        fieldId="show_client_email"/>
+                    <x-forms.checkbox :checked="$invoiceSetting->show_client_email == 'yes'" :fieldLabel="__('modules.client.clientEmail')" fieldName="show_client_email" fieldId="show_client_email" />
                 </div>
                 <div class="col-lg-4">
-                    <x-forms.checkbox :checked="$invoiceSetting->show_client_phone=='yes'"
-                                        :fieldLabel="__('modules.client.clientPhone')"
-                                        fieldName="show_client_phone"
-                                        fieldId="show_client_phone"/>
+                    <x-forms.checkbox :checked="$invoiceSetting->show_client_phone == 'yes'" :fieldLabel="__('modules.client.clientPhone')" fieldName="show_client_phone" fieldId="show_client_phone" />
                 </div>
                 <div class="col-lg-4 mt-2">
-                    <x-forms.checkbox :checked="$invoiceSetting->show_client_company_name=='yes'"
-                                        :fieldLabel="__('modules.client.companyName')"
-                                        fieldName="show_client_company_name"
-                                        fieldId="show_client_company_name"/>
+                    <x-forms.checkbox :checked="$invoiceSetting->show_client_company_name == 'yes'" :fieldLabel="__('modules.client.companyName')" fieldName="show_client_company_name" fieldId="show_client_company_name" />
                 </div>
                 <div class="col-lg-4 mt-2">
-                    <x-forms.checkbox :checked="$invoiceSetting->show_client_company_address=='yes'"
-                                        :fieldLabel="__('app.client').' '.__('modules.client.address')"
-                                        fieldName="show_client_company_address"
-                                        fieldId="show_client_company_address"/>
+                    <x-forms.checkbox :checked="$invoiceSetting->show_client_company_address == 'yes'" :fieldLabel="__('app.client') . ' ' . __('modules.client.address')" fieldName="show_client_company_address" fieldId="show_client_company_address" />
                 </div>
 
                 <div class="col-lg-4 mt-2">
-                    <x-forms.checkbox :checked="$invoiceSetting->show_project== 1"
-                                        :fieldLabel="__('app.showProjectOnInvoice')" fieldName="show_project"
-                                        fieldId="show_project"/>
+                    <x-forms.checkbox :checked="$invoiceSetting->show_project == 1" :fieldLabel="__('app.showProjectOnInvoice')" fieldName="show_project" fieldId="show_project" />
                 </div>
             </div>
         </div>
 
         <div class="col-lg-12 mt-3">
             <div class="form-group my-3">
-                <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2"
-                                    :fieldLabel="__('modules.invoiceSettings.invoiceTerms')"
-                                    fieldName="invoice_terms"
-                                    fieldId="invoice_terms"
-                                    :fieldPlaceholder="__('placeholders.invoices.invoiceTerms')"
-                                    :fieldValue="$invoiceSetting->invoice_terms">
+                <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.invoiceTerms')" fieldName="invoice_terms" fieldId="invoice_terms" :fieldPlaceholder="__('placeholders.invoices.invoiceTerms')" :fieldValue="$invoiceSetting->invoice_terms">
                 </x-forms.textarea>
             </div>
         </div>
 
         <div class="col-lg-12 mt-3">
             <div class="form-group my-3">
-                <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2"
-                                    :fieldLabel="__('modules.invoiceSettings.otherInfo')"
-                                    fieldName="other_info"
-                                    fieldId="other_info"
-                                    :fieldPlaceholder="__('placeholders.invoices.otherInfo')"
-                                    :fieldValue="$invoiceSetting->other_info">
+                <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.otherInfo')" fieldName="other_info" fieldId="other_info" :fieldPlaceholder="__('placeholders.invoices.otherInfo')" :fieldValue="$invoiceSetting->other_info">
                 </x-forms.textarea>
             </div>
         </div>
+
+        @if (in_array('estimates', user_modules()))
+            <div class="col-lg-6">
+                <x-forms.label class="mt-3" fieldId="phase1_min_gross_margin_percent" :fieldLabel="__('modules.invoiceSettings.phase1MinGrossMarginPercent')">
+                </x-forms.label>
+                <x-forms.input-group>
+                    <input type="number" step="0.01" min="0" max="100" name="phase1_min_gross_margin_percent" id="phase1_min_gross_margin_percent" class="form-control height-35 f-14" value="{{ $invoiceSetting->phase1_min_gross_margin_percent ?? '' }}" placeholder="{{ config('estimates_phase1.minimum_gross_margin_percent', 15) }}">
+                    <x-slot name="append">
+                        <span class="input-group-text height-35 bg-white border-grey">%</span>
+                    </x-slot>
+                </x-forms.input-group>
+                <small class="form-text text-muted">@lang('modules.invoiceSettings.phase1MinGrossMarginPercentHelp')</small>
+            </div>
+        @endif
 
     </div>
 
@@ -197,7 +156,7 @@
     $('.image-picker').imagepicker();
 
     // save invoice setting
-    $('#save-form').click(function () {
+    $('#save-form').click(function() {
         $.easyAjax({
             url: "{{ route('invoice-settings.update', $invoiceSetting->id) }}",
             container: '#editSettings',
@@ -259,7 +218,7 @@
         $('#contract_look_like').val(contract_no);
     }
 
-    $('#add-tax').click(function () {
+    $('#add-tax').click(function() {
         const url = "{{ route('taxes.create') }}";
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);

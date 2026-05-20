@@ -32,7 +32,7 @@ class UpdateProject extends CoreRequest
             'start_date' => 'required',
             'hours_allocated' => 'nullable|numeric',
             'client_id' => 'requiredIf:client_view_task,true',
-            'project_code' => $this->project_code != '' ? 'unique:projects,project_short_code,'.$this->project_id.',id,company_id,'.company()->id : '',
+            'project_code' => $this->project_code != '' ? 'unique:projects,project_short_code,'.$this->project_id.',id,company_id,'.company()->id.'|max:50|regex:/^[A-Za-z0-9_\-]+$/' : '',
         ];
 
         if (! $this->has('without_deadline')) {

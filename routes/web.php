@@ -767,6 +767,8 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('estimates/download/{id}', [EstimateController::class, 'download'])->name('estimates.download');
     Route::post('estimates/send-estimate/{id}', [EstimateController::class, 'sendEstimate'])->name('estimates.send_estimate');
     Route::get('estimates/change-status/{id}', [EstimateController::class, 'changeStatus'])->name('estimates.change_status');
+    Route::get('estimates/production-bom/{bom}/lines', [EstimateController::class, 'productionBomLines'])->name('estimates.production_bom_lines');
+    Route::post('estimates/{id}/submit-for-review', [EstimateController::class, 'submitForReview'])->name('estimates.submit_for_review');
     Route::post('estimates/{id}/president-review', [EstimateController::class, 'presidentReview'])->name('estimates.president_review');
     Route::post('estimates/{id}/vp-pricing-review', [EstimateController::class, 'vpPricingReview'])->name('estimates.vp_pricing_review');
     Route::post('estimates/{id}/convert-to-sales-order', [EstimateController::class, 'convertToSalesOrder'])->name('estimates.convert_to_sales_order');

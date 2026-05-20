@@ -18,6 +18,7 @@ class ProductionBomItem extends BaseModel
         'production_bom_id',
         'component_product_id',
         'quantity',
+        'waste_percent',
         'unit_id',
         'yield_factor',
         'sort_order',
@@ -27,6 +28,7 @@ class ProductionBomItem extends BaseModel
     {
         return [
             'quantity' => 'float',
+            'waste_percent' => 'float',
             'yield_factor' => 'float',
             'sort_order' => 'integer',
         ];

@@ -55,6 +55,7 @@ use App\Models\User;
 use App\Models\UserAuth;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
+use App\Support\EstimatesPhase1Review;
 use App\Traits\StoreHeaders;
 
 class CompanyObserver
@@ -152,7 +153,7 @@ class CompanyObserver
         }
 
         $this->saasSaving($company);
-        cache()->forget('user_' . $company->id . '_is_active');
+        cache()->forget('user_'.$company->id.'_is_active');
 
         session()->forget(['company', 'company.*', 'company.currency', 'company.paymentGatewayCredentials']);
         cache()->forget('global_setting');
@@ -218,8 +219,8 @@ class CompanyObserver
         Notification::whereIn('type', ['App\Notifications\SuperAdmin\NewCompanyRegister', 'App\Notifications\NewUser'])
             ->whereNull('read_at')
             ->where(function ($q) use ($company) {
-                $q->where('data', 'like', '{"id":' . $company->id . '%');
-                $q->orWhere('data', 'like', '%"company_id":' . $company->id . '%');
+                $q->where('data', 'like', '{"id":'.$company->id.'%');
+                $q->orWhere('data', 'like', '%"company_id":'.$company->id.'%');
             })->delete();
     }
 
@@ -942,7 +943,7 @@ class CompanyObserver
     {
         User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
             ->where('company_id', $company->id)->each(function ($user) {
-                cache()->forget('user_modules_' . $user->id);
+                cache()->forget('user_modules_'.$user->id);
             });
     }
 
@@ -961,7 +962,7 @@ class CompanyObserver
         }
 
         $names = collect($decoded)
-            ->map(static fn($value) => strtolower(trim((string) $value)))
+            ->map(static fn ($value) => strtolower(trim((string) $value)))
             ->filter()
             ->unique()
             ->values()
@@ -1066,6 +1067,8 @@ class CompanyObserver
             }
 
             ModuleSetting::insert($moduleSettings);
+
+            EstimatesPhase1Review::ensureModuleRowsForCompany((int) $company->id, 'deactive');
 
             $this->clearCompanyUserCache($company);
         }

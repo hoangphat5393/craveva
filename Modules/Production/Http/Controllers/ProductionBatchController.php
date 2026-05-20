@@ -22,6 +22,7 @@ use Modules\Production\Http\Requests\StoreProductionReworkOrderRequest;
 use Modules\Production\Services\ProductionFgQuantityPolicyService;
 use Modules\Production\Services\ProductionPlannedConsumptionFromSnapshotService;
 use Modules\Production\Services\ProductionPostingService;
+use Modules\Production\Support\ProductionBatchWorkflowSteps;
 use Modules\Production\Support\ProductionTenantAccess;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 
@@ -78,6 +79,8 @@ class ProductionBatchController extends AccountBaseController
             && $batch->posted_consumptions_at === null
             && $batch->consumptions->isEmpty()
             && in_array($order->status, [ProductionOrder::STATUS_RELEASED, ProductionOrder::STATUS_IN_PROGRESS], true);
+
+        $this->batchWorkflowSteps = app(ProductionBatchWorkflowSteps::class)->forBatch($batch);
 
         return view('production::batches.show', $this->data);
     }

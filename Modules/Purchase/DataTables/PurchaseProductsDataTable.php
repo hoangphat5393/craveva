@@ -3,6 +3,7 @@
 namespace Modules\Purchase\DataTables;
 
 use App\DataTables\BaseDataTable;
+use App\Enums\ProductType;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\Product;
@@ -231,6 +232,12 @@ class PurchaseProductsDataTable extends BaseDataTable
             return $row->unit ? $row->unit->unit_type : '--';
         });
 
+        $datatables->editColumn('product_type', function ($row) {
+            $type = $row->type !== null && $row->type !== '' ? (string) $row->type : null;
+
+            return ProductType::labelFor($type);
+        });
+
         $datatables->editColumn('expiry_date', function ($row) {
             return $row->expiry_date
                 ? $row->expiry_date->copy()->timezone(company()->timezone)->format(company()->date_format)
@@ -259,7 +266,7 @@ class PurchaseProductsDataTable extends BaseDataTable
 
         $model = $model->with('tax', 'category', 'subCategory', 'inventory', 'inventory.product')
             ->join('unit_types', 'unit_types.id', '=', 'products.unit_id')
-            ->select('products.id', 'products.name', 'products.sku', 'products.price', 'products.status', 'products.taxes', 'products.unit_id', 'products.opening_stock', 'products.track_inventory', 'products.allow_purchase', 'products.added_by', 'products.default_image', 'products.category_id', 'products.sub_category_id', 'products.description', 'products.product_source', 'products.brand', 'products.product_grade', 'products.expiry_date', 'products.specification', 'products.shelf_life_days')
+            ->select('products.id', 'products.name', 'products.sku', 'products.type', 'products.price', 'products.status', 'products.taxes', 'products.unit_id', 'products.opening_stock', 'products.track_inventory', 'products.allow_purchase', 'products.added_by', 'products.default_image', 'products.category_id', 'products.sub_category_id', 'products.description', 'products.product_source', 'products.brand', 'products.product_grade', 'products.expiry_date', 'products.specification', 'products.shelf_life_days')
             ->withSum('inventory as stock_on_hand', 'net_quantity');
 
         if (! is_null($request->category_id) && $request->category_id != 'all' && $request->category_id > 0) {
@@ -361,6 +368,7 @@ class PurchaseProductsDataTable extends BaseDataTable
             __('modules.productImage') => ['data' => 'default_image', 'name' => 'default_image', 'title' => __('modules.productImage'), 'exportable' => false],
             __('app.sku') => ['data' => 'sku', 'name' => 'sku', 'title' => __('app.sku')],
             __('app.menu.products') => ['data' => 'name', 'name' => 'name', 'title' => __('app.menu.products')],
+            __('purchase::modules.product.type') => ['data' => 'product_type', 'name' => 'products.type', 'title' => __('purchase::modules.product.type')],
             __('modules.productCategory.productCategory') => ['data' => 'category', 'name' => 'category', 'title' => __('modules.productCategory.productCategory'), 'visible' => false],
             __('modules.productCategory.productSubCategory') => ['data' => 'sub_category', 'name' => 'sub_category', 'title' => __('modules.productCategory.productSubCategory'), 'visible' => false],
             __('app.description') => ['data' => 'description', 'name' => 'description', 'title' => __('app.description'), 'visible' => false],

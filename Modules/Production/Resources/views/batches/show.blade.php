@@ -25,6 +25,8 @@
             <div class="alert alert-danger mt-3 mb-0">{{ session('error') }}</div>
         @endif
 
+        @include('production::batches.partials.completion-workflow')
+
         <div class="bg-white rounded p-4 mt-3 mb-3 border-left border-primary border-width-3" style="border-left-width: 4px !important;">
             <h5 class="f-14 text-dark-grey font-weight-bold mb-2">@lang('production::app.printLabelSlipCardHeading')</h5>
             <p class="f-20 font-weight-bold text-dark mb-2">{{ $batch->batch_code }}</p>
@@ -38,7 +40,7 @@
             <div class="row f-14">
                 <div class="col-md-4 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.status') (@lang('app.order'))</span>
-                    <span class="font-weight-normal">{{ ucfirst(str_replace('_', ' ', $batch->order->status)) }}</span>
+                    <span class="font-weight-normal">{{ __('production::app.statusLabels.' . $batch->order->status) }}</span>
                 </div>
                 <div class="col-md-4 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.rawMaterialsDeductedAt')</span>

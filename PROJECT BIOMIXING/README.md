@@ -4,6 +4,7 @@ Thư mục này giữ **tài liệu không thuần “triển khai kỹ thuật 
 
 - **Sơ đồ** (`.mmd`, bản `.html` render), **PDF proposal**, hình ảnh / PDF minh họa
 - **Markdown** mang tính **proposal**, **demo**, **PM**, **bối cảnh Phase / approval** (President, VP Pricing, v.v.)
+- **PM gốc (RTF):** [`PM request.rtf`](./PM%20request.rtf) → EN: [`PM_REQUEST.md`](./PM_REQUEST.md) · **VI:** [`PM_REQUEST_VI.md`](./PM_REQUEST_VI.md) (dịch: `python scripts/bulk_translate_file.py ... --mode md-whole`)
 
 ## Triển khai chức năng (dev / baseline / playbook / gap)
 

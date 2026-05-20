@@ -15,17 +15,22 @@ use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Http\Concerns\HandlesProductionErrors;
 use Modules\Production\Http\Requests\StoreProductionOrderRequest;
 use Modules\Production\Http\Requests\UpdateProductionOrderRequest;
+use Modules\Production\Services\ProductionOrderMaterialRequirementsSummary;
+use Modules\Production\Services\ProductionOrderSalesOrderPrefill;
 use Modules\Production\Services\ProductionPostingService;
 use Modules\Production\Support\ProductionProductUnitLabelMap;
 use Modules\Production\Support\ProductionTenantAccess;
+use Modules\Purchase\Entities\PurchaseManagementSetting;
 use Modules\Warehouse\Entities\Warehouse;
+use Modules\Warehouse\Entities\WarehouseProductStock;
 
 class ProductionOrderController extends AccountBaseController
 {
     use HandlesProductionErrors;
 
     public function __construct(
-        protected ProductionPostingService $posting
+        protected ProductionPostingService $posting,
+        protected ProductionOrderMaterialRequirementsSummary $materialRequirementsSummary,
     ) {
         parent::__construct();
         $this->middleware(function ($request, $next) {
@@ -66,12 +71,17 @@ class ProductionOrderController extends AccountBaseController
         return view('production::orders.index', $this->data);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         $this->assertAddProductionOrders();
 
         $this->pageTitle = __('production::app.newOrder');
-        $this->addProductData();
+        $prefillSalesOrderId = $request->integer('sales_order_id');
+        $this->prefillSalesOrderId = $prefillSalesOrderId > 0 ? $prefillSalesOrderId : null;
+        $this->salesOrderPrefill = $this->prefillSalesOrderId !== null
+            ? app(ProductionOrderSalesOrderPrefill::class)->forSalesOrder($this->prefillSalesOrderId, (int) company()->id)
+            : null;
+        $this->addProductData(null, $this->prefillSalesOrderId);
 
         return view('production::orders.create', $this->data);
     }
@@ -111,6 +121,17 @@ class ProductionOrderController extends AccountBaseController
             ? ProductionProductUnitLabelMap::forProducts(collect([$order->outputProduct]), (int) company()->id)
             : collect();
         $this->orderFgUnitType = (string) ($fgUnitMap->get((string) $order->output_product_id) ?? $fgUnitMap->get($order->output_product_id) ?? '—');
+
+        $this->materialRequirements = $this->materialRequirementsSummary->forOrder($order);
+        $this->materialRequirementsPlannedFg = (float) $order->planned_quantity;
+        $this->materialRequirementsHasShortfall = $this->materialRequirementsSummary->hasShortfall($this->materialRequirements);
+        $this->materialRequirementsShowStock = in_array('warehouse', user_modules() ?: [], true)
+            && class_exists(WarehouseProductStock::class);
+        $this->canSuggestPurchaseOrder = $this->materialRequirementsHasShortfall
+            && $this->materialRequirementsShowStock
+            && in_array(user()->permission('add_purchase_order'), ['all', 'added', 'owned', 'both'], true)
+            && in_array(PurchaseManagementSetting::MODULE_NAME, user_modules() ?: [], true);
+        $this->purchaseOrderCreateUrl = $this->canSuggestPurchaseOrder ? route('purchase-order.create') : null;
 
         return view('production::orders.show', $this->data);
     }
@@ -182,7 +203,7 @@ class ProductionOrderController extends AccountBaseController
         return back()->with('success', __('messages.updateSuccess'));
     }
 
-    protected function addProductData(?ProductionOrder $draftOrderBeingEdited = null): void
+    protected function addProductData(?ProductionOrder $draftOrderBeingEdited = null, ?int $prefillSalesOrderId = null): void
     {
         $companyId = (int) company()->id;
 
@@ -213,21 +234,39 @@ class ProductionOrderController extends AccountBaseController
             ->limit(250)
             ->get(['id', 'order_number', 'status']);
 
-        if ($draftOrderBeingEdited !== null && $draftOrderBeingEdited->sales_order_id !== null) {
+        $ensureSalesOrderInList = static function (?int $salesOrderId) use ($companyId, $recentSalesOrders) {
+            if ($salesOrderId === null || $salesOrderId <= 0) {
+                return $recentSalesOrders;
+            }
+
             $linkedSalesOrder = Order::query()
                 ->where('company_id', $companyId)
-                ->whereKey($draftOrderBeingEdited->sales_order_id)
+                ->whereKey($salesOrderId)
                 ->first(['id', 'order_number', 'status']);
 
-            if ($linkedSalesOrder !== null && ! $recentSalesOrders->contains(
+            if ($linkedSalesOrder === null) {
+                return $recentSalesOrders;
+            }
+
+            if ($recentSalesOrders->contains(
                 static fn(Order $row): bool => (int) $row->id === (int) $linkedSalesOrder->id
             )) {
-                $recentSalesOrders = $recentSalesOrders
-                    ->prepend($linkedSalesOrder)
-                    ->unique(static fn(Order $row): int => (int) $row->id)
-                    ->sortByDesc(static fn(Order $row): int => (int) $row->id)
-                    ->values();
+                return $recentSalesOrders;
             }
+
+            return $recentSalesOrders
+                ->prepend($linkedSalesOrder)
+                ->unique(static fn(Order $row): int => (int) $row->id)
+                ->sortByDesc(static fn(Order $row): int => (int) $row->id)
+                ->values();
+        };
+
+        if ($draftOrderBeingEdited !== null && $draftOrderBeingEdited->sales_order_id !== null) {
+            $recentSalesOrders = $ensureSalesOrderInList((int) $draftOrderBeingEdited->sales_order_id);
+        }
+
+        if ($prefillSalesOrderId !== null) {
+            $recentSalesOrders = $ensureSalesOrderInList($prefillSalesOrderId);
         }
 
         $this->recentSalesOrders = $recentSalesOrders;

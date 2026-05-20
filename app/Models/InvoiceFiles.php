@@ -4,14 +4,15 @@ namespace App\Models;
 
 use App\Traits\IconTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\InvoiceFiles
  *
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  * @property-read mixed $file_url
  * @property-read mixed $icon
- * @property-read \App\Models\Invoice|null $invoice
+ * @property-read Invoice|null $invoice
  *
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceFiles newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceFiles newQuery()
@@ -24,8 +25,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $filename
  * @property string|null $hashname
  * @property string|null $size
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceFiles whereAddedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceFiles whereCreatedAt($value)
@@ -45,7 +46,14 @@ class InvoiceFiles extends BaseModel
 
     const FILE_PATH = 'invoices';
 
-    protected $fillable = [];
+    protected $fillable = [
+        'invoice_id',
+        'filename',
+        'hashname',
+        'size',
+        'added_by',
+        'last_updated_by',
+    ];
 
     protected $guarded = ['id'];
 

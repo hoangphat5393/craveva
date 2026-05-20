@@ -66,7 +66,6 @@ class ProjectObserver
             if (request()->user_id != null || request()->user_id != '' || request()->has('user_id')) {
                 $unmentionIds = array_diff(request()->user_id, $mentionIds);
                 $unmentionDescriptionMember = User::whereIn('id', $unmentionIds)->get();
-
             }
 
             if ((request()->mention_user_ids) != null || request()->mention_user_ids != '' || $mentionIds != null && $mentionIds != '') {
@@ -101,7 +100,6 @@ class ProjectObserver
 
         if (! request()->has('task_project_id')) {
             $project->mentionUser()->sync(request()->mention_user_ids);
-
         }
 
         if ($requestMentionIds != null) {
@@ -114,20 +112,16 @@ class ProjectObserver
 
                         $newMention[] = $value;
                     }
-
                 } else {
 
                     $newMention[] = $value;
-
                 }
-
             }
 
             $newMentionMembers = User::whereIn('id', $newMention)->get();
 
             if (! empty($newMention)) {
                 event(new NewProjectEvent($project, $newMentionMembers, 'ProjectMention'));
-
             }
         }
     }
@@ -151,15 +145,18 @@ class ProjectObserver
             }
 
             if ($project->isDirty('project_short_code')) {
-                // phpcs:ignore
                 if ($project->project_short_code) {
-                    DB::statement("UPDATE tasks SET task_short_code = CONCAT( '$project->project_short_code', '-', id ) WHERE project_id = '".$project->id."'; ");
+                    DB::statement(
+                        'UPDATE tasks SET task_short_code = CONCAT(?, \'-\', id) WHERE project_id = ?',
+                        [$project->project_short_code, $project->id]
+                    );
                 } else {
-                    DB::statement("UPDATE tasks SET task_short_code = CONCAT( id ) WHERE project_id = '".$project->id."'; ");
+                    DB::statement(
+                        'UPDATE tasks SET task_short_code = CONCAT(id) WHERE project_id = ?',
+                        [$project->id]
+                    );
                 }
-
             }
-
         }
     }
 
@@ -208,7 +205,6 @@ class ProjectObserver
 
         if (user()) {
             self::createEmployeeActivity(user()->id, 'project-deleted');
-
         }
     }
 

@@ -43,6 +43,8 @@ use App\Models\User;
 use App\Models\UserPermission;
 use App\Observers\CompanyObserver;
 use App\Scopes\CompanyScope;
+use App\Support\EstimateReviewAuthorization;
+use App\Support\EstimatesPhase1Review;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -719,6 +721,33 @@ if (! function_exists('module_enabled')) {
     function module_enabled($moduleName)
     {
         return Module::collections()->has($moduleName);
+    }
+}
+
+if (! function_exists('estimates_phase1_review_enabled')) {
+
+    // @codingStandardsIgnoreLine
+    function estimates_phase1_review_enabled(): bool
+    {
+        return EstimatesPhase1Review::enabled();
+    }
+}
+
+if (! function_exists('user_can_approve_estimate_president')) {
+
+    // @codingStandardsIgnoreLine
+    function user_can_approve_estimate_president(): bool
+    {
+        return EstimateReviewAuthorization::canApprovePresident();
+    }
+}
+
+if (! function_exists('user_can_approve_estimate_vp_pricing')) {
+
+    // @codingStandardsIgnoreLine
+    function user_can_approve_estimate_vp_pricing(): bool
+    {
+        return EstimateReviewAuthorization::canApproveVpPricing();
     }
 }
 

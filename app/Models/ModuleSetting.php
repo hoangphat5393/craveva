@@ -55,6 +55,16 @@ class ModuleSetting extends BaseModel
         'knowledgebase',
     ];
 
+    /**
+     * Feature toggles shown in Module Settings even when not tied to SaaS package modules.
+     *
+     * @var list<string>
+     */
+    public const TENANT_FEATURE_MODULES = [
+        'estimates_phase1_review',
+        'developertools',
+    ];
+
     const OTHER_MODULES = [
         'clients',
         'developertools',
@@ -93,20 +103,17 @@ class ModuleSetting extends BaseModel
             return $allowed;
         }
 
-        $hasDevToolsInAllowed = $allowed->contains(static fn(ModuleSetting $row): bool => $row->module_name === 'developertools');
-
-        if ($hasDevToolsInAllowed) {
-            return $allowed;
-        }
-
-        $extra = self::withoutGlobalScope(CompanyScope::class)
+        $extras = self::withoutGlobalScope(CompanyScope::class)
             ->where('company_id', $companyId)
-            ->where('module_name', 'developertools')
             ->where('type', $type)
-            ->where('is_allowed', 0)
-            ->get();
+            ->whereIn('module_name', self::TENANT_FEATURE_MODULES)
+            ->get()
+            ->unique('module_name');
 
-        return $allowed->concat($extra)->values();
+        return $allowed
+            ->concat($extras)
+            ->unique('module_name')
+            ->values();
     }
 
     public static function checkModule($moduleName)

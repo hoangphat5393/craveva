@@ -23,7 +23,6 @@ use App\Models\EstimateTemplate;
 use App\Models\EstimateTemplateItem;
 use App\Models\Invoice;
 use App\Models\InvoiceItems;
-use App\Models\ModuleSetting;
 use App\Models\Order;
 use App\Models\OrderItems;
 use App\Models\Product;
@@ -32,15 +31,25 @@ use App\Models\Project;
 use App\Models\Tax;
 use App\Models\UnitType;
 use App\Models\User;
+use App\Services\Estimates\EstimateApprovalEventLogger;
+use App\Services\Estimates\EstimateBomLineSync;
+use App\Services\Estimates\EstimatePhase1Notifier;
+use App\Services\Estimates\EstimateProductionBomCopier;
+use App\Services\Estimates\EstimateSimilarRecipeSearch;
 use App\Services\Estimates\EstimateTotalsCalculator;
+use App\Services\Estimates\EstimateVpMarginPolicy;
+use App\Support\EstimateReviewAuthorization;
 use App\Traits\ImportExcel;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Modules\Production\Entities\ProductionBom;
 
 class EstimateController extends AccountBaseController
 {
@@ -74,7 +83,7 @@ class EstimateController extends AccountBaseController
         if (request('estimate') != '') {
             $this->estimateId = request('estimate');
             $this->type = 'estimate';
-            $this->estimate = Estimate::with('items', 'items.estimateItemImage', 'client', 'unit', 'client.projects')->findOrFail($this->estimateId);
+            $this->estimate = Estimate::with('items', 'items.estimateItemImage', 'bomLines.unit', 'bomLines.product', 'client', 'unit', 'client.projects')->findOrFail($this->estimateId);
         }
 
         $this->pageTitle = __('app.quotation_ui.create');
@@ -97,6 +106,8 @@ class EstimateController extends AccountBaseController
         $this->categories = ProductCategory::all();
         $this->template = EstimateTemplate::all();
         $this->units = UnitType::all();
+        $this->bomComponentProducts = $this->bomComponentProductsForEstimateForm();
+        $this->productionBoms = $this->productionBomsForEstimateForm();
 
         $this->estimateTemplate = null;
         $this->estimateTemplateItem = null;
@@ -151,6 +162,14 @@ class EstimateController extends AccountBaseController
             return Reply::error($buildResult['error']);
         }
 
+        $bomBuildResult = ['lines' => [], 'error' => null];
+        if ($this->isPhase1ReviewGateEnabled()) {
+            $bomBuildResult = app(EstimateBomLineSync::class)->parseFromRequest($request);
+            if ($bomBuildResult['error'] !== null) {
+                return Reply::error($bomBuildResult['error']);
+            }
+        }
+
         $lineItems = $buildResult['items'];
         $calculationLines = $buildResult['calculation_lines'];
 
@@ -172,6 +191,9 @@ class EstimateController extends AccountBaseController
         $estimate->estimate_request_id = $request->estimate_request_id ?? null;
         $estimate->status = request('type') === 'draft' ? 'draft' : 'waiting';
         $this->applyQuotationSourceFields($request, $estimate);
+        if ($this->isPhase1ReviewGateEnabled()) {
+            $this->applyRecipeHeaderFields($request, $estimate);
+        }
         $estimate->save();
 
         foreach ($lineItems as $index => $lineItem) {
@@ -192,6 +214,10 @@ class EstimateController extends AccountBaseController
                 'line_effective_date' => $lineItem['line_effective_date'],
                 'line_expiry_date' => $lineItem['line_expiry_date'],
             ]);
+        }
+
+        if ($this->isPhase1ReviewGateEnabled()) {
+            app(EstimateBomLineSync::class)->sync($estimate, $bomBuildResult['lines']);
         }
 
         if (request()->has('estimate_request_id')) {
@@ -217,7 +243,7 @@ class EstimateController extends AccountBaseController
 
     public function show($id)
     {
-        $this->invoice = Estimate::with('sign', 'client', 'unit', 'clientdetails', 'presidentReviewer', 'vpPricingReviewer')->findOrFail($id)->withCustomFields();
+        $this->invoice = Estimate::with('sign', 'client', 'unit', 'clientdetails', 'bomLines.unit', 'bomLines.product', 'presidentReviewer', 'vpPricingReviewer', 'approvalEvents.actor')->findOrFail($id)->withCustomFields();
         $this->viewPermission = user()->permission('view_estimates');
         $userId = UserService::getUserId();
 
@@ -300,12 +326,23 @@ class EstimateController extends AccountBaseController
             $this->invoice->save();
         }
 
+        $this->productionBoms = $this->productionBomsForEstimateForm();
+        $this->similarRecipes = $this->isPhase1ReviewGateEnabled()
+            ? app(EstimateSimilarRecipeSearch::class)->findForEstimate($this->invoice)
+            : [];
+
         return view('estimates.show', $this->data);
     }
 
     public function edit($id)
     {
-        $this->estimate = Estimate::with('items.estimateItemImage')->findOrFail($id)->withCustomFields();
+        $this->estimate = Estimate::with(
+            'items.estimateItemImage',
+            'bomLines.unit',
+            'bomLines.product',
+            'presidentReviewer',
+            'vpPricingReviewer',
+        )->findOrFail($id)->withCustomFields();
         $userId = UserService::getUserId();
         $this->editPermission = user()->permission('edit_estimates');
 
@@ -333,6 +370,11 @@ class EstimateController extends AccountBaseController
         $this->products = Product::all();
         $this->categories = ProductCategory::all();
         $this->invoiceSetting = invoice_setting();
+        $this->bomComponentProducts = $this->bomComponentProductsForEstimateForm();
+        $this->productionBoms = $this->productionBomsForEstimateForm();
+        $this->similarRecipes = $this->isPhase1ReviewGateEnabled()
+            ? app(EstimateSimilarRecipeSearch::class)->findForEstimate($this->estimate)
+            : [];
 
         $this->view = 'estimates.ajax.edit';
 
@@ -348,6 +390,14 @@ class EstimateController extends AccountBaseController
         $buildResult = $this->buildLineItemsFromEstimateRequest($request);
         if ($buildResult['error'] !== null) {
             return Reply::error($buildResult['error']);
+        }
+
+        $bomBuildResult = ['lines' => [], 'error' => null];
+        if ($this->isPhase1ReviewGateEnabled()) {
+            $bomBuildResult = app(EstimateBomLineSync::class)->parseFromRequest($request);
+            if ($bomBuildResult['error'] !== null) {
+                return Reply::error($bomBuildResult['error']);
+            }
         }
 
         $lineItems = $buildResult['items'];
@@ -370,6 +420,9 @@ class EstimateController extends AccountBaseController
         $estimate->description = trim_editor($request->description);
         $estimate->estimate_number = $request->estimate_number;
         $this->applyQuotationSourceFields($request, $estimate);
+        if ($this->isPhase1ReviewGateEnabled()) {
+            $this->applyRecipeHeaderFields($request, $estimate);
+        }
         $estimate->save();
 
         $persistedItemIds = [];
@@ -437,6 +490,10 @@ class EstimateController extends AccountBaseController
             EstimateItem::query()->where('estimate_id', $estimate->id)->delete();
         }
 
+        if ($this->isPhase1ReviewGateEnabled()) {
+            app(EstimateBomLineSync::class)->sync($estimate, $bomBuildResult['lines']);
+        }
+
         // To add custom fields data
         if ($request->custom_fields_data) {
             $estimate->updateCustomFieldData($request->custom_fields_data);
@@ -498,7 +555,9 @@ class EstimateController extends AccountBaseController
         $this->invoiceSetting = invoice_setting();
         App::setLocale($this->invoiceSetting->locale ?? 'en');
         Carbon::setLocale($this->invoiceSetting->locale ?? 'en');
-        $this->estimate = Estimate::findOrFail($id)->withCustomFields();
+        $this->estimate = Estimate::with(['bomLines.product', 'bomLines.unit'])
+            ->findOrFail($id)
+            ->withCustomFields();
 
         $getCustomFieldGroupsWithFields = $this->estimate->getCustomFieldGroupsWithFields();
 
@@ -618,7 +677,7 @@ class EstimateController extends AccountBaseController
         $estimate = Estimate::with('sign')->findOrFail($id);
 
         if ($this->isPhase1ReviewGateEnabled() && ! $estimate->isReadyForCommercialConversion()) {
-            return Reply::error(__('messages.invalidRequest'));
+            return Reply::error(__('modules.estimates.convertSoBlocked'));
         }
 
         /** @phpstan-ignore-next-line */
@@ -718,7 +777,7 @@ class EstimateController extends AccountBaseController
         $estimate = Estimate::with('items')->findOrFail($id);
 
         if ($this->isPhase1ReviewGateEnabled() && ! $estimate->isReadyForCommercialConversion()) {
-            return Reply::error(__('messages.invalidRequest'));
+            return Reply::error(__('modules.estimates.convertSoBlocked'));
         }
 
         $existingOrder = Order::query()
@@ -777,10 +836,79 @@ class EstimateController extends AccountBaseController
         return Reply::redirect(route('orders.show', $order->id), __('messages.recordSaved'));
     }
 
+    public function submitForReview($id)
+    {
+        abort_403(! $this->isPhase1ReviewGateEnabled());
+
+        $this->editPermission = user()->permission('edit_estimates');
+        abort_403(! in_array($this->editPermission, ['all', 'added'], true));
+
+        $estimate = Estimate::findOrFail($id);
+
+        if (! EstimateReviewAuthorization::canSubmitForReview($estimate)) {
+            return Reply::error(__('modules.estimates.submitReviewNotAllowed'));
+        }
+
+        if ($estimate->isRevisionRequired()) {
+            $estimate->resetInternalReviewForResubmission();
+        } elseif ($estimate->hasLegacyInternalReviewState()) {
+            $estimate->president_review_status = Estimate::INTERNAL_REVIEW_PENDING;
+            $estimate->vp_pricing_review_status = Estimate::INTERNAL_REVIEW_PENDING;
+        } else {
+            if (! $estimate->hasPresidentApproved()) {
+                $estimate->president_review_status = Estimate::INTERNAL_REVIEW_PENDING;
+                $estimate->president_reviewed_by = null;
+                $estimate->president_reviewed_at = null;
+                $estimate->president_review_note = null;
+            }
+
+            if (! $estimate->hasVpPricingApproved()) {
+                $estimate->vp_pricing_review_status = Estimate::INTERNAL_REVIEW_PENDING;
+                $estimate->vp_pricing_reviewed_by = null;
+                $estimate->vp_pricing_reviewed_at = null;
+                $estimate->vp_pricing_review_note = null;
+            }
+        }
+
+        if (in_array($estimate->status, ['draft', Estimate::STATUS_REVISION_REQUIRED], true)) {
+            $estimate->status = 'waiting';
+        }
+
+        $estimate->save();
+
+        app(EstimateApprovalEventLogger::class)->log(
+            $estimate,
+            EstimateApprovalEventLogger::EVENT_SUBMITTED,
+        );
+
+        app(EstimatePhase1Notifier::class)->notifySubmitted($estimate);
+
+        return Reply::success(__('modules.estimates.submitReviewSuccess'));
+    }
+
+    public function productionBomLines(int $bom): JsonResponse
+    {
+        abort_403(! $this->isPhase1ReviewGateEnabled());
+
+        $result = app(EstimateProductionBomCopier::class)->linesForEstimateForm(
+            $bom,
+            (int) company()->id,
+        );
+
+        if ($result['error'] !== null) {
+            return Reply::error($result['error']);
+        }
+
+        return Reply::dataOnly([
+            'status' => 'success',
+            'lines' => $result['lines'],
+        ]);
+    }
+
     public function presidentReview(Request $request, $id)
     {
-        $this->editPermission = user()->permission('edit_estimates');
-        abort_403(! in_array($this->editPermission, ['all', 'added']));
+        abort_403(! $this->isPhase1ReviewGateEnabled());
+        abort_403(! user_can_approve_estimate_president());
 
         $request->validate([
             'decision' => 'required|in:approved,rejected',
@@ -796,7 +924,7 @@ class EstimateController extends AccountBaseController
         $estimate->president_review_note = $request->input('note');
 
         if ($decision === Estimate::INTERNAL_REVIEW_REJECTED) {
-            $estimate->status = 'declined';
+            $estimate->status = Estimate::STATUS_REVISION_REQUIRED;
             $estimate->vp_pricing_review_status = Estimate::INTERNAL_REVIEW_PENDING;
             $estimate->vp_pricing_reviewed_by = null;
             $estimate->vp_pricing_reviewed_at = null;
@@ -807,13 +935,23 @@ class EstimateController extends AccountBaseController
 
         $estimate->save();
 
+        app(EstimateApprovalEventLogger::class)->log(
+            $estimate,
+            $decision === Estimate::INTERNAL_REVIEW_APPROVED
+                ? EstimateApprovalEventLogger::EVENT_PRESIDENT_APPROVED
+                : EstimateApprovalEventLogger::EVENT_PRESIDENT_REJECTED,
+            $request->input('note'),
+        );
+
+        app(EstimatePhase1Notifier::class)->notifyPresidentDecision($estimate, $decision);
+
         return Reply::success(__('messages.updateSuccess'));
     }
 
     public function vpPricingReview(Request $request, $id)
     {
-        $this->editPermission = user()->permission('edit_estimates');
-        abort_403(! in_array($this->editPermission, ['all', 'added']));
+        abort_403(! $this->isPhase1ReviewGateEnabled());
+        abort_403(! user_can_approve_estimate_vp_pricing());
 
         $request->validate([
             'decision' => 'required|in:approved,rejected',
@@ -823,43 +961,49 @@ class EstimateController extends AccountBaseController
         $estimate = Estimate::findOrFail($id);
 
         if (! $estimate->hasPresidentApproved()) {
-            return Reply::error(__('messages.invalidRequest'));
+            return Reply::error(__('modules.estimates.vpReviewRequiresPresident'));
         }
 
         $decision = (string) $request->input('decision');
+
+        if ($decision === Estimate::INTERNAL_REVIEW_APPROVED) {
+            $marginEvaluation = app(EstimateVpMarginPolicy::class)->evaluateForVpApproval($estimate);
+
+            if (! $marginEvaluation['allowed']) {
+                return Reply::error(__('modules.estimates.vpMarginBelowMinimum', [
+                    'margin' => number_format((float) $marginEvaluation['margin_percent'], 2),
+                    'minimum' => number_format((float) $marginEvaluation['minimum_percent'], 2),
+                ]));
+            }
+        }
+
         $estimate->vp_pricing_review_status = $decision;
         $estimate->vp_pricing_reviewed_by = user()->id;
         $estimate->vp_pricing_reviewed_at = now();
         $estimate->vp_pricing_review_note = $request->input('note');
 
         if ($decision === Estimate::INTERNAL_REVIEW_REJECTED) {
-            $estimate->status = 'declined';
+            $estimate->status = Estimate::STATUS_REVISION_REQUIRED;
         }
 
         $estimate->save();
+
+        app(EstimateApprovalEventLogger::class)->log(
+            $estimate,
+            $decision === Estimate::INTERNAL_REVIEW_APPROVED
+                ? EstimateApprovalEventLogger::EVENT_VP_APPROVED
+                : EstimateApprovalEventLogger::EVENT_VP_REJECTED,
+            $request->input('note'),
+        );
+
+        app(EstimatePhase1Notifier::class)->notifyVpDecision($estimate, $decision);
 
         return Reply::success(__('messages.updateSuccess'));
     }
 
     protected function isPhase1ReviewGateEnabled(): bool
     {
-        $companyId = (int) (company()?->id ?? 0);
-        if ($companyId <= 0) {
-            return true;
-        }
-
-        $setting = ModuleSetting::withoutGlobalScopes()
-            ->where('company_id', $companyId)
-            ->where('module_name', 'estimates_phase1_review')
-            ->where('type', 'admin')
-            ->first();
-
-        // Backward-compatible default: if no tenant flag row exists yet, keep enabled.
-        if ($setting === null) {
-            return true;
-        }
-
-        return $setting->status === 'active' && (int) ($setting->is_allowed ?? 0) === 1;
+        return estimates_phase1_review_enabled();
     }
 
     public function deleteEstimateItemImage(Request $request)
@@ -1083,6 +1227,20 @@ class EstimateController extends AccountBaseController
         $estimate->total_volume = $this->parseOptionalDecimalInput($request->input('total_volume'));
     }
 
+    protected function applyRecipeHeaderFields(StoreEstimate $request, Estimate $estimate): void
+    {
+        $moq = $request->input('recipe_moq');
+        $estimate->recipe_moq = ($moq !== null && $moq !== '') ? max(0, (int) $moq) : null;
+        $estimate->recipe_packaging = $request->filled('recipe_packaging') ? trim((string) $request->recipe_packaging) : null;
+        $estimate->recipe_oem_sku = $request->filled('recipe_oem_sku') ? trim((string) $request->recipe_oem_sku) : null;
+        $estimate->recipe_target_unit_price = $this->parseOptionalDecimalInput($request->input('recipe_target_unit_price'));
+
+        $productionBomId = $request->input('production_bom_id');
+        $estimate->production_bom_id = ($productionBomId !== null && $productionBomId !== '')
+            ? (int) $productionBomId
+            : null;
+    }
+
     protected function parseOptionalDateInput(mixed $value): ?string
     {
         $value = $value !== null ? trim((string) $value) : '';
@@ -1107,5 +1265,31 @@ class EstimateController extends AccountBaseController
         $s = preg_replace('/[^0-9.\-]/', '', str_replace(',', '', (string) $value));
 
         return is_numeric($s) ? (float) $s : null;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    protected function bomComponentProductsForEstimateForm()
+    {
+        return Product::query()
+            ->with('unit')
+            ->where('company_id', company()->id)
+            ->forBomComponents()
+            ->orderBy('name')
+            ->get(['id', 'name', 'unit_id', 'type']);
+    }
+
+    protected function productionBomsForEstimateForm(): Collection
+    {
+        if (! EstimateProductionBomCopier::moduleAvailable()) {
+            return new Collection;
+        }
+
+        return ProductionBom::query()
+            ->with('outputProduct')
+            ->where('company_id', company()->id)
+            ->orderByDesc('id')
+            ->get();
     }
 }

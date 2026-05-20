@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\IconTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\KnowledgeBaseFile
@@ -19,8 +20,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string|null $external_link
  * @property int|null $added_by
  * @property int|null $last_updated_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read mixed $file_url
  * @property-read mixed $icon
  *
@@ -49,7 +50,17 @@ class KnowledgeBaseFile extends BaseModel
 
     const FILE_PATH = 'knowledgebase';
 
-    protected $fillable = [];
+    protected $fillable = [
+        'company_id',
+        'knowledge_base_id',
+        'filename',
+        'hashname',
+        'size',
+        'external_link_name',
+        'external_link',
+        'added_by',
+        'last_updated_by',
+    ];
 
     protected $guarded = ['id'];
 

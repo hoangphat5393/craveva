@@ -105,6 +105,9 @@ beforeEach(function (): void {
     $yieldUomShadowMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
     $yieldUomShadowMigration->up();
 
+    $wastePercentMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_20_160000_add_waste_percent_to_production_bom_tables.php';
+    $wastePercentMigration->up();
+
     DB::table('companies')->insert([
         'company_name' => 'Acme',
         'created_at' => now(),

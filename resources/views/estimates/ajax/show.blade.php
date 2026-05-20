@@ -4,10 +4,12 @@
     $editEstimatePermission = user()->permission('edit_estimates');
     $deleteEstimatePermission = user()->permission('delete_estimates');
     $addInvoicePermission = user()->permission('add_invoices');
+    $phase1ReviewEnabled = estimates_phase1_review_enabled();
     $hasLegacyInternalReview = is_null($invoice->president_review_status) && is_null($invoice->vp_pricing_review_status);
-    $presidentApproved = $hasLegacyInternalReview || $invoice->president_review_status === \App\Models\Estimate::INTERNAL_REVIEW_APPROVED;
-    $vpApproved = $hasLegacyInternalReview || $invoice->vp_pricing_review_status === \App\Models\Estimate::INTERNAL_REVIEW_APPROVED;
-    $readyForCommercialConversion = $presidentApproved && $vpApproved;
+    $presidentApproved = !$phase1ReviewEnabled || $hasLegacyInternalReview || $invoice->president_review_status === \App\Models\Estimate::INTERNAL_REVIEW_APPROVED;
+    $vpApproved = !$phase1ReviewEnabled || $hasLegacyInternalReview || $invoice->vp_pricing_review_status === \App\Models\Estimate::INTERNAL_REVIEW_APPROVED;
+    $readyForCommercialConversion = $invoice->isCommercialConversionAllowed();
+    $canSubmitForReview = $phase1ReviewEnabled && ($editEstimatePermission == 'all' || ($editEstimatePermission == 'added' && $invoice->added_by == user()->id)) && \App\Support\EstimateReviewAuthorization::canSubmitForReview($invoice);
 @endphp
 
 <style>
@@ -46,9 +48,11 @@
     @endif
 @endif
 
-@if (!in_array('client', user_roles()))
-    @include('estimates.partials.internal-review-banner', ['estimate' => $invoice])
-@endif
+@include('estimates.partials.phase1-show-workspace', [
+    'estimate' => $invoice,
+    'similarRecipes' => $similarRecipes ?? [],
+    'productionBoms' => $productionBoms ?? collect(),
+])
 
 <!-- INVOICE CARD START -->
 
@@ -82,6 +86,15 @@
                                     @lang('modules.estimates.estimatesNumber')</td>
                                 <td class="border-left-0">{{ $invoice->estimate_number }}</td>
                             </tr>
+                            @if ($phase1ReviewEnabled)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">
+                                        @lang('modules.estimates.workflowStageLabel')</td>
+                                    <td class="border-left-0">
+                                        @include('estimates.partials.workflow-stage-badge', ['estimate' => $invoice])
+                                    </td>
+                                </tr>
+                            @endif
                             <tr>
                                 <td class="bg-light-grey border-right-0 f-w-500">
                                     @lang('modules.estimates.validTill')</td>
@@ -528,29 +541,36 @@
                                 </a>
                             </li>
                         @endif
-                        @if (($editEstimatePermission == 'all' || ($editEstimatePermission == 'added' && $invoice->added_by == user()->id)) && !in_array('client', user_roles()))
+                        @if ($canSubmitForReview && !in_array('client', user_roles()))
+                            <li>
+                                <a class="dropdown-item submit-for-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}">
+                                    <i class="fa fa-share-square f-w-500 mr-2 f-11"></i> @lang('modules.estimates.submitForReview')
+                                </a>
+                            </li>
+                        @endif
+                        @if ($phase1ReviewEnabled && user_can_approve_estimate_president() && !in_array('client', user_roles()))
                             <li>
                                 <a class="dropdown-item president-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="approved">
-                                    <i class="fa fa-check-circle text-success f-w-500 mr-2 f-11"></i> President approve
+                                    <i class="fa fa-check-circle text-success f-w-500 mr-2 f-11"></i> @lang('modules.estimates.presidentReviewApprove')
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item president-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="rejected">
-                                    <i class="fa fa-times-circle text-danger f-w-500 mr-2 f-11"></i> President reject
+                                    <i class="fa fa-times-circle text-danger f-w-500 mr-2 f-11"></i> @lang('modules.estimates.presidentReviewReject')
                                 </a>
                             </li>
-                            @if ($presidentApproved)
-                                <li>
-                                    <a class="dropdown-item vp-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="approved">
-                                        <i class="fa fa-check-circle text-success f-w-500 mr-2 f-11"></i> VP pricing approve
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item vp-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="rejected">
-                                        <i class="fa fa-times-circle text-danger f-w-500 mr-2 f-11"></i> VP pricing reject
-                                    </a>
-                                </li>
-                            @endif
+                        @endif
+                        @if ($phase1ReviewEnabled && user_can_approve_estimate_vp_pricing() && $presidentApproved && !in_array('client', user_roles()))
+                            <li>
+                                <a class="dropdown-item vp-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="approved">
+                                    <i class="fa fa-check-circle text-success f-w-500 mr-2 f-11"></i> @lang('modules.estimates.vpPricingReviewApprove')
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item vp-review-action" href="javascript:;" data-estimate-id="{{ $invoice->id }}" data-decision="rejected">
+                                    <i class="fa fa-times-circle text-danger f-w-500 mr-2 f-11"></i> @lang('modules.estimates.vpPricingReviewReject')
+                                </a>
+                            </li>
                         @endif
                         @if ($invoice->send_status)
                             <li>
@@ -571,16 +591,24 @@
                             </a>
                         </li>
                         @if ($invoice->status == 'waiting')
-                            @if (($addEstimatePermission == 'all' || $addEstimatePermission == 'added') && $readyForCommercialConversion)
-                                <li>
-                                    <a class="dropdown-item convert-to-order" href="javascript:;" data-estimate-id="{{ $invoice->id }}">
-                                        <i class="fa fa-random f-w-500 mr-2 f-11"></i> Convert to Sales Order
-                                    </a>
-                                </li>
+                            @if ($addEstimatePermission == 'all' || $addEstimatePermission == 'added')
+                                @if ($readyForCommercialConversion)
+                                    <li>
+                                        <a class="dropdown-item convert-to-order" href="javascript:;" data-estimate-id="{{ $invoice->id }}">
+                                            <i class="fa fa-random f-w-500 mr-2 f-11"></i> Convert to Sales Order
+                                        </a>
+                                    </li>
+                                @elseif ($phase1ReviewEnabled)
+                                    <li>
+                                        <span class="dropdown-item text-muted disabled" data-toggle="tooltip" data-placement="left" title="@lang('modules.estimates.convertSoBlocked')">
+                                            <i class="fa fa-random f-w-500 mr-2 f-11"></i> Convert to Sales Order
+                                        </span>
+                                    </li>
+                                @endif
                             @endif
                             @if ($addInvoicePermission == 'all' || $addInvoicePermission == 'added')
                                 <li>
-                                    <a class="dropdown-item {{ $readyForCommercialConversion ? '' : 'disabled' }}" @if ($readyForCommercialConversion) href="{{ route('invoices.create') . '?estimate=' . $invoice->id }}" @else href="javascript:;" @endif>
+                                    <a class="dropdown-item {{ $readyForCommercialConversion ? '' : 'disabled' }}" @if ($readyForCommercialConversion) href="{{ route('invoices.create') . '?estimate=' . $invoice->id }}" @else href="javascript:;" @endif @if (!$readyForCommercialConversion && $phase1ReviewEnabled) data-toggle="tooltip" data-placement="left" title="@lang('modules.estimates.convertSoBlocked')" @endif>
                                         <i class="fa fa-plus f-w-500 mr-2 f-11"></i> @lang('app.create')
                                         @lang('app.invoice')
                                     </a>
@@ -709,15 +737,54 @@
             });
         });
 
+        $('body').on('click', '.submit-for-review-action', function() {
+            const id = $(this).data('estimate-id');
+
+            Swal.fire({
+                title: "@lang('modules.estimates.submitForReview')",
+                text: "@lang('modules.estimates.submitForReviewConfirm')",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: "@lang('app.yes')",
+                cancelButtonText: "@lang('app.cancel')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                const url = "{{ route('estimates.submit_for_review', ':id') }}".replace(':id', id);
+                $.easyBlockUI('.content-wrapper');
+
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.status === 'success') {
+                        window.location.reload();
+                    }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
+                });
+            });
+        });
+
         $('body').on('click', '.president-review-action', function() {
             const id = $(this).data('estimate-id');
             const decision = $(this).data('decision');
-            const actionLabel = decision === 'approved' ? 'President approve' : 'President reject';
+            const actionLabel = decision === 'approved' ?
+                "@lang('modules.estimates.presidentReviewApprove')" :
+                "@lang('modules.estimates.presidentReviewReject')";
 
             Swal.fire({
                 title: actionLabel,
                 input: 'textarea',
-                inputPlaceholder: 'Review note (optional)',
+                inputPlaceholder: "@lang('modules.estimates.internalReviewNotePlaceholder')",
                 showCancelButton: true,
                 confirmButtonText: 'Confirm',
                 cancelButtonText: "@lang('app.cancel')",
@@ -753,12 +820,14 @@
         $('body').on('click', '.vp-review-action', function() {
             const id = $(this).data('estimate-id');
             const decision = $(this).data('decision');
-            const actionLabel = decision === 'approved' ? 'VP pricing approve' : 'VP pricing reject';
+            const actionLabel = decision === 'approved' ?
+                "@lang('modules.estimates.vpPricingReviewApprove')" :
+                "@lang('modules.estimates.vpPricingReviewReject')";
 
             Swal.fire({
                 title: actionLabel,
                 input: 'textarea',
-                inputPlaceholder: 'Review note (optional)',
+                inputPlaceholder: "@lang('modules.estimates.internalReviewNotePlaceholder')",
                 showCancelButton: true,
                 confirmButtonText: 'Confirm',
                 cancelButtonText: "@lang('app.cancel')",

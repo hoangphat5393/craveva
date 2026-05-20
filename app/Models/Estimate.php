@@ -109,6 +109,8 @@ class Estimate extends BaseModel
 
     public const INTERNAL_REVIEW_REJECTED = 'rejected';
 
+    public const STATUS_REVISION_REQUIRED = 'revision_required';
+
     protected $casts = [
         'valid_till' => 'datetime',
         'last_viewed' => 'datetime',
@@ -122,6 +124,8 @@ class Estimate extends BaseModel
         'total_volume' => 'decimal:4',
         'president_reviewed_at' => 'datetime',
         'vp_pricing_reviewed_at' => 'datetime',
+        'recipe_moq' => 'integer',
+        'recipe_target_unit_price' => 'decimal:4',
     ];
 
     protected $appends = ['total_amount', 'valid_date'];
@@ -133,6 +137,16 @@ class Estimate extends BaseModel
     public function items(): HasMany
     {
         return $this->hasMany(EstimateItem::class, 'estimate_id');
+    }
+
+    public function bomLines(): HasMany
+    {
+        return $this->hasMany(EstimateBomLine::class, 'estimate_id')->orderBy('sort_order');
+    }
+
+    public function approvalEvents(): HasMany
+    {
+        return $this->hasMany(EstimateApprovalEvent::class, 'estimate_id')->orderBy('created_at');
     }
 
     public function project(): BelongsTo
@@ -182,7 +196,7 @@ class Estimate extends BaseModel
 
     public function getTotalAmountAttribute()
     {
-        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol . $this->total : '';
+        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol.$this->total : '';
     }
 
     public function getValidDateAttribute()
@@ -238,5 +252,138 @@ class Estimate extends BaseModel
     public function isReadyForCommercialConversion(): bool
     {
         return $this->hasPresidentApproved() && $this->hasVpPricingApproved();
+    }
+
+    public function isCommercialConversionAllowed(): bool
+    {
+        if (! estimates_phase1_review_enabled()) {
+            return true;
+        }
+
+        return $this->isReadyForCommercialConversion();
+    }
+
+    public function isRevisionRequired(): bool
+    {
+        return $this->status === self::STATUS_REVISION_REQUIRED;
+    }
+
+    public function resetInternalReviewForResubmission(): void
+    {
+        $this->president_review_status = self::INTERNAL_REVIEW_PENDING;
+        $this->president_reviewed_by = null;
+        $this->president_reviewed_at = null;
+        $this->president_review_note = null;
+        $this->vp_pricing_review_status = self::INTERNAL_REVIEW_PENDING;
+        $this->vp_pricing_reviewed_by = null;
+        $this->vp_pricing_reviewed_at = null;
+        $this->vp_pricing_review_note = null;
+    }
+
+    /**
+     * @return list<array{at: \Illuminate\Support\Carbon, label: string, by: string|null, note: string|null}>
+     */
+    public function approvalTimelineEntries(): array
+    {
+        if (estimates_phase1_review_enabled() && $this->relationLoaded('approvalEvents') ? $this->approvalEvents->isNotEmpty() : $this->approvalEvents()->exists()) {
+            $events = $this->relationLoaded('approvalEvents')
+                ? $this->approvalEvents
+                : $this->approvalEvents()->with('actor')->get();
+
+            return $events
+                ->map(static fn (EstimateApprovalEvent $event): array => $event->toTimelineEntry())
+                ->values()
+                ->all();
+        }
+
+        $entries = [];
+
+        if ($this->president_reviewed_at !== null) {
+            $presidentKey = 'modules.estimates.timelinePresident_'.(in_array((string) $this->president_review_status, ['approved', 'rejected'], true)
+                ? $this->president_review_status
+                : 'pending');
+            $entries[] = [
+                'at' => $this->president_reviewed_at,
+                'label' => __($presidentKey),
+                'by' => $this->presidentReviewer?->name,
+                'note' => $this->president_review_note,
+            ];
+        }
+
+        if ($this->vp_pricing_reviewed_at !== null) {
+            $vpKey = 'modules.estimates.timelineVp_'.(in_array((string) $this->vp_pricing_review_status, ['approved', 'rejected'], true)
+                ? $this->vp_pricing_review_status
+                : 'pending');
+            $entries[] = [
+                'at' => $this->vp_pricing_reviewed_at,
+                'label' => __($vpKey),
+                'by' => $this->vpPricingReviewer?->name,
+                'note' => $this->vp_pricing_review_note,
+            ];
+        }
+
+        usort($entries, fn (array $a, array $b): int => $a['at']->getTimestamp() <=> $b['at']->getTimestamp());
+
+        return $entries;
+    }
+
+    /**
+     * @return array{label: string, badge_class: string}
+     */
+    public function workflowStagePresentation(): array
+    {
+        if (! estimates_phase1_review_enabled()) {
+            return [
+                'label' => __('modules.estimates.workflowStage_standard'),
+                'badge_class' => 'badge-secondary',
+            ];
+        }
+
+        if ($this->isRevisionRequired()) {
+            return [
+                'label' => __('modules.estimates.workflowStage_revision_required'),
+                'badge_class' => 'badge-info',
+            ];
+        }
+
+        if ($this->hasLegacyInternalReviewState()) {
+            return [
+                'label' => __('modules.estimates.workflowStage_legacy'),
+                'badge_class' => 'badge-secondary',
+            ];
+        }
+
+        if ($this->president_review_status === self::INTERNAL_REVIEW_REJECTED) {
+            return [
+                'label' => __('modules.estimates.workflowStage_president_rejected'),
+                'badge_class' => 'badge-danger',
+            ];
+        }
+
+        if ($this->president_review_status !== self::INTERNAL_REVIEW_APPROVED) {
+            return [
+                'label' => __('modules.estimates.workflowStage_pending_president'),
+                'badge_class' => 'badge-warning',
+            ];
+        }
+
+        if ($this->vp_pricing_review_status === self::INTERNAL_REVIEW_REJECTED) {
+            return [
+                'label' => __('modules.estimates.workflowStage_vp_rejected'),
+                'badge_class' => 'badge-danger',
+            ];
+        }
+
+        if ($this->vp_pricing_review_status !== self::INTERNAL_REVIEW_APPROVED) {
+            return [
+                'label' => __('modules.estimates.workflowStage_pending_vp'),
+                'badge_class' => 'badge-warning',
+            ];
+        }
+
+        return [
+            'label' => __('modules.estimates.workflowStage_ready_for_so'),
+            'badge_class' => 'badge-success',
+        ];
     }
 }

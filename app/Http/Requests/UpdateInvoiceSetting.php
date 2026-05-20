@@ -24,6 +24,7 @@ class UpdateInvoiceSetting extends CoreRequest
         $rules = [
             'due_after' => 'required|numeric',
             'invoice_terms' => 'required',
+            'phase1_min_gross_margin_percent' => 'nullable|numeric|min:0|max:100',
         ];
 
         return $rules;

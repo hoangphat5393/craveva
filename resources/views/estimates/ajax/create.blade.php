@@ -153,6 +153,16 @@
 
                 @include('estimates.partials.quotation-extra-fields', ['estimate' => $estimate ?? null])
 
+                @if (estimates_phase1_review_enabled())
+                    @include('estimates.partials.recipe-header-fields', ['estimate' => $estimate ?? null])
+                    @include('estimates.partials.bom-lines', [
+                        'estimate' => $estimate ?? null,
+                        'bomComponentProducts' => $bomComponentProducts ?? collect(),
+                        'units' => $units,
+                        'readOnly' => false,
+                    ])
+                @endif
+
                 <div class="col-md-12 my-3">
                     <div class="form-group">
                         <x-forms.label fieldId="description" :fieldLabel="__('app.description')">

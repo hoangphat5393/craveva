@@ -434,6 +434,14 @@
                             </li>
                         @endif
 
+                        @if (!empty($createProductionOrderUrl))
+                            <li>
+                                <a class="dropdown-item f-14 text-dark" href="{{ $createProductionOrderUrl }}">
+                                    <i class="fa fa-industry f-w-500 mr-2 f-11"></i> @lang('production::app.createProductionOrderFromSalesOrder')
+                                </a>
+                            </li>
+                        @endif
+
                         @if (
                             !in_array($order->status, ['completed', 'canceled', 'refunded']) &&
                                 ($editOrderPermission == 'all' || ($editOrderPermission == 'both' && ($order->added_by == user()->id || $order->client_id == user()->id)) || ($editOrderPermission == 'added' && $order->added_by == user()->id) || ($editOrderPermission == 'owned' && $order->client_id == user()->id)) &&

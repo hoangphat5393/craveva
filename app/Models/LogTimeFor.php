@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasCompany;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Holiday
@@ -10,8 +11,8 @@ use App\Traits\HasCompany;
  * @property int $id
  * @property string $log_time_for
  * @property string $auto_timer_stop
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $approval_required
  * @property-read mixed $icon
  *
@@ -26,7 +27,7 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|LogTimeFor whereUpdatedAt($value)
  *
  * @property int|null $company_id
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  *
  * @method static \Illuminate\Database\Eloquent\Builder|LogTimeFor whereCompanyId($value)
  *
@@ -46,8 +47,16 @@ class LogTimeFor extends BaseModel
 {
     use HasCompany;
 
-    // Don't forget to fill this array
-    protected $fillable = [];
+    protected $fillable = [
+        'company_id',
+        'log_time_for',
+        'auto_timer_stop',
+        'approval_required',
+        'tracker_reminder',
+        'timelog_report',
+        'daily_report_roles',
+        'time',
+    ];
 
     protected $guarded = ['id'];
 

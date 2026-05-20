@@ -31,5 +31,5 @@ it('falls back to bom id when code is empty', function (): void {
     $bom->code = '';
     $bom->setRelation('outputProduct', $product);
 
-    expect($bom->labelForSelect())->toBe('Arabica Coffee (BOM #6)');
+    expect($bom->labelForSelect())->toBe('Arabica Coffee '.__('production::app.bomSelectIdLabel', ['id' => 6]));
 });

@@ -1,5 +1,8 @@
 @php
     $addProductPermission = user()->permission('add_product');
+    $editEstimatePermission = user()->permission('edit_estimates');
+    $phase1ReviewEnabled = estimates_phase1_review_enabled();
+    $canSubmitForReview = $phase1ReviewEnabled && ($editEstimatePermission == 'all' || ($editEstimatePermission == 'added' && $estimate->added_by == user()->id)) && \App\Support\EstimateReviewAuthorization::canSubmitForReview($estimate);
 @endphp
 
 {{-- @if (!in_array('clients', user_modules())) --}}
@@ -19,6 +22,12 @@
         </div>
         <!-- HEADING END -->
         <hr class="m-0 border-top-grey">
+        @if ($phase1ReviewEnabled && !in_array('client', user_roles()))
+            <div class="px-lg-4 px-md-4 px-3 pt-3">
+                @include('estimates.partials.internal-review-banner', ['estimate' => $estimate])
+                @include('estimates.partials.approval-timeline', ['estimate' => $estimate])
+            </div>
+        @endif
         <!-- FORM START -->
         <x-form class="c-inv-form" id="saveInvoiceForm">
             @method('PUT')
@@ -126,6 +135,18 @@
 
                 @include('estimates.partials.quotation-extra-fields', ['estimate' => $estimate])
 
+                @if (estimates_phase1_review_enabled())
+                    @include('estimates.partials.recipe-header-fields', ['estimate' => $estimate])
+                    @include('estimates.partials.bom-lines', [
+                        'estimate' => $estimate,
+                        'bomComponentProducts' => $bomComponentProducts ?? collect(),
+                        'units' => $units,
+                        'readOnly' => false,
+                        'productionBoms' => $productionBoms ?? collect(),
+                    ])
+                    @include('estimates.partials.similar-recipes', ['similarRecipes' => $similarRecipes ?? []])
+                @endif
+
                 <div class="col-md-12 my-3">
                     <div class="form-group">
                         <x-forms.label fieldId="description" :fieldLabel="__('app.description')">
@@ -147,6 +168,10 @@
                             </option>
                             <option @if ($estimate->status == 'declined') selected @endif value="declined">@lang('modules.estimates.declined')
                             </option>
+                            @if (estimates_phase1_review_enabled() && $estimate->status == \App\Models\Estimate::STATUS_REVISION_REQUIRED)
+                                <option selected value="{{ \App\Models\Estimate::STATUS_REVISION_REQUIRED }}">@lang('modules.estimates.revision_required')
+                                </option>
+                            @endif
                             @if ($estimate->status == 'draft')
                                 <option @if ($estimate->status == 'draft') selected @endif value="draft">@lang('modules.invoices.draft')
                                 </option>
@@ -401,9 +426,14 @@
 
             <!-- CANCEL SAVE SEND START -->
             <x-form-actions class="c-inv-btns">
-                <div class="d-flex">
+                <div class="d-flex flex-wrap align-items-center">
                     <x-forms.button-primary class="save-form mr-3" icon="check">@lang('app.save')
                     </x-forms.button-primary>
+                    @if ($canSubmitForReview && !in_array('client', user_roles()))
+                        <button type="button" class="btn btn-secondary mr-3 submit-for-review-action" data-estimate-id="{{ $estimate->id }}">
+                            <i class="fa fa-share-square mr-1"></i> @lang('modules.estimates.submitForReview')
+                        </button>
+                    @endif
                 </div>
                 <x-forms.button-cancel :link="route('estimates.index')" class="border-0">@lang('app.cancel')
                 </x-forms.button-cancel>
@@ -880,6 +910,43 @@
             });
             return str;
         }
+
+        $('body').on('click', '.submit-for-review-action', function() {
+            const id = $(this).data('estimate-id');
+
+            Swal.fire({
+                title: "@lang('modules.estimates.submitForReview')",
+                text: "@lang('modules.estimates.submitForReviewConfirm')",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: "@lang('app.yes')",
+                cancelButtonText: "@lang('app.cancel')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                const url = "{{ route('estimates.submit_for_review', ':id') }}".replace(':id', id);
+                $.easyBlockUI('.content-wrapper');
+
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.status === 'success') {
+                        window.location.reload();
+                    }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
+                });
+            });
+        });
     </script>
 
 @endif

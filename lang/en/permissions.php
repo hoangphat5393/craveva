@@ -180,6 +180,8 @@ return [
     'add_estimates' => 'Add Estimates',
     'view_estimates' => 'View Estimates',
     'edit_estimates' => 'Edit Estimates',
+    'approve_estimate_president' => 'Approve quotation (President)',
+    'approve_estimate_vp_pricing' => 'Approve quotation (VP pricing)',
     'delete_estimates' => 'Delete Estimates',
     'add_invoices' => 'Add Invoices',
     'view_invoices' => 'View Invoices',

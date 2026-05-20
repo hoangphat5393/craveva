@@ -244,7 +244,7 @@ return [
         'delivered' => 'Delivered',
         'expectedDeliveryDate' => 'Expected Delivery Date',
         'orderDate' => 'Order Date',
-        'del_status' => 'Del Status',
+        'del_status' => 'PO delivery status',
     ],
     'reports' => [
         'inventorySummary' => 'Inventory Summary',
@@ -278,7 +278,7 @@ return [
     'salesShipment' => [
         'draft' => 'Draft',
         'confirmed' => 'Confirmed',
-        'shipped' => 'Shipped',
+        'shipped' => 'Shipped (stock out)',
         'delivered' => 'Delivered',
         'cancelled' => 'Cancelled',
         'reverse' => 'Reverse shipment',

@@ -22,156 +22,156 @@
          * IMPORTANT NOTICE: DON'T USE '!important' otherwise this may lead to broken print layout.
          * Some browsers may require '!important' in oder to work properly but be careful with it.
          */
-        @if($invoiceSetting->locale != 'th')
-        html,
-        body,
-        div,
-        span,
-        applet,
-        object,
-        iframe,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        p,
-        blockquote,
-        pre,
-        a,
-        abbr,
-        acronym,
-        address,
-        big,
-        cite,
-        code,
-        del,
-        dfn,
-        em,
-        img,
-        ins,
-        kbd,
-        q,
-        s,
-        samp,
-        small,
-        strike,
-        strong,
-        sub,
-        sup,
-        tt,
-        var,
-        b,
-        u,
-        i,
-        center,
-        dl,
-        dt,
-        dd,
-        ol,
-        ul,
-        li,
-        fieldset,
-        form,
-        label,
-        legend,
-        table,
-        caption,
-        tbody,
-        tfoot,
-        thead,
-        tr,
-        th,
-        td,
-        article,
-        aside,
-        canvas,
-        details,
-        embed,
-        figure,
-        figcaption,
-        footer,
-        header,
-        hgroup,
-        menu,
-        nav,
-        output,
-        ruby,
-        section,
-        summary,
-        time,
-        mark,
-        audio,
-        video {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            font: inherit;
-            font-size: 12px;
-            vertical-align: baseline;
-            /* font-family: Verdana, Arial, Helvetica, sans-serif; */
-        }
+        @if ($invoiceSetting->locale != 'th')
+            html,
+            body,
+            div,
+            span,
+            applet,
+            object,
+            iframe,
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6,
+            p,
+            blockquote,
+            pre,
+            a,
+            abbr,
+            acronym,
+            address,
+            big,
+            cite,
+            code,
+            del,
+            dfn,
+            em,
+            img,
+            ins,
+            kbd,
+            q,
+            s,
+            samp,
+            small,
+            strike,
+            strong,
+            sub,
+            sup,
+            tt,
+            var,
+            b,
+            u,
+            i,
+            center,
+            dl,
+            dt,
+            dd,
+            ol,
+            ul,
+            li,
+            fieldset,
+            form,
+            label,
+            legend,
+            table,
+            caption,
+            tbody,
+            tfoot,
+            thead,
+            tr,
+            th,
+            td,
+            article,
+            aside,
+            canvas,
+            details,
+            embed,
+            figure,
+            figcaption,
+            footer,
+            header,
+            hgroup,
+            menu,
+            nav,
+            output,
+            ruby,
+            section,
+            summary,
+            time,
+            mark,
+            audio,
+            video {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font: inherit;
+                font-size: 12px;
+                vertical-align: baseline;
+                /* font-family: Verdana, Arial, Helvetica, sans-serif; */
+            }
 
-        html {
-            line-height: 1;
-        }
+            html {
+                line-height: 1;
+            }
 
-        ol,
-        ul {
-            list-style: none;
-        }
+            ol,
+            ul {
+                list-style: none;
+            }
 
-        table {
-            border-collapse: collapse;
-            border-spacing: 0;
-        }
+            table {
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
 
-        caption,
-        th,
-        td {
-            text-align: left;
-            font-weight: normal;
-            vertical-align: middle;
-        }
+            caption,
+            th,
+            td {
+                text-align: left;
+                font-weight: normal;
+                vertical-align: middle;
+            }
 
-        q,
-        blockquote {
-            quotes: none;
-        }
+            q,
+            blockquote {
+                quotes: none;
+            }
 
-        q:before,
-        q:after,
-        blockquote:before,
-        blockquote:after {
-            content: "";
-            content: none;
-        }
+            q:before,
+            q:after,
+            blockquote:before,
+            blockquote:after {
+                content: "";
+                content: none;
+            }
 
-        a img {
-            border: none;
-        }
+            a img {
+                border: none;
+            }
 
-        article,
-        aside,
-        details,
-        figcaption,
-        figure,
-        footer,
-        header,
-        hgroup,
-        main,
-        menu,
-        nav,
-        section,
-        summary {
-            display: block;
-        }
+            article,
+            aside,
+            details,
+            figcaption,
+            figure,
+            footer,
+            header,
+            hgroup,
+            main,
+            menu,
+            nav,
+            section,
+            summary {
+                display: block;
+            }
 
-        html,
-        body {
-            /* MOVE ALONG, NOTHING TO CHANGE HERE! */
-        }
+            html,
+            body {
+                /* MOVE ALONG, NOTHING TO CHANGE HERE! */
+            }
         @endif
 
         .clearfix {
@@ -229,7 +229,7 @@
         }
 
         #memo .client-logo {
-            float:left;
+            float: left;
             display: flex !important;
             flex-direction: column !important;
             position: absolute;
@@ -582,24 +582,24 @@
             margin-top: 10px;
             margin-left: 10px;
         }
+
         .description {
             line-height: 12px;
         }
 
-        @if($invoiceSetting->locale == 'th')
+        @if ($invoiceSetting->locale == 'th')
 
-        table td {
-        font-weight: bold !important;
-        font-size: 20px !important;
-        }
-        .description
-        {
-            font-weight: bold !important;
-            font-size: 16px !important;
-        }
+            table td {
+                font-weight: bold !important;
+                font-size: 20px !important;
+            }
+
+            .description {
+                font-weight: bold !important;
+                font-size: 16px !important;
+            }
 
         @endif
-
     </style>
 
 </head>
@@ -619,14 +619,13 @@
                         <br>
                         <span class="description">{!! nl2br($company->defaultAddress->address) !!}</span>
                         <br>
-                        <span  class="description">{{ $company->company_phone }}</span>
+                        <span class="description">{{ $company->company_phone }}</span>
 
                     </div>
                 </div>
                 <div class="logo">
-                    @if($estimate->clientDetails->company_logo)
-                        <img src="{{ $estimate->clientDetails->image_url }}"
-                            alt="{{ $estimate->clientDetails->company_name }}" class="logo"/>
+                    @if ($estimate->clientDetails->company_logo)
+                        <img src="{{ $estimate->clientDetails->image_url }}" alt="{{ $estimate->clientDetails->company_name }}" class="logo" />
                     @endif
                 </div>
             </section>
@@ -639,55 +638,45 @@
 
             <section id="client-info" class="description">
                 @if (
-                    ($estimate->client || $estimate->clientDetails)
-                    && ($estimate->client->name
-                        || $estimate->client->email
-                        || $estimate->client->mobile
-                        || $estimate->clientDetails->company_name
-                        || $estimate->clientDetails->address
-                        )
-                    && ($invoiceSetting->show_client_name == 'yes'
-                    || $invoiceSetting->show_client_email == 'yes'
-                    || $invoiceSetting->show_client_phone == 'yes'
-                    || $invoiceSetting->show_client_company_name == 'yes'
-                    || $invoiceSetting->show_client_company_address == 'yes')
-                )
+                    ($estimate->client || $estimate->clientDetails) &&
+                        ($estimate->client->name || $estimate->client->email || $estimate->client->mobile || $estimate->clientDetails->company_name || $estimate->clientDetails->address) &&
+                        ($invoiceSetting->show_client_name == 'yes' || $invoiceSetting->show_client_email == 'yes' || $invoiceSetting->show_client_phone == 'yes' || $invoiceSetting->show_client_company_name == 'yes' || $invoiceSetting->show_client_company_address == 'yes'))
                     <span class="description">@lang('modules.invoices.billedTo'):</span>
 
                     @if ($estimate->client && $estimate->client->name && $invoiceSetting->show_client_name == 'yes')
-                    <div>
-                        <span class="bold">{{ $estimate->client->name_salutation }}</span>
-                    </div>
+                        <div>
+                            <span class="bold">{{ $estimate->client->name_salutation }}</span>
+                        </div>
                     @endif
 
                     @if ($estimate->client && $estimate->client->email && $invoiceSetting->show_client_email == 'yes')
-                    <div>
-                        <span>{{ $estimate->client->email }}</span>
-                    </div>
+                        <div>
+                            <span>{{ $estimate->client->email }}</span>
+                        </div>
                     @endif
 
                     @if ($estimate->client && $estimate->client->mobile && $invoiceSetting->show_client_phone == 'yes')
-                    <div>
-                        <span>{{ $estimate->client->mobile_with_phonecode }}</span>
-                    </div>
+                        <div>
+                            <span>{{ $estimate->client->mobile_with_phonecode }}</span>
+                        </div>
                     @endif
 
                     @if ($estimate->clientDetails && $estimate->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
-                    <div>
-                        <span>{{ $estimate->clientDetails->company_name }}</span>
-                    </div>
+                        <div>
+                            <span>{{ $estimate->clientDetails->company_name }}</span>
+                        </div>
                     @endif
 
                     @if ($estimate->clientDetails && $estimate->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
-                    <div class="mb-3">
-                        <b>@lang('app.address') :</b>
-                        <div>{!! nl2br($estimate->clientDetails->address) !!}</div>
-                    </div>
+                        <div class="mb-3">
+                            <b>@lang('app.address') :</b>
+                            <div>{!! nl2br($estimate->clientDetails->address) !!}</div>
+                        </div>
                     @endif
 
                 @endif
 
-                @if($invoiceSetting->show_gst == 'yes' && !is_null($estimate->client->clientDetails->gst_number))
+                @if ($invoiceSetting->show_gst == 'yes' && !is_null($estimate->client->clientDetails->gst_number))
                     <br><br>
                     <div>
                         <span> {{ $estimate->client->clientDetails->tax_name }}: {{ $estimate->client->clientDetails->gst_number }} </span>
@@ -726,14 +715,14 @@
 
                     <tr>
                         <th>#</th> <!-- Dummy cell for the row number and row commands -->
-                        <th class="description">@lang("modules.invoices.item")</th>
+                        <th class="description">@lang('modules.invoices.item')</th>
                         @if ($invoiceSetting->hsn_sac_code_show)
-                            <th class="description">@lang("app.hsnSac")</th>
+                            <th class="description">@lang('app.hsnSac')</th>
                         @endif
                         <th class="description">@lang('modules.invoices.qty')</th>
-                        <th class="description">@lang("modules.invoices.unitPrice")</th>
-                        <th class="description">@lang("modules.invoices.tax")</th>
-                        <th class="description">@lang("modules.invoices.price") ({!! htmlentities($estimate->currency->currency_code) !!})</th>
+                        <th class="description">@lang('modules.invoices.unitPrice')</th>
+                        <th class="description">@lang('modules.invoices.tax')</th>
+                        <th class="description">@lang('modules.invoices.price') ({!! htmlentities($estimate->currency->currency_code) !!})</th>
                     </tr>
 
                     <?php $count = 0; ?>
@@ -749,15 +738,17 @@
                                     @endif
                                     @if ($item->estimateItemImage)
                                         <p class="mt-2">
-                                            <img src="{{ $item->estimateItemImage->file_url }}" width="80"
-                                                height="80" class="img-thumbnail">
+                                            <img src="{{ $item->estimateItemImage->file_url }}" width="80" height="80" class="img-thumbnail">
                                         </p>
                                     @endif
                                 </td>
                                 @if ($invoiceSetting->hsn_sac_code_show)
-                                    <td>{{ $item->hsn_sac_code ?  : '--' }}</td>
+                                    <td>{{ $item->hsn_sac_code ?: '--' }}</td>
                                 @endif
-                                <td>{{ $item->quantity }}@if($item->unit)<br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>@endif</td>
+                                <td>{{ $item->quantity }}@if ($item->unit)
+                                        <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
+                                    @endif
+                                </td>
                                 <td>{{ currency_format($item->unit_price, $estimate->currency_id, false) }}</td>
                                 <td>{{ $item->tax_list }}</td>
                                 <td>{{ currency_format($item->amount, $estimate->currency_id, false) }}</td>
@@ -773,18 +764,18 @@
 
                 <table cellpadding="0" cellspacing="0">
                     <tr>
-                        <th>@lang("modules.invoices.subTotal"):</th>
+                        <th>@lang('modules.invoices.subTotal'):</th>
                         <td>{{ currency_format($estimate->sub_total, $estimate->currency_id, false) }}</td>
                     </tr>
                     @if ($discount != 0 && $discount != '')
                         <tr data-iterate="tax">
-                            <th>@lang("modules.invoices.discount"):
-                                @if($estimate->discount_type == 'percent')
-                        {{$estimate->discount}}%
-                    @else
-                        {{ currency_format($estimate->discount, $estimate->currency_id) }}
-                    @endif
-                    </th>
+                            <th>@lang('modules.invoices.discount'):
+                                @if ($estimate->discount_type == 'percent')
+                                    {{ $estimate->discount }}%
+                                @else
+                                    {{ currency_format($estimate->discount, $estimate->currency_id) }}
+                                @endif
+                            </th>
                             <td>{{ currency_format($discount, $estimate->currency_id, false) }}</td>
                         </tr>
                     @endif
@@ -795,12 +786,14 @@
                         </tr>
                     @endforeach
                     <tr class="amount-total">
-                        <th>@lang("modules.invoices.total"):</th>
+                        <th>@lang('modules.invoices.total'):</th>
                         <td>{{ currency_format($estimate->total, $estimate->currency_id, false) }}</td>
                     </tr>
                 </table>
 
             </section>
+
+            @include('estimates.partials.pdf-bom-lines')
 
             <div class="clearfix"></div>
             <br>
@@ -839,28 +832,28 @@
                 </div>
             </section>
 
-            {{--Custom fields data--}}
-            @if(isset($fields) && count($fields) > 0)
+            {{-- Custom fields data --}}
+            @if (isset($fields) && count($fields) > 0)
                 <div class="page_break"></div>
                 <div id="container">
                     <div class="invoice-body right-invoice b-all m-b-20">
                         <h3 class="m-t-20 text-center h3-border"> @lang('modules.projects.otherInfo')</h3>
-                        <table  style="background: none" border="0" cellspacing="0" cellpadding="0" width="100%">
-                            @foreach($fields as $field)
+                        <table style="background: none" border="0" cellspacing="0" cellpadding="0" width="100%">
+                            @foreach ($fields as $field)
                                 <tr>
-                                    <td style="text-align: left;background: none;" >
+                                    <td style="text-align: left;background: none;">
                                         <div id="field-title">{{ $field->label }}</div>
                                         <p id="notes">
-                                            @if( $field->type == 'text' || $field->type == 'password' || $field->type == 'number' || $field->type == 'textarea')
-                                                {{$estimate->custom_fields_data['field_'.$field->id] ?? '-'}}
+                                            @if ($field->type == 'text' || $field->type == 'password' || $field->type == 'number' || $field->type == 'textarea')
+                                                {{ $estimate->custom_fields_data['field_' . $field->id] ?? '-' }}
                                             @elseif($field->type == 'radio')
-                                                {{ !is_null($estimate->custom_fields_data['field_'.$field->id]) ? $estimate->custom_fields_data['field_'.$field->id] : '-' }}
+                                                {{ !is_null($estimate->custom_fields_data['field_' . $field->id]) ? $estimate->custom_fields_data['field_' . $field->id] : '-' }}
                                             @elseif($field->type == 'select')
-                                                {{ (!is_null($estimate->custom_fields_data['field_'.$field->id]) && $estimate->custom_fields_data['field_'.$field->id] != '') ? $field->values[$estimate->custom_fields_data['field_'.$field->id]] : '-' }}
+                                                {{ !is_null($estimate->custom_fields_data['field_' . $field->id]) && $estimate->custom_fields_data['field_' . $field->id] != '' ? $field->values[$estimate->custom_fields_data['field_' . $field->id]] : '-' }}
                                             @elseif($field->type == 'checkbox')
-                                                {{ !is_null($estimate->custom_fields_data['field_'.$field->id]) ? $estimate->custom_fields_data['field_'.$field->id] : '-' }}
+                                                {{ !is_null($estimate->custom_fields_data['field_' . $field->id]) ? $estimate->custom_fields_data['field_' . $field->id] : '-' }}
                                             @elseif($field->type == 'date')
-                                                {{ !is_null($estimate->custom_fields_data['field_'.$field->id]) ? \Carbon\Carbon::parse($estimate->custom_fields_data['field_'.$field->id])->translatedFormat($estimate->company->date_format) : '--'}}
+                                                {{ !is_null($estimate->custom_fields_data['field_' . $field->id]) ? \Carbon\Carbon::parse($estimate->custom_fields_data['field_' . $field->id])->translatedFormat($estimate->company->date_format) : '--' }}
                                             @endif
                                         </p>
                                     </td>
@@ -876,4 +869,3 @@
 </body>
 
 </html>
-

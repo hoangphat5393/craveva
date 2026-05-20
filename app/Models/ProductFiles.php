@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasCompany;
 use App\Traits\IconTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Holiday
@@ -17,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $description
  * @property string|null $google_url
  * @property string|null $dropbox_link
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $added_by
  * @property int|null $last_updated_by
  * @property-read mixed $file_url
@@ -42,12 +43,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereUserId($value)
  *
  * @property int $product_id
- * @property-read \App\Models\Product $product
+ * @property-read Product $product
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereProductId($value)
  *
  * @property int|null $company_id
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereCompanyId($value)
  *
@@ -64,7 +65,19 @@ class ProductFiles extends BaseModel
 
     const FILE_PATH = 'products';
 
-    protected $fillable = [];
+    protected $fillable = [
+        'company_id',
+        'product_id',
+        'filename',
+        'hashname',
+        'size',
+        'description',
+        'google_url',
+        'dropbox_link',
+        'default_status',
+        'added_by',
+        'last_updated_by',
+    ];
 
     protected $guarded = ['id'];
 

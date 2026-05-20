@@ -84,6 +84,7 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.componentProduct')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomComponentUom')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomComponentQty')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.bomWastePercent')</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,10 +99,11 @@
                             </td>
                             <td class="f-14">{{ $line->componentProduct?->unit?->unit_type ?? '—' }}</td>
                             <td class="f-14">{{ $formatQuantity($line->quantity) }}</td>
+                            <td class="f-14">{{ rtrim(rtrim(number_format((float) ($line->waste_percent ?? 0), 2, '.', ''), '0'), '.') }}%</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="p-5">
+                            <td colspan="5" class="p-5">
                                 <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>

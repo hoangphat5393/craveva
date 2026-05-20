@@ -33,7 +33,7 @@ class StoreProject extends CoreRequest
             'start_date' => 'required|date_format:"'.$setting->date_format.'"',
             'hours_allocated' => 'nullable|numeric',
             'client_id' => 'requiredIf:client_view_task,true',
-            'project_code' => $this->project_code != '' ? 'unique:projects,project_short_code,null,id,company_id,'.company()->id : '',
+            'project_code' => $this->project_code != '' ? 'unique:projects,project_short_code,null,id,company_id,'.company()->id.'|max:50|regex:/^[A-Za-z0-9_\-]+$/' : '',
             'miroboard_checkbox' => 'nullable',
             'miro_board_id' => 'nullable|required_if:miroboard_checkbox,checked',
         ];

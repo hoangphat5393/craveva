@@ -12,6 +12,9 @@ use App\Models\InvoicePaymentDetail;
 use App\Models\InvoiceSetting;
 use App\Models\QuickBooksSetting;
 use App\Models\UnitType;
+use Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Http\Response;
 
 class InvoiceSettingController extends AccountBaseController
 {
@@ -32,7 +35,7 @@ class InvoiceSettingController extends AccountBaseController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -88,8 +91,8 @@ class InvoiceSettingController extends AccountBaseController
     /**
      * @return array
      *
-     * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws RelatedResourceNotFoundException
+     * @throws FileNotFoundException
      */
     public function update(UpdateInvoiceSetting $request)
     {
@@ -112,6 +115,11 @@ class InvoiceSettingController extends AccountBaseController
         $setting->show_client_company_name = $request->has('show_client_company_name') ? 'yes' : 'no';
         $setting->show_client_company_address = $request->has('show_client_company_address') ? 'yes' : 'no';
         $setting->other_info = $request->other_info;
+
+        if ($request->has('phase1_min_gross_margin_percent')) {
+            $margin = $request->input('phase1_min_gross_margin_percent');
+            $setting->phase1_min_gross_margin_percent = ($margin === null || $margin === '') ? null : (float) $margin;
+        }
 
         if ($request->hasFile('logo')) {
             Files::deleteFile($setting->logo, GlobalSetting::APP_LOGO_PATH);

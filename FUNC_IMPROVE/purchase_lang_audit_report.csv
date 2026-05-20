@@ -1,0 +1,83 @@
+Locale,Key,File,Current,Suggested,Priority,Reason,Status
+vi,purchase::app.vendor,app.php,"Người bán","Nhà cung cấp",P0,"Glossary ERP wording",applied
+vi,purchase::app.openingStock,app.php,"Mở kho","Tồn đầu kỳ",P0,"Glossary ERP wording",applied
+vi,purchase::app.availableStock,app.php,"Cổ phiếu có sẵn","Tồn khả dụng",P0,"Glossary ERP wording",applied
+vi,purchase::app.trackInventory,app.php,"Theo dõi hàng tồn kho cho mặt hàng này","Theo dõi tồn kho (sản phẩm này)",P1,"Glossary ERP wording",applied
+vi,purchase::app.purchaseInformation,app.php,"Thông tin mua hàng (giá vốn)","Giá vốn / thông tin mua",P1,"Glossary ERP wording",applied
+vi,purchase::app.applyToBill,app.php,"Thanh toán hóa đơn bằng tín dụng của nhà cung cấp","Áp dụng vendor credit vào hóa đơn NCC",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.products,app.php,"Danh mục sản phẩm","Sản phẩm",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.inventory,app.php,"Tồn kho tổng thể","Điều chỉnh tồn (Purchase)",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.billDate,app.php,"Ngày thanh toán","Ngày hóa đơn",P0,"Glossary ERP wording",applied
+vi,purchase::app.menu.billAmount,app.php,"Tiền thanh toán","Số tiền hóa đơn",P0,"Glossary ERP wording",applied
+vi,purchase::app.menu.billDue,app.php,"Hóa đơn đến hạn","Số tiền còn phải trả",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.creditNumber,app.php,"Số tín dụng","Số chứng từ vendor credit",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.purchaseOrder,app.php,"Đơn mua hàng","Đơn đặt hàng mua (PO)",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.vendorCredits,app.php,"Ghi giảm nợ/Trả hàng cho NCC - Debit Note","Vendor credit (NCC)",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.vendorCredit,app.php,"Ghi giảm nợ/Trả hàng cho NCC - Debit Note","Vendor credit (NCC)",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.addVendorCredit,app.php,"Thêm tín dụng của nhà cung cấp","Thêm vendor credit",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.deliveryOrders,app.php,"Nhập kho - GRN","Phiếu nhập kho (GRN)",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.goodsReceivedNote,app.php,"Nhập kho - GRN","Phiếu nhập kho (GRN)",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.salesShipments,app.php,"Phiếu giao hàng - DO","Phiếu giao bán (Sales DO)",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.saleDeliveryOrder,app.php,"Phiếu giao hàng - DO","Phiếu giao bán (Sales DO)",P1,"Glossary ERP wording",applied
+vi,purchase::app.menu.salesDo,app.php,"Phiếu giao hàng - DO","Phiếu giao bán (Sales DO)",P1,"Glossary ERP wording",applied
+vi,purchase::app.purchaseOrder.purchaseOrder,app.php,"Đơn mua hàng","Đơn đặt hàng mua (PO)",P1,"Glossary ERP wording",applied
+vi,purchase::app.ship,app.php,Ship,"Xuất kho",P1,"Glossary ERP wording",applied
+vi,purchase::app.shipQty,app.php,"Ship Qty","SL xuất",P1,"Glossary ERP wording",applied
+vi,purchase::app.remainingQty,app.php,"Remaining Qty","SL còn lại giao",P1,"Glossary ERP wording",applied
+vi,purchase::app.shipmentNumber,app.php,"Shipment Number","Số phiếu giao (Sales DO)",P1,"Glossary ERP wording",applied
+vi,purchase::app.deliveryOrderNumber,app.php,"Delivery Order Number","Số phiếu nhập (GRN)",P1,"Glossary ERP wording",applied
+vi,purchase::app.batchNumber,app.php,"Batch Number","Số lô",P1,"Glossary ERP wording",applied
+vi,purchase::messages.trackInventoryMsg,messages.php,"Bạn không thể bật/tắt tính năng theo dõi hàng tồn kho sau khi đã tạo giao dịch cho mặt hàng này.","Không thể bật/tắt theo dõi tồn kho sau khi đã có phát sinh kho cho sản phẩm này.",P1,"Glossary ERP wording",applied
+vi,purchase::messages.openingStockRequired,messages.php,"Cần phải mở kho nếu bạn đã bật theo dõi hàng tồn kho.","Tồn đầu kỳ là bắt buộc khi bật theo dõi tồn kho.",P0,"Glossary ERP wording",applied
+vi,purchase::messages.purchasePriceRequired,messages.php,"Giá mua được yêu cầu nếu bạn đã kích hoạt thông tin mua hàng.","Giá vốn là bắt buộc khi bật thông tin mua / giá vốn.",P1,"Glossary ERP wording",applied
+vi,purchase::messages.confirmInactive,messages.php,"Có, hãy kích hoạt nó!","Có, ngừng hoạt động",P0,"Glossary ERP wording",applied
+vi,purchase::messages.purchaseOrderPaymentBlank,messages.php,"Đơn đặt hàng Thanh toán không được để trống.","Thanh toán PO không được để trống.",P1,"Glossary ERP wording",applied
+vi,purchase::messages.paymentConfirmation,messages.php,"Đã cập nhật số dư tín dụng","Đã cập nhật số dư vendor credit",P1,"Glossary ERP wording",applied
+vi,purchase::messages.orderMarkAsSent,messages.php,"Đơn hàng đã được gửi thành công","Đã đánh dấu PO đã gửi NCC",P1,"Glossary ERP wording",applied
+vi,purchase::messages.orderSentSuccessfully,messages.php,"Đánh dấu đơn hàng là đã gửi thành công","PO đã được gửi thành công",P1,"Glossary ERP wording",applied
+vi,purchase::messages.inventory.itemBlank,messages.php,"Số lượng trên tay không được để trống.","Tồn thực tế không được để trống.",P1,"Glossary ERP wording",applied
+vi,purchase::messages.inventory.type,messages.php,"Cần có chế độ điều chỉnh.","Vui lòng chọn phương thức điều chỉnh (số lượng hoặc giá trị).",P1,"Glossary ERP wording",applied
+vi,purchase::messages.inventory.quantityCannotLessThan,messages.php,"Số lượng không được ít hơn số lượng trên hóa đơn","Số lượng không được nhỏ hơn số lượng đã lập trên hóa đơn bán",P1,"Glossary ERP wording",applied
+vi,purchase::modules.product.openingStock,modules.php,"Mở kho","Tồn đầu kỳ",P0,"Glossary ERP wording",applied
+vi,purchase::modules.product.committedStock,modules.php,"Cổ phiếu cam kết","Tồn đã cam kết",P0,"Glossary ERP wording",applied
+vi,purchase::modules.product.costPrice,modules.php,"Giá cả","Giá vốn",P0,"Glossary ERP wording",applied
+vi,purchase::modules.product.stockOnHand,modules.php,"Hàng có sẵn","Tồn thực tế",P1,"Glossary ERP wording",applied
+vi,purchase::modules.product.quantityOnHand,modules.php,"Số lượng trên tay","Tồn thực tế",P1,"Glossary ERP wording",applied
+vi,purchase::modules.product.modeOfAdjustment,modules.php,"Chế độ điều chỉnh","Phương thức điều chỉnh",P1,"Glossary ERP wording",applied
+vi,purchase::modules.inventory.adjustmentReason,modules.php,"Lý do điều chỉnh cổ phiếu","Lý do điều chỉnh tồn",P0,"Glossary ERP wording",applied
+vi,purchase::modules.inventory.Created,modules.php,"Khoảng không quảng cáo đã được tạo","Phiếu điều chỉnh tồn đã tạo",P0,"Glossary ERP wording",applied
+vi,purchase::modules.inventory.fileCreated,modules.php,"Đã tải lên tệp khoảng không quảng cáo","Đã tải tệp phiếu tồn",P0,"Glossary ERP wording",applied
+vi,purchase::modules.inventory.details,modules.php,"Khoảng không quảng cáo đang được tạo bởi","Phiếu tồn được tạo bởi",P0,"Glossary ERP wording",applied
+vi,purchase::modules.inventory.warehouse,modules.php,Warehouse,Kho,P1,"Glossary ERP wording",applied
+vi,purchase::modules.vendorPayment.billAmount,modules.php,"Tiền thanh toán","Số tiền hóa đơn",P0,"Glossary ERP wording",applied
+vi,purchase::modules.vendorPayment.billDate,modules.php,"Ngày thanh toán","Ngày hóa đơn",P0,"Glossary ERP wording",applied
+vi,purchase::modules.vendorPayment.purchaseOrderNumber,modules.php,"Số lượng đơn đặt hàng","Số PO",P0,"Glossary ERP wording",applied
+vi,purchase::modules.vendor.billedAmount,modules.php,"Số tiền thanh toán","Số tiền đã lập HĐ",P1,"Glossary ERP wording",applied
+vi,purchase::modules.vendor.vendor_name,modules.php,"Vendor Name","Tên nhà cung cấp",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseOrder.billedStatus,modules.php,"Trạng thái thanh toán","Trạng thái lập HĐ NCC",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseOrder.billed,modules.php,"Đã thanh toán","Đã lập HĐ NCC",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseOrder.unbilled,modules.php,"Chưa thanh toán","Chưa lập HĐ NCC",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseOrder.convertToBill,modules.php,"Chuyển đổi sang hóa đơn","Tạo hóa đơn NCC từ PO",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseOrder.deliveryStatus,modules.php,"Tình trạng giao hàng","Trạng thái giao PO",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseOrder.inTransaction,modules.php,"Trong giao dịch","Đang giao / nhận một phần",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseOrder.delivered,modules.php,"Đã giao hàng","NCC đã giao (PO)",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseOrder.del_status,modules.php,"Del Status","Trạng thái giao PO",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseBill.saveAsOpen,modules.php,"Lưu dưới dạng mở","Lưu trạng thái Open (chưa thanh toán xong)",P1,"Glossary ERP wording",applied
+vi,purchase::modules.purchaseBill.partially_paid,modules.php,"Thanh toán một phần","Thanh toán một phần HĐ NCC",P1,"Glossary ERP wording",applied
+vi,purchase::modules.reports.committedStock,modules.php,"Cổ phiếu cam kết","Tồn đã cam kết",P0,"Glossary ERP wording",applied
+vi,purchase::modules.reports.committed_Stock,modules.php,"Committed Stock","Tồn đã cam kết",P1,"Glossary ERP wording",applied
+vi,purchase::modules.deliveryOrder.inbound,modules.php,"Nhập kho","Đang nhập kho",P1,"Glossary ERP wording",applied
+vi,purchase::modules.deliveryOrder.received,modules.php,"Đã nhận","Đã nhập kho (GRN)",P1,"Glossary ERP wording",applied
+vi,purchase::modules.deliveryOrder.qcStatus,modules.php,"Trạng thái QC đầu vào","QC nhập kho",P1,"Glossary ERP wording",applied
+vi,purchase::modules.deliveryOrder.qcPending,modules.php,"Chờ QC","Chờ kiểm tra",P1,"Glossary ERP wording",applied
+vi,purchase::modules.salesShipment.shipped,modules.php,"Đã giao hàng","Đã xuất kho",P1,"Glossary ERP wording",applied
+vi,purchase::modules.salesShipment.delivered,modules.php,"Đã hoàn tất giao","Đã giao khách",P1,"Glossary ERP wording",applied
+vi,purchase::modules.salesShipment.reverse,modules.php,"Hoàn tác giao hàng","Hoàn tác xuất kho (Sales DO)",P1,"Glossary ERP wording",applied
+en,purchase::messages.confirmInactive,messages.php,"Yes, inActivate it!","Yes, mark as inactive",P0,"Glossary ERP wording",applied
+en,purchase::messages.paymentConfirmation,messages.php,Paymentconfirmation,"Vendor credit balance updated",P0,"Glossary ERP wording",applied
+en,purchase::messages.messagePayment,messages.php,Messagepayment,"Amount paid:",P0,"Glossary ERP wording",applied
+en,purchase::messages.thankYou,messages.php,Thankyou,"Thank you for your business.",P0,"Glossary ERP wording",applied
+en,purchase::messages.orderMarkAsSent,messages.php,"Order sent Successfully","Purchase order marked as sent",P1,"Glossary ERP wording",applied
+en,purchase::messages.orderSentSuccessfully,messages.php,"Order Mark as Sent Successfully","Purchase order sent successfully",P1,"Glossary ERP wording",applied
+en,purchase::modules.purchaseOrder.del_status,modules.php,"Del Status","PO delivery status",P1,"Glossary ERP wording",applied
+en,purchase::modules.salesShipment.shipped,modules.php,Shipped,"Shipped (stock out)",P1,"Glossary ERP wording",applied

@@ -476,6 +476,7 @@ Kế hoạch này đảm bảo:
 
 ### Ghi chú
 
+- 2026-05-20: Chuẩn wording ERP (LanguagePack `Purchase/vi` + `en/messages`): glossary `FUNC_LOGIC/GLOSSARY_PURCHASE_ERP_VI.json`, script `scripts/audit_purchase_lang.php` / `scripts/purchase_lang_erp.ps1` (audit → `--apply` → `languagepack:publish-translation`). Menu: **Phiếu nhập kho (GRN)**, **Phiếu giao bán (Sales DO)**; NCC, giá vốn, tồn kho (không dùng “cổ phiếu”).
 - 2026-03-30: Đã triển khai compatibility naming trên UI (không đổi route/table/service):
     - Menu hiển thị: `GRN`, `Sales DO`.
     - Page title/h1 liên quan Delivery Order chuyển sang `GRN`.

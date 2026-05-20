@@ -20,6 +20,7 @@ class ProductionOrderBomSnapshotItem extends BaseModel
         'production_order_id',
         'component_product_id',
         'quantity_per_fg_unit',
+        'waste_percent',
         'unit_id',
         'yield_factor',
         'quantity_per_fg_unit_base_shadow',
@@ -30,6 +31,7 @@ class ProductionOrderBomSnapshotItem extends BaseModel
     {
         return [
             'quantity_per_fg_unit' => 'float',
+            'waste_percent' => 'float',
             'yield_factor' => 'float',
             'quantity_per_fg_unit_base_shadow' => 'float',
             'sort_order' => 'integer',

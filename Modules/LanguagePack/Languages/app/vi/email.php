@@ -162,6 +162,18 @@ return [
         'text' => 'Một ước tính mới đã được tạo ra. Vui lòng nhấp vào liên kết bên dưới để xem ước tính.',
         'loginDashboard' => 'Phê duyệt/Từ chối',
     ],
+    'estimatePhase1Review' => [
+        'subject' => 'Báo giá :number — :event',
+        'text' => 'Báo giá :number cần xử lý: :event',
+        'action' => 'Mở báo giá',
+        'events' => [
+            'submitted' => 'đã gửi duyệt',
+            'president_approved' => 'Tổng giám đốc đã duyệt (chờ Phó tổng giá)',
+            'president_rejected' => 'Tổng giám đốc trả về để sửa',
+            'vp_approved' => 'Phó tổng giá đã duyệt',
+            'vp_rejected' => 'Phó tổng giá trả về để sửa',
+        ],
+    ],
     'invoice' => [
         'subject' => 'Đã nhận được hóa đơn mới',
         'text' => 'Một hóa đơn mới đã được nhận. Vui lòng nhấp vào liên kết bên dưới để xem hóa đơn.',

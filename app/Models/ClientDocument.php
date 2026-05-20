@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasCompany;
 use App\Traits\IconTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Holiday
@@ -15,13 +16,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $filename
  * @property string $hashname
  * @property string|null $size
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $added_by
  * @property int|null $last_updated_by
  * @property-read mixed $doc_url
  * @property-read mixed $icon
- * @property-read \App\Models\User $user
+ * @property-read User $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument newQuery()
@@ -37,9 +38,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument whereUserId($value)
  *
- * @property-read \App\Models\User|null $client
+ * @property-read User|null $client
  * @property int|null $company_id
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument whereCompanyId($value)
  *
@@ -51,8 +52,16 @@ class ClientDocument extends BaseModel
 
     const FILE_PATH = 'client-docs';
 
-    // Don't forget to fill this array
-    protected $fillable = [];
+    protected $fillable = [
+        'company_id',
+        'user_id',
+        'name',
+        'filename',
+        'hashname',
+        'size',
+        'added_by',
+        'last_updated_by',
+    ];
 
     protected $guarded = ['id'];
 

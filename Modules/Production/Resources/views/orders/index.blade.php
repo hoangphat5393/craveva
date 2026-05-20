@@ -91,7 +91,7 @@
                             <td>{{ $order->outputProduct?->name ?? '—' }}</td>
                             <td class="text-dark-grey">{{ $orderListFgUnitByProductId->get((string) $order->output_product_id) ?? ($orderListFgUnitByProductId->get($order->output_product_id) ?? '—') }}</td>
                             <td>{{ $order->planned_quantity }}</td>
-                            <td>{{ ucfirst(str_replace('_', ' ', $order->status)) }}</td>
+                            <td>{{ __('production::app.statusLabels.' . $order->status) }}</td>
                             <td class="text-right">
                                 <a href="{{ route('production.orders.show', $order) }}" class="btn btn-secondary rounded f-14 btn-sm">
                                     <i class="fa fa-eye mr-1"></i>@lang('app.view')

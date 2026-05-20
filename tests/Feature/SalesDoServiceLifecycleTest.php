@@ -73,12 +73,44 @@ beforeEach(function () {
         $table->string('status')->default('draft');
         $table->timestamps();
     });
+
+    Schema::create('module_settings', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->string('module_name');
+        $table->string('type');
+        $table->string('status')->default('active');
+        $table->unsignedTinyInteger('is_allowed')->default(1);
+        $table->timestamps();
+    });
+
+    DB::table('module_settings')->insert([
+        [
+            'company_id' => 10,
+            'module_name' => 'production',
+            'type' => 'admin',
+            'status' => 'active',
+            'is_allowed' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'company_id' => 10,
+            'module_name' => 'production',
+            'type' => 'employee',
+            'status' => 'active',
+            'is_allowed' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+    ]);
 });
 
 afterEach(function () {
     Mockery::close();
     Schema::dropIfExists('sales_shipment_items');
     Schema::dropIfExists('sales_shipments');
+    Schema::dropIfExists('module_settings');
     Schema::dropIfExists('production_orders');
     Schema::dropIfExists('warehouses');
     Schema::dropIfExists('orders');

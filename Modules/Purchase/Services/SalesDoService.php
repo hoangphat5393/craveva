@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Modules\Production\Support\ProductionTenantAccess;
 use Modules\Purchase\Support\SalesDoRuntime;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Services\SalesShipmentStockService;
@@ -138,6 +139,13 @@ class SalesDoService
         $companyId = (int) ($shipment->company_id ?? 0);
         $salesOrderId = (int) ($shipment->order_id ?? 0);
         if ($companyId <= 0 || $salesOrderId <= 0) {
+            return null;
+        }
+
+        if (
+            Schema::hasTable('module_settings')
+            && ! ProductionTenantAccess::productionEnabledForCompanyId($companyId)
+        ) {
             return null;
         }
 

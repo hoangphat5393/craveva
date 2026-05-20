@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <!-- Required meta tags -->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -12,7 +13,7 @@
     <meta name="theme-color" content="#ffffff">
     @includeIf('estimates.pdf.estimate_pdf_css')
     <style>
-    .bg-grey {
+        .bg-grey {
             background-color: #F2F4F7;
         }
 
@@ -272,8 +273,7 @@
         <tbody>
             <!-- Table Row Start -->
             <tr>
-                <td><img src="{{ $invoiceSetting->logo_url }}" alt="{{ $company->company_name }}"
-                        id="logo" /></td>
+                <td><img src="{{ $invoiceSetting->logo_url }}" alt="{{ $company->company_name }}" id="logo" /></td>
                 <td align="right" class="f-21 text-black font-weight-700 text-uppercase">@lang('app.quotation_ui.singular')</td>
             </tr>
             <!-- Table Row End -->
@@ -327,39 +327,29 @@
                             <td class="f-14 text-black">
 
                                 @if (
-                                    ($estimate->client || $estimate->clientDetails)
-                                    && ($estimate->client->name
-                                        || $estimate->client->email
-                                        || $estimate->client->mobile
-                                        || $estimate->clientDetails->company_name
-                                        || $estimate->clientDetails->address
-                                        )
-                                    && ($invoiceSetting->show_client_name == 'yes'
-                                    || $invoiceSetting->show_client_email == 'yes'
-                                    || $invoiceSetting->show_client_phone == 'yes'
-                                    || $invoiceSetting->show_client_company_name == 'yes'
-                                    || $invoiceSetting->show_client_company_address == 'yes')
-                                )
-                                <p class="line-height mb-0">
-                                    <span class="text-grey ">
-                                        @lang("modules.invoices.billedTo")
-                                    </span><br>
-                                    @if ($estimate->client && $estimate->client->name && $invoiceSetting->show_client_name == 'yes')
-                                        {{ $estimate->client->name_salutation }}<br>
-                                    @endif
-                                    @if ($estimate->client && $estimate->client->email && $invoiceSetting->show_client_email == 'yes')
-                                        {{ $estimate->client->email }}<br>
-                                    @endif
-                                    @if ($estimate->client && $estimate->client->mobile && $invoiceSetting->show_client_phone == 'yes')
-                                        {{ $estimate->client->mobile_with_phonecode }}<br>
-                                    @endif
-                                    @if ($estimate->clientDetails && $estimate->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
-                                        {{ $estimate->clientDetails->company_name }}<br>
-                                    @endif
-                                    @if ($estimate->clientDetails && $estimate->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
-                                        {!! nl2br($estimate->clientDetails->address) !!}
-                                    @endif
-                                </p>
+                                    ($estimate->client || $estimate->clientDetails) &&
+                                        ($estimate->client->name || $estimate->client->email || $estimate->client->mobile || $estimate->clientDetails->company_name || $estimate->clientDetails->address) &&
+                                        ($invoiceSetting->show_client_name == 'yes' || $invoiceSetting->show_client_email == 'yes' || $invoiceSetting->show_client_phone == 'yes' || $invoiceSetting->show_client_company_name == 'yes' || $invoiceSetting->show_client_company_address == 'yes'))
+                                    <p class="line-height mb-0">
+                                        <span class="text-grey ">
+                                            @lang('modules.invoices.billedTo')
+                                        </span><br>
+                                        @if ($estimate->client && $estimate->client->name && $invoiceSetting->show_client_name == 'yes')
+                                            {{ $estimate->client->name_salutation }}<br>
+                                        @endif
+                                        @if ($estimate->client && $estimate->client->email && $invoiceSetting->show_client_email == 'yes')
+                                            {{ $estimate->client->email }}<br>
+                                        @endif
+                                        @if ($estimate->client && $estimate->client->mobile && $invoiceSetting->show_client_phone == 'yes')
+                                            {{ $estimate->client->mobile_with_phonecode }}<br>
+                                        @endif
+                                        @if ($estimate->clientDetails && $estimate->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
+                                            {{ $estimate->clientDetails->company_name }}<br>
+                                        @endif
+                                        @if ($estimate->clientDetails && $estimate->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
+                                            {!! nl2br($estimate->clientDetails->address) !!}
+                                        @endif
+                                    </p>
                                 @endif
 
                                 @if ($invoiceSetting->show_gst == 'yes' && !is_null($estimate->clientDetails->gst_number))
@@ -371,9 +361,7 @@
                             <td align="right">
                                 <br />
                                 @if ($estimate->clientDetails->company_logo)
-                                    <img src="{{ $estimate->clientDetails->image_url }}"
-                                        alt="{{ $estimate->clientDetails->company_name }}" class="logo"
-                                        style="height:50px;" />
+                                    <img src="{{ $estimate->clientDetails->image_url }}" alt="{{ $estimate->clientDetails->company_name }}" class="logo" style="height:50px;" />
                                     <br><br><br>
                                 @endif
                                 <div class="text-uppercase bg-white unpaid rightaligned">
@@ -404,9 +392,9 @@
                 <td align="right" width="10%">@lang('app.hsnSac')</td>
             @endif
             <td align="right" width="10%">@lang('modules.invoices.qty')</td>
-            <td align="right">@lang("modules.invoices.unitPrice")</td>
-            <td align="right">@lang("modules.invoices.tax")</td>
-            <td align="right" width="{{ $invoiceSetting->hsn_sac_code_show ? '17%' : '20%' }}">@lang("modules.invoices.amount")
+            <td align="right">@lang('modules.invoices.unitPrice')</td>
+            <td align="right">@lang('modules.invoices.tax')</td>
+            <td align="right" width="{{ $invoiceSetting->hsn_sac_code_show ? '17%' : '20%' }}">@lang('modules.invoices.amount')
                 ({{ $estimate->currency->currency_code }})</td>
         </tr>
         <!-- Table Row End -->
@@ -425,8 +413,7 @@
                     <td align="right" class="border-bottom-0">
                         {{ currency_format($item->unit_price, $estimate->currency_id, false) }}</td>
                     <td align="right" class="border-bottom-0">{{ $item->tax_list }}</td>
-                    <td align="right" class="border-bottom-0"
-                        width="{{ $invoiceSetting->hsn_sac_code_show ? '17%' : '20%' }}">
+                    <td align="right" class="border-bottom-0" width="{{ $invoiceSetting->hsn_sac_code_show ? '17%' : '20%' }}">
                         {{ currency_format($item->amount, $estimate->currency_id, false) }}</td>
                 </tr>
                 <!-- Table Row End -->
@@ -434,12 +421,11 @@
                     <tr class="main-table-items text-black">
                         <td class="f-13 text-black description word-break" colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}">
                             {!! nl2br(pdfStripTags($item->item_summary)) !!}
-                        @if ($item->estimateItemImage)
-                            <p class="mt-2 description">
-                                <img src="{{ $item->estimateItemImage->file_url }}" width="60" height="60"
-                                    class="img-thumbnail">
-                            </p>
-                        @endif
+                            @if ($item->estimateItemImage)
+                                <p class="mt-2 description">
+                                    <img src="{{ $item->estimateItemImage->file_url }}" width="60" height="60" class="img-thumbnail">
+                                </p>
+                            @endif
                         </td>
                     </tr>
                 @endif
@@ -462,8 +448,8 @@
                         <!-- Table Row Start -->
                         <tr align="right" class="text-grey">
                             <td width="50%" class="subtotal">@lang('modules.invoices.discount'):
-                                @if($estimate->discount_type == 'percent')
-                                    {{$estimate->discount}}%
+                                @if ($estimate->discount_type == 'percent')
+                                    {{ $estimate->discount }}%
                                 @else
                                     {{ currency_format($estimate->discount, $estimate->currency_id) }}
                                 @endif
@@ -522,6 +508,8 @@
             </td>
         </tr>
     </table>
+
+    @include('estimates.partials.pdf-bom-lines')
 
     <table class="bg-white" border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
         <tbody>
@@ -583,9 +571,9 @@
 
     @if (isset($invoiceSetting->other_info))
         <p>
-            <div style="margin-top: 10px;" class="f-11 line-height text-grey">
-                {!! nl2br($invoiceSetting->other_info) !!}
-            </div>
+        <div style="margin-top: 10px;" class="f-11 line-height text-grey">
+            {!! nl2br($invoiceSetting->other_info) !!}
+        </div>
         </p>
     @endif
 

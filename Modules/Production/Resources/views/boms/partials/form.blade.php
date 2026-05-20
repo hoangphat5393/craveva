@@ -18,6 +18,7 @@
                 static fn($it) => [
                     'component_product_id' => $it->component_product_id,
                     'quantity' => $it->quantity,
+                    'waste_percent' => $it->waste_percent ?? 0,
                 ],
             )
             ->all();
@@ -93,7 +94,8 @@
             <tr class="f-14 text-dark-grey">
                 <th>@lang('production::app.componentProduct')</th>
                 <th style="width: 120px;">@lang('production::app.bomComponentUom')</th>
-                <th style="width: 160px;">@lang('production::app.bomComponentQty')</th>
+                <th style="width: 140px;">@lang('production::app.bomComponentQty')</th>
+                <th style="width: 100px;">@lang('production::app.bomWastePercent')</th>
                 <th style="width: 80px;">@lang('app.action')</th>
             </tr>
         </thead>
@@ -103,6 +105,7 @@
                     $line = $lines[$i] ?? [];
                     $cid = old("items.$i.component_product_id", $line['component_product_id'] ?? '');
                     $qty = old("items.$i.quantity", $line['quantity'] ?? '');
+                    $waste = old("items.$i.waste_percent", $line['waste_percent'] ?? 0);
                 @endphp
                 <tr class="bom-line-row" data-row-index="{{ $i }}">
                     <td>
@@ -121,6 +124,9 @@
                     <td class="bom-line-uom f-14 text-dark-grey align-middle">{{ $lineUom }}</td>
                     <td>
                         <input type="number" step="0.0001" min="0.0001" name="items[{{ $i }}][quantity]" class="form-control height-35 f-14" value="{{ $qty }}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" max="100" name="items[{{ $i }}][waste_percent]" class="form-control height-35 f-14" value="{{ $waste }}">
                     </td>
                     <td class="text-right">
                         @if ($i > 0)
@@ -302,6 +308,9 @@
                     <td class="bom-line-uom f-14 text-dark-grey align-middle">—</td>
                     <td>
                         <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14" value="">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" max="100" name="items[${newIndex}][waste_percent]" class="form-control height-35 f-14" value="0">
                     </td>
                     <td class="text-right">
                         <button type="button" class="btn btn-outline-danger btn-sm bom-remove-row" title="@lang('app.delete')">

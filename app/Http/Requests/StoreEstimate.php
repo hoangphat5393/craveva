@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Helper\NumberFormat;
 use App\Traits\CustomFieldsRequestTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class StoreEstimate extends FormRequest
     {
         if ($this->estimate_number && is_numeric($this->estimate_number)) {
             $this->merge([
-                'estimate_number' => \App\Helper\NumberFormat::estimate($this->estimate_number),
+                'estimate_number' => NumberFormat::estimate($this->estimate_number),
             ]);
         }
     }
@@ -68,6 +69,11 @@ class StoreEstimate extends FormRequest
             'volume_unit' => 'nullable|string|max:64',
             'total_gross_weight_kg' => 'nullable|string',
             'total_volume' => 'nullable|string',
+            'recipe_moq' => 'nullable|integer|min:0',
+            'recipe_packaging' => 'nullable|string|max:255',
+            'recipe_oem_sku' => 'nullable|string|max:128',
+            'recipe_target_unit_price' => 'nullable|string',
+            'production_bom_id' => 'nullable|integer',
             'item_free_quantity' => 'nullable|array',
             'item_free_quantity.*' => 'nullable|string',
             'item_line_effective_date' => 'nullable|array',

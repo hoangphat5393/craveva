@@ -28,6 +28,8 @@
             </div>
         @endif
 
+        @include('production::orders.partials.material-requirements')
+
         @php
             $plannedQty = (float) $order->planned_quantity;
             $registeredFgTotal = $order->batches->sum(static fn($b) => $b->outputs->sum(static fn($o) => (float) $o->quantity));
@@ -39,7 +41,7 @@
             <div class="row f-14">
                 <div class="col-md-6 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.status')</span>
-                    <span class="font-weight-normal">{{ ucfirst(str_replace('_', ' ', $order->status)) }}</span>
+                    <span class="font-weight-normal">{{ __('production::app.statusLabels.' . $order->status) }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.fgProduct')</span>

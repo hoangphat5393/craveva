@@ -12,6 +12,8 @@ use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionBomItem;
 use Modules\Production\Http\Requests\StoreProductionBomRequest;
 use Modules\Production\Http\Requests\UpdateProductionBomRequest;
+use Modules\Production\Support\ProductionBomComponentUnitOptions;
+use Modules\Production\Support\ProductionBomLineCostCalculator;
 use Modules\Production\Support\ProductionProductUnitLabelMap;
 use Modules\Production\Support\ProductionTenantAccess;
 
@@ -124,10 +126,12 @@ class ProductionBomController extends AccountBaseController
         $this->assertViewProductionBoms();
         $this->assertBomInCompany($bom);
 
-        $bom->load(['items.componentProduct.unit', 'outputProduct.unit']);
+        $bom->load(['items.componentProduct.unit', 'items.unit', 'outputProduct.unit']);
 
         $this->pageTitle = __('production::app.bomDetail').' '.$bom->version;
         $this->bom = $bom;
+        $this->bomCostSummary = app(ProductionBomLineCostCalculator::class)
+            ->summarizeSavedLines($bom, (int) company()->id);
 
         return view('production::boms.show', $this->data);
     }
@@ -138,7 +142,7 @@ class ProductionBomController extends AccountBaseController
         $this->assertBomInCompany($bom);
         abort_if(! $this->bomIsEditable($bom), 403);
 
-        $bom->load(['items']);
+        $bom->load(['items.componentProduct.unit', 'items.unit']);
 
         $this->pageTitle = __('production::app.editBom');
         $this->bom = $bom;
@@ -260,15 +264,19 @@ class ProductionBomController extends AccountBaseController
 
         $this->componentProducts = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->forBomComponents()
+            ->forBomRawMaterials()
             ->with('unit:id,unit_type')
-            ->orderBy('type')
             ->orderBy('name')
             ->get(['id', 'name', 'unit_id', 'type']);
 
-        $this->componentProductsByType = $this->componentProducts->groupBy('type');
-
         $this->bomFgUnitByProductId = ProductionProductUnitLabelMap::forProducts($this->finishedGoods, $companyId);
         $this->bomComponentUnitByProductId = ProductionProductUnitLabelMap::forProducts($this->componentProducts, $companyId);
+
+        $unitOptions = app(ProductionBomComponentUnitOptions::class);
+        $calculator = app(ProductionBomLineCostCalculator::class);
+
+        $this->bomUnitsByProductId = $unitOptions->unitsByProductId($this->componentProducts, $companyId);
+        $this->bomUnitCostByProductAndUnit = $unitOptions->unitCostByProductAndUnit($this->componentProducts, $companyId);
+        $this->bomCostCalculator = $calculator;
     }
 }

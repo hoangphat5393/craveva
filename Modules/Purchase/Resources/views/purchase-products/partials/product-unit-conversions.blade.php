@@ -59,15 +59,34 @@
     @once
         @push('scripts')
             <script>
-                $(function() {
-                    const $form = $('#save-product-data-form, #save-product-form').filter(function() {
-                        return $(this).find('#product-unit-conversions-section').length;
-                    }).first();
+                (function() {
+                    function purchaseProductUomForm() {
+                        return $('#save-product-data-form, #save-product-form').filter(function() {
+                            return $(this).find('#product-unit-conversions-section').length;
+                        }).first();
+                    }
 
-                    if ($form.length && typeof window.initPurchaseProductUnitConversions === 'function') {
+                    function bootPurchaseProductUnitConversions(forceReinit) {
+                        const $form = purchaseProductUomForm();
+                        if (!$form.length || typeof window.initPurchaseProductUnitConversions !== 'function') {
+                            return;
+                        }
+                        if (forceReinit) {
+                            $form.find('#product-unit-conversions-section').removeData('uomInitialized');
+                        }
                         window.initPurchaseProductUnitConversions($form);
                     }
-                });
+
+                    $(function() {
+                        bootPurchaseProductUnitConversions(false);
+                    });
+
+                    // Full-page edit: layouts/app calls window.init() on window.load and re-inits selectpickers.
+                    $(window).on('load.purchaseProductUom', function() {
+                        bootPurchaseProductUnitConversions(true);
+                    });
+                })
+                ();
             </script>
         @endpush
     @endonce

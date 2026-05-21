@@ -4,6 +4,14 @@
     use App\Enums\ProductType;
 
     $formatQuantity = static fn($value): string => rtrim(rtrim(number_format((float) $value, 4, '.', ''), '0'), '.');
+    $formatBomCost = static function (?float $value): string {
+        if ($value === null) {
+            return '—';
+        }
+
+        return currency_format($value, company()->currency_id);
+    };
+    $bomCostSummary = $bomCostSummary ?? ['lines' => [], 'total' => null];
     $bom->loadCount('productionOrders');
     $editable = $bom->production_orders_count === 0;
 @endphp
@@ -43,7 +51,7 @@
         <div class="bg-white rounded p-4 mt-3 mb-4">
             <div class="row f-14">
                 <div class="col-md-6 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.fgProduct')</span>
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.manufacturedProduct')</span>
                     <span class="font-weight-normal">{{ $bom->outputProduct?->name ?? '—' }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -75,7 +83,8 @@
             @endif
         </div>
 
-        <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.bomLines')</h5>
+        <h5 class="f-14 text-dark-grey font-weight-bold mb-1">@lang('production::app.bomLines')</h5>
+        <p class="f-12 text-muted mb-3">@lang('production::app.bomCostingHelp')</p>
         <div class="d-flex flex-column w-tables rounded bg-white table-responsive">
             <table class="table table-hover border-0 w-100 mb-0">
                 <thead>
@@ -85,10 +94,15 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.bomComponentUom')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomComponentQty')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomWastePercent')</th>
+                        <th class="f-14 text-dark-grey text-right">@lang('production::app.bomComponentUnitCost')</th>
+                        <th class="f-14 text-dark-grey text-right">@lang('production::app.bomComponentLineTotal')</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($bom->items as $idx => $line)
+                        @php
+                            $lineCost = $bomCostSummary['lines'][$idx] ?? ['unit_cost' => null, 'line_total' => null];
+                        @endphp
                         <tr>
                             <td class="f-14">{{ $idx + 1 }}</td>
                             <td class="f-14">
@@ -97,18 +111,28 @@
                                     <span class="text-dark-grey f-12 d-block">{{ ProductType::labelFor($line->componentProduct->type) }}</span>
                                 @endif
                             </td>
-                            <td class="f-14">{{ $line->componentProduct?->unit?->unit_type ?? '—' }}</td>
+                            <td class="f-14">{{ $line->unit?->unit_type ?? ($line->componentProduct?->unit?->unit_type ?? '—') }}</td>
                             <td class="f-14">{{ $formatQuantity($line->quantity) }}</td>
                             <td class="f-14">{{ rtrim(rtrim(number_format((float) ($line->waste_percent ?? 0), 2, '.', ''), '0'), '.') }}%</td>
+                            <td class="f-14 text-right">{{ $formatBomCost($lineCost['unit_cost']) }}</td>
+                            <td class="f-14 text-right">{{ $formatBomCost($lineCost['line_total']) }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-5">
+                            <td colspan="7" class="p-5">
                                 <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
+                @if ($bom->items->isNotEmpty())
+                    <tfoot>
+                        <tr class="bg-additional-grey">
+                            <td colspan="6" class="f-14 text-dark-grey font-weight-bold text-right">@lang('production::app.bomTotalComponentCost')</td>
+                            <td class="f-14 text-right font-weight-bold">{{ $formatBomCost($bomCostSummary['total']) }}</td>
+                        </tr>
+                    </tfoot>
+                @endif
             </table>
         </div>
     </div>

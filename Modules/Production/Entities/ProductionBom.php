@@ -65,7 +65,7 @@ class ProductionBom extends BaseModel
         $fgName = trim((string) ($this->outputProduct?->name ?? ''));
 
         if ($fgName === '') {
-            $fgName = __('production::app.fgProduct') . ' #' . $this->output_product_id;
+            $fgName = __('production::app.manufacturedProduct') . ' #' . $this->output_product_id;
         }
 
         $code = trim((string) ($this->code ?? ''));

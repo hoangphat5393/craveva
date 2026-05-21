@@ -99,7 +99,7 @@ class UpdateProductionOrderRequest extends FormRequest
             }
 
             if ((int) $bom->output_product_id !== (int) $this->input('output_product_id')) {
-                $validator->errors()->add('production_bom_id', __('production::app.bomOutputMismatch'));
+                $validator->errors()->add('production_bom_id', __('production::app.bomOutputManufacturedProductMismatch'));
             }
         });
     }

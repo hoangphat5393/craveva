@@ -83,9 +83,8 @@
                     success: function(response) {
                         if (response.status === 'success') {
                             $('#unit-type-row-' + id).fadeOut();
-                            if (response.data) {
-                                $('#unit_type_id').html(response.data);
-                                $('#unit_type_id').selectpicker('refresh');
+                            if (response.data && typeof window.refreshProductUnitTypeDropdown === 'function') {
+                                window.refreshProductUnitTypeDropdown(response.data);
                             }
                         } else if (response.message) {
                             Swal.fire({
@@ -108,8 +107,9 @@
             data: $('#createUnitTypeForm').serialize(),
             success: function(response) {
                 if (response.status === 'success') {
-                    $('#unit_type_id').html(response.data);
-                    $('#unit_type_id').selectpicker('refresh');
+                    if (typeof window.refreshProductUnitTypeDropdown === 'function') {
+                        window.refreshProductUnitTypeDropdown(response.data);
+                    }
                     $(MODAL_LG).modal('hide');
                 }
             }
@@ -140,9 +140,8 @@
                 },
                 blockUI: true,
                 success: function(response) {
-                    if (response.status == 'success' && response.data) {
-                        $('#unit_type_id').html(response.data);
-                        $('#unit_type_id').selectpicker('refresh');
+                    if (response.status == 'success' && response.data && typeof window.refreshProductUnitTypeDropdown === 'function') {
+                        window.refreshProductUnitTypeDropdown(response.data);
                     }
                 }
             })

@@ -5,6 +5,7 @@ return [
         'type' => 'Type',
         'goods' => 'Goods',
         'finishedGoods' => 'Finished Goods',
+        'manufacturedProduct' => 'Manufactured product',
         'rawMaterial' => 'Raw Material',
         'semiFinished' => 'Semi Finished',
         'packaging' => 'Packaging',

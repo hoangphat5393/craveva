@@ -44,7 +44,7 @@
                     <span class="font-weight-normal">{{ __('production::app.statusLabels.' . $order->status) }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.fgProduct')</span>
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.manufacturedProduct')</span>
                     <span class="font-weight-normal">{{ $order->outputProduct?->name ?? '—' }}</span>
                     <span class="text-dark-grey d-block mb-1 mt-2">@lang('modules.invoices.unitType')</span>
                     <span class="font-weight-normal">{{ $orderFgUnitType ?? '—' }}</span>
@@ -71,7 +71,7 @@
                     <span class="font-weight-normal">{{ $order->rmWarehouse?->name ?? '#' . $order->rm_warehouse_id }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.finishedGoodsWarehouse')</span>
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.manufacturedProductWarehouse')</span>
                     <span class="font-weight-normal">{{ $order->fgWarehouse?->name ?? '#' . $order->fg_warehouse_id }}</span>
                 </div>
                 <div class="col-md-6 mb-3">

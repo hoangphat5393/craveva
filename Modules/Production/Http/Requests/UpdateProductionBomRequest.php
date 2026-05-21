@@ -6,10 +6,13 @@ use App\Enums\ProductType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Production\Entities\ProductionBom;
+use Modules\Production\Http\Requests\Concerns\ValidatesProductionBomLineUnits;
 use Modules\Production\Support\ProductionTenantAccess;
 
 class UpdateProductionBomRequest extends FormRequest
 {
+    use ValidatesProductionBomLineUnits;
+
     public function authorize(): bool
     {
         return ProductionTenantAccess::tenantMayUseProduction()
@@ -48,7 +51,7 @@ class UpdateProductionBomRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::exists('products', 'id')->where(function ($query) use ($companyId): void {
-                    $query->where('company_id', $companyId)->whereIn('type', ProductType::bomComponentValues());
+                    $query->where('company_id', $companyId)->whereIn('type', ProductType::bomRawMaterialValues());
                 }),
             ],
             'items.*.quantity' => ['required', 'numeric', 'min:0.0001'],
@@ -61,7 +64,7 @@ class UpdateProductionBomRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $items = collect($this->input('items', []))
-            ->filter(fn (mixed $line): bool => filled(data_get($line, 'component_product_id')))
+            ->filter(fn(mixed $line): bool => filled(data_get($line, 'component_product_id')))
             ->values()
             ->all();
 
@@ -69,6 +72,8 @@ class UpdateProductionBomRequest extends FormRequest
             'items' => $items,
             'is_default' => $this->boolean('is_default'),
         ]);
+
+        $this->mergeDefaultBomLineUnitIds();
     }
 
     public function withValidator($validator): void
@@ -77,9 +82,11 @@ class UpdateProductionBomRequest extends FormRequest
             $fg = (int) $this->input('output_product_id');
             foreach ($this->input('items', []) as $index => $line) {
                 if ((int) data_get($line, 'component_product_id') === $fg) {
-                    $validator->errors()->add('items.'.$index.'.component_product_id', __('production::app.bomComponentMustDifferFromOutput'));
+                    $validator->errors()->add('items.' . $index . '.component_product_id', __('production::app.bomComponentMustDifferFromManufacturedProduct'));
                 }
             }
+
+            $this->validateProductionBomLineUnits($validator);
         });
     }
 }

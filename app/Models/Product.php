@@ -311,6 +311,17 @@ class Product extends BaseModel
     }
 
     /**
+     * Production BOM components: raw materials only.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeForBomRawMaterials(Builder $query): Builder
+    {
+        return $query->where('type', ProductType::RawMaterial->value);
+    }
+
+    /**
      * @param  Builder<Product>  $query
      * @return Builder<Product>
      */

@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Choisissez-en au moins 1.',
     'addItem' => 'Ajoutez au moins 1 élément.',
     'quantityNumber' => 'La quantité doit être un nombre',
+    'salesDoShipQuantityRequired' => 'La quantité expédiée doit être supérieure à zéro sur au moins une ligne. Modifiez le bon de livraison pour renseigner les quantités.',
     'unitPriceNumber' => 'Le prix unitaire doit être un nombre',
     'amountNumber' => 'Le montant doit être un nombre.',
     'itemBlank' => 'Le nom de l\'élément ne peut pas être vide.',

@@ -119,6 +119,16 @@ module.exports = function initPurchaseProductUnitConversions($root) {
         rowIndex = $body.find('tr').length;
     }
 
+    function initUnitSelect($select) {
+        if (!$select.length || typeof $select.selectpicker !== 'function') {
+            return;
+        }
+        if ($select.data('selectpicker')) {
+            $select.selectpicker('destroy');
+        }
+        $select.selectpicker({ container: 'body' });
+    }
+
     function bindRowEvents($row) {
         const $factor = $row.find('.unit-conversion-factor');
         const $price = $row.find('.unit-conversion-selling-price');
@@ -194,7 +204,7 @@ module.exports = function initPurchaseProductUnitConversions($root) {
         }
 
         $body.append($row);
-        $row.find('.select-picker').selectpicker({ container: 'body' });
+        initUnitSelect($row.find('.unit-conversion-unit-select'));
         refreshFactorLabels();
         bindRowEvents($row);
         const $factor = $row.find('.unit-conversion-factor');
@@ -226,16 +236,7 @@ module.exports = function initPurchaseProductUnitConversions($root) {
 
     $body.find('tr').each(function () {
         const $row = $(this);
-        const $unitSelect = $row.find('.unit-conversion-unit-select.select-picker');
-
-        if ($unitSelect.length) {
-            if ($unitSelect.data('selectpicker')) {
-                $unitSelect.selectpicker('destroy');
-            }
-
-            $unitSelect.selectpicker({ container: 'body' });
-        }
-
+        initUnitSelect($row.find('.unit-conversion-unit-select'));
         bindRowEvents($row);
     });
 

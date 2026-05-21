@@ -4,6 +4,7 @@ namespace Modules\Production\Entities;
 
 use App\Models\BaseModel;
 use App\Models\Product;
+use App\Models\UnitType;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -42,5 +43,10 @@ class ProductionBomItem extends BaseModel
     public function componentProduct(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'component_product_id');
+    }
+
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(UnitType::class, 'unit_id');
     }
 }

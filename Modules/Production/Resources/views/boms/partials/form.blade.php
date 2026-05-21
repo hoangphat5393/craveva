@@ -1,12 +1,9 @@
 @php
-    use App\Enums\ProductType;
+    use Modules\Production\Support\ProductionBomLineCostCalculator;
 
     /** @var \Illuminate\Support\Collection<int, \App\Models\Product>|array $finishedGoods */
     /** @var \Illuminate\Support\Collection<int, \App\Models\Product>|array $componentProducts */
-    /** @var \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<int, \App\Models\Product>>|null $componentProductsByType */
     /** @var \Modules\Production\Entities\ProductionBom|null $bom */
-
-    $componentProductsByType = $componentProductsByType ?? collect($componentProducts ?? [])->groupBy('type');
 
     $lines = old('items');
     if (!is_array($lines)) {
@@ -17,16 +14,29 @@
             ->map(
                 static fn($it) => [
                     'component_product_id' => $it->component_product_id,
+                    'unit_id' => $it->unit_id,
                     'quantity' => $it->quantity,
                     'waste_percent' => $it->waste_percent ?? 0,
                 ],
             )
             ->all();
     }
-    $rowCount = max(count($lines), 1);
 
     $bomFgUnitByProductId = $bomFgUnitByProductId ?? $finishedGoods->keyBy('id')->map(static fn($p) => optional($p->unit)->unit_type ?? '—');
     $bomComponentUnitByProductId = $bomComponentUnitByProductId ?? $componentProducts->keyBy('id')->map(static fn($p) => optional($p->unit)->unit_type ?? '—');
+    $bomUnitsByProductId = $bomUnitsByProductId ?? [];
+    $bomUnitCostByProductAndUnit = $bomUnitCostByProductAndUnit ?? [];
+    $bomCostCalculator = $bomCostCalculator ?? app(ProductionBomLineCostCalculator::class);
+    $bomCompanyId = (int) company()->id;
+    $bomCurrencySetting = currency_format_setting(company()->currency_id);
+
+    $formatBomCost = static function (?float $value): string {
+        if ($value === null) {
+            return '—';
+        }
+
+        return currency_format($value, company()->currency_id);
+    };
 
     /** @param  \App\Models\Product  $product */
     $bomProductLabelWithUnit = static function ($product, \Illuminate\Support\Collection $unitByProductId): string {
@@ -37,19 +47,58 @@
 
         return $product->name;
     };
+
+    $componentProductById = collect($componentProducts ?? [])->keyBy('id');
+    $bomComponentLabelByProductId = $componentProductById->map(fn($p) => $bomProductLabelWithUnit($p, $bomComponentUnitByProductId));
+
+    $renderedLines = [];
+    foreach ($lines as $line) {
+        $cid = data_get($line, 'component_product_id');
+        if ($cid === '' || $cid === null) {
+            continue;
+        }
+        $product = $componentProductById->get((int) $cid);
+        $lineUnitId = data_get($line, 'unit_id');
+        $qty = data_get($line, 'quantity');
+        $waste = data_get($line, 'waste_percent', 0);
+        $unitsForRow = $bomUnitsByProductId[(string) $cid] ?? ($bomUnitsByProductId[(int) $cid] ?? []);
+        if (($lineUnitId === '' || $lineUnitId === null) && $unitsForRow !== []) {
+            $defaultUnit = collect($unitsForRow)->firstWhere('is_base', true) ?? $unitsForRow[0];
+            $lineUnitId = $defaultUnit['unit_id'] ?? $lineUnitId;
+        }
+        $lineCosts = $bomCostCalculator->lineCostFromInput(
+            [
+                'component_product_id' => $cid,
+                'unit_id' => $lineUnitId,
+                'quantity' => $qty,
+                'waste_percent' => $waste,
+            ],
+            $bomCompanyId,
+        );
+        $renderedLines[] = [
+            'component_product_id' => $cid,
+            'component_product_name' => $product ? $bomProductLabelWithUnit($product, $bomComponentUnitByProductId) : (string) $cid,
+            'unit_id' => $lineUnitId,
+            'quantity' => $qty,
+            'waste_percent' => $waste,
+            'units_for_row' => $unitsForRow,
+            'unit_cost' => $formatBomCost($lineCosts['unit_cost']),
+            'line_total' => $formatBomCost($lineCosts['line_total']),
+        ];
+    }
 @endphp
 
 <div class="form-row my-3">
     <div class="col-12">
-        <x-forms.select class="mb-0" fieldId="output_product_id" :fieldLabel="__('production::app.fgProduct')" fieldName="output_product_id" fieldRequired="true">
+        <x-forms.select class="mb-0" fieldId="output_product_id" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
             <option value="">—</option>
             @foreach ($finishedGoods as $p)
                 <option value="{{ $p->id }}" @selected((int) old('output_product_id', isset($bom) ? $bom->output_product_id : 0) === (int) $p->id)>{{ $bomProductLabelWithUnit($p, $bomFgUnitByProductId) }}</option>
             @endforeach
         </x-forms.select>
-        <p class="f-12 text-dark-grey mb-0 mt-2">@lang('production::app.bomFgProductHelp')</p>
+        <p class="f-12 text-dark-grey mb-0 mt-2">@lang('production::app.bomManufacturedProductHelp')</p>
         @if ($finishedGoods->isEmpty())
-            <div class="alert alert-warning f-13 mt-2 mb-0">@lang('production::app.bomNoFinishedGoods')</div>
+            <div class="alert alert-warning f-13 mt-2 mb-0">@lang('production::app.bomNoManufacturedProducts')</div>
         @endif
     </div>
 </div>
@@ -75,7 +124,7 @@
 
 <div class="form-group my-2">
     <input type="hidden" name="is_default" value="0" />
-    <x-forms.checkbox :checked="(bool) old('is_default', isset($bom) ? $bom->is_default : false)" :fieldLabel="__('production::app.bomDefault')" fieldName="is_default" fieldId="is_default" fieldValue="1" />
+    <x-forms.checkbox :checked="(bool) old('is_default', isset($bom) ? $bom->is_default : false)" :fieldLabel="__('production::app.bomDefaultForManufacturedProduct')" fieldName="is_default" fieldId="is_default" fieldValue="1" />
 </div>
 
 <div class="form-group my-3">
@@ -84,195 +133,302 @@
 </div>
 
 <h6 class="f-14 text-dark-grey font-weight-bold mb-1">@lang('production::app.bomLines')</h6>
-<p class="f-12 text-dark-grey mb-2">@lang('production::app.bomComponentHelp')</p>
+<p class="f-12 text-dark-grey mb-1">@lang('production::app.bomComponentHelpForManufacturedProduct')</p>
+<p class="f-12 text-muted mb-1">@lang('production::app.bomCostingHelp')</p>
+<p class="f-12 text-muted mb-1">@lang('production::app.bomUomSelectHelpForManufacturedProduct')</p>
+<p class="f-12 text-muted mb-2">@lang('production::app.bomWastePercentHelp')</p>
 @if ($componentProducts->isEmpty())
     <div class="alert alert-warning f-13">@lang('production::app.bomNoComponents')</div>
+@else
+    <div class="row mb-3">
+        <div class="col-md-6 col-lg-5">
+            <x-forms.label class="my-1" fieldId="add-bom-component" :fieldLabel="__('production::app.bomAddComponent')" />
+            <x-forms.input-group>
+                <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-bom-component">
+                    <option value="">{{ __('app.select') }} {{ __('production::app.rawMaterialProduct') }}</option>
+                    @foreach ($componentProducts as $p)
+                        <option value="{{ $p->id }}">{{ $bomProductLabelWithUnit($p, $bomComponentUnitByProductId) }}</option>
+                    @endforeach
+                </select>
+            </x-forms.input-group>
+        </div>
+    </div>
 @endif
 <div class="table-responsive bg-white rounded border">
     <table class="table table-sm mb-0">
         <thead>
             <tr class="f-14 text-dark-grey">
                 <th>@lang('production::app.componentProduct')</th>
-                <th style="width: 120px;">@lang('production::app.bomComponentUom')</th>
+                <th style="width: 150px;">@lang('production::app.bomComponentUom')</th>
                 <th style="width: 140px;">@lang('production::app.bomComponentQty')</th>
                 <th style="width: 100px;">@lang('production::app.bomWastePercent')</th>
-                <th style="width: 80px;">@lang('app.action')</th>
+                <th style="width: 110px;" class="text-right">@lang('production::app.bomComponentUnitCost')</th>
+                <th style="width: 110px;" class="text-right">@lang('production::app.bomComponentLineTotal')</th>
+                <th style="width: 48px;"></th>
             </tr>
         </thead>
         <tbody id="bom-lines-body">
-            @for ($i = 0; $i < $rowCount; $i++)
-                @php
-                    $line = $lines[$i] ?? [];
-                    $cid = old("items.$i.component_product_id", $line['component_product_id'] ?? '');
-                    $qty = old("items.$i.quantity", $line['quantity'] ?? '');
-                    $waste = old("items.$i.waste_percent", $line['waste_percent'] ?? 0);
-                @endphp
-                <tr class="bom-line-row" data-row-index="{{ $i }}">
-                    <td>
-                        <select name="items[{{ $i }}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8" data-unit-map='@json($bomComponentUnitByProductId->all())'>
-                            @include('production::boms.partials.component-select-options', [
-                                'selectedComponentId' => $cid,
-                                'componentProducts' => $componentProducts,
-                                'componentProductsByType' => $componentProductsByType,
-                                'bomComponentUnitByProductId' => $bomComponentUnitByProductId,
-                            ])
-                        </select>
-                    </td>
-                    @php
-                        $lineUom = $cid !== '' && $cid !== null ? (string) ($bomComponentUnitByProductId->get((string) $cid) ?? ($bomComponentUnitByProductId->get((int) $cid) ?? '—')) : '—';
-                    @endphp
-                    <td class="bom-line-uom f-14 text-dark-grey align-middle">{{ $lineUom }}</td>
-                    <td>
-                        <input type="number" step="0.0001" min="0.0001" name="items[{{ $i }}][quantity]" class="form-control height-35 f-14" value="{{ $qty }}">
-                    </td>
-                    <td>
-                        <input type="number" step="0.01" min="0" max="100" name="items[{{ $i }}][waste_percent]" class="form-control height-35 f-14" value="{{ $waste }}">
-                    </td>
-                    <td class="text-right">
-                        @if ($i > 0)
-                            <button type="button" class="btn btn-outline-danger btn-sm bom-remove-row" title="@lang('app.delete')">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        @endif
-                    </td>
-                </tr>
-            @endfor
+            @foreach ($renderedLines as $rowIndex => $lineRow)
+                @include('production::boms.partials.bom-line-row', [
+                    'rowIndex' => $rowIndex,
+                    'componentProductId' => $lineRow['component_product_id'],
+                    'componentProductName' => $lineRow['component_product_name'],
+                    'lineUnitId' => $lineRow['unit_id'],
+                    'qty' => $lineRow['quantity'],
+                    'waste' => $lineRow['waste_percent'],
+                    'unitsForRow' => $lineRow['units_for_row'],
+                    'lineUnitCost' => $lineRow['unit_cost'],
+                    'lineExtendedCost' => $lineRow['line_total'],
+                ])
+            @endforeach
         </tbody>
     </table>
 </div>
-<div class="mt-3">
-    <button type="button" id="bom-add-row" class="btn btn-outline-primary btn-sm">
-        <i class="fa fa-plus mr-1"></i>@lang('app.add')
-    </button>
+<div class="mt-3 d-flex flex-wrap align-items-center justify-content-end">
+    <p class="f-14 mb-0 text-dark-grey">
+        <span class="font-weight-bold">@lang('production::app.bomTotalComponentCostPerManufacturedProduct'):</span>
+        <span id="bom-total-component-cost" class="ml-1">—</span>
+    </p>
 </div>
-
-
-<template id="bom-component-options-template">
-    @include('production::boms.partials.component-select-options', [
-        'selectedComponentId' => '',
-        'componentProducts' => $componentProducts,
-        'componentProductsByType' => $componentProductsByType,
-        'bomComponentUnitByProductId' => $bomComponentUnitByProductId,
-    ])
-</template>
 
 @push('scripts')
     <script>
         (() => {
             const body = document.getElementById('bom-lines-body');
-            const addBtn = document.getElementById('bom-add-row');
+            const addComponentSelect = document.getElementById('add-bom-component');
             const bomForm = body ? body.closest('form') : null;
             const fgSelect = bomForm ?
                 (bomForm.querySelector('#output_product_id') || bomForm.querySelector('select[name="output_product_id"]')) :
                 null;
-            if (!body || !addBtn || !bomForm) {
+            if (!body || !bomForm) {
                 return;
             }
 
-            const componentOptionsTemplate = document.getElementById('bom-component-options-template');
-            const componentOptionsHtml = componentOptionsTemplate ? componentOptionsTemplate.innerHTML : '';
+            const bomUnitsByProductId = @json($bomUnitsByProductId);
+            const bomUnitCostByProductAndUnit = @json($bomUnitCostByProductAndUnit);
+            const bomComponentLabelByProductId = @json($bomComponentLabelByProductId);
+            const bomCurrencySymbol = @json(company()->currency->currency_symbol ?? '');
+            const bomCurrencyPosition = @json($bomCurrencySetting->currency_position ?? 'left');
+            const bomCurrencyDecimals = {{ (int) ($bomCurrencySetting->no_of_decimal ?? 2) }};
+            const bomCostDash = '—';
+            const bomTotalCostEl = document.getElementById('bom-total-component-cost');
+            const msgComponentAlreadyOnBom = @json(__('production::app.bomComponentAlreadyOnBom'));
+            const msgComponentMustDifferFromOutput = @json(__('production::app.bomComponentMustDifferFromManufacturedProduct'));
+            const msgAddAtLeastOneLine = @json(__('production::app.bomAddAtLeastOneLine'));
+            const deleteTitle = @json(__('app.delete'));
 
-            const collectSelectOptionElements = (selectEl) => {
-                if (!selectEl || typeof selectEl.querySelectorAll !== 'function') {
-                    return [];
+            const formatBomMoney = (value) => {
+                if (value === null || value === undefined || Number.isNaN(Number(value))) {
+                    return bomCostDash;
                 }
 
-                return Array.from(selectEl.querySelectorAll('option'));
-            };
-
-            const syncRemoveRowButtons = () => {
-                body.querySelectorAll('.bom-line-row').forEach((row, idx) => {
-                    const btn = row.querySelector('.bom-remove-row');
-                    if (!btn) {
-                        return;
-                    }
-                    btn.classList.toggle('d-none', idx === 0);
+                const amount = Number(value).toLocaleString(undefined, {
+                    minimumFractionDigits: bomCurrencyDecimals,
+                    maximumFractionDigits: bomCurrencyDecimals,
                 });
+
+                switch (bomCurrencyPosition) {
+                    case 'right':
+                        return amount + bomCurrencySymbol;
+                    case 'left_with_space':
+                        return bomCurrencySymbol + ' ' + amount;
+                    case 'right_with_space':
+                        return amount + ' ' + bomCurrencySymbol;
+                    default:
+                        return bomCurrencySymbol + amount;
+                }
             };
 
-            const refreshPicker = (selectEl) => {
-                if (!window.jQuery || typeof window.jQuery.fn.selectpicker !== 'function') {
-                    return;
+            const extendedCostFromInputs = (quantity, wastePercent, unitPrice) => {
+                if (unitPrice === null || unitPrice === undefined || quantity <= 0) {
+                    return null;
                 }
-                try {
-                    const ret = window.jQuery(selectEl).selectpicker('refresh');
-                    if (ret != null && typeof ret.then === 'function') {
-                        ret.catch(() => {});
+
+                const wasteMultiplier = 1 + (Math.max(0, wastePercent) / 100);
+
+                return Math.round(quantity * wasteMultiplier * unitPrice * 10000) / 10000;
+            };
+
+            const resolveUnitPrice = (productId, unitId) => {
+                if (productId === '' || unitId === '') {
+                    return null;
+                }
+
+                const productKey = String(productId);
+                const unitKey = String(unitId);
+                const byProduct = bomUnitCostByProductAndUnit[productKey] ??
+                    bomUnitCostByProductAndUnit[Number(productId)];
+                if (!byProduct || typeof byProduct !== 'object') {
+                    return null;
+                }
+
+                const price = byProduct[unitKey] ?? byProduct[Number(unitId)];
+
+                return price === null || price === undefined ? null : Number(price);
+            };
+
+            const defaultUnitIdForProduct = (productId) => {
+                const productKey = String(productId);
+                const units = bomUnitsByProductId[productKey] || bomUnitsByProductId[Number(productId)] || [];
+                if (!units.length) {
+                    return '';
+                }
+                const base = units.find((unit) => unit.is_base);
+
+                return String((base || units[0]).unit_id);
+            };
+
+            const pickerSelectValue = (selectEl) => {
+                if (!(selectEl instanceof HTMLSelectElement)) {
+                    return '';
+                }
+                if (selectEl.value) {
+                    return String(selectEl.value);
+                }
+                if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
+                    const $el = window.jQuery(selectEl);
+                    if ($el.data('selectpicker')) {
+                        const val = $el.selectpicker('val');
+                        if (val !== null && val !== undefined && val !== '') {
+                            return String(Array.isArray(val) ? val[0] : val);
+                        }
                     }
-                } catch (e) {
-                    /* bootstrap-select refresh can throw or reject */
                 }
+
+                return '';
             };
 
-
-            const parseUnitMap = (selectEl) => {
-                try {
-                    return JSON.parse(selectEl.getAttribute('data-unit-map') || '{}');
-                } catch (e) {
-                    return {};
-                }
-            };
-
-            const updateBomLineUom = (row) => {
+            const setRowUnitId = (row, unitId) => {
                 if (!row) {
                     return;
                 }
-                const componentSelect = row.querySelector('.bom-component-select');
-                const uomCell = row.querySelector('.bom-line-uom');
-                if (!(componentSelect instanceof HTMLSelectElement) || !uomCell) {
-                    return;
-                }
-                const unitMap = parseUnitMap(componentSelect);
-                const productId = String(componentSelect.value || '');
-                uomCell.textContent = productId !== '' && unitMap[productId] ? unitMap[productId] : '—';
+                row.dataset.unitId = unitId === null || unitId === '' ? '' : String(unitId);
             };
 
-            const applyFgRestrictionForRow = (row) => {
-                if (!row || typeof row.querySelector !== 'function') {
-                    return;
+            const lineUnitId = (row) => {
+                if (row?.dataset?.unitId) {
+                    return String(row.dataset.unitId);
                 }
-                const fgId = fgSelect ? String(fgSelect.value || '') : '';
-                const componentSelect = row.querySelector('.bom-component-select');
-                if (!(componentSelect instanceof HTMLSelectElement)) {
-                    return;
+                const unitSelect = row?.querySelector('.bom-line-unit-select');
+                if (unitSelect instanceof HTMLSelectElement && unitSelect.value) {
+                    return String(unitSelect.value);
                 }
 
-                const optionNodes = collectSelectOptionElements(componentSelect);
+                return '';
+            };
 
-                optionNodes.forEach((opt) => {
-                    if (!opt.value) {
-                        opt.disabled = false;
-                        opt.hidden = false;
-                        return;
-                    }
-                    const isFgOption = fgId !== '' && String(opt.value) === fgId;
-                    opt.disabled = isFgOption;
-                    opt.hidden = isFgOption;
+            const lineProductIdFromRow = (row) => {
+                if (row?.dataset?.productId) {
+                    return String(row.dataset.productId);
+                }
+
+                return lineProductId(row);
+            };
+
+            const effectiveLineUnitId = (row, forcedUnitId = null) => {
+                if (forcedUnitId !== null && forcedUnitId !== '') {
+                    return String(forcedUnitId);
+                }
+
+                return lineUnitId(row);
+            };
+
+            const scheduleBomCostRecalc = () => {
+                window.setTimeout(() => recalcBomTotals(), 0);
+            };
+
+            const populateBomLineUnitSelect = (row, productId, preferredUnitId = null) => {
+                const unitSelect = row.querySelector('.bom-line-unit-select');
+                if (!(unitSelect instanceof HTMLSelectElement)) {
+                    return '';
+                }
+
+                const productKey = String(productId);
+                const units = productId !== '' ?
+                    (bomUnitsByProductId[productKey] || bomUnitsByProductId[Number(productId)] || []) : [];
+                unitSelect.innerHTML = '';
+
+                if (!units.length) {
+                    const emptyOpt = document.createElement('option');
+                    emptyOpt.value = '';
+                    emptyOpt.textContent = bomCostDash;
+                    unitSelect.appendChild(emptyOpt);
+                    setRowUnitId(row, '');
+
+                    return '';
+                }
+
+                units.forEach((unit) => {
+                    const opt = document.createElement('option');
+                    opt.value = String(unit.unit_id);
+                    opt.textContent = unit.label;
+                    unitSelect.appendChild(opt);
                 });
 
-                if (fgId !== '' && String(componentSelect.value) === fgId) {
-                    componentSelect.value = '';
+                let selected = preferredUnitId !== null && preferredUnitId !== '' ?
+                    String(preferredUnitId) :
+                    defaultUnitIdForProduct(productKey);
+                if (selected && Array.from(unitSelect.options).some((opt) => opt.value === selected)) {
+                    unitSelect.value = selected;
+                } else {
+                    selected = '';
+                    unitSelect.value = '';
                 }
 
-                refreshPicker(componentSelect);
-                updateBomLineUom(row);
+                setRowUnitId(row, selected);
+
+                return selected;
             };
 
-            const applyFgRestrictionAllRows = () => {
+            const lineProductId = (row) => {
+                const hidden = row.querySelector('.bom-line-component-id');
+
+                return hidden instanceof HTMLInputElement ? String(hidden.value || '') : '';
+            };
+
+            const recalcBomLineCost = (row, forcedUnitId = null) => {
+                if (!row) {
+                    return;
+                }
+                const unitCostCell = row.querySelector('.bom-line-unit-cost');
+                const lineTotalCell = row.querySelector('.bom-line-extended-cost');
+                const qtyInput = row.querySelector('.bom-line-quantity');
+                const wasteInput = row.querySelector('.bom-line-waste');
+                if (!unitCostCell || !lineTotalCell) {
+                    return;
+                }
+
+                const productId = lineProductIdFromRow(row);
+                const unitId = effectiveLineUnitId(row, forcedUnitId);
+                const unitPrice = resolveUnitPrice(productId, unitId);
+                const quantity = qtyInput ? parseFloat(qtyInput.value || '0') : 0;
+                const wastePercent = wasteInput ? parseFloat(wasteInput.value || '0') : 0;
+                const lineTotal = extendedCostFromInputs(quantity, wastePercent, unitPrice);
+
+                unitCostCell.textContent = formatBomMoney(unitPrice);
+                lineTotalCell.textContent = formatBomMoney(lineTotal);
+            };
+
+            const recalcBomTotals = () => {
+                let total = 0;
+                let hasAny = false;
                 body.querySelectorAll('.bom-line-row').forEach((row) => {
-                    applyFgRestrictionForRow(row);
-                    updateBomLineUom(row);
+                    recalcBomLineCost(row);
+                    const qtyInput = row.querySelector('.bom-line-quantity');
+                    const wasteInput = row.querySelector('.bom-line-waste');
+                    const productId = lineProductIdFromRow(row);
+                    const unitId = lineUnitId(row);
+                    const unitPrice = resolveUnitPrice(productId, unitId);
+                    const quantity = qtyInput ? parseFloat(qtyInput.value || '0') : 0;
+                    const wastePercent = wasteInput ? parseFloat(wasteInput.value || '0') : 0;
+                    const lineTotal = extendedCostFromInputs(quantity, wastePercent, unitPrice);
+                    if (lineTotal !== null) {
+                        total += lineTotal;
+                        hasAny = true;
+                    }
                 });
-            };
-
-            const enforceComponentNotEqualFg = (componentSelect) => {
-                if (!componentSelect || !fgSelect) {
-                    return;
-                }
-                const fgId = String(fgSelect.value || '');
-                if (fgId !== '' && String(componentSelect.value || '') === fgId) {
-                    componentSelect.value = '';
-                    refreshPicker(componentSelect);
+                if (bomTotalCostEl) {
+                    bomTotalCostEl.textContent = hasAny ? formatBomMoney(Math.round(total * 10000) / 10000) : bomCostDash;
                 }
             };
 
@@ -287,151 +443,142 @@
                         field.setAttribute('name', name.replace(/items\[\d+\]/, `items[${index}]`));
                     });
                 });
-                syncRemoveRowButtons();
             };
 
-            addBtn.addEventListener('click', () => {
+            const rowHasProductId = (productId) => Array.from(body.querySelectorAll('.bom-line-row'))
+                .some((row) => lineProductId(row) === String(productId));
+
+            const showBomAlert = (text) => {
+                if (window.Swal && typeof window.Swal.fire === 'function') {
+                    window.Swal.fire({
+                        icon: 'error',
+                        title: @json(__('app.error')),
+                        text,
+                    });
+
+                    return;
+                }
+                alert(text);
+            };
+
+            const appendBomLine = (productId) => {
+                const pid = String(productId || '');
+                if (pid === '') {
+                    return;
+                }
+
+                const fgId = fgSelect ? String(fgSelect.value || '') : '';
+                if (fgId !== '' && pid === fgId) {
+                    showBomAlert(msgComponentMustDifferFromOutput);
+
+                    return;
+                }
+
+                if (rowHasProductId(pid)) {
+                    showBomAlert(msgComponentAlreadyOnBom);
+
+                    return;
+                }
+
+                const label = bomComponentLabelByProductId[pid] || bomComponentLabelByProductId[Number(pid)] || pid;
                 const newIndex = body.querySelectorAll('.bom-line-row').length;
-                const firstComponentSelect = body.querySelector('.bom-component-select');
-                const unitMapAttr = firstComponentSelect ?
-                    (firstComponentSelect.getAttribute('data-unit-map') || '{}') :
-                    '{}';
                 const tr = document.createElement('tr');
                 tr.className = 'bom-line-row';
                 tr.dataset.rowIndex = String(newIndex);
+                tr.dataset.productId = pid;
+                tr.dataset.unitId = '';
                 tr.innerHTML = `
-                    <td>
-                        <select name="items[${newIndex}][component_product_id]" class="form-control select-picker f-14 bom-component-select" data-container="body" data-size="8" data-unit-map='${unitMapAttr}'>
-                            ${componentOptionsHtml}
+                    <td class="align-middle">
+                        <span class="f-14 text-dark-grey bom-line-product-name"></span>
+                        <input type="hidden" name="items[${newIndex}][component_product_id]" class="bom-line-component-id" value="">
+                    </td>
+                    <td class="align-middle">
+                        <select name="items[${newIndex}][unit_id]" class="form-control height-35 f-14 w-100 bom-line-unit-select">
+                            <option value="">—</option>
                         </select>
                     </td>
-                    <td class="bom-line-uom f-14 text-dark-grey align-middle">—</td>
                     <td>
-                        <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14" value="">
+                        <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14 bom-line-quantity" value="1">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" max="100" name="items[${newIndex}][waste_percent]" class="form-control height-35 f-14" value="0">
+                        <input type="number" step="0.01" min="0" max="100" name="items[${newIndex}][waste_percent]" class="form-control height-35 f-14 bom-line-waste" value="0">
                     </td>
-                    <td class="text-right">
-                        <button type="button" class="btn btn-outline-danger btn-sm bom-remove-row" title="@lang('app.delete')">
+                    <td class="bom-line-unit-cost f-14 text-dark-grey align-middle text-right">${bomCostDash}</td>
+                    <td class="bom-line-extended-cost f-14 text-dark-grey align-middle text-right">${bomCostDash}</td>
+                    <td class="text-right align-middle">
+                        <button type="button" class="btn btn-outline-danger btn-sm bom-remove-row" title="${deleteTitle}">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
                 `;
                 body.appendChild(tr);
-                const newComponentSelect = tr.querySelector('.bom-component-select');
-                if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
-                    window.jQuery(tr).find('.select-picker').selectpicker();
+                const nameEl = tr.querySelector('.bom-line-product-name');
+                const hiddenId = tr.querySelector('.bom-line-component-id');
+                if (nameEl) {
+                    nameEl.textContent = label;
                 }
-                window.setTimeout(() => {
-                    applyFgRestrictionForRow(tr);
-                    updateBomLineUom(tr);
-                    syncRemoveRowButtons();
-                    if (newComponentSelect instanceof HTMLSelectElement) {
-                        bindBomUnitPickerListeners();
-                    }
-                }, 0);
+                if (hiddenId instanceof HTMLInputElement) {
+                    hiddenId.value = pid;
+                }
+                const selectedUnitId = populateBomLineUnitSelect(tr, pid, null);
+                recalcBomLineCost(tr, selectedUnitId);
+                scheduleBomCostRecalc();
+            };
 
-                if (newComponentSelect) {
-                    if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
-                        const pickerButton = window.jQuery(newComponentSelect).siblings('button.dropdown-toggle');
-                        if (pickerButton.length > 0) {
-                            pickerButton.trigger('focus');
-                        }
-                    } else {
-                        newComponentSelect.focus();
-                    }
+            const resetAddComponentPicker = () => {
+                if (!(addComponentSelect instanceof HTMLSelectElement)) {
+                    return;
                 }
+                addComponentSelect.value = '';
+                if (window.jQuery && typeof window.jQuery.fn.selectpicker === 'function') {
+                    window.jQuery(addComponentSelect).selectpicker('val', '');
+                    window.jQuery(addComponentSelect).selectpicker('refresh');
+                }
+            };
+
+            if (addComponentSelect instanceof HTMLSelectElement) {
+                const onAddComponentPick = () => {
+                    const id = pickerSelectValue(addComponentSelect);
+                    if (id !== '') {
+                        appendBomLine(id);
+                        resetAddComponentPicker();
+                    }
+                };
+
+                addComponentSelect.addEventListener('change', onAddComponentPick);
+                if (window.jQuery) {
+                    window.jQuery(function() {
+                        window.jQuery(document)
+                            .off('changed.bs.select.bomAddComponent', '#add-bom-component')
+                            .on('changed.bs.select.bomAddComponent', '#add-bom-component', onAddComponentPick);
+                    });
+                }
+            }
+
+            body.addEventListener('change', (event) => {
+                const target = event.target;
+                if (!(target instanceof HTMLSelectElement) || !target.classList.contains('bom-line-unit-select')) {
+                    return;
+                }
+                const row = target.closest('.bom-line-row');
+                const unitId = String(target.value || '');
+                setRowUnitId(row, unitId);
+                recalcBomLineCost(row, unitId);
+                recalcBomTotals();
             });
 
-            const onComponentSelectInteraction = (selectEl) => {
-                if (!(selectEl instanceof HTMLSelectElement) || !selectEl.classList.contains('bom-component-select')) {
+            body.addEventListener('input', (event) => {
+                const target = event.target;
+                if (!(target instanceof HTMLInputElement)) {
                     return;
                 }
-                window.setTimeout(() => {
-                    enforceComponentNotEqualFg(selectEl);
-                }, 0);
-            };
-
-            let bomFgSyncQueued = false;
-            const onFgSelectInteraction = () => {
-                if (bomFgSyncQueued) {
+                if (!target.classList.contains('bom-line-quantity') && !target.classList.contains('bom-line-waste')) {
                     return;
                 }
-                bomFgSyncQueued = true;
-                window.setTimeout(() => {
-                    bomFgSyncQueued = false;
-                    applyFgRestrictionAllRows();
-                }, 0);
-            };
-
-            /**
-             * Bootstrap-select: use document delegation so listeners survive re-init / `data-container="body"`.
-             */
-            const bomLineComponentSelectHandler = function() {
-                onComponentSelectInteraction(this);
-            };
-            const bomFgSelectHandler = function() {
-                onFgSelectInteraction();
-            };
-
-            /**
-             * Capture-phase `change` + jQuery delegation: enforce RM ≠ FG when picks change.
-             */
-            const bomDocumentChangeCapture = (ev) => {
-                if (!bomForm) {
-                    return;
-                }
-                const t = ev.target;
-                if (!(t instanceof HTMLSelectElement) || !bomForm.contains(t)) {
-                    return;
-                }
-                if (t.classList.contains('bom-component-select') && body.contains(t)) {
-                    onComponentSelectInteraction(t);
-
-                    return;
-                }
-                if (fgSelect && t === fgSelect) {
-                    onFgSelectInteraction();
-                }
-            };
-
-            const attachBomUnitDocumentListeners = () => {
-                document.removeEventListener('change', bomDocumentChangeCapture, true);
-                document.addEventListener('change', bomDocumentChangeCapture, true);
-                if (!window.jQuery) {
-                    return;
-                }
-                const $ = window.jQuery;
-                $(document)
-                    .off('changed.bs.select.bomUnitForm', '.bom-component-select')
-                    .on('changed.bs.select.bomUnitForm', '.bom-component-select', bomLineComponentSelectHandler);
-                $(document)
-                    .off('hidden.bs.select.bomUnitForm', '.bom-component-select')
-                    .on('hidden.bs.select.bomUnitForm', '.bom-component-select', bomLineComponentSelectHandler);
-                if (fgSelect) {
-                    $(document)
-                        .off('changed.bs.select.bomUnitFormFg', '#output_product_id')
-                        .on('changed.bs.select.bomUnitFormFg', '#output_product_id', bomFgSelectHandler);
-                    $(document)
-                        .off('hidden.bs.select.bomUnitFormFg', '#output_product_id')
-                        .on('hidden.bs.select.bomUnitFormFg', '#output_product_id', bomFgSelectHandler);
-                }
-            };
-
-            const bindBomUnitPickerListeners = () => {
-                attachBomUnitDocumentListeners();
-            };
-
-            if (window.jQuery) {
-                window.jQuery(function() {
-                    window.setTimeout(() => attachBomUnitDocumentListeners(), 0);
-                });
-                window.jQuery(window).on('load', () => {
-                    window.setTimeout(() => attachBomUnitDocumentListeners(), 0);
-                    window.setTimeout(() => attachBomUnitDocumentListeners(), 250);
-                });
-            }
+                const row = target.closest('.bom-line-row');
+                recalcBomLineCost(row);
+                recalcBomTotals();
+            });
 
             body.addEventListener('click', (event) => {
                 const target = event.target instanceof Element ? event.target.closest('.bom-remove-row') : null;
@@ -439,63 +586,45 @@
                     return;
                 }
 
-                const rows = body.querySelectorAll('.bom-line-row');
-                if (rows.length <= 1) {
-                    const onlyRow = rows[0];
-                    onlyRow.querySelectorAll('input').forEach((input) => {
-                        input.value = '';
-                    });
-                    onlyRow.querySelectorAll('select').forEach((select) => {
-                        select.value = '';
-                        refreshPicker(select);
-                    });
-                    applyFgRestrictionAllRows();
-                    return;
-                }
-
                 target.closest('.bom-line-row')?.remove();
                 reindexRows();
-                applyFgRestrictionAllRows();
+                recalcBomTotals();
             });
-
-            bindBomUnitPickerListeners();
 
             if (bomForm) {
                 bomForm.addEventListener('submit', (event) => {
+                    const rows = body.querySelectorAll('.bom-line-row');
+                    if (rows.length < 1) {
+                        event.preventDefault();
+                        showBomAlert(msgAddAtLeastOneLine);
+
+                        return;
+                    }
+
                     const fgId = fgSelect ? String(fgSelect.value || '') : '';
                     if (fgId === '') {
                         return;
                     }
-                    const hasInvalid = Array.from(body.querySelectorAll('.bom-component-select'))
-                        .some((select) => String(select.value || '') === fgId);
+
+                    const hasInvalid = Array.from(rows)
+                        .some((row) => lineProductId(row) === fgId);
                     if (hasInvalid) {
                         event.preventDefault();
-                        applyFgRestrictionAllRows();
-                        if (window.Swal && typeof window.Swal.fire === 'function') {
-                            window.Swal.fire({
-                                icon: 'error',
-                                title: @json(__('app.error')),
-                                text: @json(__('production::app.bomComponentMustDifferFromOutput')),
-                            });
-                        } else {
-                            alert(@json(__('production::app.bomComponentMustDifferFromOutput')));
-                        }
+                        showBomAlert(msgComponentMustDifferFromOutput);
                     }
                 });
             }
 
-            applyFgRestrictionAllRows();
-            syncRemoveRowButtons();
-            window.setTimeout(() => {
-                bindBomUnitPickerListeners();
-                applyFgRestrictionAllRows();
-                syncRemoveRowButtons();
-            }, 150);
-            window.setTimeout(() => {
-                bindBomUnitPickerListeners();
-                applyFgRestrictionAllRows();
-                syncRemoveRowButtons();
-            }, 500);
+            body.querySelectorAll('.bom-line-row').forEach((row) => {
+                const productId = lineProductId(row);
+                const keepUnitId = lineUnitId(row);
+                if (productId !== '') {
+                    const selectedUnitId = populateBomLineUnitSelect(row, productId, keepUnitId);
+                    recalcBomLineCost(row, selectedUnitId || keepUnitId);
+                }
+            });
+
+            scheduleBomCostRecalc();
         })();
     </script>
 @endpush

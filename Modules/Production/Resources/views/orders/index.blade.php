@@ -77,7 +77,7 @@
                 <thead>
                     <tr>
                         <th class="f-14 text-dark-grey">ID</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.fgProduct')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.manufacturedProduct')</th>
                         <th class="f-14 text-dark-grey">@lang('modules.invoices.unitType')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.plannedQty')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.status')</th>

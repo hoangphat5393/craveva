@@ -1,14 +1,12 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('modules.invoices.unitType')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-form id="createUnitType">
         <div class="row border-top-grey ">
             <div class="col-sm-12">
-                <x-forms.text fieldId="unit_type" :fieldLabel="__('modules.invoices.unitType')"
-                    fieldName="unit_type" fieldRequired="true" :fieldPlaceholder="__('placeholders.category')" fieldValue="{{ $unitType->unit_type}}">
+                <x-forms.text fieldId="unit_type" :fieldLabel="__('modules.invoices.unitType')" fieldName="unit_type" fieldRequired="true" :fieldPlaceholder="__('placeholders.category')" fieldValue="{{ $unitType->unit_type }}">
                 </x-forms.text>
             </div>
         </div>
@@ -57,14 +55,11 @@
                 },
                 blockUI: true,
                 success: function(response) {
-                    if (response.status == 'success') {
-                        $('#unit_type_id').html(response.data);
-                        $('#unit_type_id').selectpicker('refresh');
+                    if (response.status == 'success' && typeof window.refreshProductUnitTypeDropdown === 'function') {
+                        window.refreshProductUnitTypeDropdown(response.data);
                     }
                 }
             })
         }
     });
-
 </script>
-

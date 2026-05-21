@@ -40,7 +40,7 @@
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">
                 @lang('modules.invoices.unitType')</p>
             <div class="select-status d-flex">
-                <select class="form-control select-picker" name="unit_type_id" id="unit_type_id">
+                <select class="form-control select-picker" name="unit_type_id" id="filter_unit_type_id">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($unitTypes as $unitType)
                         <option value="{{ $unitType->id }}">{{ $unitType->unit_type }}</option>
@@ -178,7 +178,7 @@
             var categoryID = $('#category_id').val();
             var subCategoryID = $('#sub_category').val();
             var searchText = $('#search-text-field').val();
-            var unitTypeID = $('#unit_type_id').val();
+            var unitTypeID = $('#filter_unit_type_id').val();
 
             data['category_id'] = categoryID;
             data['sub_category_id'] = subCategoryID;
@@ -189,14 +189,14 @@
             window.LaravelDataTables["products-table"].draw(true);
         }
 
-        $('#category_id, #sub_category, #unit_type_id').on('change keyup', function() {
+        $('#category_id, #sub_category, #filter_unit_type_id').on('change keyup', function() {
             if ($('#category_id').val() != "") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
             } else if ($('#sub_category').val() != "") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
-            } else if ($('#unit_type_id').val() != "") {
+            } else if ($('#filter_unit_type_id').val() != "") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
             } else {
@@ -220,7 +220,7 @@
 
             $('#sub_category').html('<option value="all">@lang('app.all')</option>');
 
-            $('#unit_type_id').val('all');
+            $('#filter_unit_type_id').val('all');
 
             $('.select-picker').selectpicker("refresh");
 

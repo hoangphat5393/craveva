@@ -82,7 +82,7 @@ class StoreProductionOrderRequest extends FormRequest
             }
 
             if ((int) $bom->output_product_id !== (int) $this->input('output_product_id')) {
-                $validator->errors()->add('production_bom_id', __('production::app.bomOutputMismatch'));
+                $validator->errors()->add('production_bom_id', __('production::app.bomOutputManufacturedProductMismatch'));
             }
         });
     }
@@ -93,7 +93,7 @@ class StoreProductionOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'output_product_id.required' => __('validation.required', ['attribute' => __('production::app.fgProduct')]),
+            'output_product_id.required' => __('validation.required', ['attribute' => __('production::app.manufacturedProduct')]),
             'planned_quantity.min' => __('validation.min.numeric', ['attribute' => __('production::app.plannedQty'), 'min' => '0.0001']),
             'sales_order_id.exists' => __('production::app.salesOrderMustBeOpen'),
         ];

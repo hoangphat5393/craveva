@@ -1,6 +1,47 @@
 const initPurchaseProductUnitConversions = require('./purchase-product-unit-conversions');
 window.initPurchaseProductUnitConversions = initPurchaseProductUnitConversions;
 
+/**
+ * Refresh product form unit type select after add/edit in modal.
+ * List filters also use id unit_type_id; scope to name="unit_type" / RIGHT_MODAL.
+ */
+window.refreshProductUnitTypeDropdown = function refreshProductUnitTypeDropdown(optionsHtml) {
+    if (!optionsHtml) {
+        return;
+    }
+
+    var $select = typeof RIGHT_MODAL !== 'undefined' ? $(RIGHT_MODAL).find('select[name="unit_type"]') : $();
+    if (!$select.length) {
+        $select = $('select[name="unit_type"]#unit_type_id, select.unit_type[name="unit_type"]');
+    }
+    if (!$select.length) {
+        $select = $('#unit_type_id').filter('[name="unit_type"]');
+    }
+    if (!$select.length) {
+        return;
+    }
+
+    $select.html(optionsHtml);
+    if (typeof $select.selectpicker === 'function') {
+        $select.selectpicker('refresh');
+    }
+    $select.trigger('change');
+
+    var $section = $select.closest('form').find('#product-unit-conversions-section');
+    if ($section.length) {
+        var opts = [];
+        $('<div>').html(optionsHtml).find('option').each(function () {
+            var val = $(this).attr('value');
+            if (val) {
+                opts.push({ id: parseInt(val, 10), label: $(this).text().trim() });
+            }
+        });
+        if (opts.length) {
+            $section.attr('data-unit-options', JSON.stringify(opts));
+        }
+    }
+};
+
 window.init = function init() {
     var parent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     if (parent != '') {
@@ -9,10 +50,26 @@ window.init = function init() {
     /*******************************************************
                  SELECT Start
   *******************************************************/
+    var $selectPickers = $(parent + '.select-picker').filter(function () {
+        var $el = $(this);
+        if ($el.closest('#product-unit-conversions-section').length > 0) {
+            return false;
+        }
+        if ($el.hasClass('bom-line-unit-select') || $el.closest('#bom-lines-body').length > 0) {
+            return false;
+        }
+
+        return true;
+    });
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-        $(parent + '.select-picker').selectpicker('mobile');
+        $selectPickers.selectpicker('mobile');
     } else {
-        $(parent + '.select-picker').selectpicker();
+        $selectPickers.each(function () {
+            var $el = $(this);
+            if (!$el.data('selectpicker')) {
+                $el.selectpicker();
+            }
+        });
     }
     // $(parent + ".select2").select2();
     /*******************************************************

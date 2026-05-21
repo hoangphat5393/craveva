@@ -53,6 +53,18 @@ enum ProductType: string
     }
 
     /**
+     * Production BOM line components (raw materials only).
+     *
+     * @return list<string>
+     */
+    public static function bomRawMaterialValues(): array
+    {
+        return [
+            self::RawMaterial->value,
+        ];
+    }
+
+    /**
      * BOM component dropdown order (matches {@see self::bomComponentValues()}).
      *
      * @return list<self>
@@ -79,7 +91,7 @@ enum ProductType: string
     public function label(): string
     {
         return match ($this) {
-            self::Goods => __('purchase::modules.product.finishedGoods'),
+            self::Goods => __('purchase::modules.product.manufacturedProduct'),
             self::Service => __('purchase::modules.product.service'),
             self::RawMaterial => __('purchase::modules.product.rawMaterial'),
             self::SemiFinished => __('purchase::modules.product.semiFinished'),

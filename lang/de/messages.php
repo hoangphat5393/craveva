@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Wählen Sie mindestens 1.',
     'addItem' => 'Fügen Sie mindestens 1 Artikel hinzu.',
     'quantityNumber' => 'Die Menge sollte eine Zahl sein',
+    'salesDoShipQuantityRequired' => 'Die Versandmenge muss in mindestens einer Zeile größer als null sein. Bearbeiten Sie den Lieferschein und tragen Sie die Versandmengen ein.',
     'unitPriceNumber' => 'Der Stückpreis sollte eine Zahl sein',
     'amountNumber' => 'Der Betrag sollte eine Zahl sein.',
     'itemBlank' => 'Der Elementname darf nicht leer sein.',

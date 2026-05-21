@@ -6,7 +6,7 @@
             <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
                 <div class="d-flex flex-wrap align-items-center mt-3">
                     <form method="get" action="{{ route('production.boms.index') }}" class="form-inline d-flex flex-wrap align-items-center mr-3 mb-2">
-                        <label class="f-14 text-dark-grey mr-2 mb-0">@lang('production::app.fgProduct')</label>
+                        <label class="f-14 text-dark-grey mr-2 mb-0">@lang('production::app.manufacturedProduct')</label>
                         <select name="output_product_id" class="form-control select-picker height-35 f-14" data-container="body" data-size="8" onchange="this.form.submit()">
                             <option value="">@lang('app.all')</option>
                             @foreach ($finishedGoodsFilter as $p)
@@ -36,7 +36,7 @@
                 <thead>
                     <tr>
                         <th class="f-14 text-dark-grey">ID</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.fgProduct')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.manufacturedProduct')</th>
                         <th class="f-14 text-dark-grey">@lang('modules.invoices.unitType')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomVersion')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomCode')</th>

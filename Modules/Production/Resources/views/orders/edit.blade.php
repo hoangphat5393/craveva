@@ -25,7 +25,7 @@
                 <form method="post" action="{{ route('production.orders.update', $order) }}" class="bg-white rounded p-4">
                     @csrf
                     @method('put')
-                    <x-forms.select fieldId="output_product_id" :fieldLabel="__('production::app.fgProduct')" fieldName="output_product_id" fieldRequired="true">
+                    <x-forms.select fieldId="output_product_id" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
                         @foreach ($finishedGoods as $p)
                             <option value="{{ $p->id }}" @selected(old('output_product_id', $order->output_product_id) == $p->id)>{{ $p->name }}</option>
                         @endforeach
@@ -50,7 +50,7 @@
                         @endforeach
                     </x-forms.select>
 
-                    <x-forms.select fieldId="fg_warehouse_id" :fieldLabel="__('production::app.finishedGoodsWarehouse')" fieldName="fg_warehouse_id" fieldRequired="true">
+                    <x-forms.select fieldId="fg_warehouse_id" :fieldLabel="__('production::app.manufacturedProductWarehouse')" fieldName="fg_warehouse_id" fieldRequired="true">
                         @foreach ($warehouses as $w)
                             <option value="{{ $w->id }}" @selected(old('fg_warehouse_id', $order->fg_warehouse_id) == $w->id)>{{ $w->name }}</option>
                         @endforeach

@@ -33,6 +33,7 @@ return [
     'checkDayHoliday' => 'Alegeți cel puțin 1.',
     'addItem' => 'Adăugați cel puțin 1 articol.',
     'quantityNumber' => 'Cantitatea ar trebui să fie un număr',
+    'salesDoShipQuantityRequired' => 'Cantitatea expediată trebuie să fie mai mare decât zero pe cel puțin o linie. Editați comanda de livrare și completați cantitățile.',
     'unitPriceNumber' => 'Prețul unitar ar trebui să fie un număr',
     'amountNumber' => 'Suma ar trebui să fie un număr.',
     'itemBlank' => 'Numele articolului nu poate fi necompletat.',

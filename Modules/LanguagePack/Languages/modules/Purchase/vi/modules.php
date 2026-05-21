@@ -5,6 +5,7 @@ return [
         'type' => 'Kiểu',
         'goods' => 'Các mặt hàng',
         'finishedGoods' => 'Thành phẩm',
+        'manufacturedProduct' => 'Sản phẩm sản xuất',
         'rawMaterial' => 'Nguyên liệu',
         'semiFinished' => 'Bán thành phẩm',
         'packaging' => 'Bao bì',

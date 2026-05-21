@@ -72,9 +72,12 @@ class Controller extends BaseController
             $isSuperAdminRoute = request()->routeIs('superadmin.*')
                 || request()->routeIs('app-settings.*')
                 || (request()->route() && str_starts_with(request()->route()->uri(), 'account/settings'));
+            $globalAppName = $this->global?->global_app_name ?? config('app.name', 'Craveva');
+            $globalLocale = $this->global?->locale ?? config('app.locale', 'en');
+
             if ($isSuperAdminRoute && auth()->check()) {
-                $this->companyName = $this->global->global_app_name;
-                $this->appName = $this->global->global_app_name;
+                $this->companyName = $globalAppName;
+                $this->appName = $globalAppName;
             } elseif ($hasTenantCompany) {
                 // Superadmin không có company_id vẫn có thể vào tenant qua session('company');
                 // companyOrGlobalSetting() lúc đó là GlobalSetting — phải lấy tên từ model Company trong session.
@@ -82,10 +85,10 @@ class Controller extends BaseController
                 $app = $activeTenant->app_name;
                 $this->appName = (is_string($app) && $app !== '') ? $app : $activeTenant->company_name;
             } else {
-                $this->companyName = $this->global->global_app_name;
-                $this->appName = $this->global->global_app_name;
+                $this->companyName = $globalAppName;
+                $this->appName = $globalAppName;
             }
-            $this->locale = session('locale') ? session('locale') : ($hasTenantCompany ? $activeTenant->locale : $this->global->locale);
+            $this->locale = session('locale') ? session('locale') : ($hasTenantCompany ? $activeTenant->locale : $globalLocale);
 
             $this->taskBoardColumnLength = $hasTenantCompany
                 ? $activeTenant->taskboard_length
@@ -97,7 +100,7 @@ class Controller extends BaseController
             App::setLocale($this->locale);
             Carbon::setLocale($this->locale);
 
-            setlocale(LC_TIME, $this->locale . '_' . mb_strtoupper($this->locale));
+            setlocale(LC_TIME, $this->locale.'_'.mb_strtoupper($this->locale));
 
             // config(['app.debug' => $this->global->app_debug]);
 

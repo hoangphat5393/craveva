@@ -265,18 +265,13 @@
             $('.purchase_information').addClass('d-none');
         }
 
-        $('#save-product-form').click(function() {
-            const url = "{{ route('purchase-products.update', [$product->id]) }}";
-            const $form = $('#save-product-data-form');
-            $form.find('select.select-picker').each(function() {
-                const $select = $(this);
-                if (typeof $select.selectpicker === 'function') {
-                    $select.val($select.selectpicker('val'));
-                }
-            });
+        @include('purchase::purchase-products.partials.product-form-client-validation')
 
-            window.apiHttp.postUrlEncoded(url, $form.serialize())
-                .then(function(response) {
+        $('#save-product-form').click(function() {
+            window.submitPurchaseProductForm({
+                formSelector: '#save-product-data-form',
+                url: "{{ route('purchase-products.update', [$product->id]) }}",
+                onSuccess: function(response) {
                     if (productDropzone.getQueuedFiles().length > 0) {
                         productID = response.productID
                         defaultImage = response.defaultImage;
@@ -290,10 +285,8 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                })
-                .catch(function(err) {
-                    $.handleApiFormError(err);
-                });
+                },
+            });
         });
 
         $('#product_category_id').change(function(e) {

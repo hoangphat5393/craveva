@@ -242,27 +242,31 @@ if (! function_exists('global_setting')) {
     // @codingStandardsIgnoreLine
     function global_setting()
     {
-        if (! cache()->has('global_setting')) {
-            $setting = GlobalSetting::first();
-            cache(['global_setting' => $setting]);
+        if (cache()->has('global_setting')) {
+            try {
+                $setting = cache('global_setting');
 
-            return $setting;
-        }
+                if ($setting instanceof GlobalSetting) {
+                    // Trigger decrypt on all encrypted attributes to detect wrong APP_KEY (e.g. after DB restore)
+                    $setting->getAttributeValue('google_map_key');
+                    $setting->getAttributeValue('google_client_secret');
 
-        try {
-            $setting = cache('global_setting');
-            // Trigger decrypt on all encrypted attributes to detect wrong APP_KEY (e.g. after DB restore)
-            if ($setting instanceof GlobalSetting) {
-                $setting->getAttributeValue('google_map_key');
-                $setting->getAttributeValue('google_client_secret');
+                    return $setting;
+                }
+
+                cache()->forget('global_setting');
+            } catch (DecryptException $e) {
+                cache()->forget('global_setting');
             }
-
-            return $setting;
-        } catch (DecryptException $e) {
-            cache()->forget('global_setting');
-
-            return GlobalSetting::first();
         }
+
+        $setting = GlobalSetting::first();
+
+        if ($setting instanceof GlobalSetting) {
+            cache(['global_setting' => $setting]);
+        }
+
+        return $setting;
     }
 }
 
@@ -297,11 +301,25 @@ if (! function_exists('language_setting_locale')) {
     // @codingStandardsIgnoreLine
     function language_setting_locale($locale)
     {
-        if (! cache()->has('language_setting_'.$locale)) {
-            cache(['language_setting_'.$locale => LanguageSetting::where('language_code', $locale)->first()]);
+        $cacheKey = 'language_setting_'.$locale;
+
+        if (cache()->has($cacheKey)) {
+            $cached = cache($cacheKey);
+
+            if ($cached instanceof LanguageSetting) {
+                return $cached;
+            }
+
+            cache()->forget($cacheKey);
         }
 
-        return cache('language_setting_'.$locale);
+        $setting = LanguageSetting::where('language_code', $locale)->first();
+
+        if ($setting instanceof LanguageSetting) {
+            cache([$cacheKey => $setting]);
+        }
+
+        return $setting;
     }
 }
 

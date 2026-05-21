@@ -24,6 +24,9 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use InvalidArgumentException;
 use Modules\Purchase\DataTables\PurchaseProductsDataTable;
 use Modules\Purchase\DataTables\PurchaseProductTransaction;
 use Modules\Purchase\Entities\PurchaseInventory;
@@ -35,6 +38,7 @@ use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
 use Modules\Purchase\Events\PurchaseInventoryEvent;
 use Modules\Purchase\Http\Requests\Product\StorePurchaseProductRequest;
 use Modules\Purchase\Http\Requests\Product\UpdatePurchaseProductRequest;
+use Modules\Warehouse\Services\ProductUnitConversionSyncService;
 
 class PurchaseProductController extends AccountBaseController
 {
@@ -102,6 +106,7 @@ class PurchaseProductController extends AccountBaseController
         }
 
         $this->unit_types = UnitType::all();
+        $this->assignProductUnitConversionFormData($this->product);
 
         if (request()->ajax()) {
             $html = view('purchase::purchase-products.ajax.create', $this->data)->render();
@@ -173,7 +178,16 @@ class PurchaseProductController extends AccountBaseController
             $product->downloadable_file = Files::uploadLocalOrS3(request()->downloadable_file, ProductFiles::FILE_PATH);
         }
 
-        $product->save();
+        try {
+            DB::transaction(function () use ($product, $request): void {
+                $product->save();
+                if (Schema::hasTable('product_unit_conversions') && class_exists(ProductUnitConversionSyncService::class)) {
+                    app(ProductUnitConversionSyncService::class)->syncFromRequest($product, $request);
+                }
+            });
+        } catch (InvalidArgumentException $exception) {
+            return Reply::error($exception->getMessage());
+        }
 
         if (! is_null($request->track_inventory)) {
             $addStock = PurchaseStockAdjustment::where('product_id', $product->id)->first();
@@ -248,7 +262,7 @@ class PurchaseProductController extends AccountBaseController
 
         foreach ($this->taxes as $tax) {
             if ($this->product && isset($this->product->taxes) && json_decode($this->product->taxes) && array_search($tax->id, json_decode($this->product->taxes)) !== false) {
-                $taxes[] = $tax->tax_name . ' : ' . $tax->rate_percent . '%';
+                $taxes[] = $tax->tax_name.' : '.$tax->rate_percent.'%';
             }
         }
 
@@ -340,8 +354,9 @@ class PurchaseProductController extends AccountBaseController
         $this->taxes = Tax::all();
         $this->categories = ProductCategory::all();
         $this->unit_types = UnitType::all();
+        $this->assignProductUnitConversionFormData($this->product);
         $this->subCategories = ! is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
-        $this->pageTitle = __('app.update') . ' ' . __('app.menu.products');
+        $this->pageTitle = __('app.update').' '.__('app.menu.products');
 
         $images = [];
 
@@ -443,7 +458,16 @@ class PurchaseProductController extends AccountBaseController
             $product->default_image = request()->default_image;
         }
 
-        $product->save();
+        try {
+            DB::transaction(function () use ($product, $request): void {
+                $product->save();
+                if (Schema::hasTable('product_unit_conversions') && class_exists(ProductUnitConversionSyncService::class)) {
+                    app(ProductUnitConversionSyncService::class)->syncFromRequest($product, $request);
+                }
+            });
+        } catch (InvalidArgumentException $exception) {
+            return Reply::error($exception->getMessage());
+        }
 
         if (! is_null($request->track_inventory)) {
             $addStock = PurchaseStockAdjustment::where('product_id', $product->id)->first();
@@ -481,6 +505,27 @@ class PurchaseProductController extends AccountBaseController
         return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('purchase-products.index'), 'productID' => $product->id, 'defaultImage' => $request->default_image ?? 0]);
     }
 
+    protected function assignProductUnitConversionFormData(?PurchaseProduct $product): void
+    {
+        $this->productUnitConversionsEnabled = Schema::hasTable('product_unit_conversions');
+        $this->productUnitConversionRows = [];
+
+        if (! $this->productUnitConversionsEnabled) {
+            return;
+        }
+
+        if (! class_exists(ProductUnitConversionSyncService::class)) {
+            $this->productUnitConversionsEnabled = false;
+
+            return;
+        }
+
+        if ($product !== null) {
+            $this->productUnitConversionRows = app(ProductUnitConversionSyncService::class)
+                ->rowsForProduct((int) company()->id, (int) $product->id);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -508,7 +553,7 @@ class PurchaseProductController extends AccountBaseController
         foreach ($inventoryIdsToCheck as $inventoryId) {
             $inventory = PurchaseInventory::find($inventoryId);
             if ($inventory && $inventory->stocks()->count() === 0) {
-                $inventory->files()->each(fn($file) => $file->delete());
+                $inventory->files()->each(fn ($file) => $file->delete());
                 $inventory->delete();
             }
         }
@@ -748,7 +793,7 @@ class PurchaseProductController extends AccountBaseController
         foreach ($products as $item) {
             if ((! empty($item->inventory) && count($item->inventory) > 0 && $item->inventory[0]) || ($item->type == 'service')) {
                 if (($item->track_inventory == 1 && $item->inventory[0]->net_quantity > 0) || ($item->type == 'service')) {
-                    $option .= '<option data-content="' . $item->name . '" value="' . $item->id . '"> ' . $item->name . '</option>';
+                    $option .= '<option data-content="'.$item->name.'" value="'.$item->id.'"> '.$item->name.'</option>';
                 }
             }
         }
@@ -758,7 +803,7 @@ class PurchaseProductController extends AccountBaseController
 
     public function importProduct()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.product');
+        $this->pageTitle = __('app.importExcel').' '.__('app.menu.product');
 
         $this->addPermission = user()->permission('add_product');
         abort_403(! in_array($this->addPermission, ['all', 'added']));

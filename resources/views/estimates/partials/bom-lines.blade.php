@@ -1,5 +1,6 @@
 @php
     use App\Enums\ProductType;
+    use Modules\Warehouse\Services\ProductUnitQuantityHintService;
 
     /** @var \Illuminate\Support\Collection<int, \App\Models\Product>|null $bomComponentProducts */
     /** @var \App\Models\Estimate|null $estimate */
@@ -87,10 +88,19 @@
                                     $unitLabel = (string) ($bomLineModel?->unit?->unit_type ?? ($unitLabelById->get((int) ($line['unit_id'] ?? 0)) ?? ''));
                                 }
                                 $qtyDisplay = trim($line['quantity'] . ' ' . ($unitLabel !== '' ? $unitLabel : ''));
+                                $bomQtyHint = null;
+                                if (is_numeric($line['quantity'] ?? null) && (int) ($line['product_id'] ?? 0) > 0) {
+                                    $bomQtyHint = app(ProductUnitQuantityHintService::class)->hint((int) company()->id, (int) $line['product_id'], (float) $line['quantity'], (int) ($line['unit_id'] ?? 0) > 0 ? (int) $line['unit_id'] : null);
+                                }
                             @endphp
                             <tr class="f-13">
                                 <td>{{ $line['material_name'] }}</td>
-                                <td class="text-right">{{ $qtyDisplay }}</td>
+                                <td class="text-right">
+                                    {{ $qtyDisplay }}
+                                    @if ($bomQtyHint)
+                                        <br><span class="f-11 text-lightest">{{ $bomQtyHint }}</span>
+                                    @endif
+                                </td>
                                 <td class="text-right">{{ currency_format($line['unit_cost'], $estimate->currency_id ?? company()->currency_id, false) }}</td>
                                 <td class="text-right">{{ currency_format($lineTotal, $estimate->currency_id ?? company()->currency_id, false) }}</td>
                             </tr>
@@ -137,6 +147,10 @@
                             $lineNote = old("bom_notes.$i", $line['notes'] ?? '');
                             $lineUom = $productId !== '' && $productId !== null ? (string) ($bomUnitByProductId->get((string) $productId) ?? ($bomUnitByProductId->get((int) $productId) ?? '')) : (string) ($unitLabelById->get((int) $unitId) ?? '');
                             $computedLineTotal = is_numeric($quantity) && is_numeric($unitCost) ? round((float) $quantity * (float) $unitCost, 4) : '';
+                            $bomQtyHint = null;
+                            if (is_numeric($quantity) && (int) $productId > 0) {
+                                $bomQtyHint = app(ProductUnitQuantityHintService::class)->hint((int) company()->id, (int) $productId, (float) $quantity, (int) $unitId > 0 ? (int) $unitId : null);
+                            }
                         @endphp
                         <tr class="estimate-bom-line-row" data-row-index="{{ $i }}">
                             <td>
@@ -156,6 +170,11 @@
                                         <span class="input-group-text height-35 f-13 text-dark-grey estimate-bom-unit-suffix">{{ $lineUom !== '' ? $lineUom : '—' }}</span>
                                     </div>
                                 </div>
+                                @if ($bomQtyHint)
+                                    <small class="d-block f-11 text-lightest mt-1 estimate-bom-qty-hint">{{ $bomQtyHint }}</small>
+                                @else
+                                    <small class="d-block f-11 text-lightest mt-1 estimate-bom-qty-hint" style="display:none !important;"></small>
+                                @endif
                             </td>
                             <td>
                                 <input type="number" step="0.0001" min="0" name="bom_unit_cost[]" class="form-control height-35 f-14 estimate-bom-unit-cost" value="{{ $unitCost }}">

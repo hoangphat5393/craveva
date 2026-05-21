@@ -1,7 +1,11 @@
 # Kiểm tra tài liệu Biomixing (`FUNC_IMPROVE/` — file `BIOMIXING_*`) — mức độ lỗi thời & file thay thế (2026)
 
+**Cập nhật:** 2026-05-21  
+**Audit đầy đủ 3 thư mục:** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](./DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md) (`PROJECT BIOMIXING` + `FUNC_LOGIC` + `FUNC_IMPROVE`)
+
 **Mục đích:** Sau khi **SO / PO / Sales DO / Invoice / Warehouse** (đa kho, batch, reservation, inbound canonical) được hoàn thiện nhiều trên Hub/staging, một số file **`BIOMIXING_*` ở gốc `FUNC_IMPROVE/`** **mô tả trạng thái cũ**. Bảng dưới giúp **không đọc nhầm** khi chuẩn bị **module Production**.
 
+**Living status (code):** [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md)  
 **Baseline mới (đọc trước):** `BIOMIXING_BASELINE_PREP_2026_VI.md`  
 **Chỉ mục tiếng Anh:** `BIOMIXING_PREP_INDEX_EN.md`
 

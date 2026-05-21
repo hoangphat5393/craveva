@@ -36,6 +36,8 @@ use App\Models\Tax;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Scopes\ActiveScope;
+use App\Support\DocumentLineUnitPricing;
+use App\Support\OrderProductUnitPrice;
 use App\Traits\ImportExcel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -307,41 +309,63 @@ class OrderController extends AccountBaseController
     public function addItem(Request $request)
     {
         $companyCurrencyID = company()->currency_id;
-        $this->item = Product::with('tax')->findOrFail($request->id);
+        $this->item = Product::with('tax', 'unit')->findOrFail($request->id);
         $this->invoiceSetting = $this->company->invoiceSetting;
         $exchangeRate = ($request->currencyId) ? Currency::findOrFail($request->currencyId) : Currency::findOrFail($companyCurrencyID);
 
-        if ($exchangeRate->exchange_rate == $request->exchangeRate) {
-            $exRate = $exchangeRate->exchange_rate;
-        } else {
-            $exRate = floatval($request->exchangeRate ?: 1);
-        }
+        $this->sellableUnits = DocumentLineUnitPricing::sellableUnitsForLine(
+            $this->item,
+            $exchangeRate,
+            $request->exchangeRate
+        );
 
-        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
+        $defaultUnitId = (int) ($this->item->unit_id ?? 0);
+        $this->item->price = OrderProductUnitPrice::formatForOrder(
+            $this->item,
+            $defaultUnitId > 0 ? $defaultUnitId : null,
+            $exchangeRate,
+            $request->exchangeRate
+        );
 
-            if ($this->item->total_amount != '') {
-
-                $this->item->price = floor($this->item->total_amount / $exRate);
-            } else {
-                /** @phpstan-ignore-next-line */
-                $this->item->price = $this->item->price / $exRate;
-            }
-        } else {
-            if ($this->item->total_amount != '') {
-                $this->item->price = $this->item->total_amount;
-            }
-        }
-
-        $this->item->price = number_format((float) $this->item->price, 2, '.', '');
         $this->taxes = Tax::all();
         $view = view('orders.ajax.add_item', $this->data)->render();
 
         return Reply::dataOnly(['status' => 'success', 'view' => $view]);
     }
 
+    public function productUnitPrice(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'unit_id' => 'required|integer|exists:unit_types,id',
+            'currencyId' => 'nullable|integer|exists:currencies,id',
+            'exchangeRate' => 'nullable|numeric',
+        ]);
+
+        $companyCurrencyID = company()->currency_id;
+        $product = Product::findOrFail((int) $request->product_id);
+        abort_403((int) $product->company_id !== (int) company()->id);
+
+        $exchangeRate = $request->currencyId
+            ? Currency::findOrFail((int) $request->currencyId)
+            : Currency::findOrFail($companyCurrencyID);
+
+        $unitPrice = OrderProductUnitPrice::formatForOrder(
+            $product,
+            (int) $request->unit_id,
+            $exchangeRate,
+            $request->exchangeRate
+        );
+
+        return Reply::dataOnly([
+            'status' => 'success',
+            'unit_price' => $unitPrice,
+        ]);
+    }
+
     public function edit($id)
     {
-        $this->order = Order::with('client', 'unit')->findOrFail($id)->withCustomFields();
+        $this->order = Order::with(['client', 'unit', 'items'])->findOrFail($id)->withCustomFields();
 
         $this->editPermission = user()->permission('edit_order');
 
@@ -370,6 +394,8 @@ class OrderController extends AccountBaseController
         if ($getCustomFieldGroupsWithFields) {
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
+
+        $this->productSellableUnitsMap = DocumentLineUnitPricing::sellableUnitsMapForOrder($this->order);
 
         if (request()->ajax()) {
             $html = view('orders.ajax.edit', $this->data)->render();

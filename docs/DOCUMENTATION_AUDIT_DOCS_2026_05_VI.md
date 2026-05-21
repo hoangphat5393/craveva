@@ -9,6 +9,7 @@
 
 | Chủ đề                                                              | File                                                                                                                                                    |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| End-user help ERP (`/account/...`, closed English corpus)           | `docs/platform-help/` — [README.md](platform-help/README.md); `php docs/platform-help/scripts/convert-to-english.php --regenerate`                      |
 | Deploy / quyền / queue / import poll                                | `docs/SERVER_RUNBOOK_VI.md`                                                                                                                             |
 | Rehearsal staging, zip, SO/DO Phase 3                               | `docs/STAGING_OPERATIONS.md`                                                                                                                            |
 | Tiến độ PHP 8.3 + Laravel 11 + incident disk + **recovery tóm tắt** | `docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md` (mục **Phụ lục — Recovery nhanh**; gộp nội dung từ `STAGING_RECOVERY_LATEST.md` đã xóa)                     |

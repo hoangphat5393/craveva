@@ -40,6 +40,8 @@ use App\Models\Tax;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Scopes\ActiveScope;
+use App\Support\DocumentLineUnitPricing;
+use App\Support\OrderProductUnitPrice;
 use App\Traits\EmployeeActivityTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -932,6 +934,12 @@ class InvoiceController extends AccountBaseController
 
         $this->companyAddresses = CompanyAddress::all();
 
+        $currency = Currency::find($this->invoice->currency_id) ?? Currency::find(company()->currency_id);
+        $this->productSellableUnitsMap = DocumentLineUnitPricing::sellableUnitsMapForOrderItems(
+            $this->invoice->items,
+            $currency
+        );
+
         if (request()->ajax()) {
             $html = view('invoices.ajax.edit', $this->data)->render();
 
@@ -1383,32 +1391,25 @@ class InvoiceController extends AccountBaseController
 
     public function addItem(Request $request)
     {
-        $this->items = Product::findOrFail($request->id);
+        $this->items = Product::with('unit')->findOrFail($request->id);
         $this->invoiceSetting = invoice_setting();
 
         $exchangeRate = Currency::findOrFail($request->currencyId);
 
-        if ($exchangeRate->exchange_rate == $request->exchangeRate) {
-            $exRate = $exchangeRate->exchange_rate;
-        } else {
-            $exRate = floatval($request->exchangeRate ?: 1);
-        }
+        $this->sellableUnits = DocumentLineUnitPricing::sellableUnitsForLine(
+            $this->items,
+            $exchangeRate,
+            $request->exchangeRate
+        );
 
-        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate) && $exchangeRate->exchange_rate > 0) {
-            if ($this->items->total_amount != '') {
-                /** @phpstan-ignore-next-line */
-                $this->items->price = floor($this->items->total_amount / $exRate);
-            } else {
+        $defaultUnitId = (int) ($this->items->unit_id ?? 0);
+        $this->items->price = OrderProductUnitPrice::formatForOrder(
+            $this->items,
+            $defaultUnitId > 0 ? $defaultUnitId : null,
+            $exchangeRate,
+            $request->exchangeRate
+        );
 
-                $this->items->price = floatval($this->items->price) / floatval($exRate);
-            }
-        } else {
-            if ($this->items->total_amount != '') {
-                $this->items->price = $this->items->total_amount;
-            }
-        }
-
-        $this->items->price = number_format((float) $this->items->price, 2, '.', '');
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
         $view = view('invoices.ajax.add_item', $this->data)->render();

@@ -41,9 +41,13 @@
                     </td>
                     <td class="border-bottom-0">
                         <input type="number" min="1" class="f-14 border-0 w-100 text-right quantity mt-3" value="{{ 1 }}" name="quantity[]">
-                        <span class="text-dark-grey float-right border-0 f-12">{{ $item->unit?->unit_type }}</span>
                         <input type="hidden" name="product_id[]" value="{{ $item->id }}">
-                        <input type="hidden" name="unit_id[]" value="{{ $item->unit_id }}">
+                        @include('orders.partials.item-unit-select', [
+                            'sellableUnits' => $sellableUnits ?? [],
+                            'selectedUnitId' => $item->unit_id,
+                            'productId' => $item->id,
+                            'fallbackUnitLabel' => $item->unit?->unit_type,
+                        ])
                     </td>
                     <td class="border-bottom-0">
                         <input type="text" min="1" class="f-14 border-0 w-100 text-right bg-additional-grey" data-item-id="{{ $item->id }}" placeholder="{{ $item->sku }}" value="{{ $item->sku }}" name="sku[]" readonly>
@@ -100,6 +104,23 @@
             }
 
             calculateTotal();
+
+            var $unitSelect = $(document).find('#sortable .item-row').last().find('.order-line-unit-select');
+            if ($unitSelect.length) {
+                $unitSelect.selectpicker();
+                $unitSelect.on('changed.bs.select change', function() {
+                    var price = $(this).find(':selected').data('unit-price');
+                    var $row = $(this).closest('.item-row');
+                    if (price !== undefined && price !== '') {
+                        $row.find('.cost_per_item').val(price).trigger('change');
+                        var qty = parseFloat($row.find('.quantity').val()) || 1;
+                        var amount = (qty * parseFloat(price)).toFixed(2);
+                        $row.find('.amount').val(amount);
+                        $row.find('.amount-html').html(amount);
+                        calculateTotal();
+                    }
+                });
+            }
         });
     </script>
 </div>

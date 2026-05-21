@@ -4,6 +4,8 @@
 
 Dong bo co che hien thi validation error theo field (inline) cho cac form thuoc module Client khi dung `window.apiHttp`.
 
+**Hai lop (FE truoc POST + server sau POST):** xem `DESIGN_BACKEND_UI_UX_VI.md` muc **12** — Purchase Product da ap dung mau nay.
+
 ## Nguyen nhan goc
 
 - Form cu dung `$.easyAjax` se auto render `errors` vao field.

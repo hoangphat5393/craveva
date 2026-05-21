@@ -825,6 +825,24 @@
             calculateTotal();
         });
 
+        function applyOrderLineUnitPrice($select) {
+            var price = $select.find(':selected').data('unit-price');
+            var $row = $select.closest('.item-row');
+            if (price === undefined || price === '') {
+                return;
+            }
+            $row.find('.cost_per_item').val(price).trigger('change');
+            var quantity = parseFloat($row.find('.quantity').val()) || 1;
+            var amount = decimalupto2(quantity * parseFloat(price));
+            $row.find('.amount').val(amount);
+            $row.find('.amount-html').html(amount);
+            calculateTotal();
+        }
+
+        $('#saveInvoiceForm').on('changed.bs.select change', '.order-line-unit-select', function() {
+            applyOrderLineUnitPrice($(this));
+        });
+
         calculateTotal();
 
         init(RIGHT_MODAL);

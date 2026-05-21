@@ -1,6 +1,6 @@
 # Phase 2 — Lập kế hoạch sản xuất (sau Sales Order)
 
-_Cập nhật: **20/05/2026** · Phase 1: [`PHASE1_PM_STATUS_LIVE_VI.md`](./PHASE1_PM_STATUS_LIVE_VI.md) · Spec Gary: [`PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`](../PROJECT%20BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md) (Phần B)_
+_Cập nhật: **21/05/2026** · Phase 1: [`PHASE1_PM_STATUS_LIVE_VI.md`](./PHASE1_PM_STATUS_LIVE_VI.md) · Spec Gary: [`PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`](../PROJECT%20BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md) (Phần B)_
 
 ---
 
@@ -83,12 +83,12 @@ Module **`Production`** (`/account/production/...`) đã có nền (ước ~**70
 
 ### Ưu tiên thấp / Phase 2+ (P2)
 
-| #    | Việc                                                             |
-| ---- | ---------------------------------------------------------------- |
-| P2-1 | UOM chuyển đổi đầy đủ (g ↔ kg ↔ gói) trên planning               |
-| P2-2 | Phiên bản BOM V1/V2, lưu trữ                                     |
-| P2-3 | Multi-batch planning nâng cao                                    |
-| P2-4 | Receiving QC GRN, CCP cứng, AI validate certs (proposal Phase 3) |
+| #    | Việc                                                                                                                                                             |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-1 | **UOM + UOM price** — **✅ code 2026-05-20/21** (A→B→C); **UAT** còn lại. Chi tiết: [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md) |
+| P2-2 | Phiên bản BOM V1/V2, lưu trữ                                                                                                                                     |
+| P2-3 | Multi-batch planning nâng cao                                                                                                                                    |
+| P2-4 | Receiving QC GRN, CCP cứng, AI validate certs (proposal Phase 3)                                                                                                 |
 
 ---
 
@@ -113,6 +113,18 @@ Module **`Production`** (`/account/production/...`) đã có nền (ước ~**70
 
 1. P1-3 waste %
 2. P2-\* theo feedback pilot
+
+### Sprint D — P2-UOM (sau khi PM duyệt epic; ~3 sprint)
+
+**Không chặn đóng Phase 2 MVP** — làm khi user/PM cần màn Sản phẩm như KiotViet.
+
+| Giai đoạn | Nội dung ngắn                                                                                            |
+| --------- | -------------------------------------------------------------------------------------------------------- |
+| **A**     | UI Product (gate «+ Thêm đơn vị» sau giá gốc; UOM price; chọn `unit_types`) → `product_unit_conversions` |
+| **B**     | SO/PO/GRN + strict conversion + seed pilot Oldtown                                                       |
+| **C**     | BOM báo giá / tổng NL lệnh SX + (tùy) bật shadow UOM                                                     |
+
+Chi tiết: [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md).
 
 ---
 
@@ -152,13 +164,14 @@ Module **`Production`** (`/account/production/...`) đã có nền (ước ~**70
 
 ## 9. Tài liệu tham chiếu
 
-| File                                                   | Dùng khi                |
-| ------------------------------------------------------ | ----------------------- |
-| `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`          | Phần B — Gary           |
-| `PROJECT BIOMIXING/PHASE1_2_BUSINESS_FLOW_PM_VI.md`    | Luồng PM 1+2            |
-| `PROJECT BIOMIXING/BIOMIXING_PHASES_1_4_SUMMARY_VI.md` | Bản đồ 4 phase          |
-| `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`           | Chi tiết dev Production |
-| `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`             | UAT matrix              |
+| File                                                   | Dùng khi                           |
+| ------------------------------------------------------ | ---------------------------------- |
+| `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`          | Phần B — Gary                      |
+| `PROJECT BIOMIXING/PHASE1_2_BUSINESS_FLOW_PM_VI.md`    | Luồng PM 1+2                       |
+| `PROJECT BIOMIXING/BIOMIXING_PHASES_1_4_SUMMARY_VI.md` | Bản đồ 4 phase                     |
+| `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`           | Chi tiết dev Production            |
+| `FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`      | Epic đa đơn vị SP + kho (KiotViet) |
+| `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`             | UAT matrix                         |
 
 ---
 

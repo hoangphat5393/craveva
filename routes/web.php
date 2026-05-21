@@ -474,6 +474,7 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     /* Payments */
     Route::get('orders/offline-payment-modal', [OrderController::class, 'offlinePaymentModal'])->name('orders.offline_payment_modal');
     Route::get('orders/add-item', [OrderController::class, 'addItem'])->name('orders.add_item');
+    Route::get('orders/product-unit-price', [OrderController::class, 'productUnitPrice'])->name('orders.product_unit_price');
     Route::get('orders/search-clients', [OrderController::class, 'searchClients'])->name('orders.search_clients');
     Route::get('orders/search-products', [OrderController::class, 'searchProducts'])->name('orders.search_products');
     Route::get('orders/stripe-modal', [OrderController::class, 'stripeModal'])->name('orders.stripe_modal');

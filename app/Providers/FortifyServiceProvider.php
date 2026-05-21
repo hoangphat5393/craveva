@@ -219,9 +219,10 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::requestPasswordResetLinkView(function () {
             $globalSetting = GlobalSetting::first();
-            App::setLocale($globalSetting->locale);
-            Carbon::setLocale($globalSetting->locale);
-            setlocale(LC_TIME, $globalSetting->locale.'_'.mb_strtoupper($globalSetting->locale));
+            $locale = $globalSetting?->locale ?? config('app.locale', 'en');
+            App::setLocale($locale);
+            Carbon::setLocale($locale);
+            setlocale(LC_TIME, $locale.'_'.mb_strtoupper($locale));
             $frontWidgets = FrontWidget::all();
 
             return view('auth.passwords.forget', [
@@ -244,9 +245,10 @@ class FortifyServiceProvider extends ServiceProvider
             // Is craveva
             $company = Company::withCount('users')->first();
 
-            App::setLocale($globalSetting->locale);
-            Carbon::setLocale($globalSetting->locale);
-            setlocale(LC_TIME, $globalSetting->locale.'_'.mb_strtoupper($globalSetting->locale));
+            $locale = $globalSetting?->locale ?? config('app.locale', 'en');
+            App::setLocale($locale);
+            Carbon::setLocale($locale);
+            setlocale(LC_TIME, $locale.'_'.mb_strtoupper($locale));
 
             $userTotal = User::count();
 
@@ -258,6 +260,15 @@ class FortifyServiceProvider extends ServiceProvider
                 }
 
                 return view($accountSetupBlade, ['global' => $globalSetting, 'setting' => $globalSetting]);
+            }
+
+            if (! $globalSetting instanceof GlobalSetting) {
+                cache()->forget('global_setting');
+
+                return response(
+                    'Global settings are missing. Run database seeders (e.g. php artisan db:seed) or restore global_settings from backup.',
+                    503
+                );
             }
 
             $socialAuthSettings = social_auth_setting();
@@ -388,7 +399,7 @@ class FortifyServiceProvider extends ServiceProvider
                 ]);
             }
 
-            if (\App\Models\GlobalSetting::value('email_verification') == 0) {
+            if (GlobalSetting::value('email_verification') == 0) {
 
                 return redirect()->route('login');
             }

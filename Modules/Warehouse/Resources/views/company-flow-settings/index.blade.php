@@ -34,6 +34,7 @@
                     <div class="col-lg-6 mb-2">
                         <input type="hidden" name="strict_unit_conversion" value="0" />
                         <x-forms.checkbox :checked="!empty($flowSettings['strict_unit_conversion'])" :fieldLabel="__('warehouse::app.flow_strict_unit_conversion')" fieldName="strict_unit_conversion" fieldId="strict_unit_conversion" fieldValue="1" />
+                        <p class="text-muted f-12 mt-1 mb-0">@lang('warehouse::app.flow_strict_unit_conversion_hint')</p>
                     </div>
                     <div class="col-lg-6 mb-2">
                         <input type="hidden" name="inbound_from_purchase_order_delivered" value="0" />

@@ -235,7 +235,16 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 
 ## 12. Lỗi validation & phản hồi AJAX trên form create/edit
 
-Mục này ghi lại **cơ chế Hub hiện có** để làm tương tự cho view create/edit mới, và **so sánh** với luồng Estimate (đã chỉnh gần đây).
+Mục này ghi **chuẩn hai lớp** (FE trước POST + server sau POST), cơ chế Hub hiện có, và so sánh Product / Estimate.
+
+### 12.0 Tóm tắt hai lớp
+
+| Lớp               | Khi nào chạy                                     | Toast                                                                                   | Lỗi theo field                               |
+| ----------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- | -------------------------------------------- |
+| **Frontend (FE)** | Trước khi gọi API                                | **Một dòng** góc trên phải (Swal toast) — ví dụ _Invalid data_ / _Dữ liệu không hợp lệ_ | Có — **custom jQuery**, class Bootstrap      |
+| **Server**        | Sau `apiHttp` POST, Laravel 422 / `status: fail` | Chỉ khi lỗi **không map** được field (orphan)                                           | Có — `$.handleApiFormError` → `$.showErrors` |
+
+**Không dùng** jQuery Validation Plugin, Parsley, VeeValidate trên form Hub create/edit chuẩn.
 
 ### 12.1 Nguồn sự thật (backend)
 
@@ -260,37 +269,101 @@ Mục này ghi lại **cơ chế Hub hiện có** để làm tương tự cho vi
     - **Không** tìm được control hoặc host → message đưa vào nhóm **orphan** → **một** `Swal` toast (các dòng nối bằng `·`). Trường hợp này dùng cho lỗi không khớp `name`/`id` trên DOM.
 - Component **`client-selection-dropdown`**: bọc label + `input-group` trong **`<div class="form-group my-3">`** để đồng bộ với các field Hub khác.
 
+### 12.2.2 Luồng server → inline field (sau POST)
+
+```
+apiHttp.post* → .catch(err)
+    → $.handleApiFormError(err)     // global, vendor/helper/helper.js (bundle main.js)
+        → $.extractApiValidationErrors(err)
+        → $.showErrors(errorsObject) // ghi đè bởi tenant → showErrorsLaravel.js
+```
+
+- Tìm input: `[name="field"]` hoặc `#field`
+- Host: `.form-group` → `.input-group` → cột grid → `parent()`
+- Thêm: `.has-error` + `.help-block` / `.invalid-feedback` + `.is-invalid`
+- **SweetAlert2:** chỉ toast **orphan** (không tìm được ô trên DOM)
+
+### 12.2.3 Luồng FE → inline field (trước POST)
+
+**Tự viết (custom)** trong Blade partial — **không** qua `$.showErrors` global.
+
+- Ví dụ Purchase: `Modules/Purchase/Resources/views/purchase-products/partials/product-form-client-validation.blade.php`
+- Hàm: `validatePurchaseProductForm(formSelector)` → `.is-invalid` + `.invalid-feedback.purchase-product-client-error`
+- Toast: `Swal.fire({ toast: true, position: 'top-end', text: … })` — **một message chung**, không list từng field
+- Partial include **bên trong** `<script>…</script>` cha — **không** bọc thêm `<script>` trong partial
+
 ### 12.3 Product (Add / Edit) — trạng thái thực tế trong code
 
-- **Lưu form:** `window.apiHttp.postForm` + `.catch` → thường chỉ **Swal** với `err.message` (toast tổng), trừ khi bổ sung `$.handleApiFormError(err)` như rollout Client.
-- **Upload ảnh (Dropzone):** trong Blade có đoạn **jQuery** tự chèn `.help-block` + `.has-error` / `.is-invalid` khi lỗi file — cùng **họ visual** với nhánh A.
-- **Khi cần lỗi theo field giống màn Client:** áp dụng cùng pattern `CLIENT_INLINE_VALIDATION_ROLLOUT.md` trong `.catch` của `postForm` / `post`.
+- **Lưu form:** `submitPurchaseProductForm` → **FE** `validatePurchaseProductForm` (toast `top-end` _Invalid data_ + inline field) → nếu pass mới `apiHttp.postUrlEncoded`.
+- **Server:** `.catch` → **`$.handleApiFormError(err)`** (inline qua `showErrorsLaravel.js`, giống Client/Estimate).
+- **Partial:** `Modules/Purchase/Resources/views/purchase-products/partials/product-form-client-validation.blade.php` (include **trong** `<script>` cha, không bọc `<script>`).
+- **Upload ảnh (Dropzone):** jQuery tự chèn `.help-block` / `.is-invalid` khi lỗi file — cùng họ visual Bootstrap.
+- **Lang toast FE:** `purchase::app.productFormInvalidData` (LanguagePack + `PurchaseServiceProvider::registerTranslations`).
 
 ### 12.4 Estimate / Quotation (create / edit / list / show)
 
 - **`apiHttp`** + **`.catch` → `$.handleApiFormError(err)`** — lỗi validation hiển thị **inline theo field** (giống Client); không có `errors` thì helper **fallback** toast như trước.
 - **Redirect sau save:** nhận **`Reply::redirect`** → ưu tiên `response.action === 'redirect' && response.url`, fallback `redirectUrl` (create store từng trả `redirectUrl`).
 
-### 12.5 So sánh nhanh: Product vs Estimate — “cái nào tốt hơn?”
+### 12.5 So sánh nhanh: Product vs Estimate
 
-| Tiêu chí                          | Product (save chính qua `apiHttp`, chưa gắn `handleApiFormError` mặc định)     | Estimate (đã `handleApiFormError` + redirect `url` trên save)                |
-| --------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| **Tìm đúng ô sai**                | Yếu nếu chỉ toast một dòng chung                                               | **Inline** theo field khi API trả `errors`                                   |
-| **Đồng bộ theme (đỏ từng field)** | Sẵn class + helper `$.showErrors` / Dropzone đã làm kiểu đó cục bộ             | **Đã gắn** `handleApiFormError` trên create/edit/index/show                  |
-| **Redirect / success**            | Cần kiểm tra từng màn: chỗ nào backend `Reply::redirect` thì JS phải đọc `url` | Save/show đã đọc `action` + `url`; **list convert** vẫn có thể bổ sung `url` |
+| Tiêu chí             | Product (create/edit)                          | Estimate (create/edit/show)       |
+| -------------------- | ---------------------------------------------- | --------------------------------- |
+| **FE trước POST**    | `validatePurchaseProductForm` + toast một dòng | Chủ yếu server-first              |
+| **Server inline**    | `$.handleApiFormError`                         | `$.handleApiFormError`            |
+| **Redirect success** | Kiểm `url` + `redirectUrl` theo từng action    | Đã đọc `action` + `url` trên save |
 
-**Kết luận thiết kế (khuyến nghị):**
+**Khuyến nghị form dài:** FE validate (toast ngắn + đánh dấu field) **+** `handleApiFormError` sau POST **+** redirect `action` + `url`.
 
-- **Tốt nhất cho UX form dài:** **nhánh A + B kết hợp** — sau `apiHttp` fail: gọi **`$.handleApiFormError(err)`** (inline field) và **tùy chọn** toast ngắn hoặc chỉ inline; thành công: **`action` + `url`** hoặc `redirectUrl` nhất quán.
-- **So “Product vs Estimate”:** không phải “module nào tốt hơn” mà là **layer nào đầy đủ hơn**. **Estimate** đã dùng **`handleApiFormError`** (inline) + **redirect JSON** đúng `url`. **Product** save chính vẫn có thể bổ sung cùng helper nếu muốn đồng bộ.
+### 12.6 Pattern copy form mới
 
-### 12.6 Checklist khi copy form mới
+**Submit server:**
 
-1. Submit qua **`window.apiHttp`** (hoặc thống nhất một lớp wrapper).
-2. `.catch`: ưu tiên **`$.handleApiFormError(err)`** (inline + fallback Swal); hoặc **`window.apiHttp.formatValidationErrors(err)`** chỉ khi **chỉ** cần toast một chuỗi (hiếm).
-3. `.then` success: nếu API có thể là `Reply::redirect` → xử lý **`url`** + **`redirectUrl`**; không dùng icon lỗi (`icon: 'error'`) khi `status === 'success'`.
-4. Không hard-code message tiếng Anh trong JS — lấy từ response / `trans` Blade nếu cần.
+```javascript
+window.apiHttp
+    .postUrlEncoded(url, $form.serialize())
+    .then(onSuccess)
+    .catch(function (err) {
+        $.handleApiFormError(err);
+    });
+```
+
+**Thêm lớp FE (khuyến nghị modal / form dài):**
+
+1. `validate{Feature}Form(formSelector)` — rule mirror FormRequest.
+2. Trước POST: `if (!validate…(formSelector)) return;`
+3. FE fail: `.is-invalid` + `.invalid-feedback` + **một** Swal toast `top-end` (lang key module); **không** gọi API.
+4. Wrapper tùy chọn (Purchase): `submitPurchaseProductForm({ formSelector, url, onSuccess })`.
+
+**Lang:** key toast trong `Modules/LanguagePack/Languages/modules/{Module}/{locale}/app.php` hoặc `Modules/{Module}/Resources/lang/`.
+
+### 12.7 Màn tham chiếu
+
+| Màn                          | FE validate                                | Server `.catch`                                                |
+| ---------------------------- | ------------------------------------------ | -------------------------------------------------------------- |
+| Purchase Product create/edit | `product-form-client-validation.blade.php` | `$.handleApiFormError`                                         |
+| Client create/edit           | (tùy form)                                 | `$.handleApiFormError` — `CLIENT_INLINE_VALIDATION_ROLLOUT.md` |
+| Estimate create/edit/show    | (server-first)                             | `$.handleApiFormError`                                         |
+
+### 12.8 jQuery Validate?
+
+|                       | Hub chuẩn                                   | jQuery Validate       |
+| --------------------- | ------------------------------------------- | --------------------- |
+| Dùng rộng trong repo? | **Không** (mặc định)                        | Không thấy            |
+| Rule sync FormRequest | Manual trong JS partial                     | Có thể trùng lặp rule |
+| Message               | `__()` / `@json(__('…'))` trong Blade       | Plugin messages       |
+| Field UI              | Bootstrap + `showErrorsLaravel` / custom FE | Plugin + adapter      |
+
+### 12.9 Checklist khi copy form mới
+
+- [ ] Submit: `window.apiHttp` (không chỉ `$.easyAjax` trừ form legacy)
+- [ ] `.catch` → `$.handleApiFormError(err)` (hoặc `formatValidationErrors` chỉ khi **chỉ** cần toast một chuỗi)
+- [ ] (Tuỳ chọn) FE validate trước POST + toast `top-end` một dòng
+- [ ] Partial JS **không** có thẻ `<script>` khi include trong script cha
+- [ ] Message FE/BE qua `__()` / LanguagePack, không hard-code EN trong JS
+- [ ] Success: `response.url` **và** `response.redirectUrl` nếu dùng `Reply::redirect`
+- [ ] Không dùng `icon: 'error'` khi `status === 'success'`
 
 ---
 
-_Cập nhật: 2026-05-10 — §7 textarea `rows="4"` + Quill ngoại lệ; §12.2.1 `showErrorsLaravel.js` + orphan Swal; `client-selection-dropdown` bọc `form-group`._
+_Cập nhật: 2026-05-21 — §12 gộp chuẩn validation hai lớp (FE + server). Trước: §7 textarea; §12.2.1 `showErrorsLaravel.js`._

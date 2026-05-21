@@ -4,6 +4,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 
 ## Primary Entry Points
 
+- **End-user help (closed English corpus for agents/RAG):** `docs/platform-help/README.md` — self-contained; do not link out. Index [00-URL-INDEX.md](../docs/platform-help/00-URL-INDEX.md), `REFERENCE/`, `pages/`, `flows/`. Regenerate: `php docs/platform-help/scripts/convert-to-english.php --regenerate`
 - Group overview: `FUNC_LOGIC/README.md`
 - Warehouse hub: `FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`
 - Maolin hub: `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`
@@ -93,5 +94,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/WH_PURCHASE_ENV_REFERENCE_VI.md`
 - `FUNC_LOGIC/WAREHOUSE_TOM_TAT_NOI_BO.md`
 - `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md`
+- `FUNC_LOGIC/COMPANY_TRANSACTION_PURGE_GUIDE_VI.md` — purge giao dịch theo `company_id` (`company:purge-transactions`)
+- `FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md` — audit 3 thư mục (2026-05-21)
 - `FUNC_LOGIC/MIAOLIN_SALES_ORDER_API_DATABASE_ALL_FIELDS.md`
 - `FUNC_LOGIC/MIAOLIN_SALES_ORDER_API_DATABASE_REQUIRED_FIELDS.md`

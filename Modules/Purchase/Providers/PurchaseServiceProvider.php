@@ -11,6 +11,7 @@ use Modules\Purchase\Console\SalesDoMigrateRollbackCommand;
 use Modules\Purchase\Console\SalesDoMigrationRehearsalCommand;
 use Modules\Purchase\Console\SalesDoReconciliationReportCommand;
 use Modules\Purchase\Console\VerifyCutoverSchemaCommand;
+use Nwidart\Modules\Facades\Module;
 
 class PurchaseServiceProvider extends ServiceProvider
 {
@@ -94,6 +95,15 @@ class PurchaseServiceProvider extends ServiceProvider
     {
         $moduleLangPath = __DIR__.'/../Resources/lang';
         $publishedPath = base_path('resources/lang/modules/purchase');
+
+        // LanguagePack source first; module/published paths override (see AppServiceProvider app merge).
+        if (class_exists(Module::class)
+            && Module::has('LanguagePack')) {
+            $languagePackPurchasePath = module_path('LanguagePack', 'Languages/modules/Purchase');
+            if (is_dir($languagePackPurchasePath)) {
+                $this->loadTranslationsFrom($languagePackPurchasePath, 'purchase');
+            }
+        }
 
         if (is_dir($moduleLangPath)) {
             $this->loadTranslationsFrom($moduleLangPath, 'purchase');

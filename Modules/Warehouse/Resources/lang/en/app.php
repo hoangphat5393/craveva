@@ -77,6 +77,7 @@ return [
     'warehouseFlowSettingsHelp' => 'These settings apply to this company only. If no row is saved, values fall back to application config / environment defaults.',
     'flow_allow_negative_stock' => 'Allow negative stock on outbound',
     'flow_strict_unit_conversion' => 'Strict unit conversion (require product unit mapping)',
+    'flow_strict_unit_conversion_hint' => 'When enabled, each product must define alternate units on the product form before posting stock in non-base units.',
     'flow_inbound_po_delivered' => 'Inbound when purchase order is delivered',
     'flow_inbound_do_received' => 'Inbound when delivery order (GRN) is received',
     'flow_sales_outbound_enabled' => 'Sales outbound (invoice / shipment) enabled',

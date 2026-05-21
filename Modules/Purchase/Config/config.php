@@ -19,6 +19,9 @@ return [
     // are posted to warehouse inbound stock from GRN observer.
     'receiving_qc_enforced' => env('PURCHASE_RECEIVING_QC_ENFORCED', true),
 
+    // Auto SKU prefix (e.g. SP-FG-000001). Override via PURCHASE_PRODUCT_SKU_PREFIX in .env.
+    'product_sku_prefix' => env('PURCHASE_PRODUCT_SKU_PREFIX', 'SP'),
+
     // Phase-2+ cutover switch framework (reserved):
     // false: keep technical flow on current artifacts
     // true: allow new DO/GRN canonical runtime switches when implemented

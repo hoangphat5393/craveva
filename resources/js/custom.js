@@ -1,3 +1,6 @@
+const initPurchaseProductUnitConversions = require('./purchase-product-unit-conversions');
+window.initPurchaseProductUnitConversions = initPurchaseProductUnitConversions;
+
 window.init = function init() {
     var parent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     if (parent != '') {
@@ -158,6 +161,12 @@ $('body').on('click', '.openRightModal', function (event) {
             if (response.status == 'success') {
                 $(RIGHT_MODAL_CONTENT).html(response.html);
                 $(RIGHT_MODAL_TITLE).html(response.title);
+                if (typeof window.init === 'function') {
+                    window.init(RIGHT_MODAL + ' ');
+                }
+                if (typeof window.initPurchaseProductUnitConversions === 'function') {
+                    window.initPurchaseProductUnitConversions($(RIGHT_MODAL_CONTENT));
+                }
             }
         })
         .catch(function (err) {

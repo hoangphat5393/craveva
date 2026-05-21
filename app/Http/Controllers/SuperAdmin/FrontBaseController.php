@@ -31,7 +31,7 @@ class FrontBaseController extends Controller
             $this->languages = language_setting();
             $this->global = $this->globalSetting = $this->setting = global_setting();
 
-            $this->locale = $this->frontDetail->locale;
+            $this->locale = $this->frontDetail?->locale ?? $this->global?->locale ?? config('app.locale', 'en');
 
             if (session()->has('language')) {
                 $this->locale = session('language');
@@ -45,24 +45,39 @@ class FrontBaseController extends Controller
             $this->localeLanguage = $this->locale != 'en' ? language_setting_locale($this->locale) : $this->enLocaleLanguage;
             $this->localeLanguage = $this->localeLanguage ?: $this->enLocaleLanguage;
 
-            $this->footerSettings = FooterMenu::whereNotNull('slug')
+            $localeLanguageId = $this->localeLanguage?->id;
+            $enLocaleLanguageId = $this->enLocaleLanguage?->id;
+
+            $this->footerSettings = FooterMenu::query()
+                ->whereNotNull('slug')
                 ->where('private', 0)
-                ->where('language_setting_id', $this->localeLanguage->id)
+                ->when($localeLanguageId, fn ($query) => $query->where('language_setting_id', $localeLanguageId))
                 ->get();
 
-            $this->footerSettings = $this->footerSettings->count() > 0 ? $this->footerSettings : FooterMenu::whereNotNull('slug')->where('private', 0)
-                ->where('language_setting_id', $this->enLocaleLanguage->id)
-                ->get();
+            if ($this->footerSettings->isEmpty() && $enLocaleLanguageId) {
+                $this->footerSettings = FooterMenu::whereNotNull('slug')
+                    ->where('private', 0)
+                    ->where('language_setting_id', $enLocaleLanguageId)
+                    ->get();
+            }
 
-            $this->frontMenu = FrontMenu::where('language_setting_id', $this->localeLanguage->id)->first();
-            $this->frontMenu = $this->frontMenu ?: FrontMenu::where('language_setting_id', $this->enLocaleLanguage->id)->first();
+            $this->frontMenu = $localeLanguageId
+                ? FrontMenu::where('language_setting_id', $localeLanguageId)->first()
+                : null;
+            $this->frontMenu = $this->frontMenu ?: ($enLocaleLanguageId
+                ? FrontMenu::where('language_setting_id', $enLocaleLanguageId)->first()
+                : null);
 
             $this->frontWidgets = FrontWidget::all();
 
             $this->detail = $this->frontDetail;
 
-            $this->trFrontDetail = TrFrontDetail::where('language_setting_id', $this->localeLanguage->id)->first();
-            $this->trFrontDetail = $this->trFrontDetail ?: TrFrontDetail::where('language_setting_id', $this->enLocaleLanguage->id)->first();
+            $this->trFrontDetail = $localeLanguageId
+                ? TrFrontDetail::where('language_setting_id', $localeLanguageId)->first()
+                : null;
+            $this->trFrontDetail = $this->trFrontDetail ?: ($enLocaleLanguageId
+                ? TrFrontDetail::where('language_setting_id', $enLocaleLanguageId)->first()
+                : null);
 
             // ACCOUNT SETUP REDIRECT
             $userTotal = User::count();

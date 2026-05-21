@@ -15,6 +15,7 @@ Mục tiêu:
 - `FUNC_BUG/CLIENT_IMPORT_MASTER.md` — tóm tắt lỗi import client → **`FUNC_BUG/CLIENT_IMPORT_DETAILS_VI.md`** (đầy đủ)
 - `FUNC_BUG/PRODUCT_IMPORT_MASTER.md` — tóm tắt product import → **`FUNC_BUG/PRODUCT_IMPORT_DETAILS_VI.md`** (đầy đủ)
 - `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md` — `DecryptException: The MAC is invalid.` trên Social Auth Settings (encrypted casts)
+- Sau import DB staging: đồng bộ `APP_KEY` — `scripts/download_staging_env.ps1 -SyncAppKey` (xem `backup/README.md`)
 - `FUNC_BUG/DEVTOOLS_NO_COMPANY_SETTINGS.md` — package có module nhưng không hiện Settings
 - `FUNC_BUG/AFFILIATE_HIDDEN_IN_COMPANIES.md` — module Affiliate active nhưng không thấy ở Companies
 

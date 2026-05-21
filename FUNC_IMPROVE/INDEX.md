@@ -40,6 +40,7 @@ Các file **`BIOMIXING_*`** và audit tách **`BIOMIXING_MIGRATION_AUDIT_2026_VI
 ## Maintenance Notes
 
 - **Documentation audit (định kỳ):** [`AUDIT_IMPROVE_2026_VI.md`](AUDIT_IMPROVE_2026_VI.md)
+- **Audit 3 thư mục (2026-05-21):** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md) — sync `PROJECT BIOMIXING` · `FUNC_LOGIC` · `FUNC_IMPROVE`
 - **2026-05-12:** ba file AI → SO webhook (`13_`…`15_`) đã gộp thành [`SO_AI_WEBHOOK_PROMPTS_VI.md`](SO_AI_WEBHOOK_PROMPTS_VI.md) (Part 1–3); không dùng lại prefix `13_`–`15_` cho tài liệu mới.
 - Keep numbering stable for planning sequence.
 - New improvement documents should follow next numeric prefix.

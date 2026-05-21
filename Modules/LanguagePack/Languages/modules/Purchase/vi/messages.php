@@ -27,4 +27,7 @@ return [
     'orderMarkAsSent' => 'Đã đánh dấu PO đã gửi NCC',
     'orderSentSuccessfully' => 'PO đã được gửi thành công',
     'billSentSuccessfully' => 'Hóa đơn đã được gửi thành công.',
+    'unitConversionCannotMatchBase' => 'Đơn vị phụ không được trùng với đơn vị gốc của sản phẩm.',
+    'unitConversionDuplicateUnit' => 'Mỗi đơn vị phụ chỉ được thêm một lần.',
+    'unitConversionFactorInvalid' => 'Hệ số quy đổi phải lớn hơn 0.',
 ];

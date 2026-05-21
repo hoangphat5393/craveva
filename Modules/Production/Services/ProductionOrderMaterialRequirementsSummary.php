@@ -9,6 +9,7 @@ use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionOrder;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Entities\WarehouseProductStock;
+use Modules\Warehouse\Services\WarehouseUnitConversionService;
 
 /**
  * Planned raw-material totals for a production order (BOM qty × planned FG qty).
@@ -26,6 +27,10 @@ use Modules\Warehouse\Entities\WarehouseProductStock;
  */
 class ProductionOrderMaterialRequirementsSummary
 {
+    public function __construct(
+        protected WarehouseUnitConversionService $unitConversionService
+    ) {}
+
     /**
      * @return list<RequirementRow>
      */
@@ -41,8 +46,10 @@ class ProductionOrderMaterialRequirementsSummary
             return [];
         }
 
+        $companyId = (int) $order->company_id;
+
         $availableByProduct = $this->availableQuantityByProductInWarehouse(
-            (int) $order->company_id,
+            $companyId,
             $order->rm_warehouse_id !== null ? (int) $order->rm_warehouse_id : null,
             $components->pluck('component_product_id')->map(static fn ($id): int => (int) $id)->all(),
         );
@@ -50,10 +57,17 @@ class ProductionOrderMaterialRequirementsSummary
         $rows = [];
 
         foreach ($components as $component) {
-            $perFg = (float) $component['quantity_per_fg_unit'];
-            $wastePercent = max(0.0, (float) ($component['waste_percent'] ?? 0));
-            $totalRequired = round($perFg * $plannedFg * (1 + ($wastePercent / 100)), 6);
             $productId = (int) $component['component_product_id'];
+            $perFg = (float) $component['quantity_per_fg_unit'];
+            $lineUnitId = $component['unit_id'] !== null ? (int) $component['unit_id'] : null;
+            $perFgBase = $this->unitConversionService->convertToBase(
+                $companyId,
+                $productId,
+                $perFg,
+                $lineUnitId,
+            );
+            $wastePercent = max(0.0, (float) ($component['waste_percent'] ?? 0));
+            $totalRequired = round($perFgBase * $plannedFg * (1 + ($wastePercent / 100)), 6);
             $available = $availableByProduct[$productId] ?? null;
             $shortfall = null;
 
@@ -67,7 +81,7 @@ class ProductionOrderMaterialRequirementsSummary
                 'quantity_per_fg_unit' => $perFg,
                 'waste_percent' => $wastePercent,
                 'total_required' => $totalRequired,
-                'unit_label' => $component['unit_label'],
+                'unit_label' => $component['unit_label_base'] ?? $component['unit_label'],
                 'available_in_rm_warehouse' => $available,
                 'shortfall' => $shortfall,
             ];
@@ -88,12 +102,12 @@ class ProductionOrderMaterialRequirementsSummary
     }
 
     /**
-     * @return Collection<int, array{component_product_id: int, component_name: string, quantity_per_fg_unit: float, waste_percent: float, unit_label: string|null}>
+     * @return Collection<int, array{component_product_id: int, component_name: string, quantity_per_fg_unit: float, waste_percent: float, unit_id: int|null, unit_label: string|null, unit_label_base: string|null}>
      */
     protected function resolveComponents(ProductionOrder $order): Collection
     {
         if ($order->bom_snapshot_at !== null) {
-            $order->loadMissing(['bomSnapshotItems.componentProduct.unit']);
+            $order->loadMissing(['bomSnapshotItems.componentProduct.unit', 'bomSnapshotItems.unit']);
 
             return $order->bomSnapshotItems->map(static function ($line): array {
                 return [
@@ -101,7 +115,9 @@ class ProductionOrderMaterialRequirementsSummary
                     'component_name' => (string) ($line->componentProduct?->name ?? $line->component_product_id),
                     'quantity_per_fg_unit' => (float) $line->quantity_per_fg_unit,
                     'waste_percent' => max(0.0, (float) ($line->waste_percent ?? 0)),
-                    'unit_label' => $line->componentProduct?->unit?->unit_type,
+                    'unit_id' => $line->unit_id !== null ? (int) $line->unit_id : null,
+                    'unit_label' => $line->unit?->unit_type ?? $line->componentProduct?->unit?->unit_type,
+                    'unit_label_base' => $line->componentProduct?->unit?->unit_type,
                 ];
             });
         }
@@ -128,7 +144,9 @@ class ProductionOrderMaterialRequirementsSummary
                     'component_name' => (string) ($item->componentProduct?->name ?? $item->component_product_id),
                     'quantity_per_fg_unit' => (float) $item->quantity,
                     'waste_percent' => max(0.0, (float) ($item->waste_percent ?? 0)),
-                    'unit_label' => $item->componentProduct?->unit?->unit_type,
+                    'unit_id' => $item->unit_id !== null ? (int) $item->unit_id : null,
+                    'unit_label' => $item->unit?->unit_type ?? $item->componentProduct?->unit?->unit_type,
+                    'unit_label_base' => $item->componentProduct?->unit?->unit_type,
                 ];
             });
         }
@@ -139,7 +157,9 @@ class ProductionOrderMaterialRequirementsSummary
                 'component_name' => (string) ($item->componentProduct?->name ?? $item->component_product_id),
                 'quantity_per_fg_unit' => (float) $item->quantity,
                 'waste_percent' => max(0.0, (float) ($item->waste_percent ?? 0)),
-                'unit_label' => $item->componentProduct?->unit?->unit_type,
+                'unit_id' => $item->unit_id !== null ? (int) $item->unit_id : null,
+                'unit_label' => $item->unit?->unit_type ?? $item->componentProduct?->unit?->unit_type,
+                'unit_label_base' => $item->componentProduct?->unit?->unit_type,
             ];
         });
     }

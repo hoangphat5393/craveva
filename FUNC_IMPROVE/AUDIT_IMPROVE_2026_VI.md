@@ -106,4 +106,14 @@ Một loạt `.md` dưới `FUNC_BUG/`, `FUNC_IMPORT/`, `FUNC_IMPROVE/`, `FUNC_L
 | **Sync**                  | `.\scripts\md_master_sync.ps1 -Fix` và `-FixMaster` — cập nhật `FUNC_IMPROVE/INDEX.md` / `FUNC_LOGIC/INDEX.md` (khối Auto-added).                                                                                  |
 | **Tham chiếu audit tổng** | `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md` §10.                                                                                                                                                                           |
 
-_Bản ghi: audit 2026-05-09 (layout phẳng, gỡ `BIOMIXING/`); bổ sung §7 + kiểm kê §2 ngày 2026-05-12; §8 đổi tên rút gọn cùng ngày; **§9 chu kỳ 2026-05-13** — đồng bộ tài liệu REST inbound + `md_master_sync` + `upload_staging.ps1` (xem `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md` §10)._
+---
+
+## 10) Chu kỳ 2026-05-21 — Documentation audit cross-folder (P2-UOM, SKU)
+
+| Việc            | Chi tiết                                                                                                                                                  |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Báo cáo mới** | [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md) — `PROJECT BIOMIXING` + `FUNC_LOGIC` + `FUNC_IMPROVE`. |
+| **Living docs** | `BIOMIXING_GAP_STATUS_VI.md`, `PHASE2_PM_PLAN_VI.md`, `P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md` (DoD + §16).                                                   |
+| **FUNC_LOGIC**  | `FLOW_ADD_PRODUCT.md` §9; `AUDIT_LOGIC_2026_VI.md` §11.                                                                                                   |
+
+_Bản ghi: audit 2026-05-09 (layout phẳng, gỡ `BIOMIXING/`); bổ sung §7 + kiểm kê §2 ngày 2026-05-12; §8 đổi tên rút gọn cùng ngày; **§9 chu kỳ 2026-05-13** — đồng bộ tài liệu REST inbound + `md_master_sync` + `upload_staging.ps1` (xem `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md` §10); **§10 chu kỳ 2026-05-21** — audit 3 thư mục + P2-UOM/SKU doc-to-code._

@@ -38,7 +38,9 @@ use App\Services\Estimates\EstimateProductionBomCopier;
 use App\Services\Estimates\EstimateSimilarRecipeSearch;
 use App\Services\Estimates\EstimateTotalsCalculator;
 use App\Services\Estimates\EstimateVpMarginPolicy;
+use App\Support\DocumentLineUnitPricing;
 use App\Support\EstimateReviewAuthorization;
+use App\Support\OrderProductUnitPrice;
 use App\Traits\ImportExcel;
 use Carbon\Carbon;
 use Exception;
@@ -375,6 +377,12 @@ class EstimateController extends AccountBaseController
         $this->similarRecipes = $this->isPhase1ReviewGateEnabled()
             ? app(EstimateSimilarRecipeSearch::class)->findForEstimate($this->estimate)
             : [];
+
+        $currency = Currency::find($this->estimate->currency_id) ?? Currency::find(company()->currency_id);
+        $this->productSellableUnitsMap = DocumentLineUnitPricing::sellableUnitsMapForOrderItems(
+            $this->estimate->items,
+            $currency
+        );
 
         $this->view = 'estimates.ajax.edit';
 
@@ -1028,26 +1036,25 @@ class EstimateController extends AccountBaseController
 
     public function addItem(Request $request)
     {
-        $this->items = Product::findOrFail($request->id);
+        $this->items = Product::with('unit')->findOrFail($request->id);
         $this->invoiceSetting = invoice_setting();
 
         $exchangeRate = Currency::findOrFail($request->currencyId);
 
-        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate) && $exchangeRate->exchange_rate > 0) {
-            if ($this->items->total_amount != '') {
-                /** @phpstan-ignore-next-line */
-                $this->items->price = floor($this->items->total_amount / $exchangeRate->exchange_rate);
-            } else {
+        $this->sellableUnits = DocumentLineUnitPricing::sellableUnitsForLine(
+            $this->items,
+            $exchangeRate,
+            $request->exchangeRate ?? $request->exchange_rate
+        );
 
-                $this->items->price = floatval($this->items->price) / floatval($exchangeRate->exchange_rate);
-            }
-        } else {
-            if ($this->items->total_amount != '') {
-                $this->items->price = $this->items->total_amount;
-            }
-        }
+        $defaultUnitId = (int) ($this->items->unit_id ?? 0);
+        $this->items->price = OrderProductUnitPrice::formatForOrder(
+            $this->items,
+            $defaultUnitId > 0 ? $defaultUnitId : null,
+            $exchangeRate,
+            $request->exchangeRate ?? $request->exchange_rate
+        );
 
-        $this->items->price = number_format((float) $this->items->price, 2, '.', '');
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
         $this->showEstimateLineMeta = true;

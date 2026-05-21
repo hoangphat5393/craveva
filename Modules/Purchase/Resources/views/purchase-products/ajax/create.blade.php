@@ -121,54 +121,38 @@
             }, ms);
         });
 
+        @include('purchase::purchase-products.partials.product-form-client-validation')
+
         $('#save-product').click(function() {
-
-            const url = "{{ route('purchase-products.store') }}";
-            const $form = $('#save-product-form');
-            $form.find('select.select-picker').each(function() {
-                const $select = $(this);
-                if (typeof $select.selectpicker === 'function') {
-                    $select.val($select.selectpicker('val'));
-                }
-            });
-
-            window.apiHttp.postUrlEncoded(url, $form.serialize())
-                .then(function(response) {
+            $('#add_more').val(false);
+            window.submitPurchaseProductForm({
+                formSelector: '#save-product-form',
+                url: "{{ route('purchase-products.store') }}",
+                onSuccess: function(response) {
                     if (productDropzone.getQueuedFiles().length > 0) {
                         $('#hiddenProductId').val(response.productID);
                         productDropzone.processQueue();
                     } else {
                         window.location.href = response.redirectUrl;
                     }
-                })
-                .catch(function(err) {
-                    $.handleApiFormError(err);
-                });
+                },
+            });
         });
 
         $('#save-more-product').click(function() {
-            const url = "{{ route('purchase-products.store') }}";
             $('#add_more').val(true);
-            const $form = $('#save-product-form');
-            $form.find('select.select-picker').each(function() {
-                const $select = $(this);
-                if (typeof $select.selectpicker === 'function') {
-                    $select.val($select.selectpicker('val'));
-                }
-            });
-
-            window.apiHttp.postUrlEncoded(url, $form.serialize())
-                .then(function(response) {
+            window.submitPurchaseProductForm({
+                formSelector: '#save-product-form',
+                url: "{{ route('purchase-products.store') }}",
+                onSuccess: function(response) {
                     if (productDropzone.getQueuedFiles().length > 0) {
                         $('#hiddenProductId').val(response.productID);
                         productDropzone.processQueue();
                     } else {
                         window.location.reload();
                     }
-                })
-                .catch(function(err) {
-                    $.handleApiFormError(err);
-                });
+                },
+            });
         });
 
         function togglePurchaseProductTypeFields(type) {

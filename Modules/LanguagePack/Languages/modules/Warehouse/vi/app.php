@@ -78,6 +78,7 @@ return [
     'warehouseFlowSettingsHelp' => 'Áp dụng theo công ty hiện tại. Nếu chưa lưu, hệ thống dùng mặc định từ cấu hình ứng dụng / biến môi trường.',
     'flow_allow_negative_stock' => 'Cho phép tồn âm khi xuất',
     'flow_strict_unit_conversion' => 'Chuyển đơn vị chặt (bắt buộc map đơn vị sản phẩm)',
+    'flow_strict_unit_conversion_hint' => 'Khi bật: mỗi sản phẩm phải khai báo đơn vị phụ trên màn Sản phẩm trước khi nhập/xuất kho bằng đơn vị khác đơn vị gốc.',
     'flow_inbound_po_delivered' => 'Nhập kho khi PO chuyển trạng thái delivered',
     'flow_inbound_do_received' => 'Nhập kho khi phiếu nhận (GRN/DO nhập) received',
     'flow_sales_outbound_enabled' => 'Bật xuất kho bán (hóa đơn / giao hàng)',

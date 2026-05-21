@@ -163,9 +163,13 @@
                                     <td class="border-bottom-0">
                                         <input type="number" min="1" class="form-control f-14 border-0 w-100 text-right quantity mt-3" value="{{ $item->quantity }}" name="quantity[]">
                                         @if (!is_null($item->product_id) && $item->product_id != 0)
-                                            <span class="text-dark-grey float-right border-0 f-12">{{ $item->unit?->unit_type }}</span>
                                             <input type="hidden" name="product_id[]" value="{{ $item->product_id }}">
-                                            <input type="hidden" name="unit_id[]" value="{{ $item->unit_id }}">
+                                            @include('orders.partials.item-unit-select', [
+                                                'sellableUnits' => $productSellableUnitsMap[$item->product_id] ?? [],
+                                                'selectedUnitId' => $item->unit_id,
+                                                'productId' => $item->product_id,
+                                                'fallbackUnitLabel' => $item->unit?->unit_type,
+                                            ])
                                         @else
                                             <select class="text-dark-grey float-right border-0 f-12" name="unit_id[]">
                                                 @foreach ($units as $unit)
@@ -802,6 +806,25 @@
             $(this).closest('.item-row').find('.amount-html').html(decimalupto2(amount));
 
             calculateTotal();
+        });
+
+        function applyOrderLineUnitPrice($select) {
+            var price = $select.find(':selected').data('unit-price');
+            var $row = $select.closest('.item-row');
+            if (price === undefined || price === '') {
+                return;
+            }
+            $row.find('.cost_per_item').val(price).trigger('change');
+            var quantity = parseFloat($row.find('.quantity').val()) || 1;
+            var amount = decimalupto2(quantity * parseFloat(price));
+            $row.find('.amount').val(amount);
+            $row.find('.amount-html').html(amount);
+            calculateTotal();
+        }
+
+        $('#saveOrderForm .order-line-unit-select').selectpicker();
+        $('#saveOrderForm').on('changed.bs.select change', '.order-line-unit-select', function() {
+            applyOrderLineUnitPrice($(this));
         });
 
         calculateTotal();

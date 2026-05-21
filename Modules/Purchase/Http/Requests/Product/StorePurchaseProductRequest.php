@@ -6,10 +6,19 @@ use App\Enums\ProductType;
 use App\Http\Requests\CoreRequest;
 use App\Traits\CustomFieldsRequestTrait;
 use Illuminate\Validation\Rule;
+use Modules\Purchase\Http\Requests\Product\Concerns\ResolvesProductSku;
+use Modules\Purchase\Http\Requests\Product\Concerns\ValidatesProductUnitConversions;
 
 class StorePurchaseProductRequest extends CoreRequest
 {
     use CustomFieldsRequestTrait;
+    use ResolvesProductSku;
+    use ValidatesProductUnitConversions;
+
+    protected function prepareForValidation(): void
+    {
+        $this->mergeResolvedSku();
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -27,7 +36,7 @@ class StorePurchaseProductRequest extends CoreRequest
                     return $query->where('company_id', $companyId);
                 }),
             ],
-            'sku' => 'required|string|max:255',
+            'sku' => $this->skuRulesForStore($companyId),
             'track_inventory' => 'sometimes',
             'type' => ['required', Rule::in(ProductType::values())],
             'selling_price' => 'required|numeric',
@@ -37,6 +46,8 @@ class StorePurchaseProductRequest extends CoreRequest
             'downloadable_file' => 'required_if:downloadable,true|file',
             'shelf_life_days' => 'nullable|integer|min:0',
         ];
+
+        $rules = array_merge($rules, $this->productUnitConversionRules());
 
         $rules = $this->customFieldRules($rules);
 

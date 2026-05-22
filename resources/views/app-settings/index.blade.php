@@ -34,6 +34,9 @@
 
                                 <a class="nav-item nav-link f-15 ai-workspace-setting" href="{{ route('app-settings.index') }}?tab=ai-workspace-setting" role="tab" aria-controls="nav-ai-workspace" aria-selected="true" ajax="false">@lang('app.menu.aiWorkspace')
                                 </a>
+
+                                <a class="nav-item nav-link f-15 ai-assistant-widget-setting" href="{{ route('app-settings.index') }}?tab=ai-assistant-widget-setting" role="tab" aria-controls="nav-ai-assistant-widget" aria-selected="true" ajax="false">@lang('app.menu.aiAssistantWidget')
+                                </a>
                             @endif
                         </div>
                     </nav>

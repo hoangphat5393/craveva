@@ -55,10 +55,25 @@
                             <td class="f-14">{{ $bom->code ?: '—' }}</td>
                             <td class="f-14">{{ (int) $bom->items_count }}</td>
                             <td class="f-14">{{ $bom->is_default ? __('app.yes') : __('app.no') }}</td>
-                            <td class="text-right">
-                                <a href="{{ route('production.boms.show', $bom) }}" class="btn btn-secondary rounded f-14 btn-sm">
-                                    <i class="fa fa-eye mr-1"></i>@lang('app.view')
-                                </a>
+                            <td class="text-right text-nowrap align-middle">
+                                @php
+                                    $bomDeletable = (int) ($bom->production_orders_count ?? 0) === 0;
+                                    $canEditProductionBoms = in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true);
+                                @endphp
+                                <div class="d-inline-flex align-items-center justify-content-end flex-nowrap">
+                                    <a href="{{ route('production.boms.show', $bom) }}" class="btn btn-secondary rounded f-14 btn-sm height-35 d-inline-flex align-items-center mr-1 px-3">
+                                        <i class="fa fa-eye mr-1"></i>@lang('app.view')
+                                    </a>
+                                    @if ($bomDeletable && $canEditProductionBoms)
+                                        <form method="post" action="{{ route('production.boms.destroy', $bom) }}" class="d-inline-flex align-items-center mb-0" onsubmit="return confirm(@json(__('app.areYouSure')));">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger rounded f-14 btn-sm height-35 d-inline-flex align-items-center px-3">
+                                                <i class="fa fa-trash mr-1"></i>@lang('app.delete')
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty

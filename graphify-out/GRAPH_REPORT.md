@@ -1,12 +1,12 @@
 # Graph Report - craveva-staging  (2026-05-22)
 
 ## Corpus Check
-- 8225 files · ~3,610,101 words
+- 8230 files · ~3,611,820 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 25752 nodes · 57937 edges · 1184 communities detected
-- Extraction: 39% EXTRACTED · 61% INFERRED · 0% AMBIGUOUS · INFERRED: 35218 edges (avg confidence: 0.8)
+- 25772 nodes · 57974 edges · 1123 communities detected
+- Extraction: 39% EXTRACTED · 61% INFERRED · 0% AMBIGUOUS · INFERRED: 35234 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -71,21 +71,21 @@
 - [[_COMMUNITY_Community 58|Community 58]]
 - [[_COMMUNITY_Community 59|Community 59]]
 - [[_COMMUNITY_Community 60|Community 60]]
-- [[_COMMUNITY_Community 62|Community 62]]
+- [[_COMMUNITY_Community 61|Community 61]]
 - [[_COMMUNITY_Community 63|Community 63]]
 - [[_COMMUNITY_Community 64|Community 64]]
 - [[_COMMUNITY_Community 65|Community 65]]
 - [[_COMMUNITY_Community 66|Community 66]]
 - [[_COMMUNITY_Community 67|Community 67]]
+- [[_COMMUNITY_Community 68|Community 68]]
 - [[_COMMUNITY_Community 69|Community 69]]
 - [[_COMMUNITY_Community 70|Community 70]]
-- [[_COMMUNITY_Community 71|Community 71]]
+- [[_COMMUNITY_Community 72|Community 72]]
 - [[_COMMUNITY_Community 73|Community 73]]
-- [[_COMMUNITY_Community 75|Community 75]]
+- [[_COMMUNITY_Community 74|Community 74]]
 - [[_COMMUNITY_Community 76|Community 76]]
 - [[_COMMUNITY_Community 77|Community 77]]
 - [[_COMMUNITY_Community 78|Community 78]]
-- [[_COMMUNITY_Community 79|Community 79]]
 - [[_COMMUNITY_Community 80|Community 80]]
 - [[_COMMUNITY_Community 81|Community 81]]
 - [[_COMMUNITY_Community 82|Community 82]]
@@ -251,12 +251,12 @@
 - [[_COMMUNITY_Community 242|Community 242]]
 - [[_COMMUNITY_Community 243|Community 243]]
 - [[_COMMUNITY_Community 244|Community 244]]
+- [[_COMMUNITY_Community 245|Community 245]]
 - [[_COMMUNITY_Community 246|Community 246]]
 - [[_COMMUNITY_Community 247|Community 247]]
 - [[_COMMUNITY_Community 248|Community 248]]
 - [[_COMMUNITY_Community 249|Community 249]]
 - [[_COMMUNITY_Community 250|Community 250]]
-- [[_COMMUNITY_Community 251|Community 251]]
 - [[_COMMUNITY_Community 252|Community 252]]
 - [[_COMMUNITY_Community 253|Community 253]]
 - [[_COMMUNITY_Community 254|Community 254]]
@@ -545,6 +545,7 @@
 - [[_COMMUNITY_Community 537|Community 537]]
 - [[_COMMUNITY_Community 538|Community 538]]
 - [[_COMMUNITY_Community 539|Community 539]]
+- [[_COMMUNITY_Community 540|Community 540]]
 - [[_COMMUNITY_Community 541|Community 541]]
 - [[_COMMUNITY_Community 542|Community 542]]
 - [[_COMMUNITY_Community 543|Community 543]]
@@ -572,7 +573,6 @@
 - [[_COMMUNITY_Community 565|Community 565]]
 - [[_COMMUNITY_Community 566|Community 566]]
 - [[_COMMUNITY_Community 567|Community 567]]
-- [[_COMMUNITY_Community 568|Community 568]]
 - [[_COMMUNITY_Community 569|Community 569]]
 - [[_COMMUNITY_Community 570|Community 570]]
 - [[_COMMUNITY_Community 571|Community 571]]
@@ -689,6 +689,7 @@
 - [[_COMMUNITY_Community 682|Community 682]]
 - [[_COMMUNITY_Community 683|Community 683]]
 - [[_COMMUNITY_Community 684|Community 684]]
+- [[_COMMUNITY_Community 685|Community 685]]
 - [[_COMMUNITY_Community 686|Community 686]]
 - [[_COMMUNITY_Community 687|Community 687]]
 - [[_COMMUNITY_Community 688|Community 688]]
@@ -736,7 +737,6 @@
 - [[_COMMUNITY_Community 730|Community 730]]
 - [[_COMMUNITY_Community 731|Community 731]]
 - [[_COMMUNITY_Community 732|Community 732]]
-- [[_COMMUNITY_Community 733|Community 733]]
 - [[_COMMUNITY_Community 734|Community 734]]
 - [[_COMMUNITY_Community 735|Community 735]]
 - [[_COMMUNITY_Community 736|Community 736]]
@@ -874,119 +874,78 @@
 - [[_COMMUNITY_Community 868|Community 868]]
 - [[_COMMUNITY_Community 869|Community 869]]
 - [[_COMMUNITY_Community 870|Community 870]]
-- [[_COMMUNITY_Community 879|Community 879]]
-- [[_COMMUNITY_Community 880|Community 880]]
-- [[_COMMUNITY_Community 881|Community 881]]
+- [[_COMMUNITY_Community 871|Community 871]]
+- [[_COMMUNITY_Community 872|Community 872]]
+- [[_COMMUNITY_Community 875|Community 875]]
 - [[_COMMUNITY_Community 882|Community 882]]
-- [[_COMMUNITY_Community 888|Community 888]]
-- [[_COMMUNITY_Community 897|Community 897]]
-- [[_COMMUNITY_Community 898|Community 898]]
-- [[_COMMUNITY_Community 899|Community 899]]
-- [[_COMMUNITY_Community 906|Community 906]]
-- [[_COMMUNITY_Community 919|Community 919]]
-- [[_COMMUNITY_Community 920|Community 920]]
-- [[_COMMUNITY_Community 922|Community 922]]
-- [[_COMMUNITY_Community 942|Community 942]]
-- [[_COMMUNITY_Community 944|Community 944]]
-- [[_COMMUNITY_Community 948|Community 948]]
-- [[_COMMUNITY_Community 951|Community 951]]
-- [[_COMMUNITY_Community 952|Community 952]]
-- [[_COMMUNITY_Community 954|Community 954]]
-- [[_COMMUNITY_Community 963|Community 963]]
-- [[_COMMUNITY_Community 1001|Community 1001]]
+- [[_COMMUNITY_Community 883|Community 883]]
+- [[_COMMUNITY_Community 903|Community 903]]
+- [[_COMMUNITY_Community 925|Community 925]]
+- [[_COMMUNITY_Community 989|Community 989]]
+- [[_COMMUNITY_Community 990|Community 990]]
+- [[_COMMUNITY_Community 991|Community 991]]
+- [[_COMMUNITY_Community 992|Community 992]]
+- [[_COMMUNITY_Community 993|Community 993]]
+- [[_COMMUNITY_Community 996|Community 996]]
+- [[_COMMUNITY_Community 997|Community 997]]
+- [[_COMMUNITY_Community 998|Community 998]]
+- [[_COMMUNITY_Community 999|Community 999]]
 - [[_COMMUNITY_Community 1002|Community 1002]]
-- [[_COMMUNITY_Community 1003|Community 1003]]
 - [[_COMMUNITY_Community 1004|Community 1004]]
-- [[_COMMUNITY_Community 1007|Community 1007]]
 - [[_COMMUNITY_Community 1008|Community 1008]]
-- [[_COMMUNITY_Community 1009|Community 1009]]
 - [[_COMMUNITY_Community 1010|Community 1010]]
+- [[_COMMUNITY_Community 1011|Community 1011]]
+- [[_COMMUNITY_Community 1012|Community 1012]]
 - [[_COMMUNITY_Community 1013|Community 1013]]
-- [[_COMMUNITY_Community 1015|Community 1015]]
-- [[_COMMUNITY_Community 1016|Community 1016]]
-- [[_COMMUNITY_Community 1017|Community 1017]]
-- [[_COMMUNITY_Community 1021|Community 1021]]
+- [[_COMMUNITY_Community 1019|Community 1019]]
 - [[_COMMUNITY_Community 1022|Community 1022]]
-- [[_COMMUNITY_Community 1024|Community 1024]]
-- [[_COMMUNITY_Community 1025|Community 1025]]
-- [[_COMMUNITY_Community 1026|Community 1026]]
+- [[_COMMUNITY_Community 1023|Community 1023]]
 - [[_COMMUNITY_Community 1027|Community 1027]]
+- [[_COMMUNITY_Community 1032|Community 1032]]
 - [[_COMMUNITY_Community 1033|Community 1033]]
-- [[_COMMUNITY_Community 1036|Community 1036]]
 - [[_COMMUNITY_Community 1037|Community 1037]]
+- [[_COMMUNITY_Community 1040|Community 1040]]
 - [[_COMMUNITY_Community 1041|Community 1041]]
+- [[_COMMUNITY_Community 1043|Community 1043]]
+- [[_COMMUNITY_Community 1044|Community 1044]]
+- [[_COMMUNITY_Community 1045|Community 1045]]
 - [[_COMMUNITY_Community 1046|Community 1046]]
-- [[_COMMUNITY_Community 1047|Community 1047]]
-- [[_COMMUNITY_Community 1051|Community 1051]]
-- [[_COMMUNITY_Community 1054|Community 1054]]
-- [[_COMMUNITY_Community 1055|Community 1055]]
-- [[_COMMUNITY_Community 1056|Community 1056]]
-- [[_COMMUNITY_Community 1057|Community 1057]]
-- [[_COMMUNITY_Community 1059|Community 1059]]
-- [[_COMMUNITY_Community 1060|Community 1060]]
-- [[_COMMUNITY_Community 1061|Community 1061]]
-- [[_COMMUNITY_Community 1062|Community 1062]]
-- [[_COMMUNITY_Community 1063|Community 1063]]
-- [[_COMMUNITY_Community 1064|Community 1064]]
+- [[_COMMUNITY_Community 1058|Community 1058]]
+- [[_COMMUNITY_Community 1072|Community 1072]]
 - [[_COMMUNITY_Community 1076|Community 1076]]
+- [[_COMMUNITY_Community 1077|Community 1077]]
 - [[_COMMUNITY_Community 1078|Community 1078]]
+- [[_COMMUNITY_Community 1079|Community 1079]]
 - [[_COMMUNITY_Community 1081|Community 1081]]
+- [[_COMMUNITY_Community 1082|Community 1082]]
+- [[_COMMUNITY_Community 1083|Community 1083]]
+- [[_COMMUNITY_Community 1084|Community 1084]]
+- [[_COMMUNITY_Community 1091|Community 1091]]
 - [[_COMMUNITY_Community 1092|Community 1092]]
 - [[_COMMUNITY_Community 1093|Community 1093]]
-- [[_COMMUNITY_Community 1094|Community 1094]]
-- [[_COMMUNITY_Community 1095|Community 1095]]
 - [[_COMMUNITY_Community 1096|Community 1096]]
-- [[_COMMUNITY_Community 1097|Community 1097]]
-- [[_COMMUNITY_Community 1098|Community 1098]]
-- [[_COMMUNITY_Community 1099|Community 1099]]
-- [[_COMMUNITY_Community 1100|Community 1100]]
-- [[_COMMUNITY_Community 1101|Community 1101]]
-- [[_COMMUNITY_Community 1102|Community 1102]]
-- [[_COMMUNITY_Community 1103|Community 1103]]
-- [[_COMMUNITY_Community 1104|Community 1104]]
-- [[_COMMUNITY_Community 1105|Community 1105]]
 - [[_COMMUNITY_Community 1106|Community 1106]]
+- [[_COMMUNITY_Community 1107|Community 1107]]
+- [[_COMMUNITY_Community 1108|Community 1108]]
+- [[_COMMUNITY_Community 1109|Community 1109]]
 - [[_COMMUNITY_Community 1110|Community 1110]]
-- [[_COMMUNITY_Community 1111|Community 1111]]
 - [[_COMMUNITY_Community 1112|Community 1112]]
-- [[_COMMUNITY_Community 1113|Community 1113]]
-- [[_COMMUNITY_Community 1115|Community 1115]]
-- [[_COMMUNITY_Community 1116|Community 1116]]
-- [[_COMMUNITY_Community 1117|Community 1117]]
-- [[_COMMUNITY_Community 1118|Community 1118]]
+- [[_COMMUNITY_Community 1123|Community 1123]]
+- [[_COMMUNITY_Community 1124|Community 1124]]
 - [[_COMMUNITY_Community 1125|Community 1125]]
 - [[_COMMUNITY_Community 1126|Community 1126]]
 - [[_COMMUNITY_Community 1127|Community 1127]]
 - [[_COMMUNITY_Community 1128|Community 1128]]
 - [[_COMMUNITY_Community 1129|Community 1129]]
-- [[_COMMUNITY_Community 1132|Community 1132]]
-- [[_COMMUNITY_Community 1138|Community 1138]]
-- [[_COMMUNITY_Community 1143|Community 1143]]
-- [[_COMMUNITY_Community 1144|Community 1144]]
+- [[_COMMUNITY_Community 1130|Community 1130]]
+- [[_COMMUNITY_Community 1131|Community 1131]]
+- [[_COMMUNITY_Community 1133|Community 1133]]
+- [[_COMMUNITY_Community 1134|Community 1134]]
+- [[_COMMUNITY_Community 1137|Community 1137]]
 - [[_COMMUNITY_Community 1145|Community 1145]]
 - [[_COMMUNITY_Community 1146|Community 1146]]
-- [[_COMMUNITY_Community 1147|Community 1147]]
-- [[_COMMUNITY_Community 1148|Community 1148]]
 - [[_COMMUNITY_Community 1150|Community 1150]]
-- [[_COMMUNITY_Community 1151|Community 1151]]
-- [[_COMMUNITY_Community 1155|Community 1155]]
-- [[_COMMUNITY_Community 1158|Community 1158]]
-- [[_COMMUNITY_Community 1164|Community 1164]]
-- [[_COMMUNITY_Community 1165|Community 1165]]
-- [[_COMMUNITY_Community 1166|Community 1166]]
-- [[_COMMUNITY_Community 1167|Community 1167]]
-- [[_COMMUNITY_Community 1168|Community 1168]]
-- [[_COMMUNITY_Community 1169|Community 1169]]
-- [[_COMMUNITY_Community 1170|Community 1170]]
-- [[_COMMUNITY_Community 1171|Community 1171]]
-- [[_COMMUNITY_Community 1172|Community 1172]]
-- [[_COMMUNITY_Community 1173|Community 1173]]
-- [[_COMMUNITY_Community 1174|Community 1174]]
-- [[_COMMUNITY_Community 1175|Community 1175]]
-- [[_COMMUNITY_Community 1176|Community 1176]]
-- [[_COMMUNITY_Community 1177|Community 1177]]
-- [[_COMMUNITY_Community 1178|Community 1178]]
-- [[_COMMUNITY_Community 1179|Community 1179]]
+- [[_COMMUNITY_Community 1156|Community 1156]]
 - [[_COMMUNITY_Community 1180|Community 1180]]
 - [[_COMMUNITY_Community 1181|Community 1181]]
 - [[_COMMUNITY_Community 1182|Community 1182]]
@@ -997,33 +956,49 @@
 - [[_COMMUNITY_Community 1187|Community 1187]]
 - [[_COMMUNITY_Community 1188|Community 1188]]
 - [[_COMMUNITY_Community 1189|Community 1189]]
+- [[_COMMUNITY_Community 1190|Community 1190]]
 - [[_COMMUNITY_Community 1191|Community 1191]]
 - [[_COMMUNITY_Community 1192|Community 1192]]
 - [[_COMMUNITY_Community 1193|Community 1193]]
+- [[_COMMUNITY_Community 1194|Community 1194]]
+- [[_COMMUNITY_Community 1195|Community 1195]]
 - [[_COMMUNITY_Community 1196|Community 1196]]
-- [[_COMMUNITY_Community 1207|Community 1207]]
+- [[_COMMUNITY_Community 1197|Community 1197]]
+- [[_COMMUNITY_Community 1198|Community 1198]]
+- [[_COMMUNITY_Community 1199|Community 1199]]
+- [[_COMMUNITY_Community 1200|Community 1200]]
+- [[_COMMUNITY_Community 1201|Community 1201]]
+- [[_COMMUNITY_Community 1202|Community 1202]]
+- [[_COMMUNITY_Community 1203|Community 1203]]
+- [[_COMMUNITY_Community 1204|Community 1204]]
+- [[_COMMUNITY_Community 1205|Community 1205]]
+- [[_COMMUNITY_Community 1206|Community 1206]]
+- [[_COMMUNITY_Community 1211|Community 1211]]
+- [[_COMMUNITY_Community 1212|Community 1212]]
 - [[_COMMUNITY_Community 1213|Community 1213]]
+- [[_COMMUNITY_Community 1214|Community 1214]]
+- [[_COMMUNITY_Community 1215|Community 1215]]
+- [[_COMMUNITY_Community 1216|Community 1216]]
+- [[_COMMUNITY_Community 1217|Community 1217]]
+- [[_COMMUNITY_Community 1218|Community 1218]]
+- [[_COMMUNITY_Community 1219|Community 1219]]
+- [[_COMMUNITY_Community 1220|Community 1220]]
+- [[_COMMUNITY_Community 1221|Community 1221]]
+- [[_COMMUNITY_Community 1222|Community 1222]]
+- [[_COMMUNITY_Community 1223|Community 1223]]
+- [[_COMMUNITY_Community 1224|Community 1224]]
+- [[_COMMUNITY_Community 1225|Community 1225]]
+- [[_COMMUNITY_Community 1226|Community 1226]]
+- [[_COMMUNITY_Community 1227|Community 1227]]
+- [[_COMMUNITY_Community 1228|Community 1228]]
+- [[_COMMUNITY_Community 1229|Community 1229]]
+- [[_COMMUNITY_Community 1230|Community 1230]]
+- [[_COMMUNITY_Community 1231|Community 1231]]
+- [[_COMMUNITY_Community 1232|Community 1232]]
+- [[_COMMUNITY_Community 1233|Community 1233]]
 - [[_COMMUNITY_Community 1234|Community 1234]]
-- [[_COMMUNITY_Community 1238|Community 1238]]
-- [[_COMMUNITY_Community 1239|Community 1239]]
-- [[_COMMUNITY_Community 1240|Community 1240]]
-- [[_COMMUNITY_Community 1241|Community 1241]]
-- [[_COMMUNITY_Community 1242|Community 1242]]
-- [[_COMMUNITY_Community 1243|Community 1243]]
-- [[_COMMUNITY_Community 1244|Community 1244]]
-- [[_COMMUNITY_Community 1245|Community 1245]]
-- [[_COMMUNITY_Community 1246|Community 1246]]
-- [[_COMMUNITY_Community 1247|Community 1247]]
-- [[_COMMUNITY_Community 1248|Community 1248]]
-- [[_COMMUNITY_Community 1249|Community 1249]]
-- [[_COMMUNITY_Community 1250|Community 1250]]
-- [[_COMMUNITY_Community 1251|Community 1251]]
-- [[_COMMUNITY_Community 1252|Community 1252]]
-- [[_COMMUNITY_Community 1253|Community 1253]]
-- [[_COMMUNITY_Community 1254|Community 1254]]
-- [[_COMMUNITY_Community 1255|Community 1255]]
-- [[_COMMUNITY_Community 1256|Community 1256]]
-- [[_COMMUNITY_Community 1257|Community 1257]]
+- [[_COMMUNITY_Community 1235|Community 1235]]
+- [[_COMMUNITY_Community 1236|Community 1236]]
 - [[_COMMUNITY_Community 1258|Community 1258]]
 - [[_COMMUNITY_Community 1259|Community 1259]]
 - [[_COMMUNITY_Community 1260|Community 1260]]
@@ -1034,6 +1009,10 @@
 - [[_COMMUNITY_Community 1265|Community 1265]]
 - [[_COMMUNITY_Community 1266|Community 1266]]
 - [[_COMMUNITY_Community 1267|Community 1267]]
+- [[_COMMUNITY_Community 1268|Community 1268]]
+- [[_COMMUNITY_Community 1269|Community 1269]]
+- [[_COMMUNITY_Community 1270|Community 1270]]
+- [[_COMMUNITY_Community 1271|Community 1271]]
 - [[_COMMUNITY_Community 1272|Community 1272]]
 - [[_COMMUNITY_Community 1273|Community 1273]]
 - [[_COMMUNITY_Community 1274|Community 1274]]
@@ -1050,16 +1029,34 @@
 - [[_COMMUNITY_Community 1285|Community 1285]]
 - [[_COMMUNITY_Community 1286|Community 1286]]
 - [[_COMMUNITY_Community 1287|Community 1287]]
-- [[_COMMUNITY_Community 1288|Community 1288]]
 - [[_COMMUNITY_Community 1289|Community 1289]]
-- [[_COMMUNITY_Community 1290|Community 1290]]
-- [[_COMMUNITY_Community 1291|Community 1291]]
 - [[_COMMUNITY_Community 1292|Community 1292]]
 - [[_COMMUNITY_Community 1293|Community 1293]]
 - [[_COMMUNITY_Community 1294|Community 1294]]
 - [[_COMMUNITY_Community 1295|Community 1295]]
 - [[_COMMUNITY_Community 1296|Community 1296]]
 - [[_COMMUNITY_Community 1297|Community 1297]]
+- [[_COMMUNITY_Community 1298|Community 1298]]
+- [[_COMMUNITY_Community 1299|Community 1299]]
+- [[_COMMUNITY_Community 1300|Community 1300]]
+- [[_COMMUNITY_Community 1301|Community 1301]]
+- [[_COMMUNITY_Community 1302|Community 1302]]
+- [[_COMMUNITY_Community 1303|Community 1303]]
+- [[_COMMUNITY_Community 1304|Community 1304]]
+- [[_COMMUNITY_Community 1305|Community 1305]]
+- [[_COMMUNITY_Community 1306|Community 1306]]
+- [[_COMMUNITY_Community 1307|Community 1307]]
+- [[_COMMUNITY_Community 1308|Community 1308]]
+- [[_COMMUNITY_Community 1309|Community 1309]]
+- [[_COMMUNITY_Community 1310|Community 1310]]
+- [[_COMMUNITY_Community 1311|Community 1311]]
+- [[_COMMUNITY_Community 1312|Community 1312]]
+- [[_COMMUNITY_Community 1313|Community 1313]]
+- [[_COMMUNITY_Community 1314|Community 1314]]
+- [[_COMMUNITY_Community 1315|Community 1315]]
+- [[_COMMUNITY_Community 1316|Community 1316]]
+- [[_COMMUNITY_Community 1317|Community 1317]]
+- [[_COMMUNITY_Community 1318|Community 1318]]
 - [[_COMMUNITY_Community 1319|Community 1319]]
 - [[_COMMUNITY_Community 1320|Community 1320]]
 - [[_COMMUNITY_Community 1321|Community 1321]]
@@ -1090,7 +1087,10 @@
 - [[_COMMUNITY_Community 1346|Community 1346]]
 - [[_COMMUNITY_Community 1347|Community 1347]]
 - [[_COMMUNITY_Community 1348|Community 1348]]
+- [[_COMMUNITY_Community 1349|Community 1349]]
 - [[_COMMUNITY_Community 1350|Community 1350]]
+- [[_COMMUNITY_Community 1351|Community 1351]]
+- [[_COMMUNITY_Community 1352|Community 1352]]
 - [[_COMMUNITY_Community 1353|Community 1353]]
 - [[_COMMUNITY_Community 1354|Community 1354]]
 - [[_COMMUNITY_Community 1355|Community 1355]]
@@ -1112,9 +1112,6 @@
 - [[_COMMUNITY_Community 1371|Community 1371]]
 - [[_COMMUNITY_Community 1372|Community 1372]]
 - [[_COMMUNITY_Community 1373|Community 1373]]
-- [[_COMMUNITY_Community 1374|Community 1374]]
-- [[_COMMUNITY_Community 1375|Community 1375]]
-- [[_COMMUNITY_Community 1376|Community 1376]]
 - [[_COMMUNITY_Community 1377|Community 1377]]
 - [[_COMMUNITY_Community 1378|Community 1378]]
 - [[_COMMUNITY_Community 1379|Community 1379]]
@@ -1136,69 +1133,11 @@
 - [[_COMMUNITY_Community 1395|Community 1395]]
 - [[_COMMUNITY_Community 1396|Community 1396]]
 - [[_COMMUNITY_Community 1397|Community 1397]]
-- [[_COMMUNITY_Community 1398|Community 1398]]
-- [[_COMMUNITY_Community 1399|Community 1399]]
-- [[_COMMUNITY_Community 1400|Community 1400]]
-- [[_COMMUNITY_Community 1401|Community 1401]]
-- [[_COMMUNITY_Community 1402|Community 1402]]
-- [[_COMMUNITY_Community 1403|Community 1403]]
-- [[_COMMUNITY_Community 1404|Community 1404]]
-- [[_COMMUNITY_Community 1405|Community 1405]]
-- [[_COMMUNITY_Community 1406|Community 1406]]
-- [[_COMMUNITY_Community 1407|Community 1407]]
-- [[_COMMUNITY_Community 1408|Community 1408]]
-- [[_COMMUNITY_Community 1409|Community 1409]]
-- [[_COMMUNITY_Community 1410|Community 1410]]
-- [[_COMMUNITY_Community 1411|Community 1411]]
-- [[_COMMUNITY_Community 1412|Community 1412]]
-- [[_COMMUNITY_Community 1413|Community 1413]]
-- [[_COMMUNITY_Community 1414|Community 1414]]
-- [[_COMMUNITY_Community 1415|Community 1415]]
-- [[_COMMUNITY_Community 1416|Community 1416]]
-- [[_COMMUNITY_Community 1417|Community 1417]]
-- [[_COMMUNITY_Community 1418|Community 1418]]
-- [[_COMMUNITY_Community 1419|Community 1419]]
-- [[_COMMUNITY_Community 1420|Community 1420]]
-- [[_COMMUNITY_Community 1421|Community 1421]]
-- [[_COMMUNITY_Community 1422|Community 1422]]
-- [[_COMMUNITY_Community 1423|Community 1423]]
-- [[_COMMUNITY_Community 1424|Community 1424]]
-- [[_COMMUNITY_Community 1425|Community 1425]]
-- [[_COMMUNITY_Community 1426|Community 1426]]
-- [[_COMMUNITY_Community 1427|Community 1427]]
-- [[_COMMUNITY_Community 1428|Community 1428]]
-- [[_COMMUNITY_Community 1429|Community 1429]]
-- [[_COMMUNITY_Community 1430|Community 1430]]
-- [[_COMMUNITY_Community 1431|Community 1431]]
-- [[_COMMUNITY_Community 1432|Community 1432]]
-- [[_COMMUNITY_Community 1433|Community 1433]]
-- [[_COMMUNITY_Community 1434|Community 1434]]
-- [[_COMMUNITY_Community 1438|Community 1438]]
-- [[_COMMUNITY_Community 1439|Community 1439]]
-- [[_COMMUNITY_Community 1440|Community 1440]]
-- [[_COMMUNITY_Community 1441|Community 1441]]
-- [[_COMMUNITY_Community 1442|Community 1442]]
-- [[_COMMUNITY_Community 1443|Community 1443]]
-- [[_COMMUNITY_Community 1444|Community 1444]]
-- [[_COMMUNITY_Community 1445|Community 1445]]
-- [[_COMMUNITY_Community 1446|Community 1446]]
-- [[_COMMUNITY_Community 1447|Community 1447]]
-- [[_COMMUNITY_Community 1448|Community 1448]]
-- [[_COMMUNITY_Community 1449|Community 1449]]
-- [[_COMMUNITY_Community 1450|Community 1450]]
-- [[_COMMUNITY_Community 1451|Community 1451]]
-- [[_COMMUNITY_Community 1452|Community 1452]]
-- [[_COMMUNITY_Community 1453|Community 1453]]
-- [[_COMMUNITY_Community 1454|Community 1454]]
-- [[_COMMUNITY_Community 1455|Community 1455]]
-- [[_COMMUNITY_Community 1456|Community 1456]]
-- [[_COMMUNITY_Community 1457|Community 1457]]
-- [[_COMMUNITY_Community 1458|Community 1458]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `abort_403()` - 1311 edges
+1. `abort_403()` - 1312 edges
 2. `get()` - 1230 edges
-3. `save()` - 1086 edges
+3. `save()` - 1087 edges
 4. `belongsTo()` - 692 edges
 5. `DB` - 515 edges
 6. `toArray()` - 346 edges
@@ -1208,378 +1147,378 @@
 10. `isRunningInConsoleOrSeeding()` - 263 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `EmployeeShiftSchedule` --calls--> `up()`  [INFERRED]
-  app\Models\EmployeeShiftSchedule.php → database\migrations\2025_01_10_214004_fix_shift_null_time_in_schedule.php
 - `company()` --calls--> `belongsTo()`  [INFERRED]
   app\Traits\HasCompany.php → packages\macsidigital-laravel-api-client\src\Traits\HasRelationships.php
-- `up()` --calls--> `DB`  [INFERRED]
-  database\migrations\2023_02_13_045833_add_report_column_in_log_time_table.php → packages\macsidigital-laravel-oauth2-client\src\Support\Token\DB.php
-- `up()` --calls--> `DB`  [INFERRED]
-  database\migrations\2024_05_31_120806_remove_duplicate_permission_upsert.php → packages\macsidigital-laravel-oauth2-client\src\Support\Token\DB.php
-- `up()` --calls--> `DB`  [INFERRED]
-  database\migrations\2024_06_04_083820_modify_status_column_in_pending_invoice_table.php → packages\macsidigital-laravel-oauth2-client\src\Support\Token\DB.php
+- `setRelations()` --calls--> `replicate()`  [INFERRED]
+  packages\macsidigital-laravel-api-client\src\Traits\HasRelationships.php → packages\macsidigital-laravel-api-client\src\Traits\InteractsWithAPI.php
+- `deployCravevaAgent()` --calls--> `setAttribute()`  [INFERRED]
+  ai_widget\widget\typescript\widget.ts → packages\macsidigital-laravel-api-client\src\Traits\HasAttributes.php
+- `NumberFormat` --calls--> `up()`  [INFERRED]
+  app\Helper\NumberFormat.php → database\migrations\2023_09_25_055948_add_column_for_number_with_prefix.php
+- `user_roles()` --calls--> `employeeDashboard()`  [INFERRED]
+  app\Helper\start.php → app\Traits\EmployeeDashboard.php
 
 ## Communities
 
 ### Community 0 - "Community 0"
 Cohesion: 0.0
-Nodes (644): isAffiliate(), isUserAffiliate(), AddMissingRolePermission, AnnualCarryForwardLeaves, AnnualReimburseLeaves, AssignEmployeeShiftRotation, AssignShiftRotation, AuditCustomFieldsCommand (+636 more)
+Nodes (780): isAffiliate(), isUserAffiliate(), Notification, AddMissingRolePermission, AnnualCarryForwardLeaves, AnnualReimburseLeaves, AuditCustomFieldsCommand, AuditDeveloperToolsCommand (+772 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.0
-Nodes (277): StickyNote, UpdateRequest, AffiliateController, AffiliateDashboardController, ApplicantNoteController, AppreciationController, AssetController, AssetHistoryController (+269 more)
+Nodes (301): StickyNote, BirthdayReminderCommand, CreateEmployeeLeaveQuotaHistory, CandidateFollowupReminderCommand, AffiliateController, AffiliateDashboardController, ApplicantNoteController, AppreciationController (+293 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.0
-Nodes (236): SalarySlip, CreateEmployeeLeaveQuotaHistory, CheckDomainExpiryCommand, CheckHostingExpiryCommand, NotificationController, ProjectTemplateMemberController, ProjectTemplateTaskController, PromotionController (+228 more)
+Nodes (265): SalarySlip, AutoCreateRecurringExpenses, SendAutoFollowUpReminder, CheckDomainExpiryCommand, CheckHostingExpiryCommand, ProductSubCategoryController, ProjectTemplateMemberController, ProjectTemplateMilestoneController (+257 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.0
-Nodes (203): PushNotificationController, RecruitEmailNotificationSettingsController, SlackSettingController, SmsSettingsController, RecruitEmailNotificationSetting, SmsNotificationSetting, SmsSetting, SmsTemplateId (+195 more)
+Nodes (274): AutoCreateRecurringInvoices, AutoCreateRecurringTasks, AutoDeleteDatabaseBackup, ClearNullSessions, ConvertTaskBase64Images, FetchTicketEmails, InActiveEmployee, RemoveSeenNotification (+266 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.0
-Nodes (269): Notification, AutoCreateRecurringExpenses, AutoCreateRecurringTasks, RemoveSeenNotification, SendAutoFollowUpReminder, CandidateFollowupReminderCommand, OfferLetterReminder, EventCalendarController (+261 more)
+Nodes (187): PushNotificationController, SlackSettingController, SmsSettingsController, msg91Template(), translationString(), whatsappTemplate(), getDomainSpecificUrl(), push_setting() (+179 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.0
-Nodes (204): AutoCreateRecurringInvoices, CompanyPurgeTransactionsCommand, UpdateExchangeRates, CompanyTransactionPurgePlan, CompanyTransactionPurgeService, Flag, PublishButton, handleProductionThrowable() (+196 more)
+Cohesion: 0.01
+Nodes (737): a(), f(), g(), h(), i(), l(), m(), o() (+729 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.01
-Nodes (622): a(), f(), g(), h(), i(), l(), m(), o() (+614 more)
+Cohesion: 0.0
+Nodes (103): LeavesQuotaController, AcknowledgedDataTable, AffiliatesDataTable, AppreciationsDataTable, ArchivePolicyDataTable, ArchiveProjectsDataTable, ArchiveTasksDataTable, AssetDataTable (+95 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.01
-Nodes (71): RecalculateEstimateTotalsCommand, validateProductionBomLineUnits(), SendInterviewReminder, BiometricDeviceController, CustomModuleController, EstimateController, HomeController, ProductionBomController (+63 more)
+Nodes (96): UpdateExchangeRates, UpdateProjectProgressByDeadline, ActionController, BiolinksController, InvoiceController, WorkExperienceController, PurchaseBillDataTable, Action (+88 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.01
-Nodes (104): UpdateAiWorkspaceSetting, AutoDatabaseBackup, AutoDeleteDatabaseBackup, HideCronJobMessage, SendEmployeeDocumentExpiryAlert, CronMessage, ContactUsRequest, AffiliateSettingController (+96 more)
+Nodes (92): MigrationCommand, AuthorisationController, FileController, ImportController, QuickbookController, QuickbookSettingsController, BiometricPendingCommandDataTable, ClientTiersDataTable (+84 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.01
-Nodes (86): LeavesQuotaController, AcknowledgedDataTable, AffiliatesDataTable, AppreciationsDataTable, ArchivePolicyDataTable, ArchiveProjectsDataTable, ArchiveTasksDataTable, AwardDataTable (+78 more)
+Nodes (98): UpdateAiAssistantWidgetSetting, UpdateAiWorkspaceSetting, HideCronJobMessage, SendEmployeeDocumentExpiryAlert, SendImmigrationExpiryAlert, CronMessage, ContactUsRequest, AffiliateSettingController (+90 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.01
-Nodes (159): PurchaseSmtpSettingController, ZoomWebhookController, User, PurchaseNotificationSetting, AssetFactory, EventFactory, ExpenseFactory, LeadFactory (+151 more)
+Nodes (172): KeyResultsMetricsController, ZoomWebhookController, User, KeyResultsMetrics, AssetFactory, EventFactory, ExpenseFactory, LeadFactory (+164 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.01
-Nodes (85): ConvertTaskBase64Images, SendProjectReminder, MenuItem, CheckInReminderCommand, AgendaController, CheckInController, DeveloperToolsController, GoalTypeController (+77 more)
+Nodes (67): y(), RecalculateEstimateTotalsCommand, CandidateDatabaseController, InterviewScheduleController, InterviewStageController, JobApplicationBoardController, LeaveTypeController, ProductionBomController (+59 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.01
-Nodes (76): MigrationCommand, BiometricPendingCommandDataTable, JsonEncodingException, RequestException, up(), down(), up(), CustomFieldGroup (+68 more)
+Nodes (29): contracts.companysign.sign, departments-hierarchy.chart_organization, departments-hierarchy.chart_tree, designations-hierarchy.chart_organization, designations-hierarchy.chart_tree, estimates.partials.approval-timeline, estimates.partials.bom-lines, estimates.partials.copy-production-bom (+21 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.01
-Nodes (143): y(), e(), n(), CravevaAgentComponent, InterviewScheduleController, LeaveTypeController, SalesOrderSettingsController, ZoomMeetingController (+135 more)
+Nodes (44): handleWarehouseThrowable(), warehouseCompanyId(), warehouseFailResponse(), WarehouseCompanyFlowSettingController, WarehouseController, WarehouseMovementController, WarehouseProductBatchController, WarehouseStockController (+36 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.01
-Nodes (29): contracts.companysign.sign, departments-hierarchy.chart_organization, departments-hierarchy.chart_tree, designations-hierarchy.chart_organization, designations-hierarchy.chart_tree, estimates.partials.approval-timeline, estimates.partials.bom-lines, estimates.partials.copy-production-bom (+21 more)
+Nodes (55): CompanyPurgeTransactionsCommand, PhpIniCheckCommand, VerifyStripePaymentEnvironmentCommand, CompanyTransactionPurgePlan, CompanyTransactionPurgeService, Flag, PublishButton, Table (+47 more)
 
 ### Community 15 - "Community 15"
 Cohesion: 0.01
-Nodes (42): ActionController, ZoomSettingController, Action, OnboardingNotificationSetting, ZoomNotificationSetting, CandidateRescheduleInterview, CandidateScheduleInterview, CompanyUrlNotification (+34 more)
+Nodes (52): JWT, SendProjectReminder, CheckInReminderCommand, SetObjectiveStatusCommand, AgendaController, CheckInController, DashboardController, GoalTypeController (+44 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.01
-Nodes (37): StoreClientRequest, UpdateClientRequest, mergeResolvedSku(), StoreRequest, UpdateRequest, StoreRequest, UpdateRequest, StoreRequest (+29 more)
+Nodes (22): BiometricDeviceController, AssetServiceProvider, BiolinksServiceProvider, BiometricServiceProvider, CyberSecurityServiceProvider, DeveloperToolsServiceProvider, EInvoiceServiceProvider, LanguagePackServiceProvider (+14 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.01
-Nodes (37): ActivateModuleCommand, BannedSubdomainController, SubdomainController, AssetSetting, BiolinksGlobalSetting, BiometricGlobalSetting, EInvoiceCompanySetting, EInvoiceSetting (+29 more)
+Nodes (37): StoreClientRequest, UpdateClientRequest, mergeResolvedSku(), StoreRequest, UpdateRequest, StoreRequest, UpdateRequest, StoreRequest (+29 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.02
-Nodes (22): WarehouseCompanyFlowSettingController, InvoiceWarehouseStockPosting, WarehouseCompanyFlowSetting, isSeedingData(), StockMovement, VendorCredit, CreditNoteItemObserver, DeliveryOrderObserver (+14 more)
+Nodes (30): ActivateModuleCommand, BannedSubdomainController, AssetSetting, BiolinksGlobalSetting, BiometricGlobalSetting, EInvoiceSetting, LetterSetting, OnboardingSetting (+22 more)
 
 ### Community 19 - "Community 19"
 Cohesion: 0.02
-Nodes (30): TicketAgentController, TicketChannelController, TicketController, TicketFileController, TicketGroupController, TicketReplyController, TicketReplyTemplatesController, TicketTypeController (+22 more)
+Nodes (25): PayrollApiController, BiolinkBlocksController, EmployeeMonthlySalaryController, PayrollController, TwoFASettingController, OvertimeRequestDataTable, BiolinkBlocks, EmployeeMonthlySalary (+17 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.03
-Nodes (10): ImportClientChunkJob, ImportEstimateChunkJob, ImportInventoryChunkJob, ImportProductChunkJob, ImportSalesOrderChunkJob, ImportWarehouseChunkJob, AiContextGenerator, EstimateImportProcessor (+2 more)
+Nodes (11): ImportClientChunkJob, ImportEstimateChunkJob, ImportInventoryChunkJob, ImportProductChunkJob, ImportSalesHistoryChunkJob, ImportSalesOrderChunkJob, ImportWarehouseChunkJob, AiContextGenerator (+3 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.03
-Nodes (16): PhpIniCheckCommand, VerifyStripePaymentEnvironmentCommand, Table, SyncKeysCommand, QRCodeDataTable, badge(), badgeStyle(), iconClass() (+8 more)
+Nodes (19): handleProductionThrowable(), productionFailResponse(), validateProductionBomLineUnits(), ProductionBatchController, ProductionFgQuantityPolicySettingController, ProductionOrderController, SettingsController, ProductionCompanyFgPolicy (+11 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.03
-Nodes (24): DatabaseAuditCommand, LoginController, TwoFASettingController, ModelNotFoundException, ValidationException, ServerDomainFactory, ServerHostingFactory, AttemptToAuthenticate (+16 more)
+Cohesion: 0.04
+Nodes (15): SmtpSettingController, QRCodeDataTable, QrCodeData, badge(), badgeStyle(), iconClass(), label(), labelWithIcon() (+7 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.03
-Nodes (19): JobTypeController, KnowledgeBaseCategoryController, ProductCategoryController, ProductSubCategoryController, ProjectMilestoneController, StockAdjustmentReasonController, TaskCategoryController, WorkExperienceController (+11 more)
+Cohesion: 0.04
+Nodes (26): SalaryGroupComponent, DealReportExport, LeaveQuotaReportExport, Range, RouteServiceProvider, _argos_has_pair(), _argos_install_pair(), ensure_argos_pair() (+18 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.04
-Nodes (8): DeliveryOrderController, SalesShipmentController, DeliveryOrderDataTable, SalesShipmentDataTable, GrnService, FlowPermission, GrnRuntime, SalesDoRuntime
+Cohesion: 0.07
+Nodes (7): DeveloperToolsController, DbAccessLog, DbUserMapping, FileRecord, PreviewDeveloperToolsTablesRequest, DbAccessPolicy, FileScanner
 
 ### Community 25 - "Community 25"
-Cohesion: 0.03
-Nodes (19): LeadBoardController, LeadPipelineSettingController, LeadStageSettingController, CustomerDataRemovalDataTable, LeadDataRemovalDataTable, cleanUpLeadTables(), createDealsFromLeads(), createTables() (+11 more)
+Cohesion: 0.05
+Nodes (10): LeadBoardController, LeadPipelineSettingController, LeadStageSettingController, LeadPipeline, PipelineStage, UserLeadboardSetting, LeadPipelineObserver, LeadStageObserver (+2 more)
 
 ### Community 26 - "Community 26"
-Cohesion: 0.04
-Nodes (25): SalaryGroupComponent, LeaveQuotaReportExport, Range, RouteServiceProvider, _argos_has_pair(), _argos_install_pair(), ensure_argos_pair(), main() (+17 more)
+Cohesion: 0.06
+Nodes (8): AssignEmployeeShiftRotation, AssignShiftRotation, ShiftRotationController, ShiftRotationDataTable, AutomateShift, RotationAutomateLog, ShiftRotation, ShiftRotationSequence
 
 ### Community 27 - "Community 27"
-Cohesion: 0.06
-Nodes (7): BiolinkBlocksController, BiolinkPageController, BiolinksController, BiolinkSettingsController, BiolinkBlocks, BiolinkSetting, UpdateBiolinkBlocks
+Cohesion: 0.05
+Nodes (12): BlacklistEmailController, BlacklistIpController, CyberSecuritySettingController, LoginExpiryController, BlacklistEmail, BlacklistIp, CyberSecurity, LoginExpiry (+4 more)
 
 ### Community 28 - "Community 28"
 Cohesion: 0.05
-Nodes (13): BlacklistEmailController, BlacklistIpController, CyberSecuritySettingController, LoginExpiryController, BlacklistEmail, BlacklistIp, CyberSecurity, LoginExpiry (+5 more)
-
-### Community 29 - "Community 29"
-Cohesion: 0.05
 Nodes (8): common.smtp-error, purchase::partials.product-type-select, purchase::purchase-products.partials.product-form-client-validation, purchase::purchase-products.partials.product-form-fields, purchase::purchase-products.partials.product-form-section-heading, purchase::purchase-products.partials.product-unit-conversion-row, purchase::purchase-products.partials.product-unit-conversions, sections.password-autocomplete-hide
 
+### Community 29 - "Community 29"
+Cohesion: 0.08
+Nodes (15): DatabaseAuditCommand, ChunkReadFilter, EstimateImport, WarehouseImport, boostImportRuntimeLimits(), getMaxColumnCountFromFirstSheetRows(), importClassUsesLightMap(), importJobProcess() (+7 more)
+
 ### Community 30 - "Community 30"
-Cohesion: 0.07
-Nodes (5): OvertimePolicyController, PayCodeController, OvertimePolicyEmployeeDataTable, OvertimePolicy, PayCode
-
-### Community 31 - "Community 31"
-Cohesion: 0.09
-Nodes (5): SendImmigrationExpiryAlert, EmployeeVisaController, PassportController, Passport, VisaDetail
-
-### Community 32 - "Community 32"
 Cohesion: 0.16
 Nodes (24): pt(), add_runs_with_markup(), is_table_separator(), main(), md_to_docx(), parse_table(), add_heading(), add_para() (+16 more)
 
-### Community 33 - "Community 33"
+### Community 31 - "Community 31"
 Cohesion: 0.07
 Nodes (6): sections.setting-sidebar, storage-settings.aws_s3, storage-settings.digitalocean, storage-settings.minio, storage-settings.wasabi, theme-settings.ajax.customer_theme
 
-### Community 34 - "Community 34"
+### Community 32 - "Community 32"
+Cohesion: 0.09
+Nodes (4): OvertimePolicyController, PayCodeController, OvertimePolicy, PayCode
+
+### Community 33 - "Community 33"
 Cohesion: 0.08
 Nodes (10): estimates.ajax.accept-estimate, estimates.partials.phase1-show-workspace, estimates.partials.workflow-stage-badge, layouts.quill-script-include, proposals.ajax.accept-proposal, recruit::jobs.offer-letter.decline-job-offer, sections.modals, sections.sidebar (+2 more)
 
+### Community 34 - "Community 34"
+Cohesion: 0.11
+Nodes (4): RecruitCustomQuestionController, RecruitCustomQuestion, FrontJobApplication, StoreAcceptRequest
+
 ### Community 35 - "Community 35"
-Cohesion: 0.12
-Nodes (3): Connection, AuthorisationProcessor, Base
+Cohesion: 0.11
+Nodes (3): SendInterviewReminder, DailyTimeLogReport, MonthlyAttendance
 
 ### Community 36 - "Community 36"
-Cohesion: 0.12
-Nodes (7): ContractTemplateController, contractNumbers(), foreignKeyFixCompaniesTable(), languageFlags(), up(), ContractTemplate, ContractTemplateObserver
+Cohesion: 0.14
+Nodes (3): ServerLog, ServerDomainObserver, ServerHostingObserver
 
 ### Community 37 - "Community 37"
 Cohesion: 0.1
 Nodes (1): EventServiceProvider
 
 ### Community 38 - "Community 38"
-Cohesion: 0.11
-Nodes (6): PayrollApiController, PayrollCycle, NewUserListener, getMonthDates(), up(), up()
-
-### Community 39 - "Community 39"
 Cohesion: 0.1
 Nodes (19): dashboard.employee.widgets.appreciation, dashboard.employee.widgets.birthday, dashboard.employee.widgets.contract, dashboard.employee.widgets.documents, dashboard.employee.widgets.follow_ups, dashboard.employee.widgets.internship, dashboard.employee.widgets.lead, dashboard.employee.widgets.leave (+11 more)
 
-### Community 40 - "Community 40"
-Cohesion: 0.14
-Nodes (3): VendorNotesController, PurchaseVendorNote, PurchaseVendorUserNotes
-
-### Community 41 - "Community 41"
-Cohesion: 0.16
-Nodes (2): GdprSettingsController, PurposeConsent
-
-### Community 42 - "Community 42"
-Cohesion: 0.15
-Nodes (4): TicketCustomFormController, up(), TicketCustomForm, CustomFieldsObserver
-
-### Community 43 - "Community 43"
-Cohesion: 0.12
-Nodes (4): RecruitJobAlert, RecruitJobAlertListener, RecruitJobAlertUpdateListener, RecruitJobAlertNotification
-
-### Community 44 - "Community 44"
+### Community 39 - "Community 39"
 Cohesion: 0.12
 Nodes (6): CyberSecurityDatabaseSeeder, ProjectRoadmapDatabaseSeeder, RecruitTestSeeder, SmsDatabaseSeeder, WebhooksDatabaseSeeder, Model
 
-### Community 45 - "Community 45"
-Cohesion: 0.23
-Nodes (1): QrPreview
-
-### Community 46 - "Community 46"
+### Community 40 - "Community 40"
 Cohesion: 0.12
 Nodes (1): import.process-form
 
-### Community 47 - "Community 47"
+### Community 41 - "Community 41"
+Cohesion: 0.23
+Nodes (1): QrPreview
+
+### Community 42 - "Community 42"
+Cohesion: 0.16
+Nodes (3): AssetSettingController, AssetTypeController, AssetType
+
+### Community 43 - "Community 43"
+Cohesion: 0.19
+Nodes (3): TicketCustomFormController, TicketCustomForm, CustomFieldsObserver
+
+### Community 44 - "Community 44"
 Cohesion: 0.18
 Nodes (2): ClearLogs, ProviderExport
 
-### Community 48 - "Community 48"
+### Community 45 - "Community 45"
+Cohesion: 0.22
+Nodes (2): EmployeeShiftChangeRequestController, EmployeeShiftChangeRequest
+
+### Community 46 - "Community 46"
 Cohesion: 0.15
 Nodes (2): SalesOrderImport, SalesOrderSheetImport
 
-### Community 49 - "Community 49"
+### Community 47 - "Community 47"
 Cohesion: 0.18
 Nodes (2): DomainExpiringNotification, HostingExpiringNotification
 
-### Community 50 - "Community 50"
-Cohesion: 0.24
-Nodes (2): key(), SendWebhook
+### Community 48 - "Community 48"
+Cohesion: 0.17
+Nodes (3): EInvoiceCompanySetting, InvoiceXmlGenerate, Romania
 
-### Community 51 - "Community 51"
+### Community 49 - "Community 49"
 Cohesion: 0.17
 Nodes (6): super-admin.saas.pricing-plan, super-admin.saas.section.breadcrumb, super-admin.saas.section.client, super-admin.saas.section.feature, super-admin.saas.section.header, super-admin.saas.section.testimonial
 
-### Community 52 - "Community 52"
+### Community 50 - "Community 50"
 Cohesion: 0.18
 Nodes (10): biolinks::biolink-blocks.edit.avatar-form, biolinks::biolink-blocks.edit.email-collector-form, biolinks::biolink-blocks.edit.embeds-form, biolinks::biolink-blocks.edit.heading-form, biolinks::biolink-blocks.edit.image-form, biolinks::biolink-blocks.edit.link-form, biolinks::biolink-blocks.edit.paragraph-form, biolinks::biolink-blocks.edit.paypal-form (+2 more)
 
-### Community 53 - "Community 53"
+### Community 51 - "Community 51"
 Cohesion: 0.29
 Nodes (1): LineIntegrationServiceProvider
 
-### Community 54 - "Community 54"
+### Community 52 - "Community 52"
 Cohesion: 0.33
 Nodes (10): canAddDomains(), canAddHosting(), canDeleteDomains(), canDeleteHosting(), canEditDomains(), canEditHosting(), canViewDomains(), canViewHosting() (+2 more)
 
-### Community 55 - "Community 55"
+### Community 53 - "Community 53"
 Cohesion: 0.18
 Nodes (1): super-admin.common.language-selector-with-view
 
+### Community 54 - "Community 54"
+Cohesion: 0.22
+Nodes (2): CravevaAgent, CheckInterviewSchedule
+
+### Community 55 - "Community 55"
+Cohesion: 0.24
+Nodes (2): TicketAgentController, TicketAgentGroups
+
 ### Community 56 - "Community 56"
 Cohesion: 0.27
-Nodes (1): ImportSalesHistoryChunkJob
+Nodes (2): TicketReplyTemplatesController, TicketReplyTemplate
 
 ### Community 57 - "Community 57"
-Cohesion: 0.2
-Nodes (1): PayrollReportController
+Cohesion: 0.24
+Nodes (2): CustomLinkSettingController, CustomLinkSetting
 
 ### Community 58 - "Community 58"
 Cohesion: 0.2
-Nodes (1): PurchaseSettingController
+Nodes (1): PayrollReportController
 
 ### Community 59 - "Community 59"
 Cohesion: 0.2
-Nodes (1): ServerManagerHelper
+Nodes (1): PurchaseSettingController
 
 ### Community 60 - "Community 60"
+Cohesion: 0.2
+Nodes (1): ServerManagerHelper
+
+### Community 61 - "Community 61"
 Cohesion: 0.27
 Nodes (6): compareLocaleKeys(), flattenLangArray(), formatPhpArray(), printConsoleTable(), scanBadPatterns(), writePhpLangFile()
-
-### Community 62 - "Community 62"
-Cohesion: 0.22
-Nodes (1): ProjectwiseTimeLogExport
 
 ### Community 63 - "Community 63"
 Cohesion: 0.25
 Nodes (2): ProjectTemplateSubTaskController, ProjectTemplateSubTask
 
 ### Community 64 - "Community 64"
+Cohesion: 0.28
+Nodes (2): EstimateRecipeMarginSummary, EstimateVpMarginPolicy
+
+### Community 65 - "Community 65"
+Cohesion: 0.33
+Nodes (1): SupportTicketTypeController
+
+### Community 66 - "Community 66"
 Cohesion: 0.33
 Nodes (1): AffiliateServiceProvider
 
-### Community 65 - "Community 65"
+### Community 67 - "Community 67"
 Cohesion: 0.22
 Nodes (1): LineIntegrationController
 
-### Community 66 - "Community 66"
+### Community 68 - "Community 68"
 Cohesion: 0.22
-Nodes (1): OvertimeSettingController
+Nodes (1): EmployeeHourlyRateSettingController
 
-### Community 67 - "Community 67"
+### Community 69 - "Community 69"
 Cohesion: 0.33
 Nodes (1): ProjectRoadmapServiceProvider
 
-### Community 69 - "Community 69"
+### Community 70 - "Community 70"
+Cohesion: 0.31
+Nodes (2): JobTypeController, RecruitJobType
+
+### Community 72 - "Community 72"
+Cohesion: 0.25
+Nodes (1): ProjectwiseTimeLogExport
+
+### Community 73 - "Community 73"
 Cohesion: 0.25
 Nodes (1): Reply
 
-### Community 70 - "Community 70"
-Cohesion: 0.32
-Nodes (2): LeadCustomFormController, LeadCustomForm
-
-### Community 71 - "Community 71"
+### Community 74 - "Community 74"
 Cohesion: 0.29
 Nodes (2): AiOrderIntegrationAuthService, AuthenticateAiOrderIntegration
 
-### Community 73 - "Community 73"
+### Community 76 - "Community 76"
+Cohesion: 0.29
+Nodes (1): OvertimePolicyEmployeeDataTable
+
+### Community 77 - "Community 77"
+Cohesion: 0.25
+Nodes (1): OvertimeSettingController
+
+### Community 78 - "Community 78"
 Cohesion: 0.39
 Nodes (1): ProductionServiceProvider
 
-### Community 75 - "Community 75"
-Cohesion: 0.29
-Nodes (2): UserTaskboardSetting, TaskBoardColumnObserver
-
-### Community 76 - "Community 76"
-Cohesion: 0.43
-Nodes (1): Text
-
-### Community 77 - "Community 77"
-Cohesion: 0.29
-Nodes (6): biolinks::biolink-settings.advanced, biolinks::biolink-settings.background, biolinks::biolink-settings.branding, biolinks::biolink-settings.protection, biolinks::biolink-settings.seo, biolinks::biolink-settings.verified-badge
-
-### Community 78 - "Community 78"
-Cohesion: 0.43
-Nodes (1): PricingServiceProvider
-
-### Community 79 - "Community 79"
-Cohesion: 0.29
-Nodes (6): super-admin.dashboard.charts, super-admin.dashboard.package-company-count, super-admin.dashboard.recent-license-expired, super-admin.dashboard.recent-registered-companies, super-admin.dashboard.recent-subscriptions, super-admin.dashboard.top-user-count-companies
-
 ### Community 80 - "Community 80"
-Cohesion: 0.43
-Nodes (4): saas.sections.cta, super-admin.saas.section.cta, super-admin.sections.saas.saas_footer, super-admin.sections.saas.saas_header
+Cohesion: 0.29
+Nodes (1): EmployeeTimelogs
 
 ### Community 81 - "Community 81"
 Cohesion: 0.43
-Nodes (5): Add-MissingLinksToGroupIndex(), Add-MissingLinksToMasterGuide(), Get-FileText(), Get-SuggestedMasterGuidePath(), Test-MatchAnyPattern()
+Nodes (1): Text
 
 ### Community 82 - "Community 82"
-Cohesion: 0.33
-Nodes (1): Kernel
+Cohesion: 0.29
+Nodes (6): biolinks::biolink-settings.advanced, biolinks::biolink-settings.background, biolinks::biolink-settings.branding, biolinks::biolink-settings.protection, biolinks::biolink-settings.seo, biolinks::biolink-settings.verified-badge
 
 ### Community 83 - "Community 83"
-Cohesion: 0.47
-Nodes (2): LeavesQuotaRenew, Ne()
+Cohesion: 0.43
+Nodes (1): PricingServiceProvider
 
 ### Community 84 - "Community 84"
-Cohesion: 0.33
-Nodes (1): AttendanceByMemberExport
+Cohesion: 0.29
+Nodes (1): RecruitSourceController
 
 ### Community 85 - "Community 85"
-Cohesion: 0.33
-Nodes (1): DealReportExport
+Cohesion: 0.29
+Nodes (6): super-admin.dashboard.charts, super-admin.dashboard.package-company-count, super-admin.dashboard.recent-license-expired, super-admin.dashboard.recent-registered-companies, super-admin.dashboard.recent-subscriptions, super-admin.dashboard.top-user-count-companies
 
 ### Community 86 - "Community 86"
-Cohesion: 0.33
-Nodes (1): EmployeeTimelogs
+Cohesion: 0.43
+Nodes (4): saas.sections.cta, super-admin.saas.section.cta, super-admin.sections.saas.saas_footer, super-admin.sections.saas.saas_header
 
 ### Community 87 - "Community 87"
-Cohesion: 0.4
-Nodes (1): LeaveExport
+Cohesion: 0.43
+Nodes (5): Add-MissingLinksToGroupIndex(), Add-MissingLinksToMasterGuide(), Get-FileText(), Get-SuggestedMasterGuidePath(), Test-MatchAnyPattern()
 
 ### Community 88 - "Community 88"
 Cohesion: 0.33
-Nodes (1): ChatStoreRequest
+Nodes (1): Kernel
 
 ### Community 89 - "Community 89"
-Cohesion: 0.33
-Nodes (1): StoreEstimateRequest
+Cohesion: 0.47
+Nodes (2): LeavesQuotaRenew, Ne()
 
 ### Community 90 - "Community 90"
-Cohesion: 0.33
-Nodes (1): StoreRequest
+Cohesion: 0.4
+Nodes (1): LeaveExport
 
 ### Community 91 - "Community 91"
 Cohesion: 0.33
-Nodes (1): StoreRequest
+Nodes (1): UpdatePayments
 
 ### Community 92 - "Community 92"
 Cohesion: 0.33
-Nodes (1): UpdatePayments
+Nodes (1): StoreUserRole
 
 ### Community 93 - "Community 93"
 Cohesion: 0.33
-Nodes (1): StoreUserRole
+Nodes (1): StoreRequest
 
 ### Community 94 - "Community 94"
 Cohesion: 0.33
@@ -1603,151 +1542,151 @@ Nodes (1): ImmigrationExpiryAlert
 
 ### Community 99 - "Community 99"
 Cohesion: 0.33
-Nodes (1): RemovalRequestApprovedReject
+Nodes (1): NewClientTask
 
 ### Community 100 - "Community 100"
 Cohesion: 0.33
-Nodes (1): RemovalRequestApprovedRejectLead
+Nodes (1): RemovalRequestApprovedReject
 
 ### Community 101 - "Community 101"
 Cohesion: 0.33
-Nodes (1): RemovalRequestApprovedRejectUser
+Nodes (1): RemovalRequestApprovedRejectLead
 
 ### Community 102 - "Community 102"
 Cohesion: 0.33
-Nodes (1): ContactUsMail
+Nodes (1): RemovalRequestApprovedRejectUser
 
 ### Community 103 - "Community 103"
 Cohesion: 0.33
-Nodes (1): OfflinePackageChangeConfirmation
+Nodes (1): ContactUsMail
 
 ### Community 104 - "Community 104"
 Cohesion: 0.33
-Nodes (1): OfflinePackageChangeRequest
+Nodes (1): OfflinePackageChangeConfirmation
 
 ### Community 105 - "Community 105"
+Cohesion: 0.33
+Nodes (1): OfflinePackageChangeRequest
+
+### Community 106 - "Community 106"
+Cohesion: 0.33
+Nodes (2): UserTaskboardSetting, TaskBoardColumnObserver
+
+### Community 107 - "Community 107"
 Cohesion: 0.47
 Nodes (1): Label
 
-### Community 106 - "Community 106"
+### Community 108 - "Community 108"
 Cohesion: 0.53
 Nodes (4): applyPhraseMap(), phraseMap(), rewriteExternalLinks(), translateContent()
 
-### Community 107 - "Community 107"
+### Community 109 - "Community 109"
 Cohesion: 0.33
 Nodes (2): AffiliateGlobalSetting, up()
 
-### Community 108 - "Community 108"
+### Community 110 - "Community 110"
 Cohesion: 0.33
 Nodes (1): UpdateRequest
 
-### Community 109 - "Community 109"
+### Community 111 - "Community 111"
 Cohesion: 0.33
 Nodes (1): AssetLent
 
-### Community 110 - "Community 110"
+### Community 112 - "Community 112"
 Cohesion: 0.33
 Nodes (1): AssetReturn
 
-### Community 111 - "Community 111"
+### Community 113 - "Community 113"
 Cohesion: 0.33
 Nodes (1): PhoneCollectionEmail
 
-### Community 112 - "Community 112"
-Cohesion: 0.33
-Nodes (1): EmployeeHourlyDataTable
-
-### Community 113 - "Community 113"
+### Community 114 - "Community 114"
 Cohesion: 0.33
 Nodes (1): StoreMeeting
 
-### Community 114 - "Community 114"
+### Community 115 - "Community 115"
 Cohesion: 0.53
 Nodes (5): down(), foreignKeyExistsOnColumn(), isDuplicateForeignKeyOrColumnMessage(), isMissingForeignKeyMessage(), up()
 
-### Community 115 - "Community 115"
-Cohesion: 0.33
-Nodes (1): VendorPaymentDataTable
-
 ### Community 116 - "Community 116"
 Cohesion: 0.33
-Nodes (1): StorePurchaseInventoryRequest
+Nodes (1): VendorDataTable
 
 ### Community 117 - "Community 117"
 Cohesion: 0.33
-Nodes (1): InventoryImport
+Nodes (1): StorePurchaseInventoryRequest
 
 ### Community 118 - "Community 118"
 Cohesion: 0.33
-Nodes (1): VendorPayment
+Nodes (1): InventoryImport
 
 ### Community 119 - "Community 119"
 Cohesion: 0.33
-Nodes (1): JobApplicationStatusChange
+Nodes (1): VendorPayment
 
 ### Community 120 - "Community 120"
 Cohesion: 0.33
-Nodes (1): FrontBaseController
+Nodes (1): SkillDataTable
 
 ### Community 121 - "Community 121"
 Cohesion: 0.33
-Nodes (1): ImportProcessRequest
+Nodes (1): FrontBaseController
 
 ### Community 122 - "Community 122"
 Cohesion: 0.33
-Nodes (1): StoreMeeting
+Nodes (1): ImportProcessRequest
 
 ### Community 123 - "Community 123"
 Cohesion: 0.33
-Nodes (1): UpdateMeeting
+Nodes (1): StoreMeeting
 
 ### Community 124 - "Community 124"
 Cohesion: 0.33
-Nodes (1): EmployeeResponse
+Nodes (1): UpdateMeeting
 
 ### Community 125 - "Community 125"
 Cohesion: 0.33
-Nodes (1): FrontJobApplyCandidate
+Nodes (1): EmployeeResponse
 
 ### Community 126 - "Community 126"
 Cohesion: 0.33
-Nodes (1): OfferLetterAccept
+Nodes (1): FrontJobApplyCandidate
 
 ### Community 127 - "Community 127"
 Cohesion: 0.33
-Nodes (1): OfferLetterReject
+Nodes (1): OfferLetterAccept
 
 ### Community 128 - "Community 128"
 Cohesion: 0.33
-Nodes (5): servermanager::hosting.ajax.activities, servermanager::hosting.ajax.associated-domains, servermanager::hosting.ajax.billing, servermanager::hosting.ajax.hosting-information, servermanager::hosting.ajax.statistics
+Nodes (1): OfferLetterReject
 
 ### Community 129 - "Community 129"
-Cohesion: 0.53
-Nodes (1): Panelist
+Cohesion: 0.47
+Nodes (1): InterviewScheduleObserver
 
 ### Community 130 - "Community 130"
 Cohesion: 0.33
-Nodes (1): estimates.partials.pdf-bom-lines
+Nodes (5): servermanager::hosting.ajax.activities, servermanager::hosting.ajax.associated-domains, servermanager::hosting.ajax.billing, servermanager::hosting.ajax.hosting-information, servermanager::hosting.ajax.statistics
 
 ### Community 131 - "Community 131"
-Cohesion: 0.4
-Nodes (1): NewChatEvent
+Cohesion: 0.53
+Nodes (1): Panelist
 
 ### Community 132 - "Community 132"
-Cohesion: 0.4
-Nodes (1): NewMentionChatEvent
+Cohesion: 0.33
+Nodes (1): estimates.partials.pdf-bom-lines
 
 ### Community 133 - "Community 133"
 Cohesion: 0.4
-Nodes (1): TimelogEvent
+Nodes (1): NewChatEvent
 
 ### Community 134 - "Community 134"
-Cohesion: 0.5
-Nodes (1): ShiftScheduleExport
+Cohesion: 0.4
+Nodes (1): NewMentionChatEvent
 
 ### Community 135 - "Community 135"
 Cohesion: 0.4
-Nodes (1): Controller
+Nodes (1): TimelogEvent
 
 ### Community 136 - "Community 136"
 Cohesion: 0.4
@@ -1947,779 +1886,779 @@ Nodes (1): SalesHistoryImport
 
 ### Community 185 - "Community 185"
 Cohesion: 0.4
-Nodes (1): BulkShiftNotification
+Nodes (1): NewExpenseRecurringListener
 
 ### Community 186 - "Community 186"
 Cohesion: 0.4
-Nodes (1): MailTicketReply
+Nodes (1): NewProductPurchaseListener
 
 ### Community 187 - "Community 187"
 Cohesion: 0.4
-Nodes (1): ShiftRotationNotification
+Nodes (1): BulkShiftNotification
 
 ### Community 188 - "Community 188"
 Cohesion: 0.4
-Nodes (1): SubTaskCreated
+Nodes (1): MailTicketReply
 
 ### Community 189 - "Community 189"
 Cohesion: 0.4
-Nodes (1): GlobalSettingObserver
+Nodes (1): ShiftRotationNotification
 
 ### Community 190 - "Community 190"
 Cohesion: 0.4
-Nodes (1): LineChart
+Nodes (1): SubTaskCreated
 
 ### Community 191 - "Community 191"
 Cohesion: 0.4
-Nodes (1): SettingMenuItem
+Nodes (1): GlobalSettingObserver
 
 ### Community 192 - "Community 192"
+Cohesion: 0.4
+Nodes (1): LineChart
+
+### Community 193 - "Community 193"
+Cohesion: 0.5
+Nodes (1): MenuItem
+
+### Community 194 - "Community 194"
+Cohesion: 0.4
+Nodes (1): SettingMenuItem
+
+### Community 195 - "Community 195"
 Cohesion: 0.5
 Nodes (1): SubMenuItem
 
-### Community 193 - "Community 193"
+### Community 196 - "Community 196"
 Cohesion: 0.4
 Nodes (1): SettingSidebar
 
-### Community 194 - "Community 194"
+### Community 197 - "Community 197"
 Cohesion: 0.6
 Nodes (1): ProjectFactory
 
-### Community 195 - "Community 195"
+### Community 198 - "Community 198"
 Cohesion: 0.6
 Nodes (3): clean(), initials(), up()
 
-### Community 196 - "Community 196"
+### Community 199 - "Community 199"
+Cohesion: 0.6
+Nodes (3): birthdayPaymentNotification(), up(), workAnniversaryDashboardWidget()
+
+### Community 200 - "Community 200"
 Cohesion: 0.6
 Nodes (4): down(), setApprovalSendBoolean(), setApprovalSendEnum(), up()
 
-### Community 197 - "Community 197"
+### Community 201 - "Community 201"
 Cohesion: 0.8
 Nodes (4): down(), dropAllForeignKeysOnPurchaseStockAdjustments(), restorePurchaseStockAdjustmentsForeignKeys(), up()
 
-### Community 198 - "Community 198"
+### Community 202 - "Community 202"
 Cohesion: 0.4
 Nodes (1): CreateReferralsRequest
 
-### Community 199 - "Community 199"
+### Community 203 - "Community 203"
 Cohesion: 0.4
 Nodes (1): StoreAffiliates
 
-### Community 200 - "Community 200"
+### Community 204 - "Community 204"
 Cohesion: 0.4
 Nodes (1): StoreRequest
 
-### Community 201 - "Community 201"
+### Community 205 - "Community 205"
 Cohesion: 0.6
 Nodes (3): family(), familyValue(), realName()
 
-### Community 202 - "Community 202"
+### Community 206 - "Community 206"
 Cohesion: 0.4
 Nodes (1): StoreBiolinkBlocks
 
-### Community 203 - "Community 203"
+### Community 207 - "Community 207"
 Cohesion: 0.4
 Nodes (2): CyberSecuritySetting, up()
 
-### Community 204 - "Community 204"
+### Community 208 - "Community 208"
 Cohesion: 0.5
 Nodes (1): StoreSecurityRequest
 
-### Community 205 - "Community 205"
+### Community 209 - "Community 209"
 Cohesion: 0.4
 Nodes (1): DifferentIpNotification
 
-### Community 206 - "Community 206"
+### Community 210 - "Community 210"
 Cohesion: 0.4
 Nodes (1): LockoutEmailNotification
 
-### Community 207 - "Community 207"
+### Community 211 - "Community 211"
 Cohesion: 0.4
 Nodes (2): LanguagePackSetting, up()
 
-### Community 208 - "Community 208"
+### Community 212 - "Community 212"
 Cohesion: 0.4
 Nodes (1): ExpensesSalarySlipDataTable
 
-### Community 209 - "Community 209"
-Cohesion: 0.4
-Nodes (1): PayrollDataTable
-
-### Community 210 - "Community 210"
+### Community 213 - "Community 213"
 Cohesion: 0.4
 Nodes (1): SalarySettingController
 
-### Community 211 - "Community 211"
+### Community 214 - "Community 214"
 Cohesion: 0.4
 Nodes (1): StoreEmployeeSalaryGroup
 
-### Community 212 - "Community 212"
+### Community 215 - "Community 215"
 Cohesion: 0.4
 Nodes (1): StoreSalary
 
-### Community 213 - "Community 213"
+### Community 216 - "Community 216"
 Cohesion: 0.4
 Nodes (1): StoreSalaryGroup
 
-### Community 214 - "Community 214"
-Cohesion: 0.4
-Nodes (1): StoreRequest
-
-### Community 215 - "Community 215"
-Cohesion: 0.4
-Nodes (2): PerformanceGlobalSetting, up()
-
-### Community 216 - "Community 216"
-Cohesion: 0.4
-Nodes (1): OkrScoringController
-
 ### Community 217 - "Community 217"
 Cohesion: 0.4
-Nodes (1): AgendaRequest
+Nodes (1): StoreRequest
 
 ### Community 218 - "Community 218"
 Cohesion: 0.4
-Nodes (1): CreateObjectiveRequest
+Nodes (2): PerformanceGlobalSetting, up()
 
 ### Community 219 - "Community 219"
-Cohesion: 0.8
-Nodes (4): down(), renameColumnSafely(), setUnsignedIntNullable(), up()
+Cohesion: 0.4
+Nodes (1): OkrScoringController
 
 ### Community 220 - "Community 220"
 Cohesion: 0.4
-Nodes (1): ClientProductPricingImport
+Nodes (1): AgendaRequest
 
 ### Community 221 - "Community 221"
 Cohesion: 0.4
-Nodes (1): PricingTierItemsImport
+Nodes (1): CreateObjectiveRequest
 
 ### Community 222 - "Community 222"
 Cohesion: 0.4
-Nodes (2): ProjectRoadmapSetting, up()
+Nodes (1): MeetingInviteListener
 
 ### Community 223 - "Community 223"
-Cohesion: 0.6
-Nodes (1): SalesDoReconciliationReportCommand
+Cohesion: 0.8
+Nodes (4): down(), renameColumnSafely(), setUnsignedIntNullable(), up()
 
 ### Community 224 - "Community 224"
 Cohesion: 0.4
-Nodes (2): PurchaseManagementSetting, up()
+Nodes (1): ClientProductPricingImport
 
 ### Community 225 - "Community 225"
 Cohesion: 0.4
-Nodes (1): VendorDataTable
+Nodes (1): PricingTierItemsImport
 
 ### Community 226 - "Community 226"
 Cohesion: 0.4
-Nodes (1): StoreRequest
+Nodes (2): ProjectRoadmapSetting, up()
 
 ### Community 227 - "Community 227"
 Cohesion: 0.4
-Nodes (1): UpdateRequest
+Nodes (1): VendorPaymentDataTable
 
 ### Community 228 - "Community 228"
 Cohesion: 0.4
-Nodes (1): StoreRequest
+Nodes (2): PurchaseManagementSetting, up()
 
 ### Community 229 - "Community 229"
 Cohesion: 0.4
-Nodes (1): VendorCreditPaymentMade
+Nodes (1): StoreRequest
 
 ### Community 230 - "Community 230"
 Cohesion: 0.4
-Nodes (3): qrcode::qrcode.fields., qrcode::qrcode.fields.text, qrcode::qrcode.qr-placeholder
+Nodes (1): UpdateRequest
 
 ### Community 231 - "Community 231"
 Cohesion: 0.4
-Nodes (1): DashboardPipelineWidgetDataTable
+Nodes (1): StoreRequest
 
 ### Community 232 - "Community 232"
 Cohesion: 0.4
-Nodes (1): SkillDataTable
+Nodes (1): VendorCreditPaymentMade
 
 ### Community 233 - "Community 233"
 Cohesion: 0.4
-Nodes (1): StoreJobRequest
+Nodes (3): qrcode::qrcode.fields., qrcode::qrcode.fields.text, qrcode::qrcode.qr-placeholder
 
 ### Community 234 - "Community 234"
 Cohesion: 0.4
-Nodes (1): StoreApplicationStatus
+Nodes (1): CandidateDatabaseDataTable
 
 ### Community 235 - "Community 235"
 Cohesion: 0.4
-Nodes (1): StoreEvaluation
+Nodes (1): StoreJobRequest
 
 ### Community 236 - "Community 236"
 Cohesion: 0.4
-Nodes (1): StoreJobAlertRequest
+Nodes (1): StoreApplicationStatus
 
 ### Community 237 - "Community 237"
 Cohesion: 0.4
-Nodes (1): StoreJobLetter
+Nodes (1): StoreEvaluation
 
 ### Community 238 - "Community 238"
 Cohesion: 0.4
-Nodes (1): StoreOfferLetter
+Nodes (1): StoreJobAlertRequest
 
 ### Community 239 - "Community 239"
 Cohesion: 0.4
-Nodes (1): UpdateStatus
+Nodes (1): StoreJobLetter
 
 ### Community 240 - "Community 240"
 Cohesion: 0.4
-Nodes (1): StoreRecruiterRequest
+Nodes (1): StoreOfferLetter
 
 ### Community 241 - "Community 241"
 Cohesion: 0.4
-Nodes (1): StoreInterview
+Nodes (1): UpdateStatus
 
 ### Community 242 - "Community 242"
 Cohesion: 0.4
-Nodes (1): SendOfferLetterReminder
+Nodes (1): StoreRecruiterRequest
 
 ### Community 243 - "Community 243"
 Cohesion: 0.4
-Nodes (2): ServerManagerGlobalSetting, up()
+Nodes (1): StoreInterview
 
 ### Community 244 - "Community 244"
 Cohesion: 0.4
-Nodes (1): StoreMeetingNote
+Nodes (1): JobApplicationStatusChange
+
+### Community 245 - "Community 245"
+Cohesion: 0.4
+Nodes (1): JobOfferStatusChange
 
 ### Community 246 - "Community 246"
 Cohesion: 0.4
-Nodes (4): super-admin.front.section.contact, super-admin.front.section.feature, super-admin.front.section.header, super-admin.front.section.pricing
+Nodes (1): RecruitJobAlertNotification
 
 ### Community 247 - "Community 247"
 Cohesion: 0.4
-Nodes (1): tasks.ajax.sent-approval-modal
+Nodes (1): SendOfferLetterReminder
 
 ### Community 248 - "Community 248"
-Cohesion: 0.5
-Nodes (2): AgentResponse, CravevaAgentService
+Cohesion: 0.6
+Nodes (1): EvaluationObserver
 
 ### Community 249 - "Community 249"
-Cohesion: 0.5
-Nodes (1): InvitationEmailEvent
+Cohesion: 0.6
+Nodes (1): InterviewEmployeeObserver
 
 ### Community 250 - "Community 250"
-Cohesion: 0.5
-Nodes (1): NewMessage
-
-### Community 251 - "Community 251"
-Cohesion: 0.5
-Nodes (1): TaskUpdated
+Cohesion: 0.4
+Nodes (2): ServerManagerGlobalSetting, up()
 
 ### Community 252 - "Community 252"
-Cohesion: 0.5
-Nodes (1): TestPusherEvent
+Cohesion: 0.4
+Nodes (4): super-admin.front.section.contact, super-admin.front.section.feature, super-admin.front.section.header, super-admin.front.section.pricing
 
 ### Community 253 - "Community 253"
-Cohesion: 0.5
-Nodes (1): WeeklyTimesheetApprovedEvent
+Cohesion: 0.4
+Nodes (1): tasks.ajax.sent-approval-modal
 
 ### Community 254 - "Community 254"
 Cohesion: 0.5
-Nodes (1): WeeklyTimesheetDraftEvent
+Nodes (2): AgentResponse, CravevaAgentService
 
 ### Community 255 - "Community 255"
 Cohesion: 0.5
-Nodes (1): SearchController
+Nodes (1): InvitationEmailEvent
 
 ### Community 256 - "Community 256"
 Cohesion: 0.5
-Nodes (1): TimelogWeeklyApprovalController
+Nodes (1): NewMessage
 
 ### Community 257 - "Community 257"
 Cohesion: 0.5
-Nodes (1): CommonRequest
+Nodes (1): TaskUpdated
 
 ### Community 258 - "Community 258"
 Cohesion: 0.5
-Nodes (1): EstimateAcceptRequest
+Nodes (1): TestPusherEvent
 
 ### Community 259 - "Community 259"
 Cohesion: 0.5
-Nodes (1): InvoiceFileStore
+Nodes (1): SearchController
 
 ### Community 260 - "Community 260"
 Cohesion: 0.5
-Nodes (1): InvoicePaymentRequest
+Nodes (1): TimelogWeeklyApprovalController
 
 ### Community 261 - "Community 261"
-Cohesion: 0.5
-Nodes (1): LoginRequest
+Cohesion: 0.67
+Nodes (1): EnsureAiOrderIntegrationMethodAllowed
 
 ### Community 262 - "Community 262"
 Cohesion: 0.5
-Nodes (1): ProposalAcceptRequest
+Nodes (1): CommonRequest
 
 ### Community 263 - "Community 263"
 Cohesion: 0.5
-Nodes (1): SearchRequest
+Nodes (1): EstimateAcceptRequest
 
 ### Community 264 - "Community 264"
 Cohesion: 0.5
-Nodes (1): SlackWebhookRequest
+Nodes (1): InvoiceFileStore
 
 ### Community 265 - "Community 265"
 Cohesion: 0.5
-Nodes (1): StoreBusinessAddress
+Nodes (1): InvoicePaymentRequest
 
 ### Community 266 - "Community 266"
 Cohesion: 0.5
-Nodes (1): StoreContractTemplate
+Nodes (1): LoginRequest
 
 ### Community 267 - "Community 267"
 Cohesion: 0.5
-Nodes (1): StoreDealNote
+Nodes (1): SearchRequest
 
 ### Community 268 - "Community 268"
 Cohesion: 0.5
-Nodes (1): StoreFileLink
+Nodes (1): SlackWebhookRequest
 
 ### Community 269 - "Community 269"
 Cohesion: 0.5
-Nodes (1): StorePassportRequest
+Nodes (1): StoreBusinessAddress
 
 ### Community 270 - "Community 270"
 Cohesion: 0.5
-Nodes (1): StoreStatusSettingRequest
+Nodes (1): StoreContractTemplate
 
 ### Community 271 - "Community 271"
 Cohesion: 0.5
-Nodes (1): StoreVisaRequest
+Nodes (1): StoreFileLink
 
 ### Community 272 - "Community 272"
 Cohesion: 0.5
-Nodes (1): TwoFaCodeValidation
+Nodes (1): StorePassportRequest
 
 ### Community 273 - "Community 273"
 Cohesion: 0.5
-Nodes (1): UnitTypeRequest
+Nodes (1): StoreStatusSettingRequest
 
 ### Community 274 - "Community 274"
 Cohesion: 0.5
-Nodes (1): UpdateContractSetting
+Nodes (1): StoreVisaRequest
 
 ### Community 275 - "Community 275"
 Cohesion: 0.5
-Nodes (1): UpdateEstimateRequestStatus
+Nodes (1): TwoFaCodeValidation
 
 ### Community 276 - "Community 276"
 Cohesion: 0.5
-Nodes (1): UpdateInvoiceSetting
+Nodes (1): UnitTypeRequest
 
 ### Community 277 - "Community 277"
 Cohesion: 0.5
-Nodes (1): UpdatePassportRequest
+Nodes (1): UpdateContractSetting
 
 ### Community 278 - "Community 278"
 Cohesion: 0.5
-Nodes (1): UpdatePrefixSetting
+Nodes (1): UpdateEstimateRequestStatus
 
 ### Community 279 - "Community 279"
 Cohesion: 0.5
-Nodes (1): UpdateQuickBooksSetting
+Nodes (1): UpdateInvoiceSetting
 
 ### Community 280 - "Community 280"
 Cohesion: 0.5
-Nodes (1): UpdateSalesOrderAiIntegrationPermissionsRequest
+Nodes (1): UpdatePassportRequest
 
 ### Community 281 - "Community 281"
 Cohesion: 0.5
-Nodes (1): UpdateTemplateSetting
+Nodes (1): UpdatePrefixSetting
 
 ### Community 282 - "Community 282"
 Cohesion: 0.5
-Nodes (1): UpdateVisaRequest
+Nodes (1): UpdateQuickBooksSetting
 
 ### Community 283 - "Community 283"
 Cohesion: 0.5
-Nodes (1): UploadInstallRequest
+Nodes (1): UpdateSalesOrderAiIntegrationPermissionsRequest
 
 ### Community 284 - "Community 284"
 Cohesion: 0.5
-Nodes (1): UpdateAppSetting
+Nodes (1): UpdateTemplateSetting
 
 ### Community 285 - "Community 285"
 Cohesion: 0.5
-Nodes (1): StoreClientCategory
+Nodes (1): UpdateVisaRequest
 
 ### Community 286 - "Community 286"
 Cohesion: 0.5
-Nodes (1): StoreClientSubcategory
+Nodes (1): UploadInstallRequest
 
 ### Community 287 - "Community 287"
 Cohesion: 0.5
-Nodes (1): StoreShippingAddressRequest
+Nodes (1): UpdateAppSetting
 
 ### Community 288 - "Community 288"
 Cohesion: 0.5
-Nodes (1): RenewRequest
+Nodes (1): StoreClientCategory
 
 ### Community 289 - "Community 289"
 Cohesion: 0.5
-Nodes (1): SignRequest
+Nodes (1): StoreClientSubcategory
 
 ### Community 290 - "Community 290"
 Cohesion: 0.5
-Nodes (1): StoreDiscussionRequest
+Nodes (1): StoreShippingAddressRequest
 
 ### Community 291 - "Community 291"
 Cohesion: 0.5
-Nodes (1): UpdateDiscussionRequest
+Nodes (1): RenewRequest
 
 ### Community 292 - "Community 292"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): SignRequest
 
 ### Community 293 - "Community 293"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 294 - "Community 294"
 Cohesion: 0.5
-Nodes (1): ImportRequest
+Nodes (1): UpdateRequest
 
 ### Community 295 - "Community 295"
 Cohesion: 0.5
-Nodes (1): AutoTranslateRequest
+Nodes (1): ImportRequest
 
 ### Community 296 - "Community 296"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): AutoTranslateRequest
 
 ### Community 297 - "Community 297"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 298 - "Community 298"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): UpdateRequest
 
 ### Community 299 - "Community 299"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 300 - "Community 300"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): UpdateRequest
 
 ### Community 301 - "Community 301"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 302 - "Community 302"
 Cohesion: 0.5
-Nodes (1): UpdateEmployee
+Nodes (1): UpdateRequest
 
 ### Community 303 - "Community 303"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): UpdateEmployee
 
 ### Community 304 - "Community 304"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 305 - "Community 305"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): UpdateRequest
 
 ### Community 306 - "Community 306"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 307 - "Community 307"
 Cohesion: 0.5
-Nodes (1): StoreAttendance
+Nodes (1): UpdateRequest
 
 ### Community 308 - "Community 308"
 Cohesion: 0.5
-Nodes (1): UpdateAttendanceSetting
+Nodes (1): StoreAttendance
 
 ### Community 309 - "Community 309"
 Cohesion: 0.5
-Nodes (1): StoreAccount
+Nodes (1): UpdateAttendanceSetting
 
 ### Community 310 - "Community 310"
 Cohesion: 0.5
-Nodes (1): StoreContact
+Nodes (1): StoreAccount
 
 ### Community 311 - "Community 311"
 Cohesion: 0.5
-Nodes (1): UpdateContact
+Nodes (1): StoreContact
 
 ### Community 312 - "Community 312"
 Cohesion: 0.5
-Nodes (1): SignRequest
+Nodes (1): UpdateContact
 
 ### Community 313 - "Community 313"
 Cohesion: 0.5
-Nodes (1): StoreDiscussionRequest
+Nodes (1): SignRequest
 
 ### Community 314 - "Community 314"
 Cohesion: 0.5
-Nodes (1): CreateRequest
+Nodes (1): StoreDiscussionRequest
 
 ### Community 315 - "Community 315"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): CreateRequest
 
 ### Community 316 - "Community 316"
 Cohesion: 0.5
-Nodes (1): ClockInRequest
+Nodes (1): UpdateRequest
 
 ### Community 317 - "Community 317"
 Cohesion: 0.5
-Nodes (1): creditNoteFileStore
+Nodes (1): ClockInRequest
 
 ### Community 318 - "Community 318"
 Cohesion: 0.5
-Nodes (1): UpdateCreditNote
+Nodes (1): creditNoteFileStore
 
 ### Community 319 - "Community 319"
 Cohesion: 0.5
-Nodes (1): StoreCurrency
+Nodes (1): UpdateCreditNote
 
 ### Community 320 - "Community 320"
 Cohesion: 0.5
-Nodes (1): StoreCurrencyExchangeKey
+Nodes (1): StoreCurrency
 
 ### Community 321 - "Community 321"
 Cohesion: 0.5
-Nodes (1): UpdateCurrency
+Nodes (1): StoreCurrencyExchangeKey
 
 ### Community 322 - "Community 322"
 Cohesion: 0.5
-Nodes (1): UpdateCustomField
+Nodes (1): UpdateCurrency
 
 ### Community 323 - "Community 323"
 Cohesion: 0.5
-Nodes (1): StageChangeRequest
+Nodes (1): UpdateCustomField
 
 ### Community 324 - "Community 324"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): StageChangeRequest
 
 ### Community 325 - "Community 325"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 326 - "Community 326"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): UpdateRequest
 
 ### Community 327 - "Community 327"
 Cohesion: 0.5
-Nodes (1): CreateRequest
+Nodes (1): StoreRequest
 
 ### Community 328 - "Community 328"
 Cohesion: 0.5
-Nodes (1): DeleteRequest
+Nodes (1): CreateRequest
 
 ### Community 329 - "Community 329"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): DeleteRequest
 
 ### Community 330 - "Community 330"
 Cohesion: 0.5
-Nodes (1): StoreEmployeeShift
+Nodes (1): UpdateRequest
 
 ### Community 331 - "Community 331"
 Cohesion: 0.5
-Nodes (1): StoreShiftRotationRequest
+Nodes (1): StoreEmployeeShift
 
 ### Community 332 - "Community 332"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreShiftRotationRequest
 
 ### Community 333 - "Community 333"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): UpdateRequest
 
 ### Community 334 - "Community 334"
 Cohesion: 0.5
-Nodes (1): StoreEventNote
+Nodes (1): StoreRequest
 
 ### Community 335 - "Community 335"
 Cohesion: 0.5
-Nodes (1): StoreExpenseCategory
+Nodes (1): StoreEventNote
 
 ### Community 336 - "Community 336"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreExpenseCategory
 
 ### Community 337 - "Community 337"
 Cohesion: 0.5
-Nodes (1): CreateRequest
+Nodes (1): UpdateRequest
 
 ### Community 338 - "Community 338"
 Cohesion: 0.5
-Nodes (1): RemoveLeadRequest
+Nodes (1): CreateRequest
 
 ### Community 339 - "Community 339"
 Cohesion: 0.5
-Nodes (1): RemoveUserRequest
+Nodes (1): RemoveLeadRequest
 
 ### Community 340 - "Community 340"
 Cohesion: 0.5
-Nodes (1): SaveConsentLeadDataRequest
+Nodes (1): RemoveUserRequest
 
 ### Community 341 - "Community 341"
 Cohesion: 0.5
-Nodes (1): SaveConsentUserDataRequest
+Nodes (1): SaveConsentLeadDataRequest
 
 ### Community 342 - "Community 342"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): SaveConsentUserDataRequest
 
 ### Community 343 - "Community 343"
 Cohesion: 0.5
-Nodes (1): StoreGoogleCalender
+Nodes (1): UpdateRequest
 
 ### Community 344 - "Community 344"
 Cohesion: 0.5
-Nodes (1): DeleteRequest
+Nodes (1): StoreGoogleCalender
 
 ### Community 345 - "Community 345"
 Cohesion: 0.5
-Nodes (1): IndexRequest
+Nodes (1): DeleteRequest
 
 ### Community 346 - "Community 346"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): IndexRequest
 
 ### Community 347 - "Community 347"
 Cohesion: 0.5
-Nodes (1): UpdateAiIntegrationOrderRequest
+Nodes (1): UpdateRequest
 
 ### Community 348 - "Community 348"
 Cohesion: 0.5
-Nodes (1): StoreIssue
+Nodes (1): UpdateAiIntegrationOrderRequest
 
 ### Community 349 - "Community 349"
 Cohesion: 0.5
-Nodes (1): KnowledgeBaseCategoryStore
+Nodes (1): StoreIssue
 
 ### Community 350 - "Community 350"
 Cohesion: 0.5
-Nodes (1): KnowledgeBaseStore
+Nodes (1): KnowledgeBaseCategoryStore
 
 ### Community 351 - "Community 351"
 Cohesion: 0.5
-Nodes (1): DeleteRequest
+Nodes (1): KnowledgeBaseStore
 
 ### Community 352 - "Community 352"
 Cohesion: 0.5
-Nodes (1): StoreLeadAgent
+Nodes (1): DeleteRequest
 
 ### Community 353 - "Community 353"
 Cohesion: 0.5
-Nodes (1): StoreLeadCategory
+Nodes (1): StoreLeadAgent
 
 ### Community 354 - "Community 354"
 Cohesion: 0.5
-Nodes (1): UpdateLeadCategory
+Nodes (1): StoreLeadCategory
 
 ### Community 355 - "Community 355"
 Cohesion: 0.5
-Nodes (1): StoreLeadPipeline
+Nodes (1): UpdateLeadCategory
 
 ### Community 356 - "Community 356"
 Cohesion: 0.5
-Nodes (1): StoreLeadSource
+Nodes (1): StoreLeadPipeline
 
 ### Community 357 - "Community 357"
 Cohesion: 0.5
-Nodes (1): UpdateLeadAgent
+Nodes (1): StoreLeadSource
 
 ### Community 358 - "Community 358"
 Cohesion: 0.5
-Nodes (1): UpdateLeadPipeline
+Nodes (1): UpdateLeadAgent
 
 ### Community 359 - "Community 359"
 Cohesion: 0.5
-Nodes (1): UpdateLeadSource
+Nodes (1): UpdateLeadPipeline
 
 ### Community 360 - "Community 360"
 Cohesion: 0.5
-Nodes (1): UpdateLeadStage
+Nodes (1): UpdateLeadSource
 
 ### Community 361 - "Community 361"
 Cohesion: 0.5
-Nodes (1): ActionLeave
+Nodes (1): UpdateLeadStage
 
 ### Community 362 - "Community 362"
 Cohesion: 0.5
-Nodes (1): UpdateLeave
+Nodes (1): ActionLeave
 
 ### Community 363 - "Community 363"
 Cohesion: 0.5
-Nodes (1): StoreLeaveType
+Nodes (1): UpdateLeave
 
 ### Community 364 - "Community 364"
 Cohesion: 0.5
-Nodes (1): VerifyLoginRequest
+Nodes (1): StoreLeaveType
 
 ### Community 365 - "Community 365"
 Cohesion: 0.5
-Nodes (1): StoreMilestone
+Nodes (1): VerifyLoginRequest
 
 ### Community 366 - "Community 366"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): StoreMilestone
 
 ### Community 367 - "Community 367"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 368 - "Community 368"
 Cohesion: 0.5
-Nodes (1): AuthorizeDetails
+Nodes (1): UpdateRequest
 
 ### Community 369 - "Community 369"
 Cohesion: 0.5
-Nodes (1): FlutterwaveRequest
+Nodes (1): AuthorizeDetails
 
 ### Community 370 - "Community 370"
 Cohesion: 0.5
-Nodes (1): ImportPayment
+Nodes (1): FlutterwaveRequest
 
 ### Community 371 - "Community 371"
 Cohesion: 0.5
-Nodes (1): InvoicePayment
+Nodes (1): ImportPayment
 
 ### Community 372 - "Community 372"
 Cohesion: 0.5
-Nodes (1): StoreProductCategory
+Nodes (1): InvoicePayment
 
 ### Community 373 - "Community 373"
 Cohesion: 0.5
-Nodes (1): StoreProductSubCategory
+Nodes (1): StoreProductCategory
 
 ### Community 374 - "Community 374"
 Cohesion: 0.5
-Nodes (1): StoreProjectCategory
+Nodes (1): StoreProductSubCategory
 
 ### Community 375 - "Community 375"
 Cohesion: 0.5
-Nodes (1): StoreRating
+Nodes (1): StoreProjectCategory
 
 ### Community 376 - "Community 376"
 Cohesion: 0.5
-Nodes (1): UpdateProjectSetting
+Nodes (1): StoreRating
 
 ### Community 377 - "Community 377"
 Cohesion: 0.5
-Nodes (1): StoreProject
+Nodes (1): UpdateProjectSetting
 
 ### Community 378 - "Community 378"
 Cohesion: 0.5
-Nodes (1): StoreProjectCategory
+Nodes (1): StoreProject
 
 ### Community 379 - "Community 379"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): StoreProjectCategory
 
 ### Community 380 - "Community 380"
 Cohesion: 0.5
@@ -2727,59 +2666,59 @@ Nodes (1): StoreRequest
 
 ### Community 381 - "Community 381"
 Cohesion: 0.5
-Nodes (1): UpdateRole
+Nodes (1): StoreRequest
 
 ### Community 382 - "Community 382"
 Cohesion: 0.5
-Nodes (1): StorageAwsFileUpload
+Nodes (1): UpdateRole
 
 ### Community 383 - "Community 383"
 Cohesion: 0.5
-Nodes (1): UpdateOrganisationSettings
+Nodes (1): StorageAwsFileUpload
 
 ### Community 384 - "Community 384"
 Cohesion: 0.5
-Nodes (1): UpdateSmtpSetting
+Nodes (1): UpdateOrganisationSettings
 
 ### Community 385 - "Community 385"
 Cohesion: 0.5
-Nodes (1): StoreStickyNote
+Nodes (1): UpdateSmtpSetting
 
 ### Community 386 - "Community 386"
 Cohesion: 0.5
-Nodes (1): UpdateStickyNote
+Nodes (1): StoreStickyNote
 
 ### Community 387 - "Community 387"
 Cohesion: 0.5
-Nodes (1): StoreStripeDetail
+Nodes (1): UpdateStickyNote
 
 ### Community 388 - "Community 388"
 Cohesion: 0.5
-Nodes (1): AuthorizePaymentRequest
+Nodes (1): StoreStripeDetail
 
 ### Community 389 - "Community 389"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): StoreSubTask
 
 ### Community 390 - "Community 390"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): AuthorizePaymentRequest
 
 ### Community 391 - "Community 391"
 Cohesion: 0.5
-Nodes (1): PackageUpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 392 - "Community 392"
 Cohesion: 0.5
-Nodes (1): ContactSettingRequest
+Nodes (1): UpdateRequest
 
 ### Community 393 - "Community 393"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): PackageUpdateRequest
 
 ### Community 394 - "Community 394"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): ContactSettingRequest
 
 ### Community 395 - "Community 395"
 Cohesion: 0.5
@@ -2811,79 +2750,79 @@ Nodes (1): StoreRequest
 
 ### Community 402 - "Community 402"
 Cohesion: 0.5
-Nodes (1): CtaRequest
+Nodes (1): UpdateRequest
 
 ### Community 403 - "Community 403"
 Cohesion: 0.5
-Nodes (1): FooterTextRequest
+Nodes (1): StoreRequest
 
 ### Community 404 - "Community 404"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): CtaRequest
 
 ### Community 405 - "Community 405"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): FooterTextRequest
 
 ### Community 406 - "Community 406"
 Cohesion: 0.5
-Nodes (1): FrontStoreRequest
+Nodes (1): StoreRequest
 
 ### Community 407 - "Community 407"
 Cohesion: 0.5
-Nodes (1): FrontUpdateRequest
+Nodes (1): UpdateRequest
 
 ### Community 408 - "Community 408"
 Cohesion: 0.5
-Nodes (1): UpdateDetail
+Nodes (1): FrontStoreRequest
 
 ### Community 409 - "Community 409"
 Cohesion: 0.5
-Nodes (1): UpdateFrontMenu
+Nodes (1): FrontUpdateRequest
 
 ### Community 410 - "Community 410"
 Cohesion: 0.5
-Nodes (1): UpdatePriceSetting
+Nodes (1): UpdateDetail
 
 ### Community 411 - "Community 411"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): UpdateFrontMenu
 
 ### Community 412 - "Community 412"
 Cohesion: 0.5
-Nodes (1): StoreGlobalCurrency
+Nodes (1): UpdatePriceSetting
 
 ### Community 413 - "Community 413"
 Cohesion: 0.5
-Nodes (1): StoreGlobalCurrencyExchangeKey
+Nodes (1): StoreRequest
 
 ### Community 414 - "Community 414"
 Cohesion: 0.5
-Nodes (1): UpdateGlobalCurrency
+Nodes (1): StoreGlobalCurrency
 
 ### Community 415 - "Community 415"
 Cohesion: 0.5
-Nodes (1): UpdateInvoiceSetting
+Nodes (1): StoreGlobalCurrencyExchangeKey
 
 ### Community 416 - "Community 416"
 Cohesion: 0.5
-Nodes (1): StoreClientRequest
+Nodes (1): UpdateGlobalCurrency
 
 ### Community 417 - "Community 417"
 Cohesion: 0.5
-Nodes (1): PaymentRequest
+Nodes (1): UpdateInvoiceSetting
 
 ### Community 418 - "Community 418"
 Cohesion: 0.5
-Nodes (1): StripeValidateRequest
+Nodes (1): StoreClientRequest
 
 ### Community 419 - "Community 419"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): PaymentRequest
 
 ### Community 420 - "Community 420"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StripeValidateRequest
 
 ### Community 421 - "Community 421"
 Cohesion: 0.5
@@ -2891,39 +2830,39 @@ Nodes (1): StoreRequest
 
 ### Community 422 - "Community 422"
 Cohesion: 0.5
-Nodes (1): TitleStoreUpdateRequest
+Nodes (1): UpdateRequest
 
 ### Community 423 - "Community 423"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 424 - "Community 424"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): TitleStoreUpdateRequest
 
 ### Community 425 - "Community 425"
 Cohesion: 0.5
-Nodes (1): StoreTaskBoard
+Nodes (1): UpdateRequest
 
 ### Community 426 - "Community 426"
 Cohesion: 0.5
-Nodes (1): UpdateTaskBoard
+Nodes (1): UpdateRequest
 
 ### Community 427 - "Community 427"
 Cohesion: 0.5
-Nodes (1): ActionTask
+Nodes (1): StoreTaskBoard
 
 ### Community 428 - "Community 428"
 Cohesion: 0.5
-Nodes (1): StoreTaskCategory
+Nodes (1): UpdateTaskBoard
 
 ### Community 429 - "Community 429"
 Cohesion: 0.5
-Nodes (1): StoreTaskComment
+Nodes (1): ActionTask
 
 ### Community 430 - "Community 430"
 Cohesion: 0.5
-Nodes (1): StoreTaskNote
+Nodes (1): StoreTaskCategory
 
 ### Community 431 - "Community 431"
 Cohesion: 0.5
@@ -2963,1729 +2902,1729 @@ Nodes (1): StoreTicketGroup
 
 ### Community 440 - "Community 440"
 Cohesion: 0.5
-Nodes (1): StoreTemplate
+Nodes (1): UpdateTemplate
 
 ### Community 441 - "Community 441"
 Cohesion: 0.5
-Nodes (1): UpdateTemplate
+Nodes (1): StoreTicketRequest
 
 ### Community 442 - "Community 442"
 Cohesion: 0.5
-Nodes (1): StoreTicketRequest
+Nodes (1): UpdateTicketDetailRequest
 
 ### Community 443 - "Community 443"
 Cohesion: 0.5
-Nodes (1): UpdateTicketDetailRequest
+Nodes (1): UpdateTicketRequest
 
 ### Community 444 - "Community 444"
 Cohesion: 0.5
-Nodes (1): UpdateTicketRequest
+Nodes (1): StopTimer
 
 ### Community 445 - "Community 445"
 Cohesion: 0.5
-Nodes (1): StopTimer
+Nodes (1): UpdateProjectTimeLog
 
 ### Community 446 - "Community 446"
 Cohesion: 0.5
-Nodes (1): UpdateProjectTimeLog
+Nodes (1): UpdateTimeLog
 
 ### Community 447 - "Community 447"
 Cohesion: 0.5
-Nodes (1): UpdateTimeLog
+Nodes (1): AcceptInviteRequest
 
 ### Community 448 - "Community 448"
 Cohesion: 0.5
-Nodes (1): AcceptInviteRequest
+Nodes (1): AccountSetupRequest
 
 ### Community 449 - "Community 449"
 Cohesion: 0.5
-Nodes (1): AccountSetupRequest
+Nodes (1): InviteEmailRequest
 
 ### Community 450 - "Community 450"
 Cohesion: 0.5
-Nodes (1): InviteEmailRequest
+Nodes (1): UpdateUser
 
 ### Community 451 - "Community 451"
 Cohesion: 0.5
-Nodes (1): UpdateUser
+Nodes (1): AttendanceReminderListener
 
 ### Community 452 - "Community 452"
 Cohesion: 0.5
-Nodes (1): NewInvoiceRecurringListener
+Nodes (1): AutoTaskReminderListener
 
 ### Community 453 - "Community 453"
 Cohesion: 0.5
-Nodes (1): SubmitWeeklyTimesheetListener
+Nodes (1): ContractSignedListener
 
 ### Community 454 - "Community 454"
 Cohesion: 0.5
-Nodes (1): TwoFactorCodeListener
+Nodes (1): EstimateAcceptedListener
 
 ### Community 455 - "Community 455"
 Cohesion: 0.5
-Nodes (1): WeeklyTimesheetApprovedListener
+Nodes (1): EstimateDeclinedListener
 
 ### Community 456 - "Community 456"
 Cohesion: 0.5
-Nodes (1): WeeklyTimesheetDraftListener
+Nodes (1): HolidayListener
 
 ### Community 457 - "Community 457"
 Cohesion: 0.5
-Nodes (1): Country
+Nodes (1): InvoicePaymentReceivedListener
 
 ### Community 458 - "Community 458"
 Cohesion: 0.5
-Nodes (1): ProjectSetting
+Nodes (1): InvoiceReminderListener
 
 ### Community 459 - "Community 459"
 Cohesion: 0.5
-Nodes (1): ClientContactObserver
+Nodes (1): NewCreditNoteListener
 
 ### Community 460 - "Community 460"
 Cohesion: 0.5
-Nodes (1): ClientDocumentObserver
+Nodes (1): NewInvoiceRecurringListener
 
 ### Community 461 - "Community 461"
 Cohesion: 0.5
-Nodes (1): ClientNoteObserver
+Nodes (1): NewOrderListener
 
 ### Community 462 - "Community 462"
 Cohesion: 0.5
-Nodes (1): ContractDiscussionObserver
+Nodes (1): NewPaymentListener
 
 ### Community 463 - "Community 463"
 Cohesion: 0.5
-Nodes (1): ContractFileObserver
+Nodes (1): NewProjectListener
 
 ### Community 464 - "Community 464"
 Cohesion: 0.5
-Nodes (1): LeadCustomFormObserver
+Nodes (1): NewProposalListener
 
 ### Community 465 - "Community 465"
 Cohesion: 0.5
-Nodes (1): AppTitle
+Nodes (1): NewUserRegistrationViaInviteListener
 
 ### Community 466 - "Community 466"
 Cohesion: 0.5
-Nodes (1): BarChart
+Nodes (1): OrderUpdatedListener
 
 ### Community 467 - "Community 467"
 Cohesion: 0.5
-Nodes (1): Client
+Nodes (1): PaymentReminderListener
 
 ### Community 468 - "Community 468"
 Cohesion: 0.5
-Nodes (1): ClientSearchOption
+Nodes (1): ProjectReminderListener
 
 ### Community 469 - "Community 469"
 Cohesion: 0.5
-Nodes (1): ClientSelectionDropdown
+Nodes (1): RemovalRequestAdminLeadListener
 
 ### Community 470 - "Community 470"
 Cohesion: 0.5
-Nodes (1): DateBadge
+Nodes (1): RemovalRequestAdminListener
 
 ### Community 471 - "Community 471"
 Cohesion: 0.5
-Nodes (1): Employee
+Nodes (1): RemovalRequestApprovedRejectLeadListener
 
 ### Community 472 - "Community 472"
 Cohesion: 0.5
-Nodes (1): EmployeeImage
+Nodes (1): RemovalRequestApprovedRejectListener
 
 ### Community 473 - "Community 473"
 Cohesion: 0.5
-Nodes (1): FileCard
+Nodes (1): RemovalRequestApprovedRejectUserListener
 
 ### Community 474 - "Community 474"
 Cohesion: 0.5
-Nodes (1): Form
+Nodes (1): ShiftRotationListener
 
 ### Community 475 - "Community 475"
 Cohesion: 0.5
-Nodes (1): FormActions
+Nodes (1): SubmitWeeklyTimesheetListener
 
 ### Community 476 - "Community 476"
 Cohesion: 0.5
-Nodes (1): GaugeChart
+Nodes (1): SubTaskCompletedListener
 
 ### Community 477 - "Community 477"
 Cohesion: 0.5
-Nodes (1): Gender
+Nodes (1): TaskCommentListener
 
 ### Community 478 - "Community 478"
 Cohesion: 0.5
-Nodes (1): PieChart
+Nodes (1): TaskNoteListener
 
 ### Community 479 - "Community 479"
 Cohesion: 0.5
-Nodes (1): RightModal
+Nodes (1): TaskNoteMentionListener
 
 ### Community 480 - "Community 480"
 Cohesion: 0.5
-Nodes (1): SettingCard
+Nodes (1): TaskReminderListener
 
 ### Community 481 - "Community 481"
 Cohesion: 0.5
-Nodes (1): SettingFormActions
+Nodes (1): TicketRequesterListener
 
 ### Community 482 - "Community 482"
 Cohesion: 0.5
-Nodes (1): SettingSidebar
+Nodes (1): TwoFactorCodeListener
 
 ### Community 483 - "Community 483"
 Cohesion: 0.5
-Nodes (1): StackedChart
+Nodes (1): WeeklyTimesheetApprovedListener
 
 ### Community 484 - "Community 484"
 Cohesion: 0.5
-Nodes (1): Status
+Nodes (1): WeeklyTimesheetDraftListener
 
 ### Community 485 - "Community 485"
 Cohesion: 0.5
-Nodes (1): Tab
+Nodes (1): Country
 
 ### Community 486 - "Community 486"
 Cohesion: 0.5
-Nodes (1): TabItem
+Nodes (1): ProjectSetting
 
 ### Community 487 - "Community 487"
 Cohesion: 0.5
-Nodes (1): TabSection
+Nodes (1): ClientContactObserver
 
 ### Community 488 - "Community 488"
 Cohesion: 0.5
-Nodes (1): TaskCard
+Nodes (1): ClientDocumentObserver
 
 ### Community 489 - "Community 489"
 Cohesion: 0.5
-Nodes (1): TaskSelectionDropdown
+Nodes (1): ClientNoteObserver
 
 ### Community 490 - "Community 490"
 Cohesion: 0.5
-Nodes (1): UserOption
+Nodes (1): ContractDiscussionObserver
 
 ### Community 491 - "Community 491"
 Cohesion: 0.5
-Nodes (1): CardHeader
+Nodes (1): ContractFileObserver
 
 ### Community 492 - "Community 492"
 Cohesion: 0.5
-Nodes (1): Data
+Nodes (1): LeadCustomFormObserver
 
 ### Community 493 - "Community 493"
 Cohesion: 0.5
-Nodes (1): DataRow
+Nodes (1): AppTitle
 
 ### Community 494 - "Community 494"
 Cohesion: 0.5
-Nodes (1): LeadCard
+Nodes (1): BarChart
 
 ### Community 495 - "Community 495"
 Cohesion: 0.5
-Nodes (1): Message
+Nodes (1): Client
 
 ### Community 496 - "Community 496"
 Cohesion: 0.5
-Nodes (1): MessageUser
+Nodes (1): ClientSearchOption
 
 ### Community 497 - "Community 497"
 Cohesion: 0.5
-Nodes (1): NoRecord
+Nodes (1): ClientSelectionDropdown
 
 ### Community 498 - "Community 498"
 Cohesion: 0.5
-Nodes (1): NoRecordFoundList
+Nodes (1): DateBadge
 
 ### Community 499 - "Community 499"
 Cohesion: 0.5
-Nodes (1): OnboardingItem
+Nodes (1): Employee
 
 ### Community 500 - "Community 500"
 Cohesion: 0.5
-Nodes (1): PublicTaskCard
+Nodes (1): EmployeeImage
 
 ### Community 501 - "Community 501"
 Cohesion: 0.5
-Nodes (1): Ticket
+Nodes (1): FileCard
 
 ### Community 502 - "Community 502"
 Cohesion: 0.5
-Nodes (1): User
+Nodes (1): Form
 
 ### Community 503 - "Community 503"
 Cohesion: 0.5
-Nodes (1): Widget
+Nodes (1): FormActions
 
 ### Community 504 - "Community 504"
 Cohesion: 0.5
-Nodes (1): Actions
+Nodes (1): GaugeChart
 
 ### Community 505 - "Community 505"
 Cohesion: 0.5
-Nodes (1): FilterBox
+Nodes (1): Gender
 
 ### Community 506 - "Community 506"
 Cohesion: 0.5
-Nodes (1): MoreFilterBox
+Nodes (1): PieChart
 
 ### Community 507 - "Community 507"
 Cohesion: 0.5
-Nodes (1): ButtonCancel
+Nodes (1): RightModal
 
 ### Community 508 - "Community 508"
 Cohesion: 0.5
-Nodes (1): ButtonPrimary
+Nodes (1): SettingCard
 
 ### Community 509 - "Community 509"
 Cohesion: 0.5
-Nodes (1): ButtonSecondary
+Nodes (1): SettingFormActions
 
 ### Community 510 - "Community 510"
 Cohesion: 0.5
-Nodes (1): CustomFieldShow
+Nodes (1): SettingSidebar
 
 ### Community 511 - "Community 511"
 Cohesion: 0.5
-Nodes (1): Datepicker
+Nodes (1): StackedChart
 
 ### Community 512 - "Community 512"
 Cohesion: 0.5
-Nodes (1): Email
+Nodes (1): Status
 
 ### Community 513 - "Community 513"
 Cohesion: 0.5
-Nodes (1): File
+Nodes (1): Tab
 
 ### Community 514 - "Community 514"
 Cohesion: 0.5
-Nodes (1): FileMultiple
+Nodes (1): TabItem
 
 ### Community 515 - "Community 515"
 Cohesion: 0.5
-Nodes (1): InputGroup
+Nodes (1): TabSection
 
 ### Community 516 - "Community 516"
 Cohesion: 0.5
-Nodes (1): LinkPrimary
+Nodes (1): TaskCard
 
 ### Community 517 - "Community 517"
 Cohesion: 0.5
-Nodes (1): LinkSecondary
+Nodes (1): TaskSelectionDropdown
 
 ### Community 518 - "Community 518"
 Cohesion: 0.5
-Nodes (1): Radio
+Nodes (1): UserOption
 
 ### Community 519 - "Community 519"
 Cohesion: 0.5
-Nodes (1): Select2Ajax
+Nodes (1): CardHeader
 
 ### Community 520 - "Community 520"
 Cohesion: 0.5
-Nodes (1): Tel
+Nodes (1): Data
 
 ### Community 521 - "Community 521"
 Cohesion: 0.5
-Nodes (1): Textarea
+Nodes (1): DataRow
 
 ### Community 522 - "Community 522"
 Cohesion: 0.5
-Nodes (1): ToggleSwitch
+Nodes (1): LeadCard
 
 ### Community 523 - "Community 523"
 Cohesion: 0.5
-Nodes (1): Url
+Nodes (1): Message
 
 ### Community 524 - "Community 524"
 Cohesion: 0.5
-Nodes (1): FrontSettingSidebar
+Nodes (1): MessageUser
 
 ### Community 525 - "Community 525"
-Cohesion: 0.83
-Nodes (3): down(), setStringNullable(), up()
+Cohesion: 0.5
+Nodes (1): NoRecord
 
 ### Community 526 - "Community 526"
-Cohesion: 0.67
-Nodes (2): setStringNullable(), up()
+Cohesion: 0.5
+Nodes (1): NoRecordFoundList
 
 ### Community 527 - "Community 527"
-Cohesion: 0.67
-Nodes (2): setStringNullable(), up()
+Cohesion: 0.5
+Nodes (1): OnboardingItem
 
 ### Community 528 - "Community 528"
-Cohesion: 0.83
-Nodes (3): setLongTextNullable(), setStringNullable(), up()
+Cohesion: 0.5
+Nodes (1): PublicTaskCard
 
 ### Community 529 - "Community 529"
-Cohesion: 0.67
-Nodes (2): setDateTimeNullable(), up()
+Cohesion: 0.5
+Nodes (1): Ticket
 
 ### Community 530 - "Community 530"
-Cohesion: 0.67
-Nodes (2): setDecimalNullableWithDefault(), up()
+Cohesion: 0.5
+Nodes (1): User
 
 ### Community 531 - "Community 531"
-Cohesion: 0.67
-Nodes (2): renameColumnSafely(), up()
+Cohesion: 0.5
+Nodes (1): Widget
 
 ### Community 532 - "Community 532"
-Cohesion: 0.67
-Nodes (2): setDecimal(), up()
+Cohesion: 0.5
+Nodes (1): Actions
 
 ### Community 533 - "Community 533"
-Cohesion: 0.83
-Nodes (3): down(), setTextNullable(), up()
+Cohesion: 0.5
+Nodes (1): FilterBox
 
 ### Community 534 - "Community 534"
-Cohesion: 0.83
-Nodes (3): down(), setTitleNullable(), up()
+Cohesion: 0.5
+Nodes (1): MoreFilterBox
 
 ### Community 535 - "Community 535"
-Cohesion: 0.67
-Nodes (2): setFloatNullable(), up()
+Cohesion: 0.5
+Nodes (1): ButtonCancel
 
 ### Community 536 - "Community 536"
-Cohesion: 0.67
-Nodes (2): setDoubleNullable(), up()
+Cohesion: 0.5
+Nodes (1): ButtonPrimary
 
 ### Community 537 - "Community 537"
-Cohesion: 0.83
-Nodes (3): down(), renameColumnSafely(), up()
+Cohesion: 0.5
+Nodes (1): ButtonSecondary
 
 ### Community 538 - "Community 538"
-Cohesion: 0.67
-Nodes (2): setNullableDouble(), up()
+Cohesion: 0.5
+Nodes (1): CustomFieldShow
 
 ### Community 539 - "Community 539"
-Cohesion: 0.83
-Nodes (3): down(), renameColumnSafely(), up()
+Cohesion: 0.5
+Nodes (1): Datepicker
+
+### Community 540 - "Community 540"
+Cohesion: 0.5
+Nodes (1): Email
 
 ### Community 541 - "Community 541"
-Cohesion: 0.67
-Nodes (2): seedAffiliateSettings(), up()
+Cohesion: 0.5
+Nodes (1): File
 
 ### Community 542 - "Community 542"
-Cohesion: 0.83
-Nodes (2): html(), label()
+Cohesion: 0.5
+Nodes (1): FileMultiple
 
 ### Community 543 - "Community 543"
 Cohesion: 0.5
-Nodes (1): CreateSettingsRequest
+Nodes (1): InputGroup
 
 ### Community 544 - "Community 544"
 Cohesion: 0.5
-Nodes (1): StorePayout
+Nodes (1): LinkPrimary
 
 ### Community 545 - "Community 545"
 Cohesion: 0.5
-Nodes (1): UpdateAffiliate
+Nodes (1): LinkSecondary
 
 ### Community 546 - "Community 546"
 Cohesion: 0.5
-Nodes (1): AffiliateOption
+Nodes (1): Radio
 
 ### Community 547 - "Community 547"
 Cohesion: 0.5
-Nodes (1): AssetDataTable
+Nodes (1): Select2Ajax
 
 ### Community 548 - "Community 548"
 Cohesion: 0.5
-Nodes (1): LendRequest
+Nodes (1): Tel
 
 ### Community 549 - "Community 549"
 Cohesion: 0.5
-Nodes (1): ReturnRequest
+Nodes (1): Textarea
 
 ### Community 550 - "Community 550"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): ToggleSwitch
 
 ### Community 551 - "Community 551"
 Cohesion: 0.5
-Nodes (1): BiolinkSettingRequest
+Nodes (1): Url
 
 ### Community 552 - "Community 552"
 Cohesion: 0.5
-Nodes (1): CreateBiolinkRequest
+Nodes (1): FrontSettingSidebar
 
 ### Community 553 - "Community 553"
-Cohesion: 0.5
-Nodes (1): EmailCollectorRequest
+Cohesion: 0.83
+Nodes (3): down(), setStringNullable(), up()
 
 ### Community 554 - "Community 554"
-Cohesion: 0.5
-Nodes (1): PhoneCollectorRequest
+Cohesion: 0.67
+Nodes (2): setStringNullable(), up()
 
 ### Community 555 - "Community 555"
-Cohesion: 0.5
-Nodes (1): BiometricDeviceStore
+Cohesion: 0.67
+Nodes (2): setStringNullable(), up()
 
 ### Community 556 - "Community 556"
-Cohesion: 0.5
-Nodes (1): StoreEmailRequest
+Cohesion: 0.83
+Nodes (3): setLongTextNullable(), setStringNullable(), up()
 
 ### Community 557 - "Community 557"
-Cohesion: 0.5
-Nodes (1): StoreIpRequest
+Cohesion: 0.67
+Nodes (2): setDateTimeNullable(), up()
 
 ### Community 558 - "Community 558"
-Cohesion: 0.5
-Nodes (1): StoreLoginExpiryRequest
+Cohesion: 0.67
+Nodes (2): setDecimalNullableWithDefault(), up()
 
 ### Community 559 - "Community 559"
-Cohesion: 0.5
-Nodes (1): UpdateLoginExpiryRequest
+Cohesion: 0.67
+Nodes (2): renameColumnSafely(), up()
 
 ### Community 560 - "Community 560"
-Cohesion: 0.5
-Nodes (1): Client
+Cohesion: 0.67
+Nodes (2): setDecimal(), up()
 
 ### Community 561 - "Community 561"
-Cohesion: 0.5
-Nodes (1): Setting
+Cohesion: 0.83
+Nodes (3): down(), setTextNullable(), up()
 
 ### Community 562 - "Community 562"
-Cohesion: 0.5
-Nodes (1): PublishLanguageRequest
+Cohesion: 0.83
+Nodes (3): down(), setUnsignedIntNullable(), up()
 
 ### Community 563 - "Community 563"
-Cohesion: 0.5
-Nodes (1): StoreRequest
+Cohesion: 0.83
+Nodes (3): down(), setTitleNullable(), up()
 
 ### Community 564 - "Community 564"
-Cohesion: 0.5
-Nodes (1): UpdateRequest
+Cohesion: 0.67
+Nodes (2): setFloatNullable(), up()
 
 ### Community 565 - "Community 565"
-Cohesion: 0.5
-Nodes (1): StoreRequest
+Cohesion: 0.83
+Nodes (3): down(), renameColumnSafely(), up()
 
 ### Community 566 - "Community 566"
-Cohesion: 0.5
-Nodes (1): UpdateRequest
+Cohesion: 0.67
+Nodes (2): setNullableDouble(), up()
 
 ### Community 567 - "Community 567"
-Cohesion: 0.5
-Nodes (1): CreateOnboardingDashboardRequest
-
-### Community 568 - "Community 568"
-Cohesion: 0.5
-Nodes (1): CreateOnboardingRequest
+Cohesion: 0.83
+Nodes (3): down(), renameColumnSafely(), up()
 
 ### Community 569 - "Community 569"
-Cohesion: 0.5
-Nodes (1): PayrollCurrencyController
+Cohesion: 0.67
+Nodes (2): seedAffiliateSettings(), up()
 
 ### Community 570 - "Community 570"
-Cohesion: 0.5
-Nodes (1): StoreCurrency
+Cohesion: 0.83
+Nodes (2): html(), label()
 
 ### Community 571 - "Community 571"
 Cohesion: 0.5
-Nodes (1): StoreEmployyeMonthlySalary
+Nodes (1): CreateSettingsRequest
 
 ### Community 572 - "Community 572"
 Cohesion: 0.5
-Nodes (1): StorePaymentMethod
+Nodes (1): StorePayout
 
 ### Community 573 - "Community 573"
 Cohesion: 0.5
-Nodes (1): StoreSalaryComponent
+Nodes (1): UpdateAffiliate
 
 ### Community 574 - "Community 574"
 Cohesion: 0.5
-Nodes (1): StoreSalaryTds
+Nodes (1): AffiliateOption
 
 ### Community 575 - "Community 575"
 Cohesion: 0.5
-Nodes (1): UpdateRequest
+Nodes (1): LendRequest
 
 ### Community 576 - "Community 576"
 Cohesion: 0.5
-Nodes (1): RequestStoreRequest
+Nodes (1): ReturnRequest
 
 ### Community 577 - "Community 577"
 Cohesion: 0.5
-Nodes (1): RequestUpdateRequest
+Nodes (1): StoreRequest
 
 ### Community 578 - "Community 578"
 Cohesion: 0.5
-Nodes (1): SalarySlipObserver
+Nodes (1): BiolinkSettingRequest
 
 ### Community 579 - "Community 579"
-Cohesion: 0.83
-Nodes (3): down(), renameColumnSafely(), up()
+Cohesion: 0.5
+Nodes (1): CreateBiolinkRequest
 
 ### Community 580 - "Community 580"
 Cohesion: 0.5
-Nodes (1): MeetingInviteEvent
+Nodes (1): EmailCollectorRequest
 
 ### Community 581 - "Community 581"
 Cohesion: 0.5
-Nodes (1): MeetingReminderEvent
+Nodes (1): PhoneCollectorRequest
 
 ### Community 582 - "Community 582"
 Cohesion: 0.5
-Nodes (1): ActionRequest
+Nodes (1): BiometricDeviceStore
 
 ### Community 583 - "Community 583"
 Cohesion: 0.5
-Nodes (1): CreateGoalTypeRequest
+Nodes (1): StoreEmailRequest
 
 ### Community 584 - "Community 584"
 Cohesion: 0.5
-Nodes (1): CreateKeyResultsRequest
+Nodes (1): StoreIpRequest
 
 ### Community 585 - "Community 585"
 Cohesion: 0.5
-Nodes (1): CreteKeyResultsRequest
+Nodes (1): StoreLoginExpiryRequest
 
 ### Community 586 - "Community 586"
 Cohesion: 0.5
-Nodes (1): GoalTypeRequest
+Nodes (1): UpdateLoginExpiryRequest
 
 ### Community 587 - "Community 587"
 Cohesion: 0.5
-Nodes (1): KeyResultsMetricsRequest
+Nodes (1): Client
 
 ### Community 588 - "Community 588"
 Cohesion: 0.5
-Nodes (1): PerformanceSettingRequest
+Nodes (1): Setting
 
 ### Community 589 - "Community 589"
-Cohesion: 0.83
-Nodes (3): down(), renameColumnSafely(), up()
+Cohesion: 0.5
+Nodes (1): PublishLanguageRequest
 
 ### Community 590 - "Community 590"
 Cohesion: 0.5
-Nodes (1): StorePolicy
+Nodes (1): StoreRequest
 
 ### Community 591 - "Community 591"
 Cohesion: 0.5
-Nodes (1): StoreSignature
+Nodes (1): UpdateRequest
 
 ### Community 592 - "Community 592"
 Cohesion: 0.5
-Nodes (1): UpdatePolicy
+Nodes (1): StoreRequest
 
 ### Community 593 - "Community 593"
 Cohesion: 0.5
-Nodes (1): UpdateProductionFgQuantityPolicyRequest
+Nodes (1): UpdateRequest
 
 ### Community 594 - "Community 594"
 Cohesion: 0.5
-Nodes (1): HorizontalBarChart
+Nodes (1): CreateOnboardingDashboardRequest
 
 ### Community 595 - "Community 595"
 Cohesion: 0.5
-Nodes (1): PolarareaChart
+Nodes (1): CreateOnboardingRequest
 
 ### Community 596 - "Community 596"
 Cohesion: 0.5
-Nodes (1): NewPurchaseBillEvent
+Nodes (1): PayrollCurrencyController
 
 ### Community 597 - "Community 597"
 Cohesion: 0.5
-Nodes (1): NewVendorPaymentEvent
+Nodes (1): StoreCurrency
 
 ### Community 598 - "Community 598"
 Cohesion: 0.5
-Nodes (1): UpdateVendorPaymentEvent
+Nodes (1): StoreEmployyeMonthlySalary
 
 ### Community 599 - "Community 599"
 Cohesion: 0.5
-Nodes (1): VendorCreditPaymentMade
+Nodes (1): StorePaymentMethod
 
 ### Community 600 - "Community 600"
 Cohesion: 0.5
-Nodes (1): ChangeStatusRequest
+Nodes (1): StoreSalaryComponent
 
 ### Community 601 - "Community 601"
 Cohesion: 0.5
-Nodes (1): UpdatePurchaseSettingRequest
+Nodes (1): StoreSalaryTds
 
 ### Community 602 - "Community 602"
 Cohesion: 0.5
-Nodes (1): StoreVendorContact
+Nodes (1): UpdateRequest
 
 ### Community 603 - "Community 603"
 Cohesion: 0.5
-Nodes (1): UpdateVendorContact
+Nodes (1): RequestStoreRequest
 
 ### Community 604 - "Community 604"
 Cohesion: 0.5
-Nodes (1): StoreVendorCreditRequest
+Nodes (1): RequestUpdateRequest
 
 ### Community 605 - "Community 605"
 Cohesion: 0.5
-Nodes (1): UpdateVendorCreditRequest
+Nodes (1): SalarySlipObserver
 
 ### Community 606 - "Community 606"
-Cohesion: 0.5
-Nodes (1): VendorCreditPaymentMade
+Cohesion: 0.83
+Nodes (3): down(), renameColumnSafely(), up()
 
 ### Community 607 - "Community 607"
 Cohesion: 0.5
-Nodes (1): PurchaseTab
+Nodes (1): MeetingInviteEvent
 
 ### Community 608 - "Community 608"
-Cohesion: 0.83
-Nodes (3): iconClass(), label(), labelWithIcon()
+Cohesion: 0.5
+Nodes (1): MeetingReminderEvent
 
 ### Community 609 - "Community 609"
 Cohesion: 0.5
-Nodes (1): JobEndDateCheck
+Nodes (1): ActionRequest
 
 ### Community 610 - "Community 610"
-Cohesion: 0.83
-Nodes (3): down(), setUnsignedIntNullable(), up()
+Cohesion: 0.5
+Nodes (1): CreateGoalTypeRequest
 
 ### Community 611 - "Community 611"
 Cohesion: 0.5
-Nodes (1): CandidateDatabaseDataTable
+Nodes (1): CreateKeyResultsRequest
 
 ### Community 612 - "Community 612"
 Cohesion: 0.5
-Nodes (1): JobApplicationsDataTable
+Nodes (1): CreteKeyResultsRequest
 
 ### Community 613 - "Community 613"
 Cohesion: 0.5
-Nodes (1): JobDataTable
+Nodes (1): GoalTypeRequest
 
 ### Community 614 - "Community 614"
 Cohesion: 0.5
-Nodes (1): JobOfferLetterDataTable
+Nodes (1): KeyResultsMetricsRequest
 
 ### Community 615 - "Community 615"
 Cohesion: 0.5
-Nodes (1): CandidateInterviewRescheduleEvent
+Nodes (1): PerformanceSettingRequest
 
 ### Community 616 - "Community 616"
 Cohesion: 0.5
-Nodes (1): CandidateInterviewScheduleEvent
+Nodes (1): MeetingReminderListener
 
 ### Community 617 - "Community 617"
-Cohesion: 0.5
-Nodes (1): HostInterviewEvent
+Cohesion: 0.83
+Nodes (3): down(), renameColumnSafely(), up()
 
 ### Community 618 - "Community 618"
 Cohesion: 0.5
-Nodes (1): InterviewRescheduleEvent
+Nodes (1): StorePolicy
 
 ### Community 619 - "Community 619"
 Cohesion: 0.5
-Nodes (1): InterviewScheduleEvent
+Nodes (1): StoreSignature
 
 ### Community 620 - "Community 620"
 Cohesion: 0.5
-Nodes (1): JobApplicationStatusChangeEvent
+Nodes (1): UpdatePolicy
 
 ### Community 621 - "Community 621"
 Cohesion: 0.5
-Nodes (1): JobOfferStatusChangeEvent
+Nodes (1): PolicyAcknowledgedListener
 
 ### Community 622 - "Community 622"
 Cohesion: 0.5
-Nodes (1): NewJobApplicationEvent
+Nodes (1): SendReminderListener
 
 ### Community 623 - "Community 623"
 Cohesion: 0.5
-Nodes (1): NewJobEvent
+Nodes (1): HorizontalBarChart
 
 ### Community 624 - "Community 624"
 Cohesion: 0.5
-Nodes (1): OfferLetterEvent
+Nodes (1): PolarareaChart
 
 ### Community 625 - "Community 625"
 Cohesion: 0.5
-Nodes (1): RecruitJobAlertEvent
+Nodes (1): NewPurchaseBillEvent
 
 ### Community 626 - "Community 626"
 Cohesion: 0.5
-Nodes (1): RecruitJobAlertUpdateEvent
+Nodes (1): NewVendorPaymentEvent
 
 ### Community 627 - "Community 627"
 Cohesion: 0.5
-Nodes (1): SendOfferLetterReminderEvent
+Nodes (1): UpdateVendorPaymentEvent
 
 ### Community 628 - "Community 628"
 Cohesion: 0.5
-Nodes (1): UpdateInterviewScheduleEvent
+Nodes (1): VendorCreditPaymentMade
 
 ### Community 629 - "Community 629"
 Cohesion: 0.5
-Nodes (1): UpdateJobApplicationEvent
+Nodes (1): PurchaseSmtpSettingController
 
 ### Community 630 - "Community 630"
 Cohesion: 0.5
-Nodes (1): UpdateJobEvent
+Nodes (1): ChangeStatusRequest
 
 ### Community 631 - "Community 631"
 Cohesion: 0.5
-Nodes (1): UpdateOfferLetterEvent
+Nodes (1): UpdatePurchaseSettingRequest
 
 ### Community 632 - "Community 632"
 Cohesion: 0.5
-Nodes (1): RecruitController
+Nodes (1): StoreVendorContact
 
 ### Community 633 - "Community 633"
 Cohesion: 0.5
-Nodes (1): StoreJobType
+Nodes (1): UpdateVendorContact
 
 ### Community 634 - "Community 634"
 Cohesion: 0.5
-Nodes (1): StoreRemark
+Nodes (1): StoreVendorCreditRequest
 
 ### Community 635 - "Community 635"
 Cohesion: 0.5
-Nodes (1): StoreSourceRequest
+Nodes (1): UpdateVendorCreditRequest
 
 ### Community 636 - "Community 636"
 Cohesion: 0.5
-Nodes (1): UpdateSourceRequest
+Nodes (1): NewPurchaseBillListener
 
 ### Community 637 - "Community 637"
 Cohesion: 0.5
-Nodes (1): StoreJobApplicant
+Nodes (1): NewVendorPaymentListener
 
 ### Community 638 - "Community 638"
 Cohesion: 0.5
-Nodes (1): StoreFooterLinks
+Nodes (1): UpdateVendorPaymentListener
 
 ### Community 639 - "Community 639"
 Cohesion: 0.5
-Nodes (1): UpdateFooterLinks
+Nodes (1): VendorCreditListener
 
 ### Community 640 - "Community 640"
 Cohesion: 0.5
-Nodes (1): StoreRequest
+Nodes (1): VendorCreditPaymentMade
 
 ### Community 641 - "Community 641"
 Cohesion: 0.5
-Nodes (1): ImportRequest
+Nodes (1): PurchaseTab
 
 ### Community 642 - "Community 642"
-Cohesion: 0.5
-Nodes (1): UpdateFollowUpRequest
+Cohesion: 0.83
+Nodes (3): iconClass(), label(), labelWithIcon()
 
 ### Community 643 - "Community 643"
 Cohesion: 0.5
-Nodes (1): StoreAcceptRequest
+Nodes (1): JobEndDateCheck
 
 ### Community 644 - "Community 644"
 Cohesion: 0.5
-Nodes (1): StoreStatus
+Nodes (1): OfferLetterReminder
 
 ### Community 645 - "Community 645"
-Cohesion: 0.5
-Nodes (1): StoreCustomQuestionRequest
-
-### Community 646 - "Community 646"
-Cohesion: 0.5
-Nodes (1): StoreSettingRequest
-
-### Community 647 - "Community 647"
-Cohesion: 0.5
-Nodes (1): StoreJobSkill
-
-### Community 648 - "Community 648"
-Cohesion: 0.5
-Nodes (1): StoreSkill
-
-### Community 649 - "Community 649"
-Cohesion: 0.5
-Nodes (1): UpdateJobSkill
-
-### Community 650 - "Community 650"
-Cohesion: 0.5
-Nodes (1): UpdateSkill
-
-### Community 651 - "Community 651"
-Cohesion: 0.5
-Nodes (1): JobApplicationImport
-
-### Community 652 - "Community 652"
-Cohesion: 0.5
-Nodes (1): RecruitSourceObserver
-
-### Community 653 - "Community 653"
-Cohesion: 0.5
-Nodes (1): CustomQuestionField
-
-### Community 654 - "Community 654"
-Cohesion: 0.67
-Nodes (2): down(), setUnsignedIntNullable()
-
-### Community 655 - "Community 655"
 Cohesion: 0.83
 Nodes (3): down(), setUnsignedIntNullable(), up()
 
+### Community 646 - "Community 646"
+Cohesion: 0.5
+Nodes (1): InterviewScheduleDataTable
+
+### Community 647 - "Community 647"
+Cohesion: 0.5
+Nodes (1): CandidateInterviewRescheduleEvent
+
+### Community 648 - "Community 648"
+Cohesion: 0.5
+Nodes (1): CandidateInterviewScheduleEvent
+
+### Community 649 - "Community 649"
+Cohesion: 0.5
+Nodes (1): HostInterviewEvent
+
+### Community 650 - "Community 650"
+Cohesion: 0.5
+Nodes (1): InterviewRescheduleEvent
+
+### Community 651 - "Community 651"
+Cohesion: 0.5
+Nodes (1): InterviewScheduleEvent
+
+### Community 652 - "Community 652"
+Cohesion: 0.5
+Nodes (1): JobApplicationStatusChangeEvent
+
+### Community 653 - "Community 653"
+Cohesion: 0.5
+Nodes (1): JobOfferStatusChangeEvent
+
+### Community 654 - "Community 654"
+Cohesion: 0.5
+Nodes (1): NewJobApplicationEvent
+
+### Community 655 - "Community 655"
+Cohesion: 0.5
+Nodes (1): NewJobEvent
+
 ### Community 656 - "Community 656"
 Cohesion: 0.5
-Nodes (1): DomainCreated
+Nodes (1): OfferLetterEvent
 
 ### Community 657 - "Community 657"
 Cohesion: 0.5
-Nodes (1): DomainUpdated
+Nodes (1): RecruitJobAlertEvent
 
 ### Community 658 - "Community 658"
 Cohesion: 0.5
-Nodes (1): HostingCreated
+Nodes (1): RecruitJobAlertUpdateEvent
 
 ### Community 659 - "Community 659"
 Cohesion: 0.5
-Nodes (1): HostingUpdated
+Nodes (1): SendOfferLetterReminderEvent
 
 ### Community 660 - "Community 660"
 Cohesion: 0.5
-Nodes (1): StoreHostingRequest
+Nodes (1): UpdateInterviewScheduleEvent
 
 ### Community 661 - "Community 661"
 Cohesion: 0.5
-Nodes (1): UpdateHostingRequest
+Nodes (1): UpdateJobApplicationEvent
 
 ### Community 662 - "Community 662"
 Cohesion: 0.5
-Nodes (1): StoreProviderRequest
+Nodes (1): UpdateJobEvent
 
 ### Community 663 - "Community 663"
 Cohesion: 0.5
-Nodes (1): UpdateProviderRequest
+Nodes (1): UpdateOfferLetterEvent
 
 ### Community 664 - "Community 664"
 Cohesion: 0.5
-Nodes (1): StoreSmsSetting
+Nodes (1): RecruitController
 
 ### Community 665 - "Community 665"
 Cohesion: 0.5
-Nodes (1): BannedSubdomainRequest
+Nodes (1): StoreJobType
 
 ### Community 666 - "Community 666"
 Cohesion: 0.5
-Nodes (1): CheckSubdomainRequest
+Nodes (1): StoreRemark
 
 ### Community 667 - "Community 667"
 Cohesion: 0.5
-Nodes (1): ForgotCompanyRequest
+Nodes (1): StoreSourceRequest
 
 ### Community 668 - "Community 668"
 Cohesion: 0.5
-Nodes (1): StoreWebhookRequest
+Nodes (1): UpdateSourceRequest
 
 ### Community 669 - "Community 669"
 Cohesion: 0.5
-Nodes (1): StoreCategory
+Nodes (1): StoreJobApplicant
 
 ### Community 670 - "Community 670"
 Cohesion: 0.5
-Nodes (1): UpdateOccurrence
+Nodes (1): StoreFooterLinks
 
 ### Community 671 - "Community 671"
 Cohesion: 0.5
-Nodes (1): UpdateSetting
+Nodes (1): UpdateFooterLinks
 
 ### Community 672 - "Community 672"
 Cohesion: 0.5
-Nodes (1): Client
+Nodes (1): StoreRequest
 
 ### Community 673 - "Community 673"
 Cohesion: 0.5
-Nodes (1): APIServiceProvider
+Nodes (1): ImportRequest
 
 ### Community 674 - "Community 674"
 Cohesion: 0.5
-Nodes (1): JWT
+Nodes (1): StoreQuickApplication
 
 ### Community 675 - "Community 675"
 Cohesion: 0.5
-Nodes (1): CreateIntegrationsTable
+Nodes (1): UpdateFollowUpRequest
 
 ### Community 676 - "Community 676"
 Cohesion: 0.5
-Nodes (1): OAuth2ServiceProvider
+Nodes (1): StoreStatus
 
 ### Community 677 - "Community 677"
 Cohesion: 0.5
-Nodes (1): employees.leaves_quota
+Nodes (1): StoreCustomQuestionRequest
 
 ### Community 678 - "Community 678"
 Cohesion: 0.5
-Nodes (3): sections.menu, super-admin.sections.choose-company, super-admin.sections.super-admin-menu
+Nodes (1): StoreSettingRequest
 
 ### Community 679 - "Community 679"
 Cohesion: 0.5
-Nodes (1): FirstRowsFilter
+Nodes (1): StoreJobSkill
 
 ### Community 680 - "Community 680"
 Cohesion: 0.5
-Nodes (1): FirstNRows
+Nodes (1): StoreSkill
 
 ### Community 681 - "Community 681"
 Cohesion: 0.5
-Nodes (1): FirstRowsFilter
+Nodes (1): UpdateJobSkill
 
 ### Community 682 - "Community 682"
 Cohesion: 0.5
-Nodes (1): FirstRowsFilter
+Nodes (1): UpdateSkill
 
 ### Community 683 - "Community 683"
-Cohesion: 0.67
-Nodes (1): ClearDecryptRelatedCache
+Cohesion: 0.5
+Nodes (1): JobApplicationImport
 
 ### Community 684 - "Community 684"
-Cohesion: 0.67
-Nodes (1): CreateTranslations
+Cohesion: 0.5
+Nodes (1): CandidateInterviewRescheduleListener
+
+### Community 685 - "Community 685"
+Cohesion: 0.5
+Nodes (1): CandidateInterviewScheduleListener
 
 ### Community 686 - "Community 686"
-Cohesion: 0.67
-Nodes (1): AppreciationEvent
+Cohesion: 0.5
+Nodes (1): InterviewRescheduleListener
 
 ### Community 687 - "Community 687"
-Cohesion: 0.67
-Nodes (1): AttendanceReminderEvent
+Cohesion: 0.5
+Nodes (1): InterviewScheduleListener
 
 ### Community 688 - "Community 688"
-Cohesion: 0.67
-Nodes (1): AutoFollowUpReminderEvent
+Cohesion: 0.5
+Nodes (1): JobApplicationStatusChangeListener
 
 ### Community 689 - "Community 689"
-Cohesion: 0.67
-Nodes (1): AutoTaskReminderEvent
+Cohesion: 0.5
+Nodes (1): JobOfferStatusChangeListener
 
 ### Community 690 - "Community 690"
-Cohesion: 0.67
-Nodes (1): BirthdayReminderEvent
+Cohesion: 0.5
+Nodes (1): NewJobApplicationListener
 
 ### Community 691 - "Community 691"
-Cohesion: 0.67
-Nodes (1): BulkShiftEvent
+Cohesion: 0.5
+Nodes (1): NewJobListener
 
 ### Community 692 - "Community 692"
-Cohesion: 0.67
-Nodes (1): ContractSignedEvent
+Cohesion: 0.5
+Nodes (1): OfferLetterListener
 
 ### Community 693 - "Community 693"
-Cohesion: 0.67
-Nodes (1): DailyScheduleEvent
+Cohesion: 0.5
+Nodes (1): SendOfferLetterReminderListener
 
 ### Community 694 - "Community 694"
-Cohesion: 0.67
-Nodes (1): DailyTimeLogReportEvent
+Cohesion: 0.5
+Nodes (1): UpdateInterviewScheduleListener
 
 ### Community 695 - "Community 695"
-Cohesion: 0.67
-Nodes (1): DealEvent
+Cohesion: 0.5
+Nodes (1): UpdateJobListener
 
 ### Community 696 - "Community 696"
-Cohesion: 0.67
-Nodes (1): DiscussionEvent
+Cohesion: 0.5
+Nodes (1): UpdateOfferLetterListener
 
 ### Community 697 - "Community 697"
-Cohesion: 0.67
-Nodes (1): DiscussionMentionEvent
+Cohesion: 0.5
+Nodes (1): RecruitSourceObserver
 
 ### Community 698 - "Community 698"
-Cohesion: 0.67
-Nodes (1): DiscussionReplyEvent
+Cohesion: 0.5
+Nodes (1): CheckApplication
 
 ### Community 699 - "Community 699"
-Cohesion: 0.67
-Nodes (1): EmployeeShiftChangeEvent
+Cohesion: 0.5
+Nodes (1): CustomQuestionField
 
 ### Community 700 - "Community 700"
 Cohesion: 0.67
-Nodes (1): EmployeeShiftScheduleEvent
+Nodes (2): down(), setUnsignedIntNullable()
 
 ### Community 701 - "Community 701"
-Cohesion: 0.67
-Nodes (1): EstimateAcceptedEvent
+Cohesion: 0.83
+Nodes (3): down(), setUnsignedIntNullable(), up()
 
 ### Community 702 - "Community 702"
-Cohesion: 0.67
-Nodes (1): EstimateDeclinedEvent
+Cohesion: 0.5
+Nodes (1): DomainCreated
 
 ### Community 703 - "Community 703"
-Cohesion: 0.67
-Nodes (1): EstimateRequestAcceptedEvent
+Cohesion: 0.5
+Nodes (1): DomainUpdated
 
 ### Community 704 - "Community 704"
-Cohesion: 0.67
-Nodes (1): EstimateRequestRejectedEvent
+Cohesion: 0.5
+Nodes (1): HostingCreated
 
 ### Community 705 - "Community 705"
-Cohesion: 0.67
-Nodes (1): EventCompletedEvent
+Cohesion: 0.5
+Nodes (1): HostingUpdated
 
 ### Community 706 - "Community 706"
-Cohesion: 0.67
-Nodes (1): EventInviteEvent
+Cohesion: 0.5
+Nodes (1): StoreHostingRequest
 
 ### Community 707 - "Community 707"
-Cohesion: 0.67
-Nodes (1): EventInviteMentionEvent
+Cohesion: 0.5
+Nodes (1): UpdateHostingRequest
 
 ### Community 708 - "Community 708"
-Cohesion: 0.67
-Nodes (1): EventReminderEvent
+Cohesion: 0.5
+Nodes (1): StoreProviderRequest
 
 ### Community 709 - "Community 709"
-Cohesion: 0.67
-Nodes (1): EventStatusNoteEvent
+Cohesion: 0.5
+Nodes (1): UpdateProviderRequest
 
 ### Community 710 - "Community 710"
-Cohesion: 0.67
-Nodes (1): FileUploadEvent
+Cohesion: 0.5
+Nodes (1): StoreSmsSetting
 
 ### Community 711 - "Community 711"
-Cohesion: 0.67
-Nodes (1): HolidayEvent
+Cohesion: 0.5
+Nodes (1): BannedSubdomainRequest
 
 ### Community 712 - "Community 712"
-Cohesion: 0.67
-Nodes (1): InvoicePaymentReceivedEvent
+Cohesion: 0.5
+Nodes (1): CheckSubdomainRequest
 
 ### Community 713 - "Community 713"
-Cohesion: 0.67
-Nodes (1): InvoiceReminderAfterEvent
+Cohesion: 0.5
+Nodes (1): ForgotCompanyRequest
 
 ### Community 714 - "Community 714"
-Cohesion: 0.67
-Nodes (1): InvoiceReminderEvent
+Cohesion: 0.5
+Nodes (1): StoreWebhookRequest
 
 ### Community 715 - "Community 715"
-Cohesion: 0.67
-Nodes (1): InvoiceUpdatedEvent
+Cohesion: 0.5
+Nodes (1): StoreCategory
 
 ### Community 716 - "Community 716"
-Cohesion: 0.67
-Nodes (1): LeadEvent
+Cohesion: 0.5
+Nodes (1): UpdateOccurrence
 
 ### Community 717 - "Community 717"
-Cohesion: 0.67
-Nodes (1): LeadImportEvent
+Cohesion: 0.5
+Nodes (1): UpdateSetting
 
 ### Community 718 - "Community 718"
-Cohesion: 0.67
-Nodes (1): LeaveEvent
+Cohesion: 0.5
+Nodes (1): HostUpdateListener
 
 ### Community 719 - "Community 719"
-Cohesion: 0.67
-Nodes (1): MailTicketReplyEvent
+Cohesion: 0.5
+Nodes (1): InviteListener
 
 ### Community 720 - "Community 720"
-Cohesion: 0.67
-Nodes (1): ModuleStatusChanged
+Cohesion: 0.5
+Nodes (1): MeetingHostListener
 
 ### Community 721 - "Community 721"
-Cohesion: 0.67
-Nodes (1): MonthlyAttendanceEvent
+Cohesion: 0.5
+Nodes (1): MeetingUpdateListener
 
 ### Community 722 - "Community 722"
-Cohesion: 0.67
-Nodes (1): NewCompanyCreatedEvent
+Cohesion: 0.5
+Nodes (1): Client
 
 ### Community 723 - "Community 723"
-Cohesion: 0.67
-Nodes (1): NewContractEvent
+Cohesion: 0.5
+Nodes (1): APIServiceProvider
 
 ### Community 724 - "Community 724"
-Cohesion: 0.67
-Nodes (1): NewCreditNoteEvent
+Cohesion: 0.5
+Nodes (1): CreateIntegrationsTable
 
 ### Community 725 - "Community 725"
-Cohesion: 0.67
-Nodes (1): NewEstimateEvent
+Cohesion: 0.5
+Nodes (1): OAuth2ServiceProvider
 
 ### Community 726 - "Community 726"
-Cohesion: 0.67
-Nodes (1): NewEstimateRequestEvent
+Cohesion: 0.5
+Nodes (1): employees.leaves_quota
 
 ### Community 727 - "Community 727"
-Cohesion: 0.67
-Nodes (1): NewExpenseEvent
+Cohesion: 0.5
+Nodes (3): sections.menu, super-admin.sections.choose-company, super-admin.sections.super-admin-menu
 
 ### Community 728 - "Community 728"
-Cohesion: 0.67
-Nodes (1): NewExpenseRecurringEvent
+Cohesion: 0.5
+Nodes (1): FirstRowsFilter
 
 ### Community 729 - "Community 729"
-Cohesion: 0.67
-Nodes (1): NewInvoiceEvent
+Cohesion: 0.5
+Nodes (1): FirstNRows
 
 ### Community 730 - "Community 730"
-Cohesion: 0.67
-Nodes (1): NewInvoiceRecurringEvent
+Cohesion: 0.5
+Nodes (1): FirstRowsFilter
 
 ### Community 731 - "Community 731"
-Cohesion: 0.67
-Nodes (1): NewIssueEvent
+Cohesion: 0.5
+Nodes (1): FirstRowsFilter
 
 ### Community 732 - "Community 732"
 Cohesion: 0.67
-Nodes (1): NewNoticeEvent
-
-### Community 733 - "Community 733"
-Cohesion: 0.67
-Nodes (1): NewOrderEvent
+Nodes (1): ClearDecryptRelatedCache
 
 ### Community 734 - "Community 734"
 Cohesion: 0.67
-Nodes (1): NewPaymentEvent
+Nodes (1): AppreciationEvent
 
 ### Community 735 - "Community 735"
 Cohesion: 0.67
-Nodes (1): NewProductPurchaseEvent
+Nodes (1): AttendanceReminderEvent
 
 ### Community 736 - "Community 736"
 Cohesion: 0.67
-Nodes (1): NewProjectEvent
+Nodes (1): AutoFollowUpReminderEvent
 
 ### Community 737 - "Community 737"
 Cohesion: 0.67
-Nodes (1): NewProjectMemberEvent
+Nodes (1): AutoTaskReminderEvent
 
 ### Community 738 - "Community 738"
 Cohesion: 0.67
-Nodes (1): NewProposalEvent
+Nodes (1): BirthdayReminderEvent
 
 ### Community 739 - "Community 739"
 Cohesion: 0.67
-Nodes (1): NewUserEvent
+Nodes (1): BulkShiftEvent
 
 ### Community 740 - "Community 740"
 Cohesion: 0.67
-Nodes (1): NewUserRegistrationViaInviteEvent
+Nodes (1): ContractSignedEvent
 
 ### Community 741 - "Community 741"
 Cohesion: 0.67
-Nodes (1): NewUserSlackEvent
+Nodes (1): DailyScheduleEvent
 
 ### Community 742 - "Community 742"
 Cohesion: 0.67
-Nodes (1): OrderUpdatedEvent
+Nodes (1): DailyTimeLogReportEvent
 
 ### Community 743 - "Community 743"
 Cohesion: 0.67
-Nodes (1): PaymentReminderEvent
+Nodes (1): DealEvent
 
 ### Community 744 - "Community 744"
 Cohesion: 0.67
-Nodes (1): ProjectNoteEvent
+Nodes (1): DiscussionEvent
 
 ### Community 745 - "Community 745"
 Cohesion: 0.67
-Nodes (1): ProjectNoteMentionEvent
+Nodes (1): DiscussionMentionEvent
 
 ### Community 746 - "Community 746"
 Cohesion: 0.67
-Nodes (1): ProjectNoteUpdateEvent
+Nodes (1): DiscussionReplyEvent
 
 ### Community 747 - "Community 747"
 Cohesion: 0.67
-Nodes (1): ProjectReminderEvent
+Nodes (1): EmployeeShiftChangeEvent
 
 ### Community 748 - "Community 748"
 Cohesion: 0.67
-Nodes (1): PromotionAddedEvent
+Nodes (1): EmployeeShiftScheduleEvent
 
 ### Community 749 - "Community 749"
 Cohesion: 0.67
-Nodes (1): RatingEvent
+Nodes (1): EstimateAcceptedEvent
 
 ### Community 750 - "Community 750"
 Cohesion: 0.67
-Nodes (1): RemovalRequestAdminEvent
+Nodes (1): EstimateDeclinedEvent
 
 ### Community 751 - "Community 751"
 Cohesion: 0.67
-Nodes (1): RemovalRequestAdminLeadEvent
+Nodes (1): EstimateRequestAcceptedEvent
 
 ### Community 752 - "Community 752"
 Cohesion: 0.67
-Nodes (1): RemovalRequestApprovedRejectLeadEvent
+Nodes (1): EstimateRequestRejectedEvent
 
 ### Community 753 - "Community 753"
 Cohesion: 0.67
-Nodes (1): RemovalRequestApprovedRejectUserEvent
+Nodes (1): EventCompletedEvent
 
 ### Community 754 - "Community 754"
 Cohesion: 0.67
-Nodes (1): RemovalRequestApproveRejectEvent
+Nodes (1): EventInviteEvent
 
 ### Community 755 - "Community 755"
 Cohesion: 0.67
-Nodes (1): ShiftRotationEvent
+Nodes (1): EventInviteMentionEvent
 
 ### Community 756 - "Community 756"
 Cohesion: 0.67
-Nodes (1): SubTaskCompletedEvent
+Nodes (1): EventReminderEvent
 
 ### Community 757 - "Community 757"
 Cohesion: 0.67
-Nodes (1): TaskCommentEvent
+Nodes (1): EventStatusNoteEvent
 
 ### Community 758 - "Community 758"
 Cohesion: 0.67
-Nodes (1): TaskCommentMentionEvent
+Nodes (1): FileUploadEvent
 
 ### Community 759 - "Community 759"
 Cohesion: 0.67
-Nodes (1): TaskEvent
+Nodes (1): HolidayEvent
 
 ### Community 760 - "Community 760"
 Cohesion: 0.67
-Nodes (1): TaskNoteEvent
+Nodes (1): InvoicePaymentReceivedEvent
 
 ### Community 761 - "Community 761"
 Cohesion: 0.67
-Nodes (1): TaskNoteMentionEvent
+Nodes (1): InvoiceReminderAfterEvent
 
 ### Community 762 - "Community 762"
 Cohesion: 0.67
-Nodes (1): TaskReminderEvent
+Nodes (1): InvoiceReminderEvent
 
 ### Community 763 - "Community 763"
 Cohesion: 0.67
-Nodes (1): TicketEvent
+Nodes (1): InvoiceUpdatedEvent
 
 ### Community 764 - "Community 764"
 Cohesion: 0.67
-Nodes (1): TicketReplyEvent
+Nodes (1): LeadEvent
 
 ### Community 765 - "Community 765"
 Cohesion: 0.67
-Nodes (1): TicketRequesterEvent
+Nodes (1): LeadImportEvent
 
 ### Community 766 - "Community 766"
 Cohesion: 0.67
-Nodes (1): TimeTrackerReminderEvent
+Nodes (1): LeaveEvent
 
 ### Community 767 - "Community 767"
 Cohesion: 0.67
-Nodes (1): TwoFactorCodeEvent
+Nodes (1): MailTicketReplyEvent
 
 ### Community 768 - "Community 768"
 Cohesion: 0.67
-Nodes (1): UserLoginEvent
+Nodes (1): ModuleStatusChanged
 
 ### Community 769 - "Community 769"
 Cohesion: 0.67
-Nodes (1): EmailVerificationEvent
+Nodes (1): MonthlyAttendanceEvent
 
 ### Community 770 - "Community 770"
 Cohesion: 0.67
-Nodes (1): NewSupportTicketEvent
+Nodes (1): NewCompanyCreatedEvent
 
 ### Community 771 - "Community 771"
 Cohesion: 0.67
-Nodes (1): OfflinePackageChangeConfirmationEvent
+Nodes (1): NewContractEvent
 
 ### Community 772 - "Community 772"
 Cohesion: 0.67
-Nodes (1): OfflinePackageChangeRequestEvent
+Nodes (1): NewCreditNoteEvent
 
 ### Community 773 - "Community 773"
 Cohesion: 0.67
-Nodes (1): PackageUpdateNotifyEvent
+Nodes (1): NewEstimateEvent
 
 ### Community 774 - "Community 774"
 Cohesion: 0.67
-Nodes (1): SupportTicketReplyEvent
+Nodes (1): NewEstimateRequestEvent
 
 ### Community 775 - "Community 775"
 Cohesion: 0.67
-Nodes (1): SupportTicketRequesterEvent
+Nodes (1): NewExpenseEvent
 
 ### Community 776 - "Community 776"
 Cohesion: 0.67
-Nodes (1): AttendanceReportController
+Nodes (1): NewExpenseRecurringEvent
 
 ### Community 777 - "Community 777"
 Cohesion: 0.67
-Nodes (1): AuditReportController
+Nodes (1): NewInvoiceEvent
 
 ### Community 778 - "Community 778"
 Cohesion: 0.67
-Nodes (1): FinanceReportController
+Nodes (1): NewInvoiceRecurringEvent
 
 ### Community 779 - "Community 779"
 Cohesion: 0.67
-Nodes (1): MyCalendarController
+Nodes (1): NewIssueEvent
 
 ### Community 780 - "Community 780"
 Cohesion: 0.67
-Nodes (1): ProfileSettingController
+Nodes (1): NewNoticeEvent
 
 ### Community 781 - "Community 781"
 Cohesion: 0.67
-Nodes (1): SalesReportController
+Nodes (1): NewOrderEvent
 
 ### Community 782 - "Community 782"
 Cohesion: 0.67
-Nodes (1): ProfileSettingController
+Nodes (1): NewPaymentEvent
 
 ### Community 783 - "Community 783"
 Cohesion: 0.67
-Nodes (1): SupportTicketReplyController
+Nodes (1): NewProductPurchaseEvent
 
 ### Community 784 - "Community 784"
 Cohesion: 0.67
-Nodes (1): TrustHosts
+Nodes (1): NewProjectEvent
 
 ### Community 785 - "Community 785"
 Cohesion: 0.67
-Nodes (1): CoreRequest
+Nodes (1): NewProjectMemberEvent
 
 ### Community 786 - "Community 786"
 Cohesion: 0.67
-Nodes (1): StoreEmergencyContactRequest
+Nodes (1): NewProposalEvent
 
 ### Community 787 - "Community 787"
 Cohesion: 0.67
-Nodes (1): UpdateRequest
+Nodes (1): NewUserEvent
 
 ### Community 788 - "Community 788"
 Cohesion: 0.67
-Nodes (1): StoreTransaction
+Nodes (1): NewUserRegistrationViaInviteEvent
 
 ### Community 789 - "Community 789"
 Cohesion: 0.67
-Nodes (1): UpdateRequest
+Nodes (1): NewUserSlackEvent
 
 ### Community 790 - "Community 790"
 Cohesion: 0.67
-Nodes (1): UpdateRequest
+Nodes (1): OrderUpdatedEvent
 
 ### Community 791 - "Community 791"
 Cohesion: 0.67
-Nodes (1): StoreRecurringExpense
+Nodes (1): PaymentReminderEvent
 
 ### Community 792 - "Community 792"
 Cohesion: 0.67
-Nodes (1): DeleteRequest
+Nodes (1): ProjectNoteEvent
 
 ### Community 793 - "Community 793"
 Cohesion: 0.67
-Nodes (1): StoreRequest
+Nodes (1): ProjectNoteMentionEvent
 
 ### Community 794 - "Community 794"
 Cohesion: 0.67
-Nodes (1): StoreRecurringInvoice
+Nodes (1): ProjectNoteUpdateEvent
 
 ### Community 795 - "Community 795"
 Cohesion: 0.67
-Nodes (1): UpdateRecurringInvoice
+Nodes (1): ProjectReminderEvent
 
 ### Community 796 - "Community 796"
 Cohesion: 0.67
-Nodes (1): StoreLeadStage
+Nodes (1): PromotionAddedEvent
 
 ### Community 797 - "Community 797"
 Cohesion: 0.67
-Nodes (1): UpdateRequest
+Nodes (1): RatingEvent
 
 ### Community 798 - "Community 798"
 Cohesion: 0.67
-Nodes (1): UpdateRequest
+Nodes (1): RemovalRequestAdminEvent
 
 ### Community 799 - "Community 799"
 Cohesion: 0.67
-Nodes (1): StoreSubTask
+Nodes (1): RemovalRequestAdminLeadEvent
 
 ### Community 800 - "Community 800"
 Cohesion: 0.67
-Nodes (1): UpdateRequest
+Nodes (1): RemovalRequestApprovedRejectLeadEvent
 
 ### Community 801 - "Community 801"
 Cohesion: 0.67
-Nodes (1): FileUploadListener
+Nodes (1): RemovalRequestApprovedRejectUserEvent
 
 ### Community 802 - "Community 802"
 Cohesion: 0.67
-Nodes (1): EmailVerificationListener
+Nodes (1): RemovalRequestApproveRejectEvent
 
 ### Community 803 - "Community 803"
 Cohesion: 0.67
-Nodes (1): PermissionType
+Nodes (1): ShiftRotationEvent
 
 ### Community 804 - "Community 804"
 Cohesion: 0.67
-Nodes (1): PackageSetting
+Nodes (1): SubTaskCompletedEvent
 
 ### Community 805 - "Community 805"
 Cohesion: 0.67
-Nodes (1): StripeSetting
+Nodes (1): TaskCommentEvent
 
 ### Community 806 - "Community 806"
 Cohesion: 0.67
-Nodes (1): AcceptEstimateObserver
+Nodes (1): TaskCommentMentionEvent
 
 ### Community 807 - "Community 807"
 Cohesion: 0.67
-Nodes (1): AttendanceSettingObserver
+Nodes (1): TaskEvent
 
 ### Community 808 - "Community 808"
 Cohesion: 0.67
-Nodes (1): ClientCategoryObserver
+Nodes (1): TaskNoteEvent
 
 ### Community 809 - "Community 809"
 Cohesion: 0.67
-Nodes (1): ClientSubCategoryObserver
+Nodes (1): TaskNoteMentionEvent
 
 ### Community 810 - "Community 810"
 Cohesion: 0.67
-Nodes (1): ClientUserNotesObserver
+Nodes (1): TaskReminderEvent
 
 ### Community 811 - "Community 811"
 Cohesion: 0.67
-Nodes (1): ContractSignObserver
+Nodes (1): TicketEvent
 
 ### Community 812 - "Community 812"
 Cohesion: 0.67
-Nodes (1): ContractTypeObserver
+Nodes (1): TicketReplyEvent
 
 ### Community 813 - "Community 813"
 Cohesion: 0.67
-Nodes (1): CurrencyFormatSettingObserver
+Nodes (1): TicketRequesterEvent
 
 ### Community 814 - "Community 814"
 Cohesion: 0.67
-Nodes (1): CustomFieldGroupObserver
+Nodes (1): TimeTrackerReminderEvent
 
 ### Community 815 - "Community 815"
 Cohesion: 0.67
-Nodes (1): CustomLinkSettingObserver
+Nodes (1): TwoFactorCodeEvent
 
 ### Community 816 - "Community 816"
 Cohesion: 0.67
-Nodes (1): DiscussionFileObserver
+Nodes (1): UserLoginEvent
 
 ### Community 817 - "Community 817"
 Cohesion: 0.67
-Nodes (1): EmailNotificationSettingObserver
+Nodes (1): EmailVerificationEvent
 
 ### Community 818 - "Community 818"
 Cohesion: 0.67
-Nodes (1): EmployeeSkillObserver
+Nodes (1): NewSupportTicketEvent
 
 ### Community 819 - "Community 819"
 Cohesion: 0.67
-Nodes (1): EmployeeTeamObserver
+Nodes (1): OfflinePackageChangeConfirmationEvent
 
 ### Community 820 - "Community 820"
 Cohesion: 0.67
-Nodes (1): EventAttendeeObserver
+Nodes (1): OfflinePackageChangeRequestEvent
 
 ### Community 821 - "Community 821"
 Cohesion: 0.67
-Nodes (1): ExpensesCategoryObserver
+Nodes (1): PackageUpdateNotifyEvent
 
 ### Community 822 - "Community 822"
 Cohesion: 0.67
-Nodes (1): ExpensesCategoryRoleObserver
+Nodes (1): SupportTicketReplyEvent
 
 ### Community 823 - "Community 823"
 Cohesion: 0.67
-Nodes (1): FileStorageObserver
+Nodes (1): SupportTicketRequesterEvent
 
 ### Community 824 - "Community 824"
 Cohesion: 0.67
-Nodes (1): GdprSettingObserver
+Nodes (1): AttendanceReportController
 
 ### Community 825 - "Community 825"
 Cohesion: 0.67
-Nodes (1): GoogleCalendarModuleObserver
+Nodes (1): AuditReportController
 
 ### Community 826 - "Community 826"
 Cohesion: 0.67
-Nodes (1): KnowledgeBaseCategoriesObserver
+Nodes (1): MyCalendarController
 
 ### Community 827 - "Community 827"
 Cohesion: 0.67
-Nodes (1): LeaveSettingObserver
+Nodes (1): ProfileSettingController
 
 ### Community 828 - "Community 828"
 Cohesion: 0.67
-Nodes (1): LogTimeForObserver
+Nodes (1): SalesReportController
 
 ### Community 829 - "Community 829"
 Cohesion: 0.67
-Nodes (1): NoticeViewObserver
+Nodes (1): InvoiceController
 
 ### Community 830 - "Community 830"
 Cohesion: 0.67
-Nodes (1): OfflinePaymentMethodObserver
+Nodes (1): ProfileSettingController
 
 ### Community 831 - "Community 831"
 Cohesion: 0.67
-Nodes (1): PinnedObserver
+Nodes (1): TrustHosts
 
 ### Community 832 - "Community 832"
 Cohesion: 0.67
-Nodes (1): ProductCategoryObserver
+Nodes (1): CoreRequest
 
 ### Community 833 - "Community 833"
 Cohesion: 0.67
-Nodes (1): ProductSubCategoryObserver
+Nodes (1): ProposalAcceptRequest
 
 ### Community 834 - "Community 834"
 Cohesion: 0.67
-Nodes (1): ProjectSettingObserver
+Nodes (1): StoreEmergencyContactRequest
 
 ### Community 835 - "Community 835"
 Cohesion: 0.67
-Nodes (1): ProjectStatusSettingObserver
+Nodes (1): UpdateRequest
 
 ### Community 836 - "Community 836"
 Cohesion: 0.67
-Nodes (1): ProjectTemplateObserver
+Nodes (1): StoreTransaction
 
 ### Community 837 - "Community 837"
 Cohesion: 0.67
-Nodes (1): RoleObserver
+Nodes (1): UpdateRequest
 
 ### Community 838 - "Community 838"
 Cohesion: 0.67
-Nodes (1): SkillObserver
+Nodes (1): StoreRecurringExpense
 
 ### Community 839 - "Community 839"
 Cohesion: 0.67
-Nodes (1): StickyNoteObserver
+Nodes (1): DeleteRequest
 
 ### Community 840 - "Community 840"
 Cohesion: 0.67
-Nodes (1): TaskSettingObserver
+Nodes (1): UpdateRequest
 
 ### Community 841 - "Community 841"
 Cohesion: 0.67
-Nodes (1): ThemeSettingObserver
+Nodes (1): UpdateRequest
 
 ### Community 842 - "Community 842"
 Cohesion: 0.67
-Nodes (1): TicketChannelObserver
+Nodes (1): DiscussionMentionListener
 
 ### Community 843 - "Community 843"
 Cohesion: 0.67
-Nodes (1): TicketCustomFormObserver
+Nodes (1): EventCompletedListener
 
 ### Community 844 - "Community 844"
 Cohesion: 0.67
-Nodes (1): TicketEmailSettingObserver
+Nodes (1): EventInviteListener
 
 ### Community 845 - "Community 845"
 Cohesion: 0.67
-Nodes (1): TicketGroupObserver
+Nodes (1): EventStatusNoteListener
 
 ### Community 846 - "Community 846"
 Cohesion: 0.67
-Nodes (1): TicketTagListObserver
+Nodes (1): FileUploadListener
 
 ### Community 847 - "Community 847"
 Cohesion: 0.67
-Nodes (1): TicketTagObserver
+Nodes (1): NewChatListener
 
 ### Community 848 - "Community 848"
 Cohesion: 0.67
-Nodes (1): TicketTypeObserver
+Nodes (1): NewEstimateRequestListener
 
 ### Community 849 - "Community 849"
 Cohesion: 0.67
-Nodes (1): UnitTypeObserver
+Nodes (1): NewExpenseListener
 
 ### Community 850 - "Community 850"
 Cohesion: 0.67
-Nodes (1): UniversalSearchObserver
+Nodes (1): NewIssueListener
 
 ### Community 851 - "Community 851"
 Cohesion: 0.67
-Nodes (1): UserActivityObserver
+Nodes (1): ProjectNoteMentionListener
 
 ### Community 852 - "Community 852"
 Cohesion: 0.67
-Nodes (1): UserchatFileObserver
+Nodes (1): TaskCommentMentionListener
 
 ### Community 853 - "Community 853"
 Cohesion: 0.67
-Nodes (1): UserLeadboardSettingObserver
+Nodes (1): TaskListener
 
 ### Community 854 - "Community 854"
 Cohesion: 0.67
-Nodes (1): UserPermissionObserver
+Nodes (1): EmailVerificationListener
 
 ### Community 855 - "Community 855"
 Cohesion: 0.67
-Nodes (1): UserTaskboardSettingObserver
+Nodes (1): OfflinePackageChangeRequestListener
 
 ### Community 856 - "Community 856"
 Cohesion: 0.67
-Nodes (1): WeeklyTimesheetEntriesObserver
+Nodes (1): StripeSetting
 
 ### Community 857 - "Community 857"
 Cohesion: 0.67
-Nodes (1): WeeklyTimeSheetObserver
+Nodes (1): AcceptEstimateObserver
 
 ### Community 858 - "Community 858"
 Cohesion: 0.67
-Nodes (1): OfflineInvoiceObserver
+Nodes (1): GdprSettingObserver
 
 ### Community 859 - "Community 859"
 Cohesion: 0.67
-Nodes (1): PackageObserver
+Nodes (1): PinnedObserver
 
 ### Community 860 - "Community 860"
 Cohesion: 0.67
-Nodes (1): AuthServiceProvider
+Nodes (1): UserActivityObserver
 
 ### Community 861 - "Community 861"
 Cohesion: 0.67
-Nodes (1): FileStorageCustomConfigProvider
+Nodes (1): UserchatFileObserver
 
 ### Community 862 - "Community 862"
 Cohesion: 0.67
-Nodes (1): CompanyTransactionPurgeStep
+Nodes (1): UserPermissionObserver
 
 ### Community 863 - "Community 863"
 Cohesion: 0.67
-Nodes (1): AppreciationFactory
+Nodes (1): AuthServiceProvider
 
 ### Community 864 - "Community 864"
 Cohesion: 0.67
-Nodes (1): ContractFactory
+Nodes (1): CompanyTransactionPurgeStep
 
 ### Community 865 - "Community 865"
 Cohesion: 0.67
-Nodes (1): DealFactory
+Nodes (1): AppreciationFactory
 
 ### Community 866 - "Community 866"
 Cohesion: 0.67
-Nodes (1): LeaveFactory
+Nodes (1): ContractFactory
 
 ### Community 867 - "Community 867"
 Cohesion: 0.67
-Nodes (1): NoticeFactory
+Nodes (1): DealFactory
 
 ### Community 868 - "Community 868"
 Cohesion: 0.67
-Nodes (1): ProductFactory
+Nodes (1): LeaveFactory
 
 ### Community 869 - "Community 869"
 Cohesion: 0.67
-Nodes (1): UserChatFactory
+Nodes (1): NoticeFactory
 
 ### Community 870 - "Community 870"
 Cohesion: 0.67
+Nodes (1): ProductFactory
+
+### Community 871 - "Community 871"
+Cohesion: 0.67
+Nodes (1): UserChatFactory
+
+### Community 872 - "Community 872"
+Cohesion: 0.67
 Nodes (1): UserFactory
 
-### Community 879 - "Community 879"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 880 - "Community 880"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 881 - "Community 881"
+### Community 875 - "Community 875"
 Cohesion: 0.67
 Nodes (1): up()
 
@@ -4693,1267 +4632,1023 @@ Nodes (1): up()
 Cohesion: 0.67
 Nodes (1): up()
 
-### Community 888 - "Community 888"
+### Community 883 - "Community 883"
 Cohesion: 0.67
 Nodes (1): up()
 
-### Community 897 - "Community 897"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 898 - "Community 898"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 899 - "Community 899"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 906 - "Community 906"
+### Community 903 - "Community 903"
 Cohesion: 1.0
 Nodes (2): setTextNullable(), up()
 
-### Community 919 - "Community 919"
+### Community 925 - "Community 925"
 Cohesion: 0.67
 Nodes (1): up()
 
-### Community 920 - "Community 920"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 922 - "Community 922"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 942 - "Community 942"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 944 - "Community 944"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 948 - "Community 948"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 951 - "Community 951"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 952 - "Community 952"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 954 - "Community 954"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 963 - "Community 963"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1001 - "Community 1001"
+### Community 989 - "Community 989"
 Cohesion: 0.67
 Nodes (1): ContractTypeTableSeeder
 
-### Community 1002 - "Community 1002"
+### Community 990 - "Community 990"
 Cohesion: 0.67
 Nodes (1): DatabaseSeeder
 
-### Community 1003 - "Community 1003"
+### Community 991 - "Community 991"
 Cohesion: 0.67
 Nodes (1): ProjectCategorySeeder
 
-### Community 1004 - "Community 1004"
+### Community 992 - "Community 992"
 Cohesion: 0.67
 Nodes (1): TaxTableSeeder
 
-### Community 1007 - "Community 1007"
+### Community 993 - "Community 993"
+Cohesion: 0.67
+Nodes (1): TicketSettingSeeder
+
+### Community 996 - "Community 996"
 Cohesion: 0.67
 Nodes (1): AffiliateDatabaseSeeder
 
-### Community 1008 - "Community 1008"
+### Community 997 - "Community 997"
 Cohesion: 1.0
 Nodes (2): html(), label()
 
-### Community 1009 - "Community 1009"
+### Community 998 - "Community 998"
 Cohesion: 0.67
 Nodes (1): label()
 
-### Community 1010 - "Community 1010"
+### Community 999 - "Community 999"
 Cohesion: 0.67
 Nodes (2): affiliate::dashboard.companies, affiliate::dashboard.referrals
 
-### Community 1013 - "Community 1013"
+### Community 1002 - "Community 1002"
 Cohesion: 0.67
 Nodes (1): up()
 
-### Community 1015 - "Community 1015"
+### Community 1004 - "Community 1004"
 Cohesion: 0.67
 Nodes (1): up()
 
-### Community 1016 - "Community 1016"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1017 - "Community 1017"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1021 - "Community 1021"
+### Community 1008 - "Community 1008"
 Cohesion: 0.67
 Nodes (1): AssetDatabaseSeeder
 
-### Community 1022 - "Community 1022"
-Cohesion: 0.67
-Nodes (1): AssetTypeObserver
-
-### Community 1024 - "Community 1024"
+### Community 1010 - "Community 1010"
 Cohesion: 0.67
 Nodes (1): up()
 
-### Community 1025 - "Community 1025"
+### Community 1011 - "Community 1011"
 Cohesion: 0.67
 Nodes (1): BiolinksDatabaseSeeder
 
-### Community 1026 - "Community 1026"
+### Community 1012 - "Community 1012"
 Cohesion: 0.67
 Nodes (1): PhoneCollectionEmailEvent
 
-### Community 1027 - "Community 1027"
+### Community 1013 - "Community 1013"
 Cohesion: 0.67
 Nodes (2): biolinks::biolinks.ajax.blocks, biolinks::biolinks.ajax.settings
 
-### Community 1033 - "Community 1033"
+### Community 1019 - "Community 1019"
 Cohesion: 0.67
 Nodes (1): BiometricDatabaseSeeder
 
-### Community 1036 - "Community 1036"
+### Community 1022 - "Community 1022"
 Cohesion: 0.67
 Nodes (1): LockoutEmailEvent
 
-### Community 1037 - "Community 1037"
+### Community 1023 - "Community 1023"
 Cohesion: 0.67
 Nodes (1): DifferentIpListener
 
-### Community 1041 - "Community 1041"
+### Community 1027 - "Community 1027"
 Cohesion: 0.67
 Nodes (1): DeveloperToolsDatabaseSeeder
 
-### Community 1046 - "Community 1046"
+### Community 1032 - "Community 1032"
 Cohesion: 0.67
 Nodes (1): EInvoiceDatabaseSeeder
 
-### Community 1047 - "Community 1047"
+### Community 1033 - "Community 1033"
 Cohesion: 0.67
 Nodes (1): einvoice::settings.save-script
 
-### Community 1051 - "Community 1051"
+### Community 1037 - "Community 1037"
 Cohesion: 0.67
 Nodes (1): LanguagePackDatabaseSeeder
 
-### Community 1054 - "Community 1054"
+### Community 1040 - "Community 1040"
 Cohesion: 0.67
 Nodes (1): LetterDatabaseSeeder
 
-### Community 1055 - "Community 1055"
-Cohesion: 0.67
-Nodes (1): LetterObserver
-
-### Community 1056 - "Community 1056"
-Cohesion: 0.67
-Nodes (1): TemplateObserver
-
-### Community 1057 - "Community 1057"
+### Community 1041 - "Community 1041"
 Cohesion: 0.67
 Nodes (1): LineIntegrationDatabaseSeeder
 
-### Community 1059 - "Community 1059"
+### Community 1043 - "Community 1043"
 Cohesion: 0.67
 Nodes (1): NoticePeriodEvent
 
-### Community 1060 - "Community 1060"
+### Community 1044 - "Community 1044"
 Cohesion: 0.67
 Nodes (1): OnboardingNotificationEvent
 
-### Community 1061 - "Community 1061"
-Cohesion: 0.67
-Nodes (1): OnboardingStartListener
-
-### Community 1062 - "Community 1062"
-Cohesion: 0.67
-Nodes (1): UserCreatedListener
-
-### Community 1063 - "Community 1063"
+### Community 1045 - "Community 1045"
 Cohesion: 0.67
 Nodes (1): BoardingUsers
 
-### Community 1064 - "Community 1064"
+### Community 1046 - "Community 1046"
 Cohesion: 0.67
 Nodes (1): StartOnboarding
 
-### Community 1076 - "Community 1076"
+### Community 1058 - "Community 1058"
 Cohesion: 0.67
 Nodes (1): up()
 
-### Community 1078 - "Community 1078"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1081 - "Community 1081"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1092 - "Community 1092"
+### Community 1072 - "Community 1072"
 Cohesion: 0.67
 Nodes (1): PayrollDatabaseSeeder
 
-### Community 1093 - "Community 1093"
-Cohesion: 0.67
-Nodes (1): PayCodeStoreRequest
-
-### Community 1094 - "Community 1094"
-Cohesion: 0.67
-Nodes (1): PayCodeUpdateRequest
-
-### Community 1095 - "Community 1095"
-Cohesion: 0.67
-Nodes (1): PolicyStoreRequest
-
-### Community 1096 - "Community 1096"
-Cohesion: 0.67
-Nodes (1): EmployeeMonthlySalaryObserver
-
-### Community 1097 - "Community 1097"
-Cohesion: 0.67
-Nodes (1): EmployeePayrollCycleObserver
-
-### Community 1098 - "Community 1098"
-Cohesion: 0.67
-Nodes (1): OvertimePolicyEmployeeObserver
-
-### Community 1099 - "Community 1099"
-Cohesion: 0.67
-Nodes (1): OvertimePolicyObserver
-
-### Community 1100 - "Community 1100"
-Cohesion: 0.67
-Nodes (1): OvertimeRequestObserver
-
-### Community 1101 - "Community 1101"
-Cohesion: 0.67
-Nodes (1): PayrollSettingObserver
-
-### Community 1102 - "Community 1102"
-Cohesion: 0.67
-Nodes (1): SalaryGroupComponentObserver
-
-### Community 1103 - "Community 1103"
-Cohesion: 0.67
-Nodes (1): SalaryGroupObserver
-
-### Community 1104 - "Community 1104"
-Cohesion: 0.67
-Nodes (1): SalaryPaymentMethodObserver
-
-### Community 1105 - "Community 1105"
-Cohesion: 0.67
-Nodes (1): SalaryTdsObserver
-
-### Community 1106 - "Community 1106"
-Cohesion: 0.67
-Nodes (1): SetObjectiveStatusCommand
-
-### Community 1110 - "Community 1110"
+### Community 1076 - "Community 1076"
 Cohesion: 0.67
 Nodes (1): PerformanceDatabaseSeeder
 
-### Community 1111 - "Community 1111"
+### Community 1077 - "Community 1077"
 Cohesion: 0.67
 Nodes (1): CheckInReminderEvent
 
-### Community 1112 - "Community 1112"
+### Community 1078 - "Community 1078"
 Cohesion: 0.67
 Nodes (1): ObjectiveCreatedEvent
 
-### Community 1113 - "Community 1113"
+### Community 1079 - "Community 1079"
 Cohesion: 0.67
 Nodes (1): CheckInReminderListener
 
-### Community 1115 - "Community 1115"
+### Community 1081 - "Community 1081"
 Cohesion: 0.67
 Nodes (1): PolicyCentreDatabaseSeeder
 
-### Community 1116 - "Community 1116"
+### Community 1082 - "Community 1082"
 Cohesion: 0.67
 Nodes (1): PolicyAcknowledgedEvent
 
-### Community 1117 - "Community 1117"
+### Community 1083 - "Community 1083"
 Cohesion: 0.67
 Nodes (1): PolicyPublishedEvent
 
-### Community 1118 - "Community 1118"
+### Community 1084 - "Community 1084"
 Cohesion: 0.67
 Nodes (1): SendReminderEvent
 
-### Community 1125 - "Community 1125"
-Cohesion: 0.67
-Nodes (1): DecideProductionReworkOrderRequest
-
-### Community 1126 - "Community 1126"
-Cohesion: 0.67
-Nodes (1): StoreProductionReworkOrderRequest
-
-### Community 1127 - "Community 1127"
+### Community 1091 - "Community 1091"
 Cohesion: 0.67
 Nodes (1): production::boms.partials.form
 
-### Community 1128 - "Community 1128"
+### Community 1092 - "Community 1092"
 Cohesion: 0.67
 Nodes (1): production::orders.partials.bom-fg-sync-script
 
-### Community 1129 - "Community 1129"
+### Community 1093 - "Community 1093"
 Cohesion: 0.67
 Nodes (1): ProductionFgPolicySettings
 
-### Community 1132 - "Community 1132"
+### Community 1096 - "Community 1096"
 Cohesion: 0.67
 Nodes (2): projectroadmap::table.members-list, projectroadmap::table.milestones-list
 
-### Community 1138 - "Community 1138"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1143 - "Community 1143"
+### Community 1106 - "Community 1106"
 Cohesion: 0.67
 Nodes (1): PurchaseBillNumberSetting
 
-### Community 1144 - "Community 1144"
+### Community 1107 - "Community 1107"
 Cohesion: 0.67
 Nodes (1): NewPurchaseOrderEvent
 
-### Community 1145 - "Community 1145"
+### Community 1108 - "Community 1108"
 Cohesion: 0.67
 Nodes (1): PurchaseInventoryEvent
 
-### Community 1146 - "Community 1146"
+### Community 1109 - "Community 1109"
 Cohesion: 0.67
 Nodes (1): VendorCreditEvent
 
-### Community 1147 - "Community 1147"
+### Community 1110 - "Community 1110"
 Cohesion: 0.67
-Nodes (1): StoreBill
+Nodes (1): PurchaseInventoryListener
 
-### Community 1148 - "Community 1148"
-Cohesion: 0.67
-Nodes (1): PurchaseStockAdjustmentObserver
-
-### Community 1150 - "Community 1150"
+### Community 1112 - "Community 1112"
 Cohesion: 0.67
 Nodes (1): QRCodeDatabaseSeeder
 
-### Community 1151 - "Community 1151"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1155 - "Community 1155"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1158 - "Community 1158"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1164 - "Community 1164"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1165 - "Community 1165"
+### Community 1123 - "Community 1123"
 Cohesion: 0.67
 Nodes (1): RecruitDatabaseSeeder
 
-### Community 1166 - "Community 1166"
+### Community 1124 - "Community 1124"
 Cohesion: 0.67
 Nodes (1): SkillsTableSeeder
 
-### Community 1167 - "Community 1167"
+### Community 1125 - "Community 1125"
 Cohesion: 0.67
 Nodes (1): CandidateFollowUpReminderEvent
 
-### Community 1168 - "Community 1168"
+### Community 1126 - "Community 1126"
 Cohesion: 0.67
-Nodes (1): up()
+Nodes (1): RecruitEmailNotificationSettingsController
 
-### Community 1169 - "Community 1169"
+### Community 1127 - "Community 1127"
+Cohesion: 0.67
+Nodes (1): RecruitSettingController
+
+### Community 1128 - "Community 1128"
 Cohesion: 0.67
 Nodes (1): StoreJobCategory
 
-### Community 1170 - "Community 1170"
+### Community 1129 - "Community 1129"
 Cohesion: 0.67
 Nodes (1): StoreJobSubCategory
 
-### Community 1171 - "Community 1171"
+### Community 1130 - "Community 1130"
 Cohesion: 0.67
 Nodes (1): StoreWorkExperience
 
-### Community 1172 - "Community 1172"
-Cohesion: 0.67
-Nodes (1): FrontJobApplication
-
-### Community 1173 - "Community 1173"
-Cohesion: 0.67
-Nodes (1): StoreFollowUpRequest
-
-### Community 1174 - "Community 1174"
-Cohesion: 0.67
-Nodes (1): HostInterviewListener
-
-### Community 1175 - "Community 1175"
-Cohesion: 0.67
-Nodes (1): RecruitApplicationStatusObserver
-
-### Community 1176 - "Community 1176"
-Cohesion: 0.67
-Nodes (1): RecruitCandidateDatabaseObserver
-
-### Community 1177 - "Community 1177"
-Cohesion: 0.67
-Nodes (1): RecruitCustomQuestionObserver
-
-### Community 1178 - "Community 1178"
-Cohesion: 0.67
-Nodes (1): RecruitEmailNotificationObserver
-
-### Community 1179 - "Community 1179"
-Cohesion: 0.67
-Nodes (1): RecruitFooterLinkObserver
-
-### Community 1180 - "Community 1180"
-Cohesion: 0.67
-Nodes (1): RecruitInterviewEvaluationObserver
-
-### Community 1181 - "Community 1181"
-Cohesion: 0.67
-Nodes (1): RecruitInterviewStagesObserver
-
-### Community 1182 - "Community 1182"
-Cohesion: 0.67
-Nodes (1): RecruitJobCategoryObserver
-
-### Community 1183 - "Community 1183"
-Cohesion: 0.67
-Nodes (1): RecruitJobOfferLetterObserver
-
-### Community 1184 - "Community 1184"
-Cohesion: 0.67
-Nodes (1): RecruitJobSubCategoryObserver
-
-### Community 1185 - "Community 1185"
-Cohesion: 0.67
-Nodes (1): RecruitJobTypesObserver
-
-### Community 1186 - "Community 1186"
-Cohesion: 0.67
-Nodes (1): RecruitSalaryStructureObserver
-
-### Community 1187 - "Community 1187"
-Cohesion: 0.67
-Nodes (1): RecruitSelectedSalaryComponentObserver
-
-### Community 1188 - "Community 1188"
-Cohesion: 0.67
-Nodes (1): RecruitWorkExperienceObserver
-
-### Community 1189 - "Community 1189"
+### Community 1131 - "Community 1131"
 Cohesion: 0.67
 Nodes (1): JobCard
 
-### Community 1191 - "Community 1191"
+### Community 1133 - "Community 1133"
 Cohesion: 0.67
 Nodes (1): ServerManagerDatabaseSeeder
 
-### Community 1192 - "Community 1192"
+### Community 1134 - "Community 1134"
 Cohesion: 0.67
 Nodes (1): StoreDomainRequest
 
-### Community 1193 - "Community 1193"
-Cohesion: 0.67
-Nodes (1): UpdateDomainRequest
-
-### Community 1196 - "Community 1196"
+### Community 1137 - "Community 1137"
 Cohesion: 0.67
 Nodes (1): up()
 
-### Community 1207 - "Community 1207"
+### Community 1145 - "Community 1145"
+Cohesion: 0.67
+Nodes (1): SmsLeaveListener
+
+### Community 1146 - "Community 1146"
+Cohesion: 0.67
+Nodes (1): SmsTicketListener
+
+### Community 1150 - "Community 1150"
 Cohesion: 0.67
 Nodes (1): CompanyUrlEvent
 
-### Community 1213 - "Community 1213"
+### Community 1156 - "Community 1156"
 Cohesion: 0.67
 Nodes (1): WarehouseDatabaseSeeder
 
-### Community 1234 - "Community 1234"
-Cohesion: 0.67
-Nodes (1): up()
-
-### Community 1238 - "Community 1238"
+### Community 1180 - "Community 1180"
 Cohesion: 0.67
 Nodes (1): MeetingHostEvent
 
-### Community 1239 - "Community 1239"
+### Community 1181 - "Community 1181"
 Cohesion: 0.67
 Nodes (1): MeetingHostUpdateEvent
 
-### Community 1240 - "Community 1240"
+### Community 1182 - "Community 1182"
 Cohesion: 0.67
 Nodes (1): MeetingUpdateEvent
 
-### Community 1241 - "Community 1241"
-Cohesion: 0.67
-Nodes (1): ZoomNoteObserver
-
-### Community 1242 - "Community 1242"
+### Community 1183 - "Community 1183"
 Cohesion: 0.67
 Nodes (1): Base
 
-### Community 1243 - "Community 1243"
+### Community 1184 - "Community 1184"
 Cohesion: 0.67
 Nodes (1): CantDeleteException
 
-### Community 1244 - "Community 1244"
+### Community 1185 - "Community 1185"
 Cohesion: 0.67
 Nodes (1): HttpException
 
-### Community 1245 - "Community 1245"
+### Community 1186 - "Community 1186"
 Cohesion: 0.67
 Nodes (1): IncorrectRelationshipModel
 
-### Community 1246 - "Community 1246"
+### Community 1187 - "Community 1187"
 Cohesion: 0.67
 Nodes (1): KeyNotFoundException
 
-### Community 1247 - "Community 1247"
+### Community 1188 - "Community 1188"
 Cohesion: 0.67
 Nodes (1): NotAPersistableModel
 
-### Community 1248 - "Community 1248"
+### Community 1189 - "Community 1189"
 Cohesion: 0.67
 Nodes (1): OutOfResultSetException
 
-### Community 1249 - "Community 1249"
+### Community 1190 - "Community 1190"
 Cohesion: 0.67
 Nodes (1): RelationAlreadyExistsException
 
-### Community 1250 - "Community 1250"
-Cohesion: 0.67
-Nodes (1): ValidationFailedException
-
-### Community 1251 - "Community 1251"
+### Community 1191 - "Community 1191"
 Cohesion: 0.67
 Nodes (1): OAuth1
 
-### Community 1252 - "Community 1252"
+### Community 1192 - "Community 1192"
 Cohesion: 0.67
 Nodes (1): Package
 
-### Community 1253 - "Community 1253"
+### Community 1193 - "Community 1193"
 Cohesion: 0.67
 Nodes (1): AlreadyAuthenticatedException
 
-### Community 1254 - "Community 1254"
+### Community 1194 - "Community 1194"
 Cohesion: 0.67
 Nodes (1): ConfigDoesntExistException
 
-### Community 1255 - "Community 1255"
-Cohesion: 0.67
-Nodes (1): Instance
-
-### Community 1256 - "Community 1256"
+### Community 1195 - "Community 1195"
 Cohesion: 0.67
 Nodes (1): MeetingParticipant
 
-### Community 1257 - "Community 1257"
+### Community 1196 - "Community 1196"
 Cohesion: 0.67
 Nodes (1): WebinarParticipant
 
-### Community 1258 - "Community 1258"
+### Community 1197 - "Community 1197"
 Cohesion: 0.67
 Nodes (1): FileTooLargeException
 
-### Community 1259 - "Community 1259"
+### Community 1198 - "Community 1198"
 Cohesion: 0.67
 Nodes (1): EntrustFacade
 
-### Community 1260 - "Community 1260"
+### Community 1199 - "Community 1199"
 Cohesion: 0.67
 Nodes (1): EntrustPermission
 
-### Community 1261 - "Community 1261"
+### Community 1200 - "Community 1200"
 Cohesion: 0.67
 Nodes (1): EntrustRole
 
-### Community 1262 - "Community 1262"
+### Community 1201 - "Community 1201"
 Cohesion: 0.67
 Nodes (1): departments-hierarchy.manage_hierarchy
 
-### Community 1263 - "Community 1263"
+### Community 1202 - "Community 1202"
 Cohesion: 0.67
 Nodes (1): designations-hierarchy.manage_hierarchy
 
-### Community 1264 - "Community 1264"
+### Community 1203 - "Community 1203"
 Cohesion: 0.67
 Nodes (1): leaves.multiple-leave-table
 
-### Community 1265 - "Community 1265"
+### Community 1204 - "Community 1204"
 Cohesion: 0.67
 Nodes (2): notifications., notifications.superadmin.
 
-### Community 1266 - "Community 1266"
+### Community 1205 - "Community 1205"
 Cohesion: 0.67
 Nodes (2): super-admin.front.section.front_footer, super-admin.front.section.front_header
 
-### Community 1267 - "Community 1267"
+### Community 1206 - "Community 1206"
 Cohesion: 1.0
 Nodes (2): Show-FileHeader(), Show-FileQuick()
 
-### Community 1272 - "Community 1272"
+### Community 1211 - "Community 1211"
 Cohesion: 1.0
 Nodes (1): Kernel
 
-### Community 1273 - "Community 1273"
+### Community 1212 - "Community 1212"
 Cohesion: 1.0
 Nodes (1): EncryptCookies
 
-### Community 1274 - "Community 1274"
+### Community 1213 - "Community 1213"
 Cohesion: 1.0
 Nodes (1): PreventRequestsDuringMaintenance
 
-### Community 1275 - "Community 1275"
+### Community 1214 - "Community 1214"
 Cohesion: 1.0
 Nodes (1): TrimStrings
 
-### Community 1276 - "Community 1276"
+### Community 1215 - "Community 1215"
 Cohesion: 1.0
 Nodes (1): TrustProxies
 
-### Community 1277 - "Community 1277"
+### Community 1216 - "Community 1216"
 Cohesion: 1.0
 Nodes (1): ClientCategory
 
-### Community 1278 - "Community 1278"
+### Community 1217 - "Community 1217"
 Cohesion: 1.0
 Nodes (1): CustomModulePermission
 
-### Community 1279 - "Community 1279"
+### Community 1218 - "Community 1218"
 Cohesion: 1.0
 Nodes (1): DatabaseBackup
 
-### Community 1280 - "Community 1280"
+### Community 1219 - "Community 1219"
 Cohesion: 1.0
 Nodes (1): DiscussionCategory
 
-### Community 1281 - "Community 1281"
+### Community 1220 - "Community 1220"
 Cohesion: 1.0
 Nodes (1): Flag
 
-### Community 1282 - "Community 1282"
+### Community 1221 - "Community 1221"
 Cohesion: 1.0
 Nodes (1): GdprSetting
 
-### Community 1283 - "Community 1283"
+### Community 1222 - "Community 1222"
 Cohesion: 1.0
 Nodes (1): LogTimeFor
 
-### Community 1284 - "Community 1284"
+### Community 1223 - "Community 1223"
 Cohesion: 1.0
 Nodes (1): Menu
 
-### Community 1285 - "Community 1285"
+### Community 1224 - "Community 1224"
 Cohesion: 1.0
 Nodes (1): MessageSetting
 
-### Community 1286 - "Community 1286"
+### Community 1225 - "Community 1225"
 Cohesion: 1.0
 Nodes (1): PurposeConsentUser
 
-### Community 1287 - "Community 1287"
+### Community 1226 - "Community 1226"
 Cohesion: 1.0
 Nodes (1): Qrcodes
 
-### Community 1288 - "Community 1288"
+### Community 1227 - "Community 1227"
 Cohesion: 1.0
 Nodes (1): Session
 
-### Community 1289 - "Community 1289"
+### Community 1228 - "Community 1228"
 Cohesion: 1.0
 Nodes (1): SignUpSetting
 
-### Community 1290 - "Community 1290"
+### Community 1229 - "Community 1229"
 Cohesion: 1.0
 Nodes (1): Skill
 
-### Community 1291 - "Community 1291"
+### Community 1230 - "Community 1230"
 Cohesion: 1.0
 Nodes (1): TaskTagList
 
-### Community 1292 - "Community 1292"
+### Community 1231 - "Community 1231"
 Cohesion: 1.0
 Nodes (1): Tax
 
-### Community 1293 - "Community 1293"
+### Community 1232 - "Community 1232"
 Cohesion: 1.0
 Nodes (1): TicketEmailSetting
 
-### Community 1294 - "Community 1294"
+### Community 1233 - "Community 1233"
 Cohesion: 1.0
 Nodes (1): TicketSettingForAgents
 
-### Community 1295 - "Community 1295"
+### Community 1234 - "Community 1234"
 Cohesion: 1.0
 Nodes (1): GlobalCurrency
 
-### Community 1296 - "Community 1296"
+### Community 1235 - "Community 1235"
 Cohesion: 1.0
 Nodes (1): PermissionRoleObserver
 
-### Community 1297 - "Community 1297"
+### Community 1236 - "Community 1236"
 Cohesion: 1.0
 Nodes (1): EventServiceProvider
 
-### Community 1319 - "Community 1319"
+### Community 1258 - "Community 1258"
 Cohesion: 1.0
 Nodes (1): BiometricSetting
 
-### Community 1320 - "Community 1320"
+### Community 1259 - "Community 1259"
 Cohesion: 1.0
 Nodes (1): biometric::devices.create-url
 
-### Community 1321 - "Community 1321"
+### Community 1260 - "Community 1260"
 Cohesion: 1.0
 Nodes (1): EmployeePayrollCycle
 
-### Community 1322 - "Community 1322"
+### Community 1261 - "Community 1261"
 Cohesion: 1.0
 Nodes (1): PayrollGlobalSetting
 
-### Community 1323 - "Community 1323"
+### Community 1262 - "Community 1262"
 Cohesion: 1.0
 Nodes (1): Dashboard
 
-### Community 1324 - "Community 1324"
+### Community 1263 - "Community 1263"
 Cohesion: 1.0
 Nodes (1): OkrScoring
 
-### Community 1325 - "Community 1325"
+### Community 1264 - "Community 1264"
 Cohesion: 1.0
 Nodes (1): performance::objectives.ajax.objectives
 
-### Community 1326 - "Community 1326"
+### Community 1265 - "Community 1265"
 Cohesion: 1.0
 Nodes (1): pricing::client_pricing.ajax.create
 
-### Community 1327 - "Community 1327"
+### Community 1266 - "Community 1266"
 Cohesion: 1.0
 Nodes (1): pricing::client_pricing.ajax.edit
 
-### Community 1328 - "Community 1328"
+### Community 1267 - "Community 1267"
 Cohesion: 1.0
 Nodes (1): pricing::client_tiers.ajax.edit
 
-### Community 1329 - "Community 1329"
+### Community 1268 - "Community 1268"
 Cohesion: 1.0
 Nodes (1): pricing::company_pricing.ajax.create
 
-### Community 1330 - "Community 1330"
+### Community 1269 - "Community 1269"
 Cohesion: 1.0
 Nodes (1): pricing::company_pricing.ajax.edit
 
-### Community 1331 - "Community 1331"
+### Community 1270 - "Community 1270"
 Cohesion: 1.0
 Nodes (1): pricing::tiers.ajax.create
 
-### Community 1332 - "Community 1332"
+### Community 1271 - "Community 1271"
 Cohesion: 1.0
 Nodes (1): pricing::tiers.ajax.edit
 
-### Community 1333 - "Community 1333"
+### Community 1272 - "Community 1272"
 Cohesion: 1.0
 Nodes (1): pricing::volume_rules.ajax.create
 
-### Community 1334 - "Community 1334"
+### Community 1273 - "Community 1273"
 Cohesion: 1.0
 Nodes (1): pricing::volume_rules.ajax.edit
 
-### Community 1335 - "Community 1335"
+### Community 1274 - "Community 1274"
 Cohesion: 1.0
 Nodes (1): production::batches.partials.completion-workflow
 
-### Community 1336 - "Community 1336"
+### Community 1275 - "Community 1275"
 Cohesion: 1.0
 Nodes (1): production::boms.partials.bom-line-unit-select
 
-### Community 1337 - "Community 1337"
+### Community 1276 - "Community 1276"
 Cohesion: 1.0
 Nodes (1): production::boms.partials.bom-line-row
 
-### Community 1338 - "Community 1338"
+### Community 1277 - "Community 1277"
 Cohesion: 1.0
 Nodes (1): production::orders.partials.material-requirements
 
-### Community 1339 - "Community 1339"
+### Community 1278 - "Community 1278"
 Cohesion: 1.0
 Nodes (1): OrderDeliveryItem
 
-### Community 1340 - "Community 1340"
+### Community 1279 - "Community 1279"
 Cohesion: 1.0
 Nodes (1): PurchaseOrderSetting
 
-### Community 1341 - "Community 1341"
+### Community 1280 - "Community 1280"
 Cohesion: 1.0
 Nodes (1): purchase::delivery-order.ajax.items
 
-### Community 1342 - "Community 1342"
+### Community 1281 - "Community 1281"
 Cohesion: 1.0
 Nodes (1): purchase::purchase-inventory.inventory-files.ajax-list
 
-### Community 1343 - "Community 1343"
+### Community 1282 - "Community 1282"
 Cohesion: 1.0
 Nodes (1): purchase::purchase-products.product-files.ajax-list
 
-### Community 1344 - "Community 1344"
+### Community 1283 - "Community 1283"
 Cohesion: 1.0
 Nodes (1): ApplicationSource
 
-### Community 1345 - "Community 1345"
+### Community 1284 - "Community 1284"
 Cohesion: 1.0
 Nodes (1): RecruitGlobalSetting
 
-### Community 1346 - "Community 1346"
+### Community 1285 - "Community 1285"
 Cohesion: 1.0
 Nodes (1): recruit::import.process-form
 
-### Community 1347 - "Community 1347"
+### Community 1286 - "Community 1286"
 Cohesion: 1.0
 Nodes (1): recruit::jobs.salary-components.default-structure
 
-### Community 1348 - "Community 1348"
+### Community 1287 - "Community 1287"
 Cohesion: 1.0
 Nodes (1): servermanager::sections.sidebar
 
-### Community 1350 - "Community 1350"
+### Community 1289 - "Community 1289"
 Cohesion: 1.0
 Nodes (1): warehouse::ajax.import
 
-### Community 1353 - "Community 1353"
+### Community 1292 - "Community 1292"
 Cohesion: 1.0
 Nodes (1): ZoomGlobalSetting
 
-### Community 1354 - "Community 1354"
+### Community 1293 - "Community 1293"
 Cohesion: 1.0
 Nodes (1): StoreAddress
 
-### Community 1355 - "Community 1355"
+### Community 1294 - "Community 1294"
 Cohesion: 1.0
 Nodes (1): StoreUser
 
-### Community 1356 - "Community 1356"
+### Community 1295 - "Community 1295"
 Cohesion: 1.0
 Nodes (1): UpdateAddress
 
-### Community 1357 - "Community 1357"
+### Community 1296 - "Community 1296"
 Cohesion: 1.0
 Nodes (1): UpdateUser
 
-### Community 1358 - "Community 1358"
+### Community 1297 - "Community 1297"
 Cohesion: 1.0
 Nodes (1): InvalidActionException
 
-### Community 1359 - "Community 1359"
+### Community 1298 - "Community 1298"
 Cohesion: 1.0
 Nodes (1): NodeNotFoundException
 
-### Community 1360 - "Community 1360"
+### Community 1299 - "Community 1299"
 Cohesion: 1.0
 Nodes (1): ApiResource
 
-### Community 1361 - "Community 1361"
+### Community 1300 - "Community 1300"
 Cohesion: 1.0
 Nodes (1): IdentityProviderException
 
-### Community 1362 - "Community 1362"
+### Community 1301 - "Community 1301"
 Cohesion: 1.0
 Nodes (1): GenericProvider
 
-### Community 1363 - "Community 1363"
+### Community 1302 - "Community 1302"
 Cohesion: 1.0
 Nodes (1): Absentees
 
-### Community 1364 - "Community 1364"
+### Community 1303 - "Community 1303"
 Cohesion: 1.0
 Nodes (1): AuthenticationOption
 
-### Community 1365 - "Community 1365"
+### Community 1304 - "Community 1304"
 Cohesion: 1.0
 Nodes (1): CustomQuestion
 
-### Community 1366 - "Community 1366"
+### Community 1305 - "Community 1305"
 Cohesion: 1.0
 Nodes (1): EmailNotification
 
-### Community 1367 - "Community 1367"
+### Community 1306 - "Community 1306"
 Cohesion: 1.0
 Nodes (1): Feature
 
-### Community 1368 - "Community 1368"
+### Community 1307 - "Community 1307"
 Cohesion: 1.0
 Nodes (1): GlobalDialInCountry
 
-### Community 1369 - "Community 1369"
+### Community 1308 - "Community 1308"
 Cohesion: 1.0
 Nodes (1): GlobalDialInNumber
 
-### Community 1370 - "Community 1370"
+### Community 1309 - "Community 1309"
 Cohesion: 1.0
 Nodes (1): InMeeting
 
-### Community 1371 - "Community 1371"
+### Community 1310 - "Community 1310"
 Cohesion: 1.0
 Nodes (1): Invitation
 
-### Community 1372 - "Community 1372"
+### Community 1311 - "Community 1311"
 Cohesion: 1.0
 Nodes (1): LiveStream
 
-### Community 1373 - "Community 1373"
+### Community 1312 - "Community 1312"
 Cohesion: 1.0
 Nodes (1): LiveStreamStatusSetting
 
-### Community 1374 - "Community 1374"
+### Community 1313 - "Community 1313"
 Cohesion: 1.0
 Nodes (1): Participant
 
-### Community 1375 - "Community 1375"
+### Community 1314 - "Community 1314"
 Cohesion: 1.0
 Nodes (1): PollQuestion
 
-### Community 1376 - "Community 1376"
+### Community 1315 - "Community 1315"
 Cohesion: 1.0
 Nodes (1): PollResult
 
-### Community 1377 - "Community 1377"
+### Community 1316 - "Community 1316"
 Cohesion: 1.0
 Nodes (1): Privilege
 
-### Community 1378 - "Community 1378"
+### Community 1317 - "Community 1317"
 Cohesion: 1.0
 Nodes (1): QA
 
-### Community 1379 - "Community 1379"
+### Community 1318 - "Community 1318"
 Cohesion: 1.0
 Nodes (1): QuestionAnswer
 
-### Community 1380 - "Community 1380"
+### Community 1319 - "Community 1319"
 Cohesion: 1.0
 Nodes (1): Recurrence
 
-### Community 1381 - "Community 1381"
+### Community 1320 - "Community 1320"
 Cohesion: 1.0
 Nodes (1): RegistrantCustomQuestion
 
-### Community 1382 - "Community 1382"
+### Community 1321 - "Community 1321"
 Cohesion: 1.0
 Nodes (1): Telephony
 
-### Community 1383 - "Community 1383"
+### Community 1322 - "Community 1322"
 Cohesion: 1.0
 Nodes (1): TrackingField
 
-### Community 1384 - "Community 1384"
+### Community 1323 - "Community 1323"
 Cohesion: 1.0
 Nodes (1): TrackingSource
 
-### Community 1385 - "Community 1385"
+### Community 1324 - "Community 1324"
 Cohesion: 1.0
 Nodes (1): Tsp
 
-### Community 1386 - "Community 1386"
+### Community 1325 - "Community 1325"
 Cohesion: 1.0
 Nodes (1): StoreAccount
 
-### Community 1387 - "Community 1387"
+### Community 1326 - "Community 1326"
 Cohesion: 1.0
 Nodes (1): StoreAssistant
 
-### Community 1388 - "Community 1388"
+### Community 1327 - "Community 1327"
 Cohesion: 1.0
 Nodes (1): StoreCustomQuestion
 
-### Community 1389 - "Community 1389"
+### Community 1328 - "Community 1328"
 Cohesion: 1.0
 Nodes (1): StoreEmailNotification
 
-### Community 1390 - "Community 1390"
+### Community 1329 - "Community 1329"
 Cohesion: 1.0
 Nodes (1): StoreGlobalDialInCountry
 
-### Community 1391 - "Community 1391"
+### Community 1330 - "Community 1330"
 Cohesion: 1.0
 Nodes (1): StoreGlobalDialInNumber
 
-### Community 1392 - "Community 1392"
+### Community 1331 - "Community 1331"
 Cohesion: 1.0
 Nodes (1): StoreMeetingSetting
 
-### Community 1393 - "Community 1393"
+### Community 1332 - "Community 1332"
 Cohesion: 1.0
 Nodes (1): StorePanelist
 
-### Community 1394 - "Community 1394"
+### Community 1333 - "Community 1333"
 Cohesion: 1.0
 Nodes (1): StorePoll
 
-### Community 1395 - "Community 1395"
+### Community 1334 - "Community 1334"
 Cohesion: 1.0
 Nodes (1): StorePollQuestion
 
-### Community 1396 - "Community 1396"
+### Community 1335 - "Community 1335"
 Cohesion: 1.0
 Nodes (1): StoreQuestionAnswer
 
-### Community 1397 - "Community 1397"
+### Community 1336 - "Community 1336"
 Cohesion: 1.0
 Nodes (1): StoreRecurrence
 
-### Community 1398 - "Community 1398"
+### Community 1337 - "Community 1337"
 Cohesion: 1.0
 Nodes (1): StoreRegistrant
 
-### Community 1399 - "Community 1399"
+### Community 1338 - "Community 1338"
 Cohesion: 1.0
 Nodes (1): StoreRegistrantCustomQuestion
 
-### Community 1400 - "Community 1400"
+### Community 1339 - "Community 1339"
 Cohesion: 1.0
 Nodes (1): StoreRole
 
-### Community 1401 - "Community 1401"
+### Community 1340 - "Community 1340"
 Cohesion: 1.0
 Nodes (1): StoreTrackingField
 
-### Community 1402 - "Community 1402"
+### Community 1341 - "Community 1341"
 Cohesion: 1.0
 Nodes (1): StoreUser
 
-### Community 1403 - "Community 1403"
+### Community 1342 - "Community 1342"
 Cohesion: 1.0
 Nodes (1): StoreWebinar
 
-### Community 1404 - "Community 1404"
+### Community 1343 - "Community 1343"
 Cohesion: 1.0
 Nodes (1): StoreWebinarSetting
 
-### Community 1405 - "Community 1405"
+### Community 1344 - "Community 1344"
 Cohesion: 1.0
 Nodes (1): UpdateAccount
 
-### Community 1406 - "Community 1406"
+### Community 1345 - "Community 1345"
 Cohesion: 1.0
 Nodes (1): UpdateAssistant
 
-### Community 1407 - "Community 1407"
+### Community 1346 - "Community 1346"
 Cohesion: 1.0
 Nodes (1): UpdateCustomQuestion
 
-### Community 1408 - "Community 1408"
+### Community 1347 - "Community 1347"
 Cohesion: 1.0
 Nodes (1): UpdateEmailNotification
 
-### Community 1409 - "Community 1409"
+### Community 1348 - "Community 1348"
 Cohesion: 1.0
 Nodes (1): UpdateFeature
 
-### Community 1410 - "Community 1410"
+### Community 1349 - "Community 1349"
 Cohesion: 1.0
 Nodes (1): UpdateGlobalDialInCountry
 
-### Community 1411 - "Community 1411"
+### Community 1350 - "Community 1350"
 Cohesion: 1.0
 Nodes (1): UpdateGlobalDialInNumber
 
-### Community 1412 - "Community 1412"
+### Community 1351 - "Community 1351"
 Cohesion: 1.0
 Nodes (1): UpdateInMeeting
 
-### Community 1413 - "Community 1413"
+### Community 1352 - "Community 1352"
 Cohesion: 1.0
 Nodes (1): UpdateIntegration
 
-### Community 1414 - "Community 1414"
+### Community 1353 - "Community 1353"
 Cohesion: 1.0
 Nodes (1): UpdateLiveStream
 
-### Community 1415 - "Community 1415"
+### Community 1354 - "Community 1354"
 Cohesion: 1.0
 Nodes (1): UpdateLiveStreamStatus
 
-### Community 1416 - "Community 1416"
+### Community 1355 - "Community 1355"
 Cohesion: 1.0
 Nodes (1): UpdateLiveStreamStatusSetting
 
-### Community 1417 - "Community 1417"
+### Community 1356 - "Community 1356"
 Cohesion: 1.0
 Nodes (1): UpdateMeeting
 
-### Community 1418 - "Community 1418"
+### Community 1357 - "Community 1357"
 Cohesion: 1.0
 Nodes (1): UpdateMeetingSetting
 
-### Community 1419 - "Community 1419"
+### Community 1358 - "Community 1358"
 Cohesion: 1.0
 Nodes (1): UpdateOccurrence
 
-### Community 1420 - "Community 1420"
+### Community 1359 - "Community 1359"
 Cohesion: 1.0
 Nodes (1): UpdatePoll
 
-### Community 1421 - "Community 1421"
+### Community 1360 - "Community 1360"
 Cohesion: 1.0
 Nodes (1): UpdatePollQuestion
 
-### Community 1422 - "Community 1422"
+### Community 1361 - "Community 1361"
 Cohesion: 1.0
 Nodes (1): UpdateQuestion
 
-### Community 1423 - "Community 1423"
+### Community 1362 - "Community 1362"
 Cohesion: 1.0
 Nodes (1): UpdateRecording
 
-### Community 1424 - "Community 1424"
+### Community 1363 - "Community 1363"
 Cohesion: 1.0
 Nodes (1): UpdateRecurrence
 
-### Community 1425 - "Community 1425"
+### Community 1364 - "Community 1364"
 Cohesion: 1.0
 Nodes (1): UpdateRegistrationQuestion
 
-### Community 1426 - "Community 1426"
+### Community 1365 - "Community 1365"
 Cohesion: 1.0
 Nodes (1): UpdateRole
 
-### Community 1427 - "Community 1427"
+### Community 1366 - "Community 1366"
 Cohesion: 1.0
 Nodes (1): UpdateScheduleMeeting
 
-### Community 1428 - "Community 1428"
+### Community 1367 - "Community 1367"
 Cohesion: 1.0
 Nodes (1): UpdateSetting
 
-### Community 1429 - "Community 1429"
+### Community 1368 - "Community 1368"
 Cohesion: 1.0
 Nodes (1): UpdateTelephony
 
-### Community 1430 - "Community 1430"
+### Community 1369 - "Community 1369"
 Cohesion: 1.0
 Nodes (1): UpdateTrackingField
 
-### Community 1431 - "Community 1431"
+### Community 1370 - "Community 1370"
 Cohesion: 1.0
 Nodes (1): UpdateTsp
 
-### Community 1432 - "Community 1432"
+### Community 1371 - "Community 1371"
 Cohesion: 1.0
 Nodes (1): UpdateUser
 
-### Community 1433 - "Community 1433"
+### Community 1372 - "Community 1372"
 Cohesion: 1.0
 Nodes (1): UpdateWebinar
 
-### Community 1434 - "Community 1434"
+### Community 1373 - "Community 1373"
 Cohesion: 1.0
 Nodes (1): UpdateWebinarSetting
 
-### Community 1438 - "Community 1438"
+### Community 1377 - "Community 1377"
 Cohesion: 1.0
 Nodes (1): app-settings.cron-message
 
-### Community 1439 - "Community 1439"
+### Community 1378 - "Community 1378"
 Cohesion: 1.0
 Nodes (1): contracts.renew.renew_history
 
-### Community 1440 - "Community 1440"
+### Community 1379 - "Community 1379"
 Cohesion: 1.0
 Nodes (1): credit-notes.ajax.show
 
-### Community 1441 - "Community 1441"
+### Community 1380 - "Community 1380"
 Cohesion: 1.0
 Nodes (1): custom-modules.sections.version
 
-### Community 1442 - "Community 1442"
+### Community 1381 - "Community 1381"
 Cohesion: 1.0
 Nodes (1): attendance-settings.ajax.shift
 
-### Community 1443 - "Community 1443"
+### Community 1382 - "Community 1382"
 Cohesion: 1.0
 Nodes (1): employees.ajax.document-expiry.show
 
-### Community 1444 - "Community 1444"
+### Community 1383 - "Community 1383"
 Cohesion: 1.0
 Nodes (1): estimates.ajax.show
 
-### Community 1445 - "Community 1445"
+### Community 1384 - "Community 1384"
 Cohesion: 1.0
 Nodes (1): estimates-templates.ajax.show
 
-### Community 1446 - "Community 1446"
+### Community 1385 - "Community 1385"
 Cohesion: 1.0
 Nodes (1): invoices.ajax.show
 
-### Community 1447 - "Community 1447"
+### Community 1386 - "Community 1386"
 Cohesion: 1.0
 Nodes (1): leads.lead-files.thumbnail-list
 
-### Community 1448 - "Community 1448"
+### Community 1387 - "Community 1387"
 Cohesion: 1.0
 Nodes (1): messages.user_list
 
-### Community 1449 - "Community 1449"
+### Community 1388 - "Community 1388"
 Cohesion: 1.0
 Nodes (1): notifications.client.detail_
 
-### Community 1450 - "Community 1450"
+### Community 1389 - "Community 1389"
 Cohesion: 1.0
 Nodes (1): orders.ajax.show
 
-### Community 1451 - "Community 1451"
+### Community 1390 - "Community 1390"
 Cohesion: 1.0
 Nodes (1): proposal-template.ajax.show
 
-### Community 1452 - "Community 1452"
+### Community 1391 - "Community 1391"
 Cohesion: 1.0
 Nodes (1): proposals.ajax.show
 
-### Community 1453 - "Community 1453"
+### Community 1392 - "Community 1392"
 Cohesion: 1.0
 Nodes (1): reports.leave.ajax.show
 
-### Community 1454 - "Community 1454"
+### Community 1393 - "Community 1393"
 Cohesion: 1.0
 Nodes (1): sections.timer_clock
 
-### Community 1455 - "Community 1455"
+### Community 1394 - "Community 1394"
 Cohesion: 1.0
 Nodes (1): super-admin.billing.plan
 
-### Community 1456 - "Community 1456"
+### Community 1395 - "Community 1395"
 Cohesion: 1.0
 Nodes (1): super-admin.front.section.pricing-plan
 
-### Community 1457 - "Community 1457"
+### Community 1396 - "Community 1396"
 Cohesion: 1.0
 Nodes (1): super-admin.front-setting.faq-settings.faq-data
 
-### Community 1458 - "Community 1458"
+### Community 1397 - "Community 1397"
 Cohesion: 1.0
 Nodes (1): super-admin.front-setting.footer-setting.footer-data
 
@@ -5962,81 +5657,83 @@ Nodes (1): super-admin.front-setting.footer-setting.footer-data
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 37`** (20 nodes): `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider.php`, `EventServiceProvider`, `.boot()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (18 nodes): `GdprSettingsController.php`, `PurposeConsent.php`, `.consent()`, `.consent()`, `GdprSettingsController`, `.addConsent()`, `.applyQuickAction()`, `.approveRejectClient()`, `.consentList()`, `.deleteRecords()`, `.editConsent()`, `.index()`, `.purposeDelete()`, `.removalRequest()`, `.removalRequestLead()`, `PurposeConsent`, `.lead()`, `.user()`
+- **Thin community `Community 40`** (16 nodes): `import.process-form`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (16 nodes): `QrPreview.php`, `QrPreview`, `.authorize()`, `.messages()`, `.qrEmail()`, `.qrEvent()`, `.qrGeo()`, `.qrPaypal()`, `.qrSkype()`, `.qrSms()`, `.qrTel()`, `.qrText()`, `.qrUpi()`, `.qrUrl()`, `.qrWifi()`, `.rules()`
+- **Thin community `Community 41`** (16 nodes): `QrPreview.php`, `QrPreview`, `.authorize()`, `.messages()`, `.qrEmail()`, `.qrEvent()`, `.qrGeo()`, `.qrPaypal()`, `.qrSkype()`, `.qrSms()`, `.qrTel()`, `.qrText()`, `.qrUpi()`, `.qrUrl()`, `.qrWifi()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (16 nodes): `import.process-form`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`, `import_progress.blade.php`
+- **Thin community `Community 44`** (14 nodes): `ClearLogs.php`, `ClearLogs`, `.__construct()`, `.delete()`, `.filesToDelete()`, `.getLogFiles()`, `.handle()`, `ProviderExport`, `.collection()`, `.__construct()`, `.headings()`, `.map()`, `.styles()`, `ProviderExport.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (14 nodes): `ClearLogs.php`, `ClearLogs`, `.__construct()`, `.delete()`, `.filesToDelete()`, `.getLogFiles()`, `.handle()`, `ProviderExport`, `.collection()`, `.__construct()`, `.headings()`, `.map()`, `.styles()`, `ProviderExport.php`
+- **Thin community `Community 45`** (13 nodes): `EmployeeShiftChangeRequestController.php`, `EmployeeShiftChangeRequest.php`, `EmployeeShiftChangeRequestController`, `.applyQuickAction()`, `.approveRequest()`, `.changeBulkStatus()`, `.__construct()`, `.declineRequest()`, `.destroy()`, `.update()`, `EmployeeShiftChangeRequest`, `.shift()`, `.shiftSchedule()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (13 nodes): `SalesOrderImport.php`, `SalesOrderSheetImport.php`, `SalesOrderImport`, `.appendRow()`, `.appendRows()`, `.fields()`, `.getProcessedData()`, `.onUnknownSheet()`, `.sheets()`, `SalesOrderSheetImport`, `.chunkSize()`, `.__construct()`, `.onRow()`
+- **Thin community `Community 46`** (13 nodes): `SalesOrderImport.php`, `SalesOrderSheetImport.php`, `SalesOrderImport`, `.appendRow()`, `.appendRows()`, `.fields()`, `.getProcessedData()`, `.onUnknownSheet()`, `.sheets()`, `SalesOrderSheetImport`, `.chunkSize()`, `.__construct()`, `.onRow()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (13 nodes): `.daysUntilExpiry()`, `DomainExpiringNotification.php`, `HostingExpiringNotification.php`, `DomainExpiringNotification`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`, `HostingExpiringNotification`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 47`** (13 nodes): `.daysUntilExpiry()`, `DomainExpiringNotification.php`, `HostingExpiringNotification.php`, `DomainExpiringNotification`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`, `HostingExpiringNotification`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (13 nodes): `invalidVariables()`, `key()`, `SendWebhook`, `.__construct()`, `.dataCleanUp()`, `.getClientRequest()`, `.getVariableClass()`, `.handle()`, `.mapData()`, `.mapHeaders()`, `.saveData()`, `Variable.php`, `SendWebhook.php`
+- **Thin community `Community 51`** (11 nodes): `LineIntegrationServiceProvider.php`, `LineIntegrationServiceProvider`, `.boot()`, `.getPublishableViewPaths()`, `.provides()`, `.register()`, `.registerCommands()`, `.registerCommandSchedules()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (11 nodes): `LineIntegrationServiceProvider.php`, `LineIntegrationServiceProvider`, `.boot()`, `.getPublishableViewPaths()`, `.provides()`, `.register()`, `.registerCommands()`, `.registerCommandSchedules()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
+- **Thin community `Community 53`** (11 nodes): `index.blade.php`, `index.blade.php`, `index.blade.php`, `index.blade.php`, `translation-cta.blade.php`, `index.blade.php`, `translation-price.blade.php`, `index.blade.php`, `index.blade.php`, `translation.blade.php`, `super-admin.common.language-selector-with-view`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (11 nodes): `index.blade.php`, `index.blade.php`, `index.blade.php`, `index.blade.php`, `translation-cta.blade.php`, `index.blade.php`, `translation-price.blade.php`, `index.blade.php`, `index.blade.php`, `translation.blade.php`, `super-admin.common.language-selector-with-view`
+- **Thin community `Community 54`** (10 nodes): `agent.rb`, `CheckInterviewSchedule.php`, `CravevaAgent`, `.chat()`, `.get_response()`, `.initialize()`, `CheckInterviewSchedule`, `.__construct()`, `.message()`, `.passes()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (10 nodes): `ImportSalesHistoryChunkJob.php`, `ImportSalesHistoryChunkJob`, `.__construct()`, `.getValue()`, `.isDuplicateHashException()`, `.isEmptyRow()`, `.normalizeRow()`, `.parseDateToYmd()`, `.parseNumber()`, `.prepareDataRow()`
+- **Thin community `Community 55`** (10 nodes): `TicketAgentController.php`, `TicketAgentGroups.php`, `TicketAgentController`, `.__construct()`, `.destroy()`, `.update()`, `.updateGroup()`, `TicketAgentGroups`, `.group()`, `.user()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (10 nodes): `PayrollReportController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.exportReport()`, `.show()`, `.store()`, `.update()`, `PayrollReportController.php`
+- **Thin community `Community 56`** (10 nodes): `TicketReplyTemplatesController.php`, `TicketReplyTemplate.php`, `TicketReplyTemplatesController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.fetchTemplate()`, `.update()`, `TicketReplyTemplate`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (10 nodes): `PurchaseSettingController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.show()`, `.store()`, `.update()`, `.updatePrefix()`, `PurchaseSettingController.php`
+- **Thin community `Community 57`** (10 nodes): `CustomLinkSettingController.php`, `CustomLinkSetting.php`, `CustomLinkSettingController`, `.create()`, `.destroy()`, `.edit()`, `.show()`, `.store()`, `.update()`, `CustomLinkSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (10 nodes): `ServerManagerHelper`, `.formatFileSize()`, `.getBillingCycleOptions()`, `.getDaysUntilExpiry()`, `.getDomainTypeOptions()`, `.getServerTypeOptions()`, `.getStatusOptions()`, `.isExpired()`, `.isExpiringSoon()`, `ServerManagerHelper.php`
+- **Thin community `Community 58`** (10 nodes): `PayrollReportController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.exportReport()`, `.show()`, `.store()`, `.update()`, `PayrollReportController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 62`** (9 nodes): `ProjectwiseTimeLogExport.php`, `ProjectwiseTimeLogExport`, `.__construct()`, `.formatBreakTime()`, `.formatTime()`, `.headings()`, `.map()`, `.startCell()`, `.styles()`
+- **Thin community `Community 59`** (10 nodes): `PurchaseSettingController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.show()`, `.store()`, `.update()`, `.updatePrefix()`, `PurchaseSettingController.php`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 60`** (10 nodes): `ServerManagerHelper`, `.formatFileSize()`, `.getBillingCycleOptions()`, `.getDaysUntilExpiry()`, `.getDomainTypeOptions()`, `.getServerTypeOptions()`, `.getStatusOptions()`, `.isExpired()`, `.isExpiringSoon()`, `ServerManagerHelper.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 63`** (9 nodes): `ProjectTemplateSubTaskController.php`, `ProjectTemplateSubTask.php`, `ProjectTemplateSubTaskController`, `.__construct()`, `.create()`, `.destroy()`, `.store()`, `ProjectTemplateSubTask`, `.task()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (9 nodes): `AffiliateServiceProvider.php`, `AffiliateServiceProvider`, `.boot()`, `.getPublishableViewPaths()`, `.provides()`, `.register()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
+- **Thin community `Community 64`** (9 nodes): `EstimateRecipeMarginSummary.php`, `EstimateVpMarginPolicy.php`, `EstimateRecipeMarginSummary`, `.resolveOrderQuantity()`, `.summarize()`, `EstimateVpMarginPolicy`, `.__construct()`, `.evaluateForVpApproval()`, `.minimumGrossMarginPercent()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 65`** (9 nodes): `LineIntegrationController`, `.create()`, `.destroy()`, `.edit()`, `.index()`, `.show()`, `.store()`, `.update()`, `LineIntegrationController.php`
+- **Thin community `Community 65`** (9 nodes): `SupportTicketTypeController.php`, `.supportTicketType()`, `SupportTicketTypeController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.store()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 66`** (9 nodes): `OvertimeSettingController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.show()`, `.store()`, `.update()`, `OvertimeSettingController.php`
+- **Thin community `Community 66`** (9 nodes): `AffiliateServiceProvider.php`, `AffiliateServiceProvider`, `.boot()`, `.getPublishableViewPaths()`, `.provides()`, `.register()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 67`** (9 nodes): `ProjectRoadmapServiceProvider.php`, `ProjectRoadmapServiceProvider`, `.boot()`, `.getPublishableViewPaths()`, `.provides()`, `.register()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
+- **Thin community `Community 67`** (9 nodes): `LineIntegrationController`, `.create()`, `.destroy()`, `.edit()`, `.index()`, `.show()`, `.store()`, `.update()`, `LineIntegrationController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 69`** (8 nodes): `Reply.php`, `Reply`, `.dataOnly()`, `.formErrors()`, `.getTranslated()`, `.redirect()`, `.success()`, `.successWithData()`
+- **Thin community `Community 68`** (9 nodes): `EmployeeHourlyRateSettingController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.index()`, `.show()`, `.update()`, `EmployeeHourlyRateSettingController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 70`** (8 nodes): `LeadCustomFormController.php`, `LeadCustomForm.php`, `LeadCustomFormController`, `.__construct()`, `.sortFields()`, `.update()`, `LeadCustomForm`, `.customField()`
+- **Thin community `Community 69`** (9 nodes): `ProjectRoadmapServiceProvider.php`, `ProjectRoadmapServiceProvider`, `.boot()`, `.getPublishableViewPaths()`, `.provides()`, `.register()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 71`** (8 nodes): `AuthenticateAiOrderIntegration.php`, `AiOrderIntegrationAuthService.php`, `AiOrderIntegrationAuthService`, `.isGlobalSecretToken()`, `.resolveSecretToken()`, `AuthenticateAiOrderIntegration`, `.__construct()`, `.handle()`
+- **Thin community `Community 70`** (9 nodes): `JobTypeController`, `.create()`, `.destroy()`, `.store()`, `.update()`, `RecruitJobType`, `.jobTypes()`, `RecruitJobType.php`, `JobTypeController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 73`** (8 nodes): `ProductionServiceProvider.php`, `ProductionServiceProvider`, `.boot()`, `.getPublishableViewPaths()`, `.register()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
+- **Thin community `Community 72`** (8 nodes): `ProjectwiseTimeLogExport.php`, `ProjectwiseTimeLogExport`, `.__construct()`, `.formatBreakTime()`, `.formatTime()`, `.headings()`, `.startCell()`, `.styles()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (7 nodes): `UserTaskboardSetting.php`, `TaskBoardColumnObserver.php`, `.collapseColumn()`, `UserTaskboardSetting`, `TaskBoardColumnObserver`, `.created()`, `.creating()`
+- **Thin community `Community 73`** (8 nodes): `Reply.php`, `Reply`, `.dataOnly()`, `.formErrors()`, `.getTranslated()`, `.redirect()`, `.success()`, `.successWithData()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (7 nodes): `Text.php`, `Text`, `.__construct()`, `.normalizeReadOnly()`, `.normalizeRequired()`, `.render()`, `.toDisplayString()`
+- **Thin community `Community 74`** (8 nodes): `AuthenticateAiOrderIntegration.php`, `AiOrderIntegrationAuthService.php`, `AiOrderIntegrationAuthService`, `.isGlobalSecretToken()`, `.resolveSecretToken()`, `AuthenticateAiOrderIntegration`, `.__construct()`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (7 nodes): `PricingServiceProvider.php`, `PricingServiceProvider`, `.boot()`, `.register()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
+- **Thin community `Community 76`** (8 nodes): `OvertimePolicyEmployeeDataTable`, `.checkBoxPolicy()`, `.__construct()`, `.dataTable()`, `.getColumns()`, `.html()`, `.query()`, `OvertimePolicyEmployeeDataTable.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 82`** (6 nodes): `Kernel.php`, `Kernel`, `.commands()`, `.schedule()`, `.scheduleCache()`, `.scheduleTimezone()`
+- **Thin community `Community 77`** (8 nodes): `OvertimeSettingController`, `.__construct()`, `.create()`, `.destroy()`, `.edit()`, `.show()`, `.update()`, `OvertimeSettingController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 83`** (6 nodes): `LeavesQuotaRenew.php`, `LeavesQuotaRenew`, `.handle()`, `.renewLeavesQuota()`, `.renewLeavesQuotaForCompany()`, `Ne()`
+- **Thin community `Community 78`** (8 nodes): `ProductionServiceProvider.php`, `ProductionServiceProvider`, `.boot()`, `.getPublishableViewPaths()`, `.register()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (6 nodes): `AttendanceByMemberExport.php`, `AttendanceByMemberExport`, `.checkHolidays()`, `.__construct()`, `.headings()`, `.map()`
+- **Thin community `Community 80`** (7 nodes): `EmployeeTimelogs.php`, `EmployeeTimelogs`, `.__construct()`, `.countTotalDays()`, `.countWeekends()`, `.registerEvents()`, `.styles()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 85`** (6 nodes): `DealReportExport.php`, `DealReportExport`, `.__construct()`, `.headings()`, `.map()`, `.registerEvents()`
+- **Thin community `Community 81`** (7 nodes): `Text.php`, `Text`, `.__construct()`, `.normalizeReadOnly()`, `.normalizeRequired()`, `.render()`, `.toDisplayString()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (6 nodes): `EmployeeTimelogs.php`, `EmployeeTimelogs`, `.__construct()`, `.countTotalDays()`, `.countWeekends()`, `.styles()`
+- **Thin community `Community 83`** (7 nodes): `PricingServiceProvider.php`, `PricingServiceProvider`, `.boot()`, `.register()`, `.registerConfig()`, `.registerTranslations()`, `.registerViews()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (6 nodes): `LeaveExport.php`, `LeaveExport`, `.afterSheet()`, `.headings()`, `.map()`, `.registerEvents()`
+- **Thin community `Community 84`** (7 nodes): `RecruitSourceController`, `.create()`, `.edit()`, `.index()`, `.show()`, `.store()`, `RecruitSourceController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (6 nodes): `ChatStoreRequest.php`, `ChatStoreRequest`, `.authorize()`, `.messages()`, `.prepareForValidation()`, `.rules()`
+- **Thin community `Community 88`** (6 nodes): `Kernel.php`, `Kernel`, `.commands()`, `.schedule()`, `.scheduleCache()`, `.scheduleTimezone()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (6 nodes): `StoreEstimateRequest.php`, `StoreEstimateRequest`, `.attributes()`, `.authorize()`, `.prepareForValidation()`, `.rules()`
+- **Thin community `Community 89`** (6 nodes): `LeavesQuotaRenew.php`, `LeavesQuotaRenew`, `.handle()`, `.renewLeavesQuota()`, `.renewLeavesQuotaForCompany()`, `Ne()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (6 nodes): `StoreRequest.php`, `StoreRequest`, `.attributes()`, `.authorize()`, `.prepareForValidation()`, `.rules()`
+- **Thin community `Community 90`** (6 nodes): `LeaveExport.php`, `LeaveExport`, `.afterSheet()`, `.headings()`, `.map()`, `.registerEvents()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (6 nodes): `StoreRequest.php`, `StoreRequest`, `.attributes()`, `.authorize()`, `.prepareForValidation()`, `.rules()`
+- **Thin community `Community 91`** (6 nodes): `UpdatePayments.php`, `UpdatePayments`, `.attributes()`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 92`** (6 nodes): `UpdatePayments.php`, `UpdatePayments`, `.attributes()`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 92`** (6 nodes): `StoreUserRole.php`, `StoreUserRole.php`, `StoreUserRole`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 93`** (6 nodes): `StoreUserRole.php`, `StoreUserRole.php`, `StoreUserRole`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 93`** (6 nodes): `StoreRequest.php`, `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.messages()`, `.prepareForValidation()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 94`** (6 nodes): `ClientImport.php`, `ClientImport`, `.array()`, `.fields()`, `.getProcessedData()`, `.resolveImportCompanyId()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -6048,73 +5745,73 @@ Nodes (1): super-admin.front-setting.footer-setting.footer-data
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 98`** (6 nodes): `ImmigrationExpiryAlert.php`, `ImmigrationExpiryAlert`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 99`** (6 nodes): `RemovalRequestApprovedReject.php`, `RemovalRequestApprovedReject`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 99`** (6 nodes): `NewClientTask.php`, `NewClientTask`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (6 nodes): `RemovalRequestApprovedRejectLead.php`, `RemovalRequestApprovedRejectLead`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 100`** (6 nodes): `RemovalRequestApprovedReject.php`, `RemovalRequestApprovedReject`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (6 nodes): `RemovalRequestApprovedRejectUser.php`, `RemovalRequestApprovedRejectUser`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 101`** (6 nodes): `RemovalRequestApprovedRejectLead.php`, `RemovalRequestApprovedRejectLead`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (6 nodes): `ContactUsMail.php`, `ContactUsMail`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 102`** (6 nodes): `RemovalRequestApprovedRejectUser.php`, `RemovalRequestApprovedRejectUser`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (6 nodes): `OfflinePackageChangeConfirmation.php`, `OfflinePackageChangeConfirmation`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 103`** (6 nodes): `ContactUsMail.php`, `ContactUsMail`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (6 nodes): `OfflinePackageChangeRequest.php`, `OfflinePackageChangeRequest`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 104`** (6 nodes): `OfflinePackageChangeConfirmation.php`, `OfflinePackageChangeConfirmation`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (6 nodes): `Label.php`, `Label`, `.__construct()`, `.normalizeFieldLabel()`, `.normalizeFieldRequired()`, `.render()`
+- **Thin community `Community 105`** (6 nodes): `OfflinePackageChangeRequest.php`, `OfflinePackageChangeRequest`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (6 nodes): `AffiliateGlobalSetting`, `.addModuleSetting()`, `down()`, `up()`, `2024_05_07_045046_create_affiliate_global_settings_table.php`, `AffiliateGlobalSetting.php`
+- **Thin community `Community 106`** (6 nodes): `UserTaskboardSetting.php`, `TaskBoardColumnObserver.php`, `UserTaskboardSetting`, `TaskBoardColumnObserver`, `.created()`, `.creating()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 108`** (6 nodes): `UpdateRequest.php`, `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 107`** (6 nodes): `Label.php`, `Label`, `.__construct()`, `.normalizeFieldLabel()`, `.normalizeFieldRequired()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 109`** (6 nodes): `AssetLent.php`, `AssetLent`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 109`** (6 nodes): `AffiliateGlobalSetting`, `.addModuleSetting()`, `down()`, `up()`, `2024_05_07_045046_create_affiliate_global_settings_table.php`, `AffiliateGlobalSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 110`** (6 nodes): `AssetReturn.php`, `AssetReturn`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 110`** (6 nodes): `UpdateRequest.php`, `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 111`** (6 nodes): `PhoneCollectionEmail.php`, `PhoneCollectionEmail`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 111`** (6 nodes): `AssetLent.php`, `AssetLent`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 112`** (6 nodes): `EmployeeHourlyDataTable`, `.__construct()`, `.dataTable()`, `.getColumns()`, `.html()`, `EmployeeHourlyDataTable.php`
+- **Thin community `Community 112`** (6 nodes): `AssetReturn.php`, `AssetReturn`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 113`** (6 nodes): `StoreMeeting.php`, `StoreMeeting.php`, `StoreMeeting`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 113`** (6 nodes): `PhoneCollectionEmail.php`, `PhoneCollectionEmail`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 115`** (6 nodes): `VendorPaymentDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `.query()`, `VendorPaymentDataTable.php`
+- **Thin community `Community 114`** (6 nodes): `StoreMeeting.php`, `StoreMeeting.php`, `StoreMeeting`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 116`** (6 nodes): `StorePurchaseInventoryRequest`, `.authorize()`, `.messages()`, `.prepareForValidation()`, `.rules()`, `StorePurchaseInventoryRequest.php`
+- **Thin community `Community 116`** (6 nodes): `VendorDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `.query()`, `VendorDataTable.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 117`** (6 nodes): `InventoryImport`, `.array()`, `.fields()`, `.getProcessedData()`, `.resolveImportCompanyId()`, `InventoryImport.php`
+- **Thin community `Community 117`** (6 nodes): `StorePurchaseInventoryRequest`, `.authorize()`, `.messages()`, `.prepareForValidation()`, `.rules()`, `StorePurchaseInventoryRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 118`** (6 nodes): `VendorPayment.php`, `VendorPayment`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 118`** (6 nodes): `InventoryImport`, `.array()`, `.fields()`, `.getProcessedData()`, `.resolveImportCompanyId()`, `InventoryImport.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 119`** (6 nodes): `JobApplicationStatusChange.php`, `JobApplicationStatusChange`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 119`** (6 nodes): `VendorPayment.php`, `VendorPayment`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 120`** (6 nodes): `FrontBaseController`, `.__construct()`, `.__get()`, `.__isset()`, `.__set()`, `FrontBaseController.php`
+- **Thin community `Community 120`** (6 nodes): `SkillDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `.query()`, `SkillDataTable.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 121`** (6 nodes): `ImportProcessRequest`, `.attributes()`, `.authorize()`, `.messages()`, `.rules()`, `ImportProcessRequest.php`
+- **Thin community `Community 121`** (6 nodes): `FrontBaseController`, `.__construct()`, `.__get()`, `.__isset()`, `.__set()`, `FrontBaseController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 122`** (6 nodes): `StoreMeeting.php`, `StoreMeeting.php`, `StoreMeeting`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 122`** (6 nodes): `ImportProcessRequest`, `.attributes()`, `.authorize()`, `.messages()`, `.rules()`, `ImportProcessRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 123`** (6 nodes): `UpdateMeeting.php`, `UpdateMeeting.php`, `UpdateMeeting`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 123`** (6 nodes): `StoreMeeting.php`, `StoreMeeting.php`, `StoreMeeting`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 124`** (6 nodes): `EmployeeResponse.php`, `EmployeeResponse`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 124`** (6 nodes): `UpdateMeeting.php`, `UpdateMeeting.php`, `UpdateMeeting`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 125`** (6 nodes): `FrontJobApplyCandidate.php`, `FrontJobApplyCandidate`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 125`** (6 nodes): `EmployeeResponse.php`, `EmployeeResponse`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 126`** (6 nodes): `OfferLetterAccept.php`, `OfferLetterAccept`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 126`** (6 nodes): `FrontJobApplyCandidate.php`, `FrontJobApplyCandidate`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 127`** (6 nodes): `OfferLetterReject.php`, `OfferLetterReject`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 127`** (6 nodes): `OfferLetterAccept.php`, `OfferLetterAccept`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 129`** (6 nodes): `Panelist.php`, `Panelist`, `.approve()`, `.cancel()`, `.deny()`, `.updateAction()`
+- **Thin community `Community 128`** (6 nodes): `OfferLetterReject.php`, `OfferLetterReject`, `.__construct()`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 130`** (6 nodes): `estimates.partials.pdf-bom-lines`, `invoice-1.blade.php`, `invoice-2.blade.php`, `invoice-3.blade.php`, `invoice-4.blade.php`, `invoice-5.blade.php`
+- **Thin community `Community 129`** (6 nodes): `InterviewScheduleObserver.php`, `InterviewScheduleObserver`, `.created()`, `.creating()`, `.logRecruitInterviewActivity()`, `.updated()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 131`** (5 nodes): `NewChatEvent.php`, `NewChatEvent`, `.broadcastAs()`, `.broadcastOn()`, `.__construct()`
+- **Thin community `Community 131`** (6 nodes): `Panelist.php`, `Panelist`, `.approve()`, `.cancel()`, `.deny()`, `.updateAction()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 132`** (5 nodes): `NewMentionChatEvent.php`, `NewMentionChatEvent`, `.broadcastAs()`, `.broadcastOn()`, `.__construct()`
+- **Thin community `Community 132`** (6 nodes): `estimates.partials.pdf-bom-lines`, `invoice-1.blade.php`, `invoice-2.blade.php`, `invoice-3.blade.php`, `invoice-4.blade.php`, `invoice-5.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 133`** (5 nodes): `TimelogEvent.php`, `TimelogEvent`, `.broadcastAs()`, `.broadcastOn()`, `.__construct()`
+- **Thin community `Community 133`** (5 nodes): `NewChatEvent.php`, `NewChatEvent`, `.broadcastAs()`, `.broadcastOn()`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 134`** (5 nodes): `ShiftScheduleExport.php`, `ShiftScheduleExport`, `.afterSheet()`, `.headings()`, `.registerEvents()`
+- **Thin community `Community 134`** (5 nodes): `NewMentionChatEvent.php`, `NewMentionChatEvent`, `.broadcastAs()`, `.broadcastOn()`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 135`** (5 nodes): `Controller.php`, `Controller`, `.__get()`, `.__isset()`, `.__set()`
+- **Thin community `Community 135`** (5 nodes): `TimelogEvent.php`, `TimelogEvent`, `.broadcastAs()`, `.broadcastOn()`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 136`** (5 nodes): `UpdateThemeSetting.php`, `UpdateThemeSetting`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -6214,409 +5911,407 @@ Nodes (1): super-admin.front-setting.footer-setting.footer-data
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 184`** (5 nodes): `SalesHistoryImport.php`, `SalesHistoryImport`, `.array()`, `.fields()`, `.getProcessedData()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 185`** (5 nodes): `BulkShiftNotification.php`, `BulkShiftNotification`, `.__construct()`, `.toArray()`, `.via()`
+- **Thin community `Community 185`** (5 nodes): `NewExpenseRecurringListener.php`, `NewExpenseRecurringListener`, `.__construct()`, `.handle()`, `NewExpenseRecurringListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 186`** (5 nodes): `MailTicketReply.php`, `MailTicketReply`, `.__construct()`, `.toArray()`, `.via()`
+- **Thin community `Community 186`** (5 nodes): `NewProductPurchaseListener.php`, `NewProductPurchaseListener`, `.__construct()`, `.handle()`, `NewProductPurchaseListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 187`** (5 nodes): `ShiftRotationNotification.php`, `ShiftRotationNotification`, `.__construct()`, `.toArray()`, `.via()`
+- **Thin community `Community 187`** (5 nodes): `BulkShiftNotification.php`, `BulkShiftNotification`, `.__construct()`, `.toArray()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 188`** (5 nodes): `SubTaskCreated.php`, `SubTaskCreated`, `.__construct()`, `.toArray()`, `.via()`
+- **Thin community `Community 188`** (5 nodes): `MailTicketReply.php`, `MailTicketReply`, `.__construct()`, `.toArray()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 189`** (5 nodes): `GlobalSettingObserver.php`, `GlobalSettingObserver`, `.deleted()`, `.saving()`, `.updated()`
+- **Thin community `Community 189`** (5 nodes): `ShiftRotationNotification.php`, `ShiftRotationNotification`, `.__construct()`, `.toArray()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 190`** (5 nodes): `LineChart.php`, `LineChart`, `.__construct()`, `.render()`, `LineChart.php`
+- **Thin community `Community 190`** (5 nodes): `SubTaskCreated.php`, `SubTaskCreated`, `.__construct()`, `.toArray()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 191`** (5 nodes): `SettingMenuItem.php`, `SettingMenuItem`, `.__construct()`, `.isActive()`, `.render()`
+- **Thin community `Community 191`** (5 nodes): `GlobalSettingObserver.php`, `GlobalSettingObserver`, `.deleted()`, `.saving()`, `.updated()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 192`** (5 nodes): `SubMenuItem.php`, `SubMenuItem`, `.__construct()`, `.render()`, `.resolveActiveState()`
+- **Thin community `Community 192`** (5 nodes): `LineChart.php`, `LineChart`, `.__construct()`, `.render()`, `LineChart.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 193`** (5 nodes): `SettingSidebar.php`, `SettingSidebar.php`, `SettingSidebar`, `.__construct()`, `.render()`
+- **Thin community `Community 193`** (5 nodes): `MenuItem.php`, `MenuItem`, `.__construct()`, `.render()`, `.resolveActiveState()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 194`** (5 nodes): `ProjectFactory.php`, `ProjectFactory`, `.clean()`, `.definition()`, `.initials()`
+- **Thin community `Community 194`** (5 nodes): `SettingMenuItem.php`, `SettingMenuItem`, `.__construct()`, `.isActive()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 198`** (5 nodes): `CreateReferralsRequest.php`, `CreateReferralsRequest`, `.attributes()`, `.authorize()`, `.rules()`
+- **Thin community `Community 195`** (5 nodes): `SubMenuItem.php`, `SubMenuItem`, `.__construct()`, `.render()`, `.resolveActiveState()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 199`** (5 nodes): `StoreAffiliates.php`, `StoreAffiliates`, `.attributes()`, `.authorize()`, `.rules()`
+- **Thin community `Community 196`** (5 nodes): `SettingSidebar.php`, `SettingSidebar.php`, `SettingSidebar`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 200`** (5 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 197`** (5 nodes): `ProjectFactory.php`, `ProjectFactory`, `.clean()`, `.definition()`, `.initials()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 202`** (5 nodes): `StoreBiolinkBlocks.php`, `StoreBiolinkBlocks`, `.attributes()`, `.authorize()`, `.rules()`
+- **Thin community `Community 202`** (5 nodes): `CreateReferralsRequest.php`, `CreateReferralsRequest`, `.attributes()`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 203`** (5 nodes): `CyberSecuritySetting`, `down()`, `up()`, `2023_11_11_090216_create_cyber_security_settings_table.php`, `CyberSecuritySetting.php`
+- **Thin community `Community 203`** (5 nodes): `StoreAffiliates.php`, `StoreAffiliates`, `.attributes()`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 204`** (5 nodes): `StoreSecurityRequest.php`, `StoreSecurityRequest`, `.authorize()`, `.defaultRules()`, `.rules()`
+- **Thin community `Community 204`** (5 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 205`** (5 nodes): `DifferentIpNotification.php`, `DifferentIpNotification`, `.__construct()`, `.toMail()`, `.via()`
+- **Thin community `Community 206`** (5 nodes): `StoreBiolinkBlocks.php`, `StoreBiolinkBlocks`, `.attributes()`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 206`** (5 nodes): `LockoutEmailNotification.php`, `LockoutEmailNotification`, `.__construct()`, `.toMail()`, `.via()`
+- **Thin community `Community 207`** (5 nodes): `CyberSecuritySetting`, `down()`, `up()`, `2023_11_11_090216_create_cyber_security_settings_table.php`, `CyberSecuritySetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 207`** (5 nodes): `LanguagePackSetting`, `down()`, `up()`, `2023_10_09_114356_create_language_pack_settings_table.php`, `LanguagePackSetting.php`
+- **Thin community `Community 208`** (5 nodes): `StoreSecurityRequest.php`, `StoreSecurityRequest`, `.authorize()`, `.defaultRules()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 208`** (5 nodes): `ExpensesSalarySlipDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `ExpensesSalarySlipDataTable.php`
+- **Thin community `Community 209`** (5 nodes): `DifferentIpNotification.php`, `DifferentIpNotification`, `.__construct()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 209`** (5 nodes): `PayrollDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `PayrollDataTable.php`
+- **Thin community `Community 210`** (5 nodes): `LockoutEmailNotification.php`, `LockoutEmailNotification`, `.__construct()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 210`** (5 nodes): `SalarySettingController`, `.__construct()`, `.create()`, `.index()`, `SalarySettingController.php`
+- **Thin community `Community 211`** (5 nodes): `LanguagePackSetting`, `down()`, `up()`, `2023_10_09_114356_create_language_pack_settings_table.php`, `LanguagePackSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 211`** (5 nodes): `StoreEmployeeSalaryGroup.php`, `StoreEmployeeSalaryGroup`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 212`** (5 nodes): `ExpensesSalarySlipDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `ExpensesSalarySlipDataTable.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 212`** (5 nodes): `StoreSalary.php`, `StoreSalary`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 213`** (5 nodes): `SalarySettingController`, `.__construct()`, `.create()`, `.index()`, `SalarySettingController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 213`** (5 nodes): `StoreSalaryGroup.php`, `StoreSalaryGroup`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 214`** (5 nodes): `StoreEmployeeSalaryGroup.php`, `StoreEmployeeSalaryGroup`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 214`** (5 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 215`** (5 nodes): `StoreSalary.php`, `StoreSalary`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 215`** (5 nodes): `PerformanceGlobalSetting`, `down()`, `up()`, `2024_09_19_082743_create_performance_global_settings_table.php`, `PerformanceGlobalSetting.php`
+- **Thin community `Community 216`** (5 nodes): `StoreSalaryGroup.php`, `StoreSalaryGroup`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 216`** (5 nodes): `OkrScoringController`, `.__construct()`, `.exportReport()`, `.index()`, `OkrScoringController.php`
+- **Thin community `Community 217`** (5 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 217`** (5 nodes): `AgendaRequest.php`, `AgendaRequest`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 218`** (5 nodes): `PerformanceGlobalSetting`, `down()`, `up()`, `2024_09_19_082743_create_performance_global_settings_table.php`, `PerformanceGlobalSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 218`** (5 nodes): `CreateObjectiveRequest.php`, `CreateObjectiveRequest`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 219`** (5 nodes): `OkrScoringController`, `.__construct()`, `.exportReport()`, `.index()`, `OkrScoringController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 220`** (5 nodes): `ClientProductPricingImport`, `.array()`, `.fields()`, `.getProcessedData()`, `ClientProductPricingImport.php`
+- **Thin community `Community 220`** (5 nodes): `AgendaRequest.php`, `AgendaRequest`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 221`** (5 nodes): `PricingTierItemsImport`, `.array()`, `.fields()`, `.getProcessedData()`, `PricingTierItemsImport.php`
+- **Thin community `Community 221`** (5 nodes): `CreateObjectiveRequest.php`, `CreateObjectiveRequest`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 222`** (5 nodes): `ProjectRoadmapSetting`, `down()`, `up()`, `2023_11_03_071005_create_project_roadmap_settings_table.php`, `ProjectRoadmapSetting.php`
+- **Thin community `Community 222`** (5 nodes): `MeetingInviteListener`, `.__construct()`, `.handle()`, `MeetingInviteListener.php`, `MeetingInviteListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 223`** (5 nodes): `SalesDoReconciliationReportCommand`, `.diffAssocNumeric()`, `.handle()`, `.resolvePath()`, `SalesDoReconciliationReportCommand.php`
+- **Thin community `Community 224`** (5 nodes): `ClientProductPricingImport`, `.array()`, `.fields()`, `.getProcessedData()`, `ClientProductPricingImport.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 224`** (5 nodes): `PurchaseManagementSetting`, `down()`, `up()`, `2023_10_23_071216_create_purchase_management_settings.php`, `PurchaseManagementSetting.php`
+- **Thin community `Community 225`** (5 nodes): `PricingTierItemsImport`, `.array()`, `.fields()`, `.getProcessedData()`, `PricingTierItemsImport.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 225`** (5 nodes): `VendorDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `VendorDataTable.php`
+- **Thin community `Community 226`** (5 nodes): `ProjectRoadmapSetting`, `down()`, `up()`, `2023_11_03_071005_create_project_roadmap_settings_table.php`, `ProjectRoadmapSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 226`** (5 nodes): `StoreRequest.php`, `StoreRequest`, `.attributes()`, `.authorize()`, `.messages()`
+- **Thin community `Community 227`** (5 nodes): `VendorPaymentDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `VendorPaymentDataTable.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 227`** (5 nodes): `UpdateRequest.php`, `UpdateRequest`, `.attributes()`, `.authorize()`, `.messages()`
+- **Thin community `Community 228`** (5 nodes): `PurchaseManagementSetting`, `down()`, `up()`, `2023_10_23_071216_create_purchase_management_settings.php`, `PurchaseManagementSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 228`** (5 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 229`** (5 nodes): `StoreRequest.php`, `StoreRequest`, `.attributes()`, `.authorize()`, `.messages()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 229`** (5 nodes): `VendorCreditPaymentMade.php`, `VendorCreditPaymentMade`, `.__construct()`, `.toArray()`, `.via()`
+- **Thin community `Community 230`** (5 nodes): `UpdateRequest.php`, `UpdateRequest`, `.attributes()`, `.authorize()`, `.messages()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 231`** (5 nodes): `DashboardPipelineWidgetDataTable`, `.getColumns()`, `.html()`, `.query()`, `DashboardPipelineWidgetDataTable.php`
+- **Thin community `Community 231`** (5 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 232`** (5 nodes): `SkillDataTable`, `.dataTable()`, `.getColumns()`, `.html()`, `SkillDataTable.php`
+- **Thin community `Community 232`** (5 nodes): `VendorCreditPaymentMade.php`, `VendorCreditPaymentMade`, `.__construct()`, `.toArray()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 233`** (5 nodes): `StoreJobRequest.php`, `StoreJobRequest`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 234`** (5 nodes): `CandidateDatabaseDataTable`, `.getColumns()`, `.html()`, `.query()`, `CandidateDatabaseDataTable.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 234`** (5 nodes): `StoreApplicationStatus`, `.authorize()`, `.messages()`, `.rules()`, `StoreApplicationStatus.php`
+- **Thin community `Community 235`** (5 nodes): `StoreJobRequest.php`, `StoreJobRequest`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 235`** (5 nodes): `StoreEvaluation`, `.authorize()`, `.messages()`, `.rules()`, `StoreEvaluation.php`
+- **Thin community `Community 236`** (5 nodes): `StoreApplicationStatus`, `.authorize()`, `.messages()`, `.rules()`, `StoreApplicationStatus.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 236`** (5 nodes): `StoreJobAlertRequest`, `.authorize()`, `.messages()`, `.rules()`, `StoreJobAlertRequest.php`
+- **Thin community `Community 237`** (5 nodes): `StoreEvaluation`, `.authorize()`, `.messages()`, `.rules()`, `StoreEvaluation.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 237`** (5 nodes): `StoreJobLetter.php`, `StoreJobLetter`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 238`** (5 nodes): `StoreJobAlertRequest`, `.authorize()`, `.messages()`, `.rules()`, `StoreJobAlertRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 238`** (5 nodes): `StoreOfferLetter.php`, `StoreOfferLetter`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 239`** (5 nodes): `StoreJobLetter.php`, `StoreJobLetter`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 239`** (5 nodes): `UpdateStatus.php`, `UpdateStatus`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 240`** (5 nodes): `StoreOfferLetter.php`, `StoreOfferLetter`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 240`** (5 nodes): `StoreRecruiterRequest.php`, `StoreRecruiterRequest`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 241`** (5 nodes): `UpdateStatus.php`, `UpdateStatus`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 241`** (5 nodes): `StoreInterview.php`, `StoreInterview`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 242`** (5 nodes): `StoreRecruiterRequest.php`, `StoreRecruiterRequest`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 242`** (5 nodes): `SendOfferLetterReminder.php`, `SendOfferLetterReminder`, `.toArray()`, `.toMail()`, `.via()`
+- **Thin community `Community 243`** (5 nodes): `StoreInterview.php`, `StoreInterview`, `.authorize()`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 243`** (5 nodes): `ServerManagerGlobalSetting`, `down()`, `up()`, `2025_01_01_00001_create_server_global_settings_table.php`, `ServerManagerGlobalSetting.php`
+- **Thin community `Community 244`** (5 nodes): `JobApplicationStatusChange.php`, `JobApplicationStatusChange`, `.__construct()`, `.toArray()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 244`** (5 nodes): `StoreMeetingNote.php`, `StoreMeetingNote`, `.authorize()`, `.messages()`, `.rules()`
+- **Thin community `Community 245`** (5 nodes): `JobOfferStatusChange.php`, `JobOfferStatusChange`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 247`** (5 nodes): `comments.blade.php`, `files.blade.php`, `notes.blade.php`, `sub_tasks.blade.php`, `tasks.ajax.sent-approval-modal`
+- **Thin community `Community 246`** (5 nodes): `RecruitJobAlertNotification.php`, `RecruitJobAlertNotification`, `.__construct()`, `.toArray()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 248`** (4 nodes): `agent.cs`, `AgentResponse`, `CravevaAgentService`, `.ChatAsync()`
+- **Thin community `Community 247`** (5 nodes): `SendOfferLetterReminder.php`, `SendOfferLetterReminder`, `.toArray()`, `.toMail()`, `.via()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 249`** (4 nodes): `InvitationEmailEvent.php`, `InvitationEmailEvent`, `.broadcastOn()`, `.__construct()`
+- **Thin community `Community 248`** (5 nodes): `EvaluationObserver.php`, `EvaluationObserver`, `.created()`, `.logRecruitEvaluationActivity()`, `.updated()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 250`** (4 nodes): `NewMessage.php`, `NewMessage`, `.broadcastOn()`, `.__construct()`
+- **Thin community `Community 249`** (5 nodes): `InterviewEmployeeObserver.php`, `InterviewEmployeeObserver`, `.created()`, `.logRecruitInterviewActivity()`, `.updated()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 251`** (4 nodes): `TaskUpdated.php`, `TaskUpdated`, `.broadcastAs()`, `.broadcastOn()`
+- **Thin community `Community 250`** (5 nodes): `ServerManagerGlobalSetting`, `down()`, `up()`, `2025_01_01_00001_create_server_global_settings_table.php`, `ServerManagerGlobalSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 252`** (4 nodes): `TestPusherEvent.php`, `TestPusherEvent`, `.broadcastAs()`, `.broadcastOn()`
+- **Thin community `Community 253`** (5 nodes): `comments.blade.php`, `files.blade.php`, `notes.blade.php`, `sub_tasks.blade.php`, `tasks.ajax.sent-approval-modal`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 253`** (4 nodes): `WeeklyTimesheetApprovedEvent.php`, `WeeklyTimesheetApprovedEvent`, `.broadcastOn()`, `.__construct()`
+- **Thin community `Community 254`** (4 nodes): `agent.cs`, `AgentResponse`, `CravevaAgentService`, `.ChatAsync()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 254`** (4 nodes): `WeeklyTimesheetDraftEvent.php`, `WeeklyTimesheetDraftEvent`, `.broadcastOn()`, `.__construct()`
+- **Thin community `Community 255`** (4 nodes): `InvitationEmailEvent.php`, `InvitationEmailEvent`, `.broadcastOn()`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 255`** (4 nodes): `SearchController.php`, `SearchController`, `.index()`, `.store()`
+- **Thin community `Community 256`** (4 nodes): `NewMessage.php`, `NewMessage`, `.broadcastOn()`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 256`** (4 nodes): `TimelogWeeklyApprovalController.php`, `TimelogWeeklyApprovalController`, `.__construct()`, `.formatTime()`
+- **Thin community `Community 257`** (4 nodes): `TaskUpdated.php`, `TaskUpdated`, `.broadcastAs()`, `.broadcastOn()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 257`** (4 nodes): `CommonRequest.php`, `CommonRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 258`** (4 nodes): `TestPusherEvent.php`, `TestPusherEvent`, `.broadcastAs()`, `.broadcastOn()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 258`** (4 nodes): `EstimateAcceptRequest.php`, `EstimateAcceptRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 259`** (4 nodes): `SearchController.php`, `SearchController`, `.index()`, `.store()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 259`** (4 nodes): `InvoiceFileStore.php`, `InvoiceFileStore`, `.authorize()`, `.rules()`
+- **Thin community `Community 260`** (4 nodes): `TimelogWeeklyApprovalController.php`, `TimelogWeeklyApprovalController`, `.__construct()`, `.formatTime()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 260`** (4 nodes): `InvoicePaymentRequest.php`, `InvoicePaymentRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 261`** (4 nodes): `EnsureAiOrderIntegrationMethodAllowed.php`, `EnsureAiOrderIntegrationMethodAllowed`, `.handle()`, `.isMethodAllowed()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 261`** (4 nodes): `LoginRequest.php`, `LoginRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 262`** (4 nodes): `CommonRequest.php`, `CommonRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 262`** (4 nodes): `ProposalAcceptRequest.php`, `ProposalAcceptRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 263`** (4 nodes): `EstimateAcceptRequest.php`, `EstimateAcceptRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 263`** (4 nodes): `SearchRequest.php`, `SearchRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 264`** (4 nodes): `InvoiceFileStore.php`, `InvoiceFileStore`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 264`** (4 nodes): `SlackWebhookRequest.php`, `SlackWebhookRequest`, `.authorize()`, `.messages()`
+- **Thin community `Community 265`** (4 nodes): `InvoicePaymentRequest.php`, `InvoicePaymentRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 265`** (4 nodes): `StoreBusinessAddress.php`, `StoreBusinessAddress`, `.authorize()`, `.rules()`
+- **Thin community `Community 266`** (4 nodes): `LoginRequest.php`, `LoginRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 266`** (4 nodes): `StoreContractTemplate.php`, `StoreContractTemplate`, `.authorize()`, `.rules()`
+- **Thin community `Community 267`** (4 nodes): `SearchRequest.php`, `SearchRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 267`** (4 nodes): `StoreDealNote.php`, `StoreDealNote`, `.authorize()`, `.rules()`
+- **Thin community `Community 268`** (4 nodes): `SlackWebhookRequest.php`, `SlackWebhookRequest`, `.authorize()`, `.messages()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 268`** (4 nodes): `StoreFileLink.php`, `StoreFileLink`, `.authorize()`, `.rules()`
+- **Thin community `Community 269`** (4 nodes): `StoreBusinessAddress.php`, `StoreBusinessAddress`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 269`** (4 nodes): `StorePassportRequest.php`, `StorePassportRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 270`** (4 nodes): `StoreContractTemplate.php`, `StoreContractTemplate`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 270`** (4 nodes): `StoreStatusSettingRequest.php`, `StoreStatusSettingRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 271`** (4 nodes): `StoreFileLink.php`, `StoreFileLink`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 271`** (4 nodes): `StoreVisaRequest.php`, `StoreVisaRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 272`** (4 nodes): `StorePassportRequest.php`, `StorePassportRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 272`** (4 nodes): `TwoFaCodeValidation.php`, `TwoFaCodeValidation`, `.authorize()`, `.rules()`
+- **Thin community `Community 273`** (4 nodes): `StoreStatusSettingRequest.php`, `StoreStatusSettingRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 273`** (4 nodes): `UnitTypeRequest.php`, `UnitTypeRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 274`** (4 nodes): `StoreVisaRequest.php`, `StoreVisaRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 274`** (4 nodes): `UpdateContractSetting.php`, `UpdateContractSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 275`** (4 nodes): `TwoFaCodeValidation.php`, `TwoFaCodeValidation`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 275`** (4 nodes): `UpdateEstimateRequestStatus.php`, `UpdateEstimateRequestStatus`, `.authorize()`, `.rules()`
+- **Thin community `Community 276`** (4 nodes): `UnitTypeRequest.php`, `UnitTypeRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 276`** (4 nodes): `UpdateInvoiceSetting.php`, `UpdateInvoiceSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 277`** (4 nodes): `UpdateContractSetting.php`, `UpdateContractSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 277`** (4 nodes): `UpdatePassportRequest.php`, `UpdatePassportRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 278`** (4 nodes): `UpdateEstimateRequestStatus.php`, `UpdateEstimateRequestStatus`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 278`** (4 nodes): `UpdatePrefixSetting.php`, `UpdatePrefixSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 279`** (4 nodes): `UpdateInvoiceSetting.php`, `UpdateInvoiceSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 279`** (4 nodes): `UpdateQuickBooksSetting.php`, `UpdateQuickBooksSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 280`** (4 nodes): `UpdatePassportRequest.php`, `UpdatePassportRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 280`** (4 nodes): `UpdateSalesOrderAiIntegrationPermissionsRequest.php`, `UpdateSalesOrderAiIntegrationPermissionsRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 281`** (4 nodes): `UpdatePrefixSetting.php`, `UpdatePrefixSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 281`** (4 nodes): `UpdateTemplateSetting.php`, `UpdateTemplateSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 282`** (4 nodes): `UpdateQuickBooksSetting.php`, `UpdateQuickBooksSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 282`** (4 nodes): `UpdateVisaRequest.php`, `UpdateVisaRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 283`** (4 nodes): `UpdateSalesOrderAiIntegrationPermissionsRequest.php`, `UpdateSalesOrderAiIntegrationPermissionsRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 283`** (4 nodes): `UploadInstallRequest.php`, `UploadInstallRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 284`** (4 nodes): `UpdateTemplateSetting.php`, `UpdateTemplateSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 284`** (4 nodes): `UpdateAppSetting.php`, `UpdateAppSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 285`** (4 nodes): `UpdateVisaRequest.php`, `UpdateVisaRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 285`** (4 nodes): `StoreClientCategory.php`, `StoreClientCategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 286`** (4 nodes): `UploadInstallRequest.php`, `UploadInstallRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 286`** (4 nodes): `StoreClientSubcategory.php`, `StoreClientSubcategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 287`** (4 nodes): `UpdateAppSetting.php`, `UpdateAppSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 287`** (4 nodes): `StoreShippingAddressRequest.php`, `StoreShippingAddressRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 288`** (4 nodes): `StoreClientCategory.php`, `StoreClientCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 288`** (4 nodes): `RenewRequest.php`, `RenewRequest`, `.authorize()`, `.messages()`
+- **Thin community `Community 289`** (4 nodes): `StoreClientSubcategory.php`, `StoreClientSubcategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 289`** (4 nodes): `SignRequest.php`, `SignRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 290`** (4 nodes): `StoreShippingAddressRequest.php`, `StoreShippingAddressRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 290`** (4 nodes): `StoreDiscussionRequest.php`, `StoreDiscussionRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 291`** (4 nodes): `RenewRequest.php`, `RenewRequest`, `.authorize()`, `.messages()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 291`** (4 nodes): `UpdateDiscussionRequest.php`, `UpdateDiscussionRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 292`** (4 nodes): `SignRequest.php`, `SignRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 292`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 293`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 293`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 294`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 294`** (4 nodes): `ImportRequest.php`, `ImportRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 295`** (4 nodes): `ImportRequest.php`, `ImportRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 295`** (4 nodes): `AutoTranslateRequest.php`, `AutoTranslateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 296`** (4 nodes): `AutoTranslateRequest.php`, `AutoTranslateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 296`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 297`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 297`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 298`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 298`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 299`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 299`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 300`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 300`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 301`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 301`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 302`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 302`** (4 nodes): `UpdateEmployee.php`, `UpdateEmployee.php`, `UpdateEmployee`, `.authorize()`
+- **Thin community `Community 303`** (4 nodes): `UpdateEmployee.php`, `UpdateEmployee.php`, `UpdateEmployee`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 303`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 304`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 304`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 305`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 305`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 306`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 306`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 307`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 307`** (4 nodes): `StoreAttendance.php`, `StoreAttendance`, `.authorize()`, `.rules()`
+- **Thin community `Community 308`** (4 nodes): `StoreAttendance.php`, `StoreAttendance`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 308`** (4 nodes): `UpdateAttendanceSetting.php`, `UpdateAttendanceSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 309`** (4 nodes): `UpdateAttendanceSetting.php`, `UpdateAttendanceSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 309`** (4 nodes): `StoreAccount.php`, `StoreAccount`, `.authorize()`, `.rules()`
+- **Thin community `Community 310`** (4 nodes): `StoreAccount.php`, `StoreAccount`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 310`** (4 nodes): `StoreContact.php`, `StoreContact`, `.authorize()`, `.rules()`
+- **Thin community `Community 311`** (4 nodes): `StoreContact.php`, `StoreContact`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 311`** (4 nodes): `UpdateContact.php`, `UpdateContact`, `.authorize()`, `.rules()`
+- **Thin community `Community 312`** (4 nodes): `UpdateContact.php`, `UpdateContact`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 312`** (4 nodes): `SignRequest.php`, `SignRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 313`** (4 nodes): `SignRequest.php`, `SignRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 313`** (4 nodes): `StoreDiscussionRequest.php`, `StoreDiscussionRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 314`** (4 nodes): `StoreDiscussionRequest.php`, `StoreDiscussionRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 314`** (4 nodes): `CreateRequest.php`, `CreateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 315`** (4 nodes): `CreateRequest.php`, `CreateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 315`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 316`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 316`** (4 nodes): `ClockInRequest.php`, `ClockInRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 317`** (4 nodes): `ClockInRequest.php`, `ClockInRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 317`** (4 nodes): `creditNoteFileStore.php`, `creditNoteFileStore`, `.authorize()`, `.rules()`
+- **Thin community `Community 318`** (4 nodes): `creditNoteFileStore.php`, `creditNoteFileStore`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 318`** (4 nodes): `UpdateCreditNote.php`, `UpdateCreditNote`, `.authorize()`, `.rules()`
+- **Thin community `Community 319`** (4 nodes): `UpdateCreditNote.php`, `UpdateCreditNote`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 319`** (4 nodes): `StoreCurrency.php`, `StoreCurrency`, `.authorize()`, `.rules()`
+- **Thin community `Community 320`** (4 nodes): `StoreCurrency.php`, `StoreCurrency`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 320`** (4 nodes): `StoreCurrencyExchangeKey.php`, `StoreCurrencyExchangeKey`, `.authorize()`, `.rules()`
+- **Thin community `Community 321`** (4 nodes): `StoreCurrencyExchangeKey.php`, `StoreCurrencyExchangeKey`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 321`** (4 nodes): `UpdateCurrency.php`, `UpdateCurrency`, `.authorize()`, `.rules()`
+- **Thin community `Community 322`** (4 nodes): `UpdateCurrency.php`, `UpdateCurrency`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 322`** (4 nodes): `UpdateCustomField.php`, `UpdateCustomField`, `.authorize()`, `.rules()`
+- **Thin community `Community 323`** (4 nodes): `UpdateCustomField.php`, `UpdateCustomField`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 323`** (4 nodes): `StageChangeRequest.php`, `StageChangeRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 324`** (4 nodes): `StageChangeRequest.php`, `StageChangeRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 324`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 325`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 325`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 326`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 326`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 327`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 327`** (4 nodes): `CreateRequest.php`, `CreateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 328`** (4 nodes): `CreateRequest.php`, `CreateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 328`** (4 nodes): `DeleteRequest.php`, `DeleteRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 329`** (4 nodes): `DeleteRequest.php`, `DeleteRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 329`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 330`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 330`** (4 nodes): `StoreEmployeeShift.php`, `StoreEmployeeShift`, `.authorize()`, `.rules()`
+- **Thin community `Community 331`** (4 nodes): `StoreEmployeeShift.php`, `StoreEmployeeShift`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 331`** (4 nodes): `StoreShiftRotationRequest.php`, `StoreShiftRotationRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 332`** (4 nodes): `StoreShiftRotationRequest.php`, `StoreShiftRotationRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 332`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 333`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 333`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 334`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 334`** (4 nodes): `StoreEventNote.php`, `StoreEventNote`, `.authorize()`, `.rules()`
+- **Thin community `Community 335`** (4 nodes): `StoreEventNote.php`, `StoreEventNote`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 335`** (4 nodes): `StoreExpenseCategory.php`, `StoreExpenseCategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 336`** (4 nodes): `StoreExpenseCategory.php`, `StoreExpenseCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 336`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 337`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 337`** (4 nodes): `CreateRequest.php`, `CreateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 338`** (4 nodes): `CreateRequest.php`, `CreateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 338`** (4 nodes): `RemoveLeadRequest.php`, `RemoveLeadRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 339`** (4 nodes): `RemoveLeadRequest.php`, `RemoveLeadRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 339`** (4 nodes): `RemoveUserRequest.php`, `RemoveUserRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 340`** (4 nodes): `RemoveUserRequest.php`, `RemoveUserRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 340`** (4 nodes): `SaveConsentLeadDataRequest.php`, `SaveConsentLeadDataRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 341`** (4 nodes): `SaveConsentLeadDataRequest.php`, `SaveConsentLeadDataRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 341`** (4 nodes): `SaveConsentUserDataRequest.php`, `SaveConsentUserDataRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 342`** (4 nodes): `SaveConsentUserDataRequest.php`, `SaveConsentUserDataRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 342`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 343`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 343`** (4 nodes): `StoreGoogleCalender.php`, `StoreGoogleCalender`, `.authorize()`, `.rules()`
+- **Thin community `Community 344`** (4 nodes): `StoreGoogleCalender.php`, `StoreGoogleCalender`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 344`** (4 nodes): `DeleteRequest.php`, `DeleteRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 345`** (4 nodes): `DeleteRequest.php`, `DeleteRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 345`** (4 nodes): `IndexRequest.php`, `IndexRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 346`** (4 nodes): `IndexRequest.php`, `IndexRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 346`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 347`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 347`** (4 nodes): `UpdateAiIntegrationOrderRequest.php`, `UpdateAiIntegrationOrderRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 348`** (4 nodes): `UpdateAiIntegrationOrderRequest.php`, `UpdateAiIntegrationOrderRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 348`** (4 nodes): `StoreIssue.php`, `StoreIssue`, `.authorize()`, `.rules()`
+- **Thin community `Community 349`** (4 nodes): `StoreIssue.php`, `StoreIssue`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 349`** (4 nodes): `KnowledgeBaseCategoryStore.php`, `KnowledgeBaseCategoryStore`, `.authorize()`, `.rules()`
+- **Thin community `Community 350`** (4 nodes): `KnowledgeBaseCategoryStore.php`, `KnowledgeBaseCategoryStore`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 350`** (4 nodes): `KnowledgeBaseStore.php`, `KnowledgeBaseStore`, `.authorize()`, `.rules()`
+- **Thin community `Community 351`** (4 nodes): `KnowledgeBaseStore.php`, `KnowledgeBaseStore`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 351`** (4 nodes): `DeleteRequest.php`, `DeleteRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 352`** (4 nodes): `DeleteRequest.php`, `DeleteRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 352`** (4 nodes): `StoreLeadAgent.php`, `StoreLeadAgent`, `.authorize()`, `.rules()`
+- **Thin community `Community 353`** (4 nodes): `StoreLeadAgent.php`, `StoreLeadAgent`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 353`** (4 nodes): `StoreLeadCategory.php`, `StoreLeadCategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 354`** (4 nodes): `StoreLeadCategory.php`, `StoreLeadCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 354`** (4 nodes): `UpdateLeadCategory.php`, `UpdateLeadCategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 355`** (4 nodes): `UpdateLeadCategory.php`, `UpdateLeadCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 355`** (4 nodes): `StoreLeadPipeline.php`, `StoreLeadPipeline`, `.authorize()`, `.rules()`
+- **Thin community `Community 356`** (4 nodes): `StoreLeadPipeline.php`, `StoreLeadPipeline`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 356`** (4 nodes): `StoreLeadSource.php`, `StoreLeadSource`, `.authorize()`, `.rules()`
+- **Thin community `Community 357`** (4 nodes): `StoreLeadSource.php`, `StoreLeadSource`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 357`** (4 nodes): `UpdateLeadAgent.php`, `UpdateLeadAgent`, `.authorize()`, `.rules()`
+- **Thin community `Community 358`** (4 nodes): `UpdateLeadAgent.php`, `UpdateLeadAgent`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 358`** (4 nodes): `UpdateLeadPipeline.php`, `UpdateLeadPipeline`, `.authorize()`, `.rules()`
+- **Thin community `Community 359`** (4 nodes): `UpdateLeadPipeline.php`, `UpdateLeadPipeline`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 359`** (4 nodes): `UpdateLeadSource.php`, `UpdateLeadSource`, `.authorize()`, `.rules()`
+- **Thin community `Community 360`** (4 nodes): `UpdateLeadSource.php`, `UpdateLeadSource`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 360`** (4 nodes): `UpdateLeadStage.php`, `UpdateLeadStage`, `.authorize()`, `.rules()`
+- **Thin community `Community 361`** (4 nodes): `UpdateLeadStage.php`, `UpdateLeadStage`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 361`** (4 nodes): `ActionLeave.php`, `ActionLeave`, `.authorize()`, `.rules()`
+- **Thin community `Community 362`** (4 nodes): `ActionLeave.php`, `ActionLeave`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 362`** (4 nodes): `UpdateLeave.php`, `UpdateLeave`, `.authorize()`, `.rules()`
+- **Thin community `Community 363`** (4 nodes): `UpdateLeave.php`, `UpdateLeave`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 363`** (4 nodes): `StoreLeaveType.php`, `StoreLeaveType`, `.authorize()`, `.rules()`
+- **Thin community `Community 364`** (4 nodes): `StoreLeaveType.php`, `StoreLeaveType`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 364`** (4 nodes): `VerifyLoginRequest.php`, `VerifyLoginRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 365`** (4 nodes): `VerifyLoginRequest.php`, `VerifyLoginRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 365`** (4 nodes): `StoreMilestone.php`, `StoreMilestone`, `.authorize()`, `.rules()`
+- **Thin community `Community 366`** (4 nodes): `StoreMilestone.php`, `StoreMilestone`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 366`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 367`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 367`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 368`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 368`** (4 nodes): `AuthorizeDetails.php`, `AuthorizeDetails`, `.authorize()`, `.rules()`
+- **Thin community `Community 369`** (4 nodes): `AuthorizeDetails.php`, `AuthorizeDetails`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 369`** (4 nodes): `FlutterwaveRequest.php`, `FlutterwaveRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 370`** (4 nodes): `FlutterwaveRequest.php`, `FlutterwaveRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 370`** (4 nodes): `ImportPayment.php`, `ImportPayment`, `.authorize()`, `.rules()`
+- **Thin community `Community 371`** (4 nodes): `ImportPayment.php`, `ImportPayment`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 371`** (4 nodes): `InvoicePayment.php`, `InvoicePayment`, `.authorize()`, `.rules()`
+- **Thin community `Community 372`** (4 nodes): `InvoicePayment.php`, `InvoicePayment`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 372`** (4 nodes): `StoreProductCategory.php`, `StoreProductCategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 373`** (4 nodes): `StoreProductCategory.php`, `StoreProductCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 373`** (4 nodes): `StoreProductSubCategory.php`, `StoreProductSubCategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 374`** (4 nodes): `StoreProductSubCategory.php`, `StoreProductSubCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 374`** (4 nodes): `StoreProjectCategory.php`, `StoreProjectCategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 375`** (4 nodes): `StoreProjectCategory.php`, `StoreProjectCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 375`** (4 nodes): `StoreRating.php`, `StoreRating`, `.authorize()`, `.rules()`
+- **Thin community `Community 376`** (4 nodes): `StoreRating.php`, `StoreRating`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 376`** (4 nodes): `UpdateProjectSetting.php`, `UpdateProjectSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 377`** (4 nodes): `UpdateProjectSetting.php`, `UpdateProjectSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 377`** (4 nodes): `StoreProject.php`, `StoreProject`, `.authorize()`, `.rules()`
+- **Thin community `Community 378`** (4 nodes): `StoreProject.php`, `StoreProject`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 378`** (4 nodes): `StoreProjectCategory.php`, `StoreProjectCategory`, `.authorize()`, `.rules()`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 379`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 379`** (4 nodes): `StoreProjectCategory.php`, `StoreProjectCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 380`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 381`** (4 nodes): `UpdateRole.php`, `UpdateRole.php`, `UpdateRole`, `.authorize()`
+- **Thin community `Community 381`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 382`** (4 nodes): `StorageAwsFileUpload.php`, `StorageAwsFileUpload`, `.authorize()`, `.rules()`
+- **Thin community `Community 382`** (4 nodes): `UpdateRole.php`, `UpdateRole.php`, `UpdateRole`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 383`** (4 nodes): `UpdateOrganisationSettings.php`, `UpdateOrganisationSettings`, `.authorize()`, `.rules()`
+- **Thin community `Community 383`** (4 nodes): `StorageAwsFileUpload.php`, `StorageAwsFileUpload`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 384`** (4 nodes): `UpdateSmtpSetting.php`, `UpdateSmtpSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 384`** (4 nodes): `UpdateOrganisationSettings.php`, `UpdateOrganisationSettings`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 385`** (4 nodes): `StoreStickyNote.php`, `StoreStickyNote`, `.authorize()`, `.rules()`
+- **Thin community `Community 385`** (4 nodes): `UpdateSmtpSetting.php`, `UpdateSmtpSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 386`** (4 nodes): `UpdateStickyNote.php`, `UpdateStickyNote`, `.authorize()`, `.rules()`
+- **Thin community `Community 386`** (4 nodes): `StoreStickyNote.php`, `StoreStickyNote`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 387`** (4 nodes): `StoreStripeDetail.php`, `StoreStripeDetail`, `.authorize()`, `.rules()`
+- **Thin community `Community 387`** (4 nodes): `UpdateStickyNote.php`, `UpdateStickyNote`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 388`** (4 nodes): `AuthorizePaymentRequest.php`, `AuthorizePaymentRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 388`** (4 nodes): `StoreStripeDetail.php`, `StoreStripeDetail`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 389`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 389`** (4 nodes): `StoreSubTask.php`, `StoreSubTask`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 390`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 390`** (4 nodes): `AuthorizePaymentRequest.php`, `AuthorizePaymentRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 391`** (4 nodes): `PackageUpdateRequest.php`, `PackageUpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 391`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 392`** (4 nodes): `ContactSettingRequest.php`, `ContactSettingRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 392`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 393`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 393`** (4 nodes): `PackageUpdateRequest.php`, `PackageUpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 394`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 394`** (4 nodes): `ContactSettingRequest.php`, `ContactSettingRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 395`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -6632,63 +6327,63 @@ Nodes (1): super-admin.front-setting.footer-setting.footer-data
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 401`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 402`** (4 nodes): `CtaRequest.php`, `CtaRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 402`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 403`** (4 nodes): `FooterTextRequest.php`, `FooterTextRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 403`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 404`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 404`** (4 nodes): `CtaRequest.php`, `CtaRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 405`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 405`** (4 nodes): `FooterTextRequest.php`, `FooterTextRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 406`** (4 nodes): `FrontStoreRequest.php`, `FrontStoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 406`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 407`** (4 nodes): `FrontUpdateRequest.php`, `FrontUpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 407`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 408`** (4 nodes): `UpdateDetail.php`, `UpdateDetail`, `.authorize()`, `.rules()`
+- **Thin community `Community 408`** (4 nodes): `FrontStoreRequest.php`, `FrontStoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 409`** (4 nodes): `UpdateFrontMenu.php`, `UpdateFrontMenu`, `.authorize()`, `.rules()`
+- **Thin community `Community 409`** (4 nodes): `FrontUpdateRequest.php`, `FrontUpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 410`** (4 nodes): `UpdatePriceSetting.php`, `UpdatePriceSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 410`** (4 nodes): `UpdateDetail.php`, `UpdateDetail`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 411`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 411`** (4 nodes): `UpdateFrontMenu.php`, `UpdateFrontMenu`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 412`** (4 nodes): `StoreGlobalCurrency.php`, `StoreGlobalCurrency`, `.authorize()`, `.rules()`
+- **Thin community `Community 412`** (4 nodes): `UpdatePriceSetting.php`, `UpdatePriceSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 413`** (4 nodes): `StoreGlobalCurrencyExchangeKey.php`, `StoreGlobalCurrencyExchangeKey`, `.authorize()`, `.rules()`
+- **Thin community `Community 413`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 414`** (4 nodes): `UpdateGlobalCurrency.php`, `UpdateGlobalCurrency`, `.authorize()`, `.rules()`
+- **Thin community `Community 414`** (4 nodes): `StoreGlobalCurrency.php`, `StoreGlobalCurrency`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 415`** (4 nodes): `UpdateInvoiceSetting.php`, `UpdateInvoiceSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 415`** (4 nodes): `StoreGlobalCurrencyExchangeKey.php`, `StoreGlobalCurrencyExchangeKey`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 416`** (4 nodes): `StoreClientRequest.php`, `StoreClientRequest`, `.authorize()`, `.messages()`
+- **Thin community `Community 416`** (4 nodes): `UpdateGlobalCurrency.php`, `UpdateGlobalCurrency`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 417`** (4 nodes): `PaymentRequest.php`, `PaymentRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 417`** (4 nodes): `UpdateInvoiceSetting.php`, `UpdateInvoiceSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 418`** (4 nodes): `StripeValidateRequest.php`, `StripeValidateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 418`** (4 nodes): `StoreClientRequest.php`, `StoreClientRequest`, `.authorize()`, `.messages()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 419`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 419`** (4 nodes): `PaymentRequest.php`, `PaymentRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 420`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 420`** (4 nodes): `StripeValidateRequest.php`, `StripeValidateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 421`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 422`** (4 nodes): `TitleStoreUpdateRequest.php`, `TitleStoreUpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 422`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 423`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 423`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 424`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 424`** (4 nodes): `TitleStoreUpdateRequest.php`, `TitleStoreUpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 425`** (4 nodes): `StoreTaskBoard.php`, `StoreTaskBoard`, `.authorize()`, `.rules()`
+- **Thin community `Community 425`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 426`** (4 nodes): `UpdateTaskBoard.php`, `UpdateTaskBoard`, `.authorize()`, `.rules()`
+- **Thin community `Community 426`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 427`** (4 nodes): `ActionTask.php`, `ActionTask`, `.authorize()`, `.rules()`
+- **Thin community `Community 427`** (4 nodes): `StoreTaskBoard.php`, `StoreTaskBoard`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 428`** (4 nodes): `StoreTaskCategory.php`, `StoreTaskCategory`, `.authorize()`, `.rules()`
+- **Thin community `Community 428`** (4 nodes): `UpdateTaskBoard.php`, `UpdateTaskBoard`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 429`** (4 nodes): `StoreTaskComment.php`, `StoreTaskComment`, `.authorize()`, `.rules()`
+- **Thin community `Community 429`** (4 nodes): `ActionTask.php`, `ActionTask`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 430`** (4 nodes): `StoreTaskNote.php`, `StoreTaskNote`, `.authorize()`, `.rules()`
+- **Thin community `Community 430`** (4 nodes): `StoreTaskCategory.php`, `StoreTaskCategory`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 431`** (4 nodes): `StoreTax.php`, `StoreTax`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -6708,1495 +6403,1371 @@ Nodes (1): super-admin.front-setting.footer-setting.footer-data
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 439`** (4 nodes): `StoreTicketGroup.php`, `StoreTicketGroup`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 440`** (4 nodes): `StoreTemplate.php`, `StoreTemplate`, `.authorize()`, `.rules()`
+- **Thin community `Community 440`** (4 nodes): `UpdateTemplate.php`, `UpdateTemplate`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 441`** (4 nodes): `UpdateTemplate.php`, `UpdateTemplate`, `.authorize()`, `.rules()`
+- **Thin community `Community 441`** (4 nodes): `StoreTicketRequest.php`, `StoreTicketRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 442`** (4 nodes): `StoreTicketRequest.php`, `StoreTicketRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 442`** (4 nodes): `UpdateTicketDetailRequest.php`, `UpdateTicketDetailRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 443`** (4 nodes): `UpdateTicketDetailRequest.php`, `UpdateTicketDetailRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 443`** (4 nodes): `UpdateTicketRequest.php`, `UpdateTicketRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 444`** (4 nodes): `UpdateTicketRequest.php`, `UpdateTicketRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 444`** (4 nodes): `StopTimer.php`, `StopTimer`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 445`** (4 nodes): `StopTimer.php`, `StopTimer`, `.authorize()`, `.rules()`
+- **Thin community `Community 445`** (4 nodes): `UpdateProjectTimeLog.php`, `UpdateProjectTimeLog`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 446`** (4 nodes): `UpdateProjectTimeLog.php`, `UpdateProjectTimeLog`, `.authorize()`, `.rules()`
+- **Thin community `Community 446`** (4 nodes): `UpdateTimeLog.php`, `UpdateTimeLog`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 447`** (4 nodes): `UpdateTimeLog.php`, `UpdateTimeLog`, `.authorize()`, `.rules()`
+- **Thin community `Community 447`** (4 nodes): `AcceptInviteRequest.php`, `AcceptInviteRequest`, `.authorize()`, `.messages()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 448`** (4 nodes): `AcceptInviteRequest.php`, `AcceptInviteRequest`, `.authorize()`, `.messages()`
+- **Thin community `Community 448`** (4 nodes): `AccountSetupRequest.php`, `AccountSetupRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 449`** (4 nodes): `AccountSetupRequest.php`, `AccountSetupRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 449`** (4 nodes): `InviteEmailRequest.php`, `InviteEmailRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 450`** (4 nodes): `InviteEmailRequest.php`, `InviteEmailRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 450`** (4 nodes): `UpdateUser.php`, `UpdateUser`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 451`** (4 nodes): `UpdateUser.php`, `UpdateUser`, `.authorize()`, `.rules()`
+- **Thin community `Community 451`** (4 nodes): `AttendanceReminderListener.php`, `AttendanceReminderListener`, `.handle()`, `AttendanceReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 452`** (4 nodes): `NewInvoiceRecurringListener.php`, `NewInvoiceRecurringListener`, `.__construct()`, `NewInvoiceRecurringListener.php`
+- **Thin community `Community 452`** (4 nodes): `AutoTaskReminderListener.php`, `AutoTaskReminderListener`, `.handle()`, `AutoTaskReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 453`** (4 nodes): `SubmitWeeklyTimesheetListener.php`, `SubmitWeeklyTimesheetListener`, `.__construct()`, `.handle()`
+- **Thin community `Community 453`** (4 nodes): `ContractSignedListener.php`, `ContractSignedListener`, `.handle()`, `ContractSignedListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 454`** (4 nodes): `TwoFactorCodeListener.php`, `TwoFactorCodeListener`, `.handle()`, `TwoFactorCodeListener.php`
+- **Thin community `Community 454`** (4 nodes): `EstimateAcceptedListener.php`, `EstimateAcceptedListener`, `.__construct()`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 455`** (4 nodes): `WeeklyTimesheetApprovedListener.php`, `WeeklyTimesheetApprovedListener`, `.__construct()`, `.handle()`
+- **Thin community `Community 455`** (4 nodes): `EstimateDeclinedListener.php`, `EstimateDeclinedListener`, `.handle()`, `EstimateDeclinedListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 456`** (4 nodes): `WeeklyTimesheetDraftListener.php`, `WeeklyTimesheetDraftListener`, `.__construct()`, `.handle()`
+- **Thin community `Community 456`** (4 nodes): `HolidayListener.php`, `HolidayListener`, `.__construct()`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 457`** (4 nodes): `Country.php`, `Country`, `.flagSpanCountryCode()`, `.getNationalityAttribute()`
+- **Thin community `Community 457`** (4 nodes): `InvoicePaymentReceivedListener.php`, `InvoicePaymentReceivedListener`, `.handle()`, `InvoicePaymentReceivedListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 458`** (4 nodes): `ProjectSetting.php`, `ProjectSetting`, `.getRemindToAttribute()`, `.setRemindToAttribute()`
+- **Thin community `Community 458`** (4 nodes): `InvoiceReminderListener.php`, `InvoiceReminderListener`, `.handle()`, `InvoiceReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 459`** (4 nodes): `ClientContactObserver.php`, `ClientContactObserver`, `.creating()`, `.saving()`
+- **Thin community `Community 459`** (4 nodes): `NewCreditNoteListener.php`, `NewCreditNoteListener`, `.__construct()`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 460`** (4 nodes): `ClientDocumentObserver.php`, `ClientDocumentObserver`, `.creating()`, `.saving()`
+- **Thin community `Community 460`** (4 nodes): `NewInvoiceRecurringListener.php`, `NewInvoiceRecurringListener`, `.__construct()`, `NewInvoiceRecurringListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 461`** (4 nodes): `ClientNoteObserver.php`, `ClientNoteObserver`, `.creating()`, `.saving()`
+- **Thin community `Community 461`** (4 nodes): `NewOrderListener.php`, `NewOrderListener`, `.handle()`, `NewOrderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 462`** (4 nodes): `ContractDiscussionObserver.php`, `ContractDiscussionObserver`, `.creating()`, `.saving()`
+- **Thin community `Community 462`** (4 nodes): `NewPaymentListener.php`, `NewPaymentListener`, `.handle()`, `NewPaymentListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 463`** (4 nodes): `ContractFileObserver.php`, `ContractFileObserver`, `.creating()`, `.saving()`
+- **Thin community `Community 463`** (4 nodes): `NewProjectListener.php`, `NewProjectListener`, `.handle()`, `NewProjectListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 464`** (4 nodes): `LeadCustomFormObserver.php`, `LeadCustomFormObserver`, `.creating()`, `.saving()`
+- **Thin community `Community 464`** (4 nodes): `NewProposalListener.php`, `NewProposalListener`, `.handle()`, `NewProposalListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 465`** (4 nodes): `AppTitle.php`, `AppTitle`, `.__construct()`, `.render()`
+- **Thin community `Community 465`** (4 nodes): `NewUserRegistrationViaInviteListener.php`, `NewUserRegistrationViaInviteListener`, `.handle()`, `NewUserRegistrationViaInviteListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 466`** (4 nodes): `BarChart.php`, `BarChart`, `.__construct()`, `.render()`
+- **Thin community `Community 466`** (4 nodes): `OrderUpdatedListener.php`, `OrderUpdatedListener`, `.handle()`, `OrderUpdatedListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 467`** (4 nodes): `Client.php`, `Client`, `.__construct()`, `.render()`
+- **Thin community `Community 467`** (4 nodes): `PaymentReminderListener.php`, `PaymentReminderListener`, `.handle()`, `PaymentReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 468`** (4 nodes): `ClientSearchOption.php`, `ClientSearchOption`, `.__construct()`, `.render()`
+- **Thin community `Community 468`** (4 nodes): `ProjectReminderListener.php`, `ProjectReminderListener`, `.handle()`, `ProjectReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 469`** (4 nodes): `ClientSelectionDropdown.php`, `ClientSelectionDropdown`, `.__construct()`, `.render()`
+- **Thin community `Community 469`** (4 nodes): `RemovalRequestAdminLeadListener.php`, `RemovalRequestAdminLeadListener`, `.handle()`, `RemovalRequestAdminLeadListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 470`** (4 nodes): `DateBadge.php`, `DateBadge`, `.__construct()`, `.render()`
+- **Thin community `Community 470`** (4 nodes): `RemovalRequestAdminListener.php`, `RemovalRequestAdminListener`, `.handle()`, `RemovalRequestAdminListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 471`** (4 nodes): `Employee.php`, `Employee`, `.__construct()`, `.render()`
+- **Thin community `Community 471`** (4 nodes): `RemovalRequestApprovedRejectLeadListener.php`, `RemovalRequestApprovedRejectLeadListener`, `.handle()`, `RemovalRequestApprovedRejectLeadListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 472`** (4 nodes): `EmployeeImage.php`, `EmployeeImage`, `.__construct()`, `.render()`
+- **Thin community `Community 472`** (4 nodes): `RemovalRequestApprovedRejectListener.php`, `RemovalRequestApprovedRejectListener`, `.handle()`, `RemovalRequestApprovedRejectListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 473`** (4 nodes): `FileCard.php`, `FileCard`, `.__construct()`, `.render()`
+- **Thin community `Community 473`** (4 nodes): `RemovalRequestApprovedRejectUserListener.php`, `RemovalRequestApprovedRejectUserListener`, `.handle()`, `RemovalRequestApprovedRejectUserListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 474`** (4 nodes): `Form.php`, `Form`, `.__construct()`, `.render()`
+- **Thin community `Community 474`** (4 nodes): `ShiftRotationListener.php`, `ShiftRotationListener`, `.__construct()`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 475`** (4 nodes): `FormActions.php`, `FormActions`, `.__construct()`, `.render()`
+- **Thin community `Community 475`** (4 nodes): `SubmitWeeklyTimesheetListener.php`, `SubmitWeeklyTimesheetListener`, `.__construct()`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 476`** (4 nodes): `GaugeChart.php`, `GaugeChart`, `.__construct()`, `.render()`
+- **Thin community `Community 476`** (4 nodes): `SubTaskCompletedListener.php`, `SubTaskCompletedListener`, `.handle()`, `SubTaskCompletedListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 477`** (4 nodes): `Gender.php`, `Gender`, `.__construct()`, `.render()`
+- **Thin community `Community 477`** (4 nodes): `TaskCommentListener.php`, `TaskCommentListener`, `.handle()`, `TaskCommentListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 478`** (4 nodes): `PieChart.php`, `PieChart`, `.__construct()`, `.render()`
+- **Thin community `Community 478`** (4 nodes): `TaskNoteListener.php`, `TaskNoteListener`, `.handle()`, `TaskNoteListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 479`** (4 nodes): `RightModal.php`, `RightModal`, `.__construct()`, `.render()`
+- **Thin community `Community 479`** (4 nodes): `TaskNoteMentionListener.php`, `TaskNoteMentionListener`, `.handle()`, `TaskNoteMentionListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 480`** (4 nodes): `SettingCard.php`, `SettingCard`, `.__construct()`, `.render()`
+- **Thin community `Community 480`** (4 nodes): `TaskReminderListener.php`, `TaskReminderListener`, `.handle()`, `TaskReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 481`** (4 nodes): `SettingFormActions.php`, `SettingFormActions`, `.__construct()`, `.render()`
+- **Thin community `Community 481`** (4 nodes): `TicketRequesterListener.php`, `TicketRequesterListener`, `.handle()`, `TicketRequesterListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 482`** (4 nodes): `SettingSidebar.php`, `SettingSidebar`, `.__construct()`, `.render()`
+- **Thin community `Community 482`** (4 nodes): `TwoFactorCodeListener.php`, `TwoFactorCodeListener`, `.handle()`, `TwoFactorCodeListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 483`** (4 nodes): `StackedChart.php`, `StackedChart`, `.__construct()`, `.render()`
+- **Thin community `Community 483`** (4 nodes): `WeeklyTimesheetApprovedListener.php`, `WeeklyTimesheetApprovedListener`, `.__construct()`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 484`** (4 nodes): `Status.php`, `Status`, `.__construct()`, `.render()`
+- **Thin community `Community 484`** (4 nodes): `WeeklyTimesheetDraftListener.php`, `WeeklyTimesheetDraftListener`, `.__construct()`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 485`** (4 nodes): `Tab.php`, `Tab`, `.__construct()`, `.render()`
+- **Thin community `Community 485`** (4 nodes): `Country.php`, `Country`, `.flagSpanCountryCode()`, `.getNationalityAttribute()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 486`** (4 nodes): `TabItem.php`, `TabItem`, `.__construct()`, `.render()`
+- **Thin community `Community 486`** (4 nodes): `ProjectSetting.php`, `ProjectSetting`, `.getRemindToAttribute()`, `.setRemindToAttribute()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 487`** (4 nodes): `TabSection.php`, `TabSection`, `.__construct()`, `.render()`
+- **Thin community `Community 487`** (4 nodes): `ClientContactObserver.php`, `ClientContactObserver`, `.creating()`, `.saving()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 488`** (4 nodes): `TaskCard.php`, `TaskCard`, `.__construct()`, `.render()`
+- **Thin community `Community 488`** (4 nodes): `ClientDocumentObserver.php`, `ClientDocumentObserver`, `.creating()`, `.saving()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 489`** (4 nodes): `TaskSelectionDropdown.php`, `TaskSelectionDropdown`, `.__construct()`, `.render()`
+- **Thin community `Community 489`** (4 nodes): `ClientNoteObserver.php`, `ClientNoteObserver`, `.creating()`, `.saving()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 490`** (4 nodes): `UserOption.php`, `UserOption`, `.__construct()`, `.render()`
+- **Thin community `Community 490`** (4 nodes): `ContractDiscussionObserver.php`, `ContractDiscussionObserver`, `.creating()`, `.saving()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 491`** (4 nodes): `CardHeader.php`, `CardHeader`, `.__construct()`, `.render()`
+- **Thin community `Community 491`** (4 nodes): `ContractFileObserver.php`, `ContractFileObserver`, `.creating()`, `.saving()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 492`** (4 nodes): `Data.php`, `Data`, `.__construct()`, `.render()`
+- **Thin community `Community 492`** (4 nodes): `LeadCustomFormObserver.php`, `LeadCustomFormObserver`, `.creating()`, `.saving()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 493`** (4 nodes): `DataRow.php`, `DataRow`, `.__construct()`, `.render()`
+- **Thin community `Community 493`** (4 nodes): `AppTitle.php`, `AppTitle`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 494`** (4 nodes): `LeadCard.php`, `LeadCard`, `.__construct()`, `.render()`
+- **Thin community `Community 494`** (4 nodes): `BarChart.php`, `BarChart`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 495`** (4 nodes): `Message.php`, `Message`, `.__construct()`, `.render()`
+- **Thin community `Community 495`** (4 nodes): `Client.php`, `Client`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 496`** (4 nodes): `MessageUser.php`, `MessageUser`, `.__construct()`, `.render()`
+- **Thin community `Community 496`** (4 nodes): `ClientSearchOption.php`, `ClientSearchOption`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 497`** (4 nodes): `NoRecord.php`, `NoRecord`, `.__construct()`, `.render()`
+- **Thin community `Community 497`** (4 nodes): `ClientSelectionDropdown.php`, `ClientSelectionDropdown`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 498`** (4 nodes): `NoRecordFoundList.php`, `NoRecordFoundList`, `.__construct()`, `.render()`
+- **Thin community `Community 498`** (4 nodes): `DateBadge.php`, `DateBadge`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 499`** (4 nodes): `OnboardingItem.php`, `OnboardingItem`, `.__construct()`, `.render()`
+- **Thin community `Community 499`** (4 nodes): `Employee.php`, `Employee`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 500`** (4 nodes): `PublicTaskCard.php`, `PublicTaskCard`, `.__construct()`, `.render()`
+- **Thin community `Community 500`** (4 nodes): `EmployeeImage.php`, `EmployeeImage`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 501`** (4 nodes): `Ticket.php`, `Ticket`, `.__construct()`, `.render()`
+- **Thin community `Community 501`** (4 nodes): `FileCard.php`, `FileCard`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 502`** (4 nodes): `User.php`, `User`, `.__construct()`, `.render()`
+- **Thin community `Community 502`** (4 nodes): `Form.php`, `Form`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 503`** (4 nodes): `Widget.php`, `Widget`, `.__construct()`, `.render()`
+- **Thin community `Community 503`** (4 nodes): `FormActions.php`, `FormActions`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 504`** (4 nodes): `Actions.php`, `Actions`, `.__construct()`, `.render()`
+- **Thin community `Community 504`** (4 nodes): `GaugeChart.php`, `GaugeChart`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 505`** (4 nodes): `FilterBox.php`, `FilterBox`, `.__construct()`, `.render()`
+- **Thin community `Community 505`** (4 nodes): `Gender.php`, `Gender`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 506`** (4 nodes): `MoreFilterBox.php`, `MoreFilterBox`, `.__construct()`, `.render()`
+- **Thin community `Community 506`** (4 nodes): `PieChart.php`, `PieChart`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 507`** (4 nodes): `ButtonCancel.php`, `ButtonCancel`, `.__construct()`, `.render()`
+- **Thin community `Community 507`** (4 nodes): `RightModal.php`, `RightModal`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 508`** (4 nodes): `ButtonPrimary.php`, `ButtonPrimary`, `.__construct()`, `.render()`
+- **Thin community `Community 508`** (4 nodes): `SettingCard.php`, `SettingCard`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 509`** (4 nodes): `ButtonSecondary.php`, `ButtonSecondary`, `.__construct()`, `.render()`
+- **Thin community `Community 509`** (4 nodes): `SettingFormActions.php`, `SettingFormActions`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 510`** (4 nodes): `CustomFieldShow.php`, `CustomFieldShow`, `.__construct()`, `.render()`
+- **Thin community `Community 510`** (4 nodes): `SettingSidebar.php`, `SettingSidebar`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 511`** (4 nodes): `Datepicker.php`, `Datepicker`, `.__construct()`, `.render()`
+- **Thin community `Community 511`** (4 nodes): `StackedChart.php`, `StackedChart`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 512`** (4 nodes): `Email.php`, `Email`, `.__construct()`, `.render()`
+- **Thin community `Community 512`** (4 nodes): `Status.php`, `Status`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 513`** (4 nodes): `File.php`, `File`, `.__construct()`, `.render()`
+- **Thin community `Community 513`** (4 nodes): `Tab.php`, `Tab`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 514`** (4 nodes): `FileMultiple.php`, `FileMultiple`, `.__construct()`, `.render()`
+- **Thin community `Community 514`** (4 nodes): `TabItem.php`, `TabItem`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 515`** (4 nodes): `InputGroup.php`, `InputGroup`, `.__construct()`, `.render()`
+- **Thin community `Community 515`** (4 nodes): `TabSection.php`, `TabSection`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 516`** (4 nodes): `LinkPrimary.php`, `LinkPrimary`, `.__construct()`, `.render()`
+- **Thin community `Community 516`** (4 nodes): `TaskCard.php`, `TaskCard`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 517`** (4 nodes): `LinkSecondary.php`, `LinkSecondary`, `.__construct()`, `.render()`
+- **Thin community `Community 517`** (4 nodes): `TaskSelectionDropdown.php`, `TaskSelectionDropdown`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 518`** (4 nodes): `Radio.php`, `Radio`, `.__construct()`, `.render()`
+- **Thin community `Community 518`** (4 nodes): `UserOption.php`, `UserOption`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 519`** (4 nodes): `Select2Ajax.php`, `Select2Ajax`, `.__construct()`, `.render()`
+- **Thin community `Community 519`** (4 nodes): `CardHeader.php`, `CardHeader`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 520`** (4 nodes): `Tel.php`, `Tel`, `.__construct()`, `.render()`
+- **Thin community `Community 520`** (4 nodes): `Data.php`, `Data`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 521`** (4 nodes): `Textarea.php`, `Textarea`, `.__construct()`, `.render()`
+- **Thin community `Community 521`** (4 nodes): `DataRow.php`, `DataRow`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 522`** (4 nodes): `ToggleSwitch.php`, `ToggleSwitch`, `.__construct()`, `.render()`
+- **Thin community `Community 522`** (4 nodes): `LeadCard.php`, `LeadCard`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 523`** (4 nodes): `Url.php`, `Url`, `.__construct()`, `.render()`
+- **Thin community `Community 523`** (4 nodes): `Message.php`, `Message`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 524`** (4 nodes): `FrontSettingSidebar.php`, `FrontSettingSidebar`, `.__construct()`, `.render()`
+- **Thin community `Community 524`** (4 nodes): `MessageUser.php`, `MessageUser`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 526`** (4 nodes): `2022_08_25_085025_add_other_location_to_attendances_table.php`, `down()`, `setStringNullable()`, `up()`
+- **Thin community `Community 525`** (4 nodes): `NoRecord.php`, `NoRecord`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 527`** (4 nodes): `2022_09_23_053942_update_type_of_hsn_sac_code_to_proposal_template_items.php`, `down()`, `setStringNullable()`, `up()`
+- **Thin community `Community 526`** (4 nodes): `NoRecordFoundList.php`, `NoRecordFoundList`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 529`** (4 nodes): `2023_11_23_065925_alter_sign_date_contracts.php`, `down()`, `setDateTimeNullable()`, `up()`
+- **Thin community `Community 527`** (4 nodes): `OnboardingItem.php`, `OnboardingItem`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 530`** (4 nodes): `2023_12_19_091940_change_column_type_in_order_items_table.php`, `down()`, `setDecimalNullableWithDefault()`, `up()`
+- **Thin community `Community 528`** (4 nodes): `PublicTaskCard.php`, `PublicTaskCard`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 531`** (4 nodes): `2024_02_02_114946_lead-files_changes_for_deals.php`, `down()`, `renameColumnSafely()`, `up()`
+- **Thin community `Community 529`** (4 nodes): `Ticket.php`, `Ticket`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 532`** (4 nodes): `2024_04_17_064540_add_add_to_budget_column_in_proj_table.php`, `down()`, `setDecimal()`, `up()`
+- **Thin community `Community 530`** (4 nodes): `User.php`, `User`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 535`** (4 nodes): `2024_09_11_060652_fix_flexible_shift_columns.php`, `down()`, `setFloatNullable()`, `up()`
+- **Thin community `Community 531`** (4 nodes): `Widget.php`, `Widget`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 536`** (4 nodes): `2024_10_19_092843_recalculate_leaves.php`, `down()`, `setDoubleNullable()`, `up()`
+- **Thin community `Community 532`** (4 nodes): `Actions.php`, `Actions`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 538`** (4 nodes): `2026_02_09_000001_ensure_product_prices_nullable.php`, `down()`, `setNullableDouble()`, `up()`
+- **Thin community `Community 533`** (4 nodes): `FilterBox.php`, `FilterBox`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 541`** (4 nodes): `down()`, `seedAffiliateSettings()`, `up()`, `2024_05_07_063115_create_affiliate_settings_table.php`
+- **Thin community `Community 534`** (4 nodes): `MoreFilterBox.php`, `MoreFilterBox`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 542`** (4 nodes): `html()`, `label()`, `Status.php`, `Status.php`
+- **Thin community `Community 535`** (4 nodes): `ButtonCancel.php`, `ButtonCancel`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 543`** (4 nodes): `CreateSettingsRequest.php`, `CreateSettingsRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 536`** (4 nodes): `ButtonPrimary.php`, `ButtonPrimary`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 544`** (4 nodes): `StorePayout.php`, `StorePayout`, `.attributes()`, `.authorize()`
+- **Thin community `Community 537`** (4 nodes): `ButtonSecondary.php`, `ButtonSecondary`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 545`** (4 nodes): `UpdateAffiliate.php`, `UpdateAffiliate`, `.authorize()`, `.rules()`
+- **Thin community `Community 538`** (4 nodes): `CustomFieldShow.php`, `CustomFieldShow`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 546`** (4 nodes): `AffiliateOption`, `.__construct()`, `.render()`, `AffiliateOption.php`
+- **Thin community `Community 539`** (4 nodes): `Datepicker.php`, `Datepicker`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 547`** (4 nodes): `AssetDataTable`, `.getColumns()`, `.html()`, `AssetDataTable.php`
+- **Thin community `Community 540`** (4 nodes): `Email.php`, `Email`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 548`** (4 nodes): `LendRequest.php`, `LendRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 541`** (4 nodes): `File.php`, `File`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 549`** (4 nodes): `ReturnRequest.php`, `ReturnRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 542`** (4 nodes): `FileMultiple.php`, `FileMultiple`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 550`** (4 nodes): `StoreRequest`, `.authorize()`, `.rules()`, `StoreRequest.php`
+- **Thin community `Community 543`** (4 nodes): `InputGroup.php`, `InputGroup`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 551`** (4 nodes): `BiolinkSettingRequest.php`, `BiolinkSettingRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 544`** (4 nodes): `LinkPrimary.php`, `LinkPrimary`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 552`** (4 nodes): `CreateBiolinkRequest.php`, `CreateBiolinkRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 545`** (4 nodes): `LinkSecondary.php`, `LinkSecondary`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 553`** (4 nodes): `EmailCollectorRequest.php`, `EmailCollectorRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 546`** (4 nodes): `Radio.php`, `Radio`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 554`** (4 nodes): `PhoneCollectorRequest.php`, `PhoneCollectorRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 547`** (4 nodes): `Select2Ajax.php`, `Select2Ajax`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 555`** (4 nodes): `BiometricDeviceStore.php`, `BiometricDeviceStore`, `.authorize()`, `.rules()`
+- **Thin community `Community 548`** (4 nodes): `Tel.php`, `Tel`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 556`** (4 nodes): `StoreEmailRequest.php`, `StoreEmailRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 549`** (4 nodes): `Textarea.php`, `Textarea`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 557`** (4 nodes): `StoreIpRequest.php`, `StoreIpRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 550`** (4 nodes): `ToggleSwitch.php`, `ToggleSwitch`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 558`** (4 nodes): `StoreLoginExpiryRequest.php`, `StoreLoginExpiryRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 551`** (4 nodes): `Url.php`, `Url`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 559`** (4 nodes): `UpdateLoginExpiryRequest.php`, `UpdateLoginExpiryRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 552`** (4 nodes): `FrontSettingSidebar.php`, `FrontSettingSidebar`, `.__construct()`, `.render()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 560`** (4 nodes): `Client`, `.__construct()`, `.render()`, `Client.php`
+- **Thin community `Community 554`** (4 nodes): `2022_08_25_085025_add_other_location_to_attendances_table.php`, `down()`, `setStringNullable()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 561`** (4 nodes): `Setting`, `.__construct()`, `.render()`, `Setting.php`
+- **Thin community `Community 555`** (4 nodes): `2022_09_23_053942_update_type_of_hsn_sac_code_to_proposal_template_items.php`, `down()`, `setStringNullable()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 562`** (4 nodes): `PublishLanguageRequest.php`, `PublishLanguageRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 557`** (4 nodes): `2023_11_23_065925_alter_sign_date_contracts.php`, `down()`, `setDateTimeNullable()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 563`** (4 nodes): `StoreRequest`, `.authorize()`, `.rules()`, `StoreRequest.php`
+- **Thin community `Community 558`** (4 nodes): `2023_12_19_091940_change_column_type_in_order_items_table.php`, `down()`, `setDecimalNullableWithDefault()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 564`** (4 nodes): `UpdateRequest`, `.authorize()`, `.rules()`, `UpdateRequest.php`
+- **Thin community `Community 559`** (4 nodes): `2024_02_02_114946_lead-files_changes_for_deals.php`, `down()`, `renameColumnSafely()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 565`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 560`** (4 nodes): `2024_04_17_064540_add_add_to_budget_column_in_proj_table.php`, `down()`, `setDecimal()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 566`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 564`** (4 nodes): `2024_09_11_060652_fix_flexible_shift_columns.php`, `down()`, `setFloatNullable()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 567`** (4 nodes): `CreateOnboardingDashboardRequest.php`, `CreateOnboardingDashboardRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 566`** (4 nodes): `2026_02_09_000001_ensure_product_prices_nullable.php`, `down()`, `setNullableDouble()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 568`** (4 nodes): `CreateOnboardingRequest.php`, `CreateOnboardingRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 569`** (4 nodes): `down()`, `seedAffiliateSettings()`, `up()`, `2024_05_07_063115_create_affiliate_settings_table.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 569`** (4 nodes): `PayrollCurrencyController`, `.__construct()`, `.index()`, `PayrollCurrencyController.php`
+- **Thin community `Community 570`** (4 nodes): `html()`, `label()`, `Status.php`, `Status.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 570`** (4 nodes): `StoreCurrency.php`, `StoreCurrency`, `.authorize()`, `.rules()`
+- **Thin community `Community 571`** (4 nodes): `CreateSettingsRequest.php`, `CreateSettingsRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 571`** (4 nodes): `StoreEmployyeMonthlySalary.php`, `StoreEmployyeMonthlySalary`, `.authorize()`, `.rules()`
+- **Thin community `Community 572`** (4 nodes): `StorePayout.php`, `StorePayout`, `.attributes()`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 572`** (4 nodes): `StorePaymentMethod.php`, `StorePaymentMethod`, `.authorize()`, `.rules()`
+- **Thin community `Community 573`** (4 nodes): `UpdateAffiliate.php`, `UpdateAffiliate`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 573`** (4 nodes): `StoreSalaryComponent.php`, `StoreSalaryComponent`, `.authorize()`, `.rules()`
+- **Thin community `Community 574`** (4 nodes): `AffiliateOption`, `.__construct()`, `.render()`, `AffiliateOption.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 574`** (4 nodes): `StoreSalaryTds.php`, `StoreSalaryTds`, `.authorize()`, `.rules()`
+- **Thin community `Community 575`** (4 nodes): `LendRequest.php`, `LendRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 575`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 576`** (4 nodes): `ReturnRequest.php`, `ReturnRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 576`** (4 nodes): `RequestStoreRequest.php`, `RequestStoreRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 577`** (4 nodes): `StoreRequest`, `.authorize()`, `.rules()`, `StoreRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 577`** (4 nodes): `RequestUpdateRequest.php`, `RequestUpdateRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 578`** (4 nodes): `BiolinkSettingRequest.php`, `BiolinkSettingRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 578`** (4 nodes): `SalarySlipObserver.php`, `SalarySlipObserver`, `.creating()`, `.saving()`
+- **Thin community `Community 579`** (4 nodes): `CreateBiolinkRequest.php`, `CreateBiolinkRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 580`** (4 nodes): `MeetingInviteEvent`, `.__construct()`, `MeetingInviteEvent.php`, `MeetingInviteEvent.php`
+- **Thin community `Community 580`** (4 nodes): `EmailCollectorRequest.php`, `EmailCollectorRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 581`** (4 nodes): `MeetingReminderEvent`, `.__construct()`, `MeetingReminderEvent.php`, `MeetingReminderEvent.php`
+- **Thin community `Community 581`** (4 nodes): `PhoneCollectorRequest.php`, `PhoneCollectorRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 582`** (4 nodes): `ActionRequest.php`, `ActionRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 582`** (4 nodes): `BiometricDeviceStore.php`, `BiometricDeviceStore`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 583`** (4 nodes): `CreateGoalTypeRequest.php`, `CreateGoalTypeRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 583`** (4 nodes): `StoreEmailRequest.php`, `StoreEmailRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 584`** (4 nodes): `CreateKeyResultsRequest.php`, `CreateKeyResultsRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 584`** (4 nodes): `StoreIpRequest.php`, `StoreIpRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 585`** (4 nodes): `CreteKeyResultsRequest.php`, `CreteKeyResultsRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 585`** (4 nodes): `StoreLoginExpiryRequest.php`, `StoreLoginExpiryRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 586`** (4 nodes): `GoalTypeRequest.php`, `GoalTypeRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 586`** (4 nodes): `UpdateLoginExpiryRequest.php`, `UpdateLoginExpiryRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 587`** (4 nodes): `KeyResultsMetricsRequest.php`, `KeyResultsMetricsRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 587`** (4 nodes): `Client`, `.__construct()`, `.render()`, `Client.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 588`** (4 nodes): `PerformanceSettingRequest.php`, `PerformanceSettingRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 588`** (4 nodes): `Setting`, `.__construct()`, `.render()`, `Setting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 590`** (4 nodes): `StorePolicy.php`, `StorePolicy`, `.authorize()`, `.rules()`
+- **Thin community `Community 589`** (4 nodes): `PublishLanguageRequest.php`, `PublishLanguageRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 591`** (4 nodes): `StoreSignature.php`, `StoreSignature`, `.authorize()`, `.rules()`
+- **Thin community `Community 590`** (4 nodes): `StoreRequest`, `.authorize()`, `.rules()`, `StoreRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 592`** (4 nodes): `UpdatePolicy.php`, `UpdatePolicy`, `.authorize()`, `.rules()`
+- **Thin community `Community 591`** (4 nodes): `UpdateRequest`, `.authorize()`, `.rules()`, `UpdateRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 593`** (4 nodes): `UpdateProductionFgQuantityPolicyRequest.php`, `UpdateProductionFgQuantityPolicyRequest`, `.prepareForValidation()`, `.rules()`
+- **Thin community `Community 592`** (4 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 594`** (4 nodes): `HorizontalBarChart`, `.__construct()`, `.render()`, `HorizontalBarChart.php`
+- **Thin community `Community 593`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 595`** (4 nodes): `PolarareaChart`, `.__construct()`, `.render()`, `PolarareaChart.php`
+- **Thin community `Community 594`** (4 nodes): `CreateOnboardingDashboardRequest.php`, `CreateOnboardingDashboardRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 596`** (4 nodes): `NewPurchaseBillEvent`, `.broadcastOn()`, `.__construct()`, `NewPurchaseBillEvent.php`
+- **Thin community `Community 595`** (4 nodes): `CreateOnboardingRequest.php`, `CreateOnboardingRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 597`** (4 nodes): `NewVendorPaymentEvent`, `.broadcastOn()`, `.__construct()`, `NewVendorPaymentEvent.php`
+- **Thin community `Community 596`** (4 nodes): `PayrollCurrencyController`, `.__construct()`, `.index()`, `PayrollCurrencyController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 598`** (4 nodes): `UpdateVendorPaymentEvent`, `.broadcastOn()`, `.__construct()`, `UpdateVendorPaymentEvent.php`
+- **Thin community `Community 597`** (4 nodes): `StoreCurrency.php`, `StoreCurrency`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 599`** (4 nodes): `VendorCreditPaymentMade`, `.broadcastOn()`, `.__construct()`, `VendorCreditPaymentMade.php`
+- **Thin community `Community 598`** (4 nodes): `StoreEmployyeMonthlySalary.php`, `StoreEmployyeMonthlySalary`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 600`** (4 nodes): `ChangeStatusRequest.php`, `ChangeStatusRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 599`** (4 nodes): `StorePaymentMethod.php`, `StorePaymentMethod`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 601`** (4 nodes): `UpdatePurchaseSettingRequest.php`, `UpdatePurchaseSettingRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 600`** (4 nodes): `StoreSalaryComponent.php`, `StoreSalaryComponent`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 602`** (4 nodes): `StoreVendorContact.php`, `StoreVendorContact`, `.authorize()`, `.rules()`
+- **Thin community `Community 601`** (4 nodes): `StoreSalaryTds.php`, `StoreSalaryTds`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 603`** (4 nodes): `UpdateVendorContact.php`, `UpdateVendorContact`, `.authorize()`, `.rules()`
+- **Thin community `Community 602`** (4 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 604`** (4 nodes): `StoreVendorCreditRequest.php`, `StoreVendorCreditRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 603`** (4 nodes): `RequestStoreRequest.php`, `RequestStoreRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 605`** (4 nodes): `UpdateVendorCreditRequest.php`, `UpdateVendorCreditRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 604`** (4 nodes): `RequestUpdateRequest.php`, `RequestUpdateRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 606`** (4 nodes): `VendorCreditPaymentMade`, `.__construct()`, `.handle()`, `VendorCreditPaymentMade.php`
+- **Thin community `Community 605`** (4 nodes): `SalarySlipObserver.php`, `SalarySlipObserver`, `.creating()`, `.saving()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 607`** (4 nodes): `PurchaseTab`, `.__construct()`, `.render()`, `PurchaseTab.php`
+- **Thin community `Community 607`** (4 nodes): `MeetingInviteEvent`, `.__construct()`, `MeetingInviteEvent.php`, `MeetingInviteEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 609`** (4 nodes): `JobEndDateCheck`, `.getArguments()`, `.getOptions()`, `JobEndDateCheck.php`
+- **Thin community `Community 608`** (4 nodes): `MeetingReminderEvent`, `.__construct()`, `MeetingReminderEvent.php`, `MeetingReminderEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 611`** (4 nodes): `CandidateDatabaseDataTable`, `.getColumns()`, `.html()`, `CandidateDatabaseDataTable.php`
+- **Thin community `Community 609`** (4 nodes): `ActionRequest.php`, `ActionRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 612`** (4 nodes): `JobApplicationsDataTable`, `.getColumns()`, `.html()`, `JobApplicationsDataTable.php`
+- **Thin community `Community 610`** (4 nodes): `CreateGoalTypeRequest.php`, `CreateGoalTypeRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 613`** (4 nodes): `JobDataTable`, `.getColumns()`, `.html()`, `JobDataTable.php`
+- **Thin community `Community 611`** (4 nodes): `CreateKeyResultsRequest.php`, `CreateKeyResultsRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 614`** (4 nodes): `JobOfferLetterDataTable`, `.getColumns()`, `.html()`, `JobOfferLetterDataTable.php`
+- **Thin community `Community 612`** (4 nodes): `CreteKeyResultsRequest.php`, `CreteKeyResultsRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 615`** (4 nodes): `CandidateInterviewRescheduleEvent`, `.broadcastOn()`, `.__construct()`, `CandidateInterviewRescheduleEvent.php`
+- **Thin community `Community 613`** (4 nodes): `GoalTypeRequest.php`, `GoalTypeRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 616`** (4 nodes): `CandidateInterviewScheduleEvent`, `.broadcastOn()`, `.__construct()`, `CandidateInterviewScheduleEvent.php`
+- **Thin community `Community 614`** (4 nodes): `KeyResultsMetricsRequest.php`, `KeyResultsMetricsRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 617`** (4 nodes): `HostInterviewEvent`, `.broadcastOn()`, `.__construct()`, `HostInterviewEvent.php`
+- **Thin community `Community 615`** (4 nodes): `PerformanceSettingRequest.php`, `PerformanceSettingRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 618`** (4 nodes): `InterviewRescheduleEvent`, `.broadcastOn()`, `.__construct()`, `InterviewRescheduleEvent.php`
+- **Thin community `Community 616`** (4 nodes): `MeetingReminderListener`, `.__construct()`, `MeetingReminderListener.php`, `MeetingReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 619`** (4 nodes): `InterviewScheduleEvent`, `.broadcastOn()`, `.__construct()`, `InterviewScheduleEvent.php`
+- **Thin community `Community 618`** (4 nodes): `StorePolicy.php`, `StorePolicy`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 620`** (4 nodes): `JobApplicationStatusChangeEvent`, `.broadcastOn()`, `.__construct()`, `JobApplicationStatusChangeEvent.php`
+- **Thin community `Community 619`** (4 nodes): `StoreSignature.php`, `StoreSignature`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 621`** (4 nodes): `JobOfferStatusChangeEvent`, `.broadcastOn()`, `.__construct()`, `JobOfferStatusChangeEvent.php`
+- **Thin community `Community 620`** (4 nodes): `UpdatePolicy.php`, `UpdatePolicy`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 622`** (4 nodes): `NewJobApplicationEvent`, `.broadcastOn()`, `.__construct()`, `NewJobApplicationEvent.php`
+- **Thin community `Community 621`** (4 nodes): `PolicyAcknowledgedListener`, `.__construct()`, `.handle()`, `PolicyAcknowledgedListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 623`** (4 nodes): `NewJobEvent`, `.broadcastOn()`, `.__construct()`, `NewJobEvent.php`
+- **Thin community `Community 622`** (4 nodes): `SendReminderListener`, `.__construct()`, `.handle()`, `SendReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 624`** (4 nodes): `OfferLetterEvent`, `.broadcastOn()`, `.__construct()`, `OfferLetterEvent.php`
+- **Thin community `Community 623`** (4 nodes): `HorizontalBarChart`, `.__construct()`, `.render()`, `HorizontalBarChart.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 625`** (4 nodes): `RecruitJobAlertEvent`, `.broadcastOn()`, `.__construct()`, `RecruitJobAlertEvent.php`
+- **Thin community `Community 624`** (4 nodes): `PolarareaChart`, `.__construct()`, `.render()`, `PolarareaChart.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 626`** (4 nodes): `RecruitJobAlertUpdateEvent`, `.broadcastOn()`, `.__construct()`, `RecruitJobAlertUpdateEvent.php`
+- **Thin community `Community 625`** (4 nodes): `NewPurchaseBillEvent`, `.broadcastOn()`, `.__construct()`, `NewPurchaseBillEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 627`** (4 nodes): `SendOfferLetterReminderEvent`, `.broadcastOn()`, `.__construct()`, `SendOfferLetterReminderEvent.php`
+- **Thin community `Community 626`** (4 nodes): `NewVendorPaymentEvent`, `.broadcastOn()`, `.__construct()`, `NewVendorPaymentEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 628`** (4 nodes): `UpdateInterviewScheduleEvent`, `.broadcastOn()`, `.__construct()`, `UpdateInterviewScheduleEvent.php`
+- **Thin community `Community 627`** (4 nodes): `UpdateVendorPaymentEvent`, `.broadcastOn()`, `.__construct()`, `UpdateVendorPaymentEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 629`** (4 nodes): `UpdateJobApplicationEvent`, `.broadcastOn()`, `.__construct()`, `UpdateJobApplicationEvent.php`
+- **Thin community `Community 628`** (4 nodes): `VendorCreditPaymentMade`, `.broadcastOn()`, `.__construct()`, `VendorCreditPaymentMade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 630`** (4 nodes): `UpdateJobEvent`, `.broadcastOn()`, `.__construct()`, `UpdateJobEvent.php`
+- **Thin community `Community 629`** (4 nodes): `PurchaseSmtpSettingController`, `.__construct()`, `.update()`, `PurchaseSmtpSettingController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 631`** (4 nodes): `UpdateOfferLetterEvent`, `.broadcastOn()`, `.__construct()`, `UpdateOfferLetterEvent.php`
+- **Thin community `Community 630`** (4 nodes): `ChangeStatusRequest.php`, `ChangeStatusRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 632`** (4 nodes): `RecruitController`, `.create()`, `.index()`, `RecruitController.php`
+- **Thin community `Community 631`** (4 nodes): `UpdatePurchaseSettingRequest.php`, `UpdatePurchaseSettingRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 633`** (4 nodes): `StoreJobType.php`, `StoreJobType`, `.authorize()`, `.rules()`
+- **Thin community `Community 632`** (4 nodes): `StoreVendorContact.php`, `StoreVendorContact`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 634`** (4 nodes): `StoreRemark.php`, `StoreRemark`, `.authorize()`, `.rules()`
+- **Thin community `Community 633`** (4 nodes): `UpdateVendorContact.php`, `UpdateVendorContact`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 635`** (4 nodes): `StoreSourceRequest.php`, `StoreSourceRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 634`** (4 nodes): `StoreVendorCreditRequest.php`, `StoreVendorCreditRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 636`** (4 nodes): `UpdateSourceRequest.php`, `UpdateSourceRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 635`** (4 nodes): `UpdateVendorCreditRequest.php`, `UpdateVendorCreditRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 637`** (4 nodes): `StoreJobApplicant`, `.authorize()`, `.rules()`, `StoreJobApplicant.php`
+- **Thin community `Community 636`** (4 nodes): `NewPurchaseBillListener`, `.__construct()`, `.handle()`, `NewPurchaseBillListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 638`** (4 nodes): `StoreFooterLinks`, `.authorize()`, `.rules()`, `StoreFooterLinks.php`
+- **Thin community `Community 637`** (4 nodes): `NewVendorPaymentListener`, `.__construct()`, `.handle()`, `NewVendorPaymentListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 639`** (4 nodes): `UpdateFooterLinks`, `.authorize()`, `.rules()`, `UpdateFooterLinks.php`
+- **Thin community `Community 638`** (4 nodes): `UpdateVendorPaymentListener`, `.__construct()`, `.handle()`, `UpdateVendorPaymentListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 640`** (4 nodes): `StoreRequest`, `.authorize()`, `.rules()`, `StoreRequest.php`
+- **Thin community `Community 639`** (4 nodes): `VendorCreditListener`, `.__construct()`, `.handle()`, `VendorCreditListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 641`** (4 nodes): `ImportRequest`, `.authorize()`, `.rules()`, `ImportRequest.php`
+- **Thin community `Community 640`** (4 nodes): `VendorCreditPaymentMade`, `.__construct()`, `.handle()`, `VendorCreditPaymentMade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 642`** (4 nodes): `UpdateFollowUpRequest`, `.authorize()`, `.rules()`, `UpdateFollowUpRequest.php`
+- **Thin community `Community 641`** (4 nodes): `PurchaseTab`, `.__construct()`, `.render()`, `PurchaseTab.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 643`** (4 nodes): `StoreAcceptRequest.php`, `StoreAcceptRequest`, `.authorize()`, `.messages()`
+- **Thin community `Community 643`** (4 nodes): `JobEndDateCheck`, `.getArguments()`, `.getOptions()`, `JobEndDateCheck.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 644`** (4 nodes): `StoreStatus.php`, `StoreStatus`, `.authorize()`, `.rules()`
+- **Thin community `Community 644`** (4 nodes): `OfferLetterReminder`, `.getArguments()`, `.getOptions()`, `OfferLetterReminder.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 645`** (4 nodes): `StoreCustomQuestionRequest.php`, `StoreCustomQuestionRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 646`** (4 nodes): `InterviewScheduleDataTable`, `.getColumns()`, `.html()`, `InterviewScheduleDataTable.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 646`** (4 nodes): `StoreSettingRequest.php`, `StoreSettingRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 647`** (4 nodes): `CandidateInterviewRescheduleEvent`, `.broadcastOn()`, `.__construct()`, `CandidateInterviewRescheduleEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 647`** (4 nodes): `StoreJobSkill.php`, `StoreJobSkill`, `.messages()`, `.rules()`
+- **Thin community `Community 648`** (4 nodes): `CandidateInterviewScheduleEvent`, `.broadcastOn()`, `.__construct()`, `CandidateInterviewScheduleEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 648`** (4 nodes): `StoreSkill.php`, `StoreSkill`, `.messages()`, `.rules()`
+- **Thin community `Community 649`** (4 nodes): `HostInterviewEvent`, `.broadcastOn()`, `.__construct()`, `HostInterviewEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 649`** (4 nodes): `UpdateJobSkill.php`, `UpdateJobSkill`, `.messages()`, `.rules()`
+- **Thin community `Community 650`** (4 nodes): `InterviewRescheduleEvent`, `.broadcastOn()`, `.__construct()`, `InterviewRescheduleEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 650`** (4 nodes): `UpdateSkill.php`, `UpdateSkill`, `.messages()`, `.rules()`
+- **Thin community `Community 651`** (4 nodes): `InterviewScheduleEvent`, `.broadcastOn()`, `.__construct()`, `InterviewScheduleEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 651`** (4 nodes): `JobApplicationImport`, `.array()`, `.fields()`, `JobApplicationImport.php`
+- **Thin community `Community 652`** (4 nodes): `JobApplicationStatusChangeEvent`, `.broadcastOn()`, `.__construct()`, `JobApplicationStatusChangeEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 652`** (4 nodes): `RecruitSourceObserver.php`, `RecruitSourceObserver`, `.creating()`, `.restored()`
+- **Thin community `Community 653`** (4 nodes): `JobOfferStatusChangeEvent`, `.broadcastOn()`, `.__construct()`, `JobOfferStatusChangeEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 653`** (4 nodes): `CustomQuestionField`, `.__construct()`, `.render()`, `CustomQuestionField.php`
+- **Thin community `Community 654`** (4 nodes): `NewJobApplicationEvent`, `.broadcastOn()`, `.__construct()`, `NewJobApplicationEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 654`** (4 nodes): `down()`, `setUnsignedIntNullable()`, `up()`, `2025_09_05_105835_update_server_hosting_domain_created_by_nullable.php`
+- **Thin community `Community 655`** (4 nodes): `NewJobEvent`, `.broadcastOn()`, `.__construct()`, `NewJobEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 656`** (4 nodes): `DomainCreated`, `.broadcastOn()`, `.__construct()`, `DomainCreated.php`
+- **Thin community `Community 656`** (4 nodes): `OfferLetterEvent`, `.broadcastOn()`, `.__construct()`, `OfferLetterEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 657`** (4 nodes): `DomainUpdated`, `.broadcastOn()`, `.__construct()`, `DomainUpdated.php`
+- **Thin community `Community 657`** (4 nodes): `RecruitJobAlertEvent`, `.broadcastOn()`, `.__construct()`, `RecruitJobAlertEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 658`** (4 nodes): `HostingCreated`, `.broadcastOn()`, `.__construct()`, `HostingCreated.php`
+- **Thin community `Community 658`** (4 nodes): `RecruitJobAlertUpdateEvent`, `.broadcastOn()`, `.__construct()`, `RecruitJobAlertUpdateEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 659`** (4 nodes): `HostingUpdated`, `.broadcastOn()`, `.__construct()`, `HostingUpdated.php`
+- **Thin community `Community 659`** (4 nodes): `SendOfferLetterReminderEvent`, `.broadcastOn()`, `.__construct()`, `SendOfferLetterReminderEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 660`** (4 nodes): `StoreHostingRequest`, `.attributes()`, `.rules()`, `StoreHostingRequest.php`
+- **Thin community `Community 660`** (4 nodes): `UpdateInterviewScheduleEvent`, `.broadcastOn()`, `.__construct()`, `UpdateInterviewScheduleEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 661`** (4 nodes): `UpdateHostingRequest`, `.attributes()`, `.rules()`, `UpdateHostingRequest.php`
+- **Thin community `Community 661`** (4 nodes): `UpdateJobApplicationEvent`, `.broadcastOn()`, `.__construct()`, `UpdateJobApplicationEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 662`** (4 nodes): `StoreProviderRequest.php`, `StoreProviderRequest`, `.attributes()`, `.rules()`
+- **Thin community `Community 662`** (4 nodes): `UpdateJobEvent`, `.broadcastOn()`, `.__construct()`, `UpdateJobEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 663`** (4 nodes): `UpdateProviderRequest.php`, `UpdateProviderRequest`, `.attributes()`, `.rules()`
+- **Thin community `Community 663`** (4 nodes): `UpdateOfferLetterEvent`, `.broadcastOn()`, `.__construct()`, `UpdateOfferLetterEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 664`** (4 nodes): `StoreSmsSetting.php`, `StoreSmsSetting`, `.attributes()`, `.authorize()`
+- **Thin community `Community 664`** (4 nodes): `RecruitController`, `.create()`, `.index()`, `RecruitController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 665`** (4 nodes): `BannedSubdomainRequest`, `.authorize()`, `.rules()`, `BannedSubdomainRequest.php`
+- **Thin community `Community 665`** (4 nodes): `StoreJobType.php`, `StoreJobType`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 666`** (4 nodes): `CheckSubdomainRequest`, `.authorize()`, `.rules()`, `CheckSubdomainRequest.php`
+- **Thin community `Community 666`** (4 nodes): `StoreRemark.php`, `StoreRemark`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 667`** (4 nodes): `ForgotCompanyRequest`, `.authorize()`, `.rules()`, `ForgotCompanyRequest.php`
+- **Thin community `Community 667`** (4 nodes): `StoreSourceRequest.php`, `StoreSourceRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 668`** (4 nodes): `StoreWebhookRequest.php`, `StoreWebhookRequest`, `.authorize()`, `.rules()`
+- **Thin community `Community 668`** (4 nodes): `UpdateSourceRequest.php`, `UpdateSourceRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 669`** (4 nodes): `StoreCategory`, `.authorize()`, `.rules()`, `StoreCategory.php`
+- **Thin community `Community 669`** (4 nodes): `StoreJobApplicant`, `.authorize()`, `.rules()`, `StoreJobApplicant.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 670`** (4 nodes): `UpdateOccurrence.php`, `UpdateOccurrence`, `.authorize()`, `.rules()`
+- **Thin community `Community 670`** (4 nodes): `StoreFooterLinks`, `.authorize()`, `.rules()`, `StoreFooterLinks.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 671`** (4 nodes): `UpdateSetting.php`, `UpdateSetting`, `.authorize()`, `.rules()`
+- **Thin community `Community 671`** (4 nodes): `UpdateFooterLinks`, `.authorize()`, `.rules()`, `UpdateFooterLinks.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 672`** (4 nodes): `Client`, `.getFacadeAccessor()`, `Client.php`, `Client.php`
+- **Thin community `Community 672`** (4 nodes): `StoreRequest`, `.authorize()`, `.rules()`, `StoreRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 673`** (4 nodes): `APIServiceProvider.php`, `APIServiceProvider`, `.boot()`, `.register()`
+- **Thin community `Community 673`** (4 nodes): `ImportRequest`, `.authorize()`, `.rules()`, `ImportRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 674`** (4 nodes): `JWT`, `.decodeToken()`, `.generateToken()`, `JWT.php`
+- **Thin community `Community 674`** (4 nodes): `StoreQuickApplication`, `.authorize()`, `.messages()`, `StoreQuickApplication.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 675`** (4 nodes): `CreateIntegrationsTable`, `.down()`, `.up()`, `2020_05_10_000000_create_integrations_table.php`
+- **Thin community `Community 675`** (4 nodes): `UpdateFollowUpRequest`, `.authorize()`, `.rules()`, `UpdateFollowUpRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 676`** (4 nodes): `OAuth2ServiceProvider.php`, `OAuth2ServiceProvider`, `.boot()`, `.register()`
+- **Thin community `Community 676`** (4 nodes): `StoreStatus.php`, `StoreStatus`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 677`** (4 nodes): `employees.leaves_quota`, `leaves_quota.blade.php`, `personal.blade.php`, `show.blade.php`
+- **Thin community `Community 677`** (4 nodes): `StoreCustomQuestionRequest.php`, `StoreCustomQuestionRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 679`** (4 nodes): `FirstRowsFilter`, `.__construct()`, `.readCell()`, `list_maolin_new_all_sheets.php`
+- **Thin community `Community 678`** (4 nodes): `StoreSettingRequest.php`, `StoreSettingRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 680`** (4 nodes): `FirstNRows`, `.__construct()`, `.readCell()`, `peek_maolin_sheet.php`
+- **Thin community `Community 679`** (4 nodes): `StoreJobSkill.php`, `StoreJobSkill`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 681`** (4 nodes): `FirstRowsFilter`, `.__construct()`, `.readCell()`, `read_maolin_new_folder_headers.php`
+- **Thin community `Community 680`** (4 nodes): `StoreSkill.php`, `StoreSkill`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 682`** (4 nodes): `FirstRowsFilter`, `.__construct()`, `.readCell()`, `read_maolin_project_headers.php`
+- **Thin community `Community 681`** (4 nodes): `UpdateJobSkill.php`, `UpdateJobSkill`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 683`** (3 nodes): `ClearDecryptRelatedCache.php`, `ClearDecryptRelatedCache`, `.handle()`
+- **Thin community `Community 682`** (4 nodes): `UpdateSkill.php`, `UpdateSkill`, `.messages()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 684`** (3 nodes): `CreateTranslations.php`, `CreateTranslations`, `.handle()`
+- **Thin community `Community 683`** (4 nodes): `JobApplicationImport`, `.array()`, `.fields()`, `JobApplicationImport.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 686`** (3 nodes): `AppreciationEvent.php`, `AppreciationEvent`, `.__construct()`
+- **Thin community `Community 684`** (4 nodes): `CandidateInterviewRescheduleListener`, `.__construct()`, `.handle()`, `CandidateInterviewRescheduleListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 687`** (3 nodes): `AttendanceReminderEvent.php`, `AttendanceReminderEvent`, `.__construct()`
+- **Thin community `Community 685`** (4 nodes): `CandidateInterviewScheduleListener`, `.__construct()`, `.handle()`, `CandidateInterviewScheduleListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 688`** (3 nodes): `AutoFollowUpReminderEvent.php`, `AutoFollowUpReminderEvent`, `.__construct()`
+- **Thin community `Community 686`** (4 nodes): `InterviewRescheduleListener`, `.__construct()`, `.handle()`, `InterviewRescheduleListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 689`** (3 nodes): `AutoTaskReminderEvent.php`, `AutoTaskReminderEvent`, `.__construct()`
+- **Thin community `Community 687`** (4 nodes): `InterviewScheduleListener`, `.__construct()`, `.handle()`, `InterviewScheduleListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 690`** (3 nodes): `BirthdayReminderEvent.php`, `BirthdayReminderEvent`, `.__construct()`
+- **Thin community `Community 688`** (4 nodes): `JobApplicationStatusChangeListener`, `.__construct()`, `.handle()`, `JobApplicationStatusChangeListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 691`** (3 nodes): `BulkShiftEvent.php`, `BulkShiftEvent`, `.__construct()`
+- **Thin community `Community 689`** (4 nodes): `JobOfferStatusChangeListener`, `.__construct()`, `.handle()`, `JobOfferStatusChangeListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 692`** (3 nodes): `ContractSignedEvent.php`, `ContractSignedEvent`, `.__construct()`
+- **Thin community `Community 690`** (4 nodes): `NewJobApplicationListener`, `.__construct()`, `.handle()`, `NewJobApplicationListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 693`** (3 nodes): `DailyScheduleEvent.php`, `DailyScheduleEvent`, `.__construct()`
+- **Thin community `Community 691`** (4 nodes): `NewJobListener`, `.__construct()`, `.handle()`, `NewJobListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 694`** (3 nodes): `DailyTimeLogReportEvent.php`, `DailyTimeLogReportEvent`, `.__construct()`
+- **Thin community `Community 692`** (4 nodes): `OfferLetterListener`, `.__construct()`, `.handle()`, `OfferLetterListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 695`** (3 nodes): `DealEvent.php`, `DealEvent`, `.__construct()`
+- **Thin community `Community 693`** (4 nodes): `SendOfferLetterReminderListener`, `.__construct()`, `.handle()`, `SendOfferLetterReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 696`** (3 nodes): `DiscussionEvent.php`, `DiscussionEvent`, `.__construct()`
+- **Thin community `Community 694`** (4 nodes): `UpdateInterviewScheduleListener`, `.__construct()`, `.handle()`, `UpdateInterviewScheduleListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 697`** (3 nodes): `DiscussionMentionEvent.php`, `DiscussionMentionEvent`, `.__construct()`
+- **Thin community `Community 695`** (4 nodes): `UpdateJobListener`, `.__construct()`, `.handle()`, `UpdateJobListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 698`** (3 nodes): `DiscussionReplyEvent.php`, `DiscussionReplyEvent`, `.__construct()`
+- **Thin community `Community 696`** (4 nodes): `UpdateOfferLetterListener`, `.__construct()`, `.handle()`, `UpdateOfferLetterListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 699`** (3 nodes): `EmployeeShiftChangeEvent.php`, `EmployeeShiftChangeEvent`, `.__construct()`
+- **Thin community `Community 697`** (4 nodes): `RecruitSourceObserver.php`, `RecruitSourceObserver`, `.creating()`, `.restored()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 700`** (3 nodes): `EmployeeShiftScheduleEvent.php`, `EmployeeShiftScheduleEvent`, `.__construct()`
+- **Thin community `Community 698`** (4 nodes): `CheckApplication.php`, `CheckApplication`, `.__construct()`, `.message()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 701`** (3 nodes): `EstimateAcceptedEvent.php`, `EstimateAcceptedEvent`, `.__construct()`
+- **Thin community `Community 699`** (4 nodes): `CustomQuestionField`, `.__construct()`, `.render()`, `CustomQuestionField.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 702`** (3 nodes): `EstimateDeclinedEvent.php`, `EstimateDeclinedEvent`, `.__construct()`
+- **Thin community `Community 700`** (4 nodes): `down()`, `setUnsignedIntNullable()`, `up()`, `2025_09_05_105835_update_server_hosting_domain_created_by_nullable.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 703`** (3 nodes): `EstimateRequestAcceptedEvent.php`, `EstimateRequestAcceptedEvent`, `.__construct()`
+- **Thin community `Community 702`** (4 nodes): `DomainCreated`, `.broadcastOn()`, `.__construct()`, `DomainCreated.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 704`** (3 nodes): `EstimateRequestRejectedEvent.php`, `EstimateRequestRejectedEvent`, `.__construct()`
+- **Thin community `Community 703`** (4 nodes): `DomainUpdated`, `.broadcastOn()`, `.__construct()`, `DomainUpdated.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 705`** (3 nodes): `EventCompletedEvent.php`, `EventCompletedEvent`, `.__construct()`
+- **Thin community `Community 704`** (4 nodes): `HostingCreated`, `.broadcastOn()`, `.__construct()`, `HostingCreated.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 706`** (3 nodes): `EventInviteEvent.php`, `EventInviteEvent`, `.__construct()`
+- **Thin community `Community 705`** (4 nodes): `HostingUpdated`, `.broadcastOn()`, `.__construct()`, `HostingUpdated.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 707`** (3 nodes): `EventInviteMentionEvent.php`, `EventInviteMentionEvent`, `.__construct()`
+- **Thin community `Community 706`** (4 nodes): `StoreHostingRequest`, `.attributes()`, `.rules()`, `StoreHostingRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 708`** (3 nodes): `EventReminderEvent.php`, `EventReminderEvent`, `.__construct()`
+- **Thin community `Community 707`** (4 nodes): `UpdateHostingRequest`, `.attributes()`, `.rules()`, `UpdateHostingRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 709`** (3 nodes): `EventStatusNoteEvent.php`, `EventStatusNoteEvent`, `.__construct()`
+- **Thin community `Community 708`** (4 nodes): `StoreProviderRequest.php`, `StoreProviderRequest`, `.attributes()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 710`** (3 nodes): `FileUploadEvent.php`, `FileUploadEvent`, `.__construct()`
+- **Thin community `Community 709`** (4 nodes): `UpdateProviderRequest.php`, `UpdateProviderRequest`, `.attributes()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 711`** (3 nodes): `HolidayEvent.php`, `HolidayEvent`, `.__construct()`
+- **Thin community `Community 710`** (4 nodes): `StoreSmsSetting.php`, `StoreSmsSetting`, `.attributes()`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 712`** (3 nodes): `InvoicePaymentReceivedEvent.php`, `InvoicePaymentReceivedEvent`, `.__construct()`
+- **Thin community `Community 711`** (4 nodes): `BannedSubdomainRequest`, `.authorize()`, `.rules()`, `BannedSubdomainRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 713`** (3 nodes): `InvoiceReminderAfterEvent.php`, `InvoiceReminderAfterEvent`, `.__construct()`
+- **Thin community `Community 712`** (4 nodes): `CheckSubdomainRequest`, `.authorize()`, `.rules()`, `CheckSubdomainRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 714`** (3 nodes): `InvoiceReminderEvent.php`, `InvoiceReminderEvent`, `.__construct()`
+- **Thin community `Community 713`** (4 nodes): `ForgotCompanyRequest`, `.authorize()`, `.rules()`, `ForgotCompanyRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 715`** (3 nodes): `InvoiceUpdatedEvent.php`, `InvoiceUpdatedEvent`, `.__construct()`
+- **Thin community `Community 714`** (4 nodes): `StoreWebhookRequest.php`, `StoreWebhookRequest`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 716`** (3 nodes): `LeadEvent.php`, `LeadEvent`, `.__construct()`
+- **Thin community `Community 715`** (4 nodes): `StoreCategory`, `.authorize()`, `.rules()`, `StoreCategory.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 717`** (3 nodes): `LeadImportEvent.php`, `LeadImportEvent`, `.__construct()`
+- **Thin community `Community 716`** (4 nodes): `UpdateOccurrence.php`, `UpdateOccurrence`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 718`** (3 nodes): `LeaveEvent.php`, `LeaveEvent`, `.__construct()`
+- **Thin community `Community 717`** (4 nodes): `UpdateSetting.php`, `UpdateSetting`, `.authorize()`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 719`** (3 nodes): `MailTicketReplyEvent.php`, `MailTicketReplyEvent`, `.__construct()`
+- **Thin community `Community 718`** (4 nodes): `HostUpdateListener`, `.__construct()`, `.handle()`, `HostUpdateListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 720`** (3 nodes): `ModuleStatusChanged.php`, `ModuleStatusChanged`, `.__construct()`
+- **Thin community `Community 719`** (4 nodes): `InviteListener`, `.__construct()`, `.handle()`, `InviteListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 721`** (3 nodes): `MonthlyAttendanceEvent.php`, `MonthlyAttendanceEvent`, `.__construct()`
+- **Thin community `Community 720`** (4 nodes): `MeetingHostListener`, `.__construct()`, `.handle()`, `MeetingHostListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 722`** (3 nodes): `NewCompanyCreatedEvent.php`, `NewCompanyCreatedEvent`, `.__construct()`
+- **Thin community `Community 721`** (4 nodes): `MeetingUpdateListener`, `.__construct()`, `.handle()`, `MeetingUpdateListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 723`** (3 nodes): `NewContractEvent.php`, `NewContractEvent`, `.__construct()`
+- **Thin community `Community 722`** (4 nodes): `Client`, `.getFacadeAccessor()`, `Client.php`, `Client.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 724`** (3 nodes): `NewCreditNoteEvent.php`, `NewCreditNoteEvent`, `.__construct()`
+- **Thin community `Community 723`** (4 nodes): `APIServiceProvider.php`, `APIServiceProvider`, `.boot()`, `.register()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 725`** (3 nodes): `NewEstimateEvent.php`, `NewEstimateEvent`, `.__construct()`
+- **Thin community `Community 724`** (4 nodes): `CreateIntegrationsTable`, `.down()`, `.up()`, `2020_05_10_000000_create_integrations_table.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 726`** (3 nodes): `NewEstimateRequestEvent.php`, `NewEstimateRequestEvent`, `.__construct()`
+- **Thin community `Community 725`** (4 nodes): `OAuth2ServiceProvider.php`, `OAuth2ServiceProvider`, `.boot()`, `.register()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 727`** (3 nodes): `NewExpenseEvent.php`, `NewExpenseEvent`, `.__construct()`
+- **Thin community `Community 726`** (4 nodes): `employees.leaves_quota`, `leaves_quota.blade.php`, `personal.blade.php`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 728`** (3 nodes): `NewExpenseRecurringEvent.php`, `NewExpenseRecurringEvent`, `.__construct()`
+- **Thin community `Community 728`** (4 nodes): `FirstRowsFilter`, `.__construct()`, `.readCell()`, `list_maolin_new_all_sheets.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 729`** (3 nodes): `NewInvoiceEvent.php`, `NewInvoiceEvent`, `.__construct()`
+- **Thin community `Community 729`** (4 nodes): `FirstNRows`, `.__construct()`, `.readCell()`, `peek_maolin_sheet.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 730`** (3 nodes): `NewInvoiceRecurringEvent.php`, `NewInvoiceRecurringEvent`, `.__construct()`
+- **Thin community `Community 730`** (4 nodes): `FirstRowsFilter`, `.__construct()`, `.readCell()`, `read_maolin_new_folder_headers.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 731`** (3 nodes): `NewIssueEvent.php`, `NewIssueEvent`, `.__construct()`
+- **Thin community `Community 731`** (4 nodes): `FirstRowsFilter`, `.__construct()`, `.readCell()`, `read_maolin_project_headers.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 732`** (3 nodes): `NewNoticeEvent.php`, `NewNoticeEvent`, `.__construct()`
+- **Thin community `Community 732`** (3 nodes): `ClearDecryptRelatedCache.php`, `ClearDecryptRelatedCache`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 733`** (3 nodes): `NewOrderEvent.php`, `NewOrderEvent`, `.__construct()`
+- **Thin community `Community 734`** (3 nodes): `AppreciationEvent.php`, `AppreciationEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 734`** (3 nodes): `NewPaymentEvent.php`, `NewPaymentEvent`, `.__construct()`
+- **Thin community `Community 735`** (3 nodes): `AttendanceReminderEvent.php`, `AttendanceReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 735`** (3 nodes): `NewProductPurchaseEvent.php`, `NewProductPurchaseEvent`, `.__construct()`
+- **Thin community `Community 736`** (3 nodes): `AutoFollowUpReminderEvent.php`, `AutoFollowUpReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 736`** (3 nodes): `NewProjectEvent.php`, `NewProjectEvent`, `.__construct()`
+- **Thin community `Community 737`** (3 nodes): `AutoTaskReminderEvent.php`, `AutoTaskReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 737`** (3 nodes): `NewProjectMemberEvent.php`, `NewProjectMemberEvent`, `.__construct()`
+- **Thin community `Community 738`** (3 nodes): `BirthdayReminderEvent.php`, `BirthdayReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 738`** (3 nodes): `NewProposalEvent.php`, `NewProposalEvent`, `.__construct()`
+- **Thin community `Community 739`** (3 nodes): `BulkShiftEvent.php`, `BulkShiftEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 739`** (3 nodes): `NewUserEvent.php`, `NewUserEvent`, `.__construct()`
+- **Thin community `Community 740`** (3 nodes): `ContractSignedEvent.php`, `ContractSignedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 740`** (3 nodes): `NewUserRegistrationViaInviteEvent.php`, `NewUserRegistrationViaInviteEvent`, `.__construct()`
+- **Thin community `Community 741`** (3 nodes): `DailyScheduleEvent.php`, `DailyScheduleEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 741`** (3 nodes): `NewUserSlackEvent.php`, `NewUserSlackEvent`, `.__construct()`
+- **Thin community `Community 742`** (3 nodes): `DailyTimeLogReportEvent.php`, `DailyTimeLogReportEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 742`** (3 nodes): `OrderUpdatedEvent.php`, `OrderUpdatedEvent`, `.__construct()`
+- **Thin community `Community 743`** (3 nodes): `DealEvent.php`, `DealEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 743`** (3 nodes): `PaymentReminderEvent.php`, `PaymentReminderEvent`, `.__construct()`
+- **Thin community `Community 744`** (3 nodes): `DiscussionEvent.php`, `DiscussionEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 744`** (3 nodes): `ProjectNoteEvent.php`, `ProjectNoteEvent`, `.__construct()`
+- **Thin community `Community 745`** (3 nodes): `DiscussionMentionEvent.php`, `DiscussionMentionEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 745`** (3 nodes): `ProjectNoteMentionEvent.php`, `ProjectNoteMentionEvent`, `.__construct()`
+- **Thin community `Community 746`** (3 nodes): `DiscussionReplyEvent.php`, `DiscussionReplyEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 746`** (3 nodes): `ProjectNoteUpdateEvent.php`, `ProjectNoteUpdateEvent`, `.__construct()`
+- **Thin community `Community 747`** (3 nodes): `EmployeeShiftChangeEvent.php`, `EmployeeShiftChangeEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 747`** (3 nodes): `ProjectReminderEvent.php`, `ProjectReminderEvent`, `.__construct()`
+- **Thin community `Community 748`** (3 nodes): `EmployeeShiftScheduleEvent.php`, `EmployeeShiftScheduleEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 748`** (3 nodes): `PromotionAddedEvent.php`, `PromotionAddedEvent`, `.__construct()`
+- **Thin community `Community 749`** (3 nodes): `EstimateAcceptedEvent.php`, `EstimateAcceptedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 749`** (3 nodes): `RatingEvent.php`, `RatingEvent`, `.__construct()`
+- **Thin community `Community 750`** (3 nodes): `EstimateDeclinedEvent.php`, `EstimateDeclinedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 750`** (3 nodes): `RemovalRequestAdminEvent.php`, `RemovalRequestAdminEvent`, `.__construct()`
+- **Thin community `Community 751`** (3 nodes): `EstimateRequestAcceptedEvent.php`, `EstimateRequestAcceptedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 751`** (3 nodes): `RemovalRequestAdminLeadEvent.php`, `RemovalRequestAdminLeadEvent`, `.__construct()`
+- **Thin community `Community 752`** (3 nodes): `EstimateRequestRejectedEvent.php`, `EstimateRequestRejectedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 752`** (3 nodes): `RemovalRequestApprovedRejectLeadEvent.php`, `RemovalRequestApprovedRejectLeadEvent`, `.__construct()`
+- **Thin community `Community 753`** (3 nodes): `EventCompletedEvent.php`, `EventCompletedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 753`** (3 nodes): `RemovalRequestApprovedRejectUserEvent.php`, `RemovalRequestApprovedRejectUserEvent`, `.__construct()`
+- **Thin community `Community 754`** (3 nodes): `EventInviteEvent.php`, `EventInviteEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 754`** (3 nodes): `RemovalRequestApproveRejectEvent.php`, `RemovalRequestApproveRejectEvent`, `.__construct()`
+- **Thin community `Community 755`** (3 nodes): `EventInviteMentionEvent.php`, `EventInviteMentionEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 755`** (3 nodes): `ShiftRotationEvent.php`, `ShiftRotationEvent`, `.__construct()`
+- **Thin community `Community 756`** (3 nodes): `EventReminderEvent.php`, `EventReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 756`** (3 nodes): `SubTaskCompletedEvent.php`, `SubTaskCompletedEvent`, `.__construct()`
+- **Thin community `Community 757`** (3 nodes): `EventStatusNoteEvent.php`, `EventStatusNoteEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 757`** (3 nodes): `TaskCommentEvent.php`, `TaskCommentEvent`, `.__construct()`
+- **Thin community `Community 758`** (3 nodes): `FileUploadEvent.php`, `FileUploadEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 758`** (3 nodes): `TaskCommentMentionEvent.php`, `TaskCommentMentionEvent`, `.__construct()`
+- **Thin community `Community 759`** (3 nodes): `HolidayEvent.php`, `HolidayEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 759`** (3 nodes): `TaskEvent.php`, `TaskEvent`, `.__construct()`
+- **Thin community `Community 760`** (3 nodes): `InvoicePaymentReceivedEvent.php`, `InvoicePaymentReceivedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 760`** (3 nodes): `TaskNoteEvent.php`, `TaskNoteEvent`, `.__construct()`
+- **Thin community `Community 761`** (3 nodes): `InvoiceReminderAfterEvent.php`, `InvoiceReminderAfterEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 761`** (3 nodes): `TaskNoteMentionEvent.php`, `TaskNoteMentionEvent`, `.__construct()`
+- **Thin community `Community 762`** (3 nodes): `InvoiceReminderEvent.php`, `InvoiceReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 762`** (3 nodes): `TaskReminderEvent.php`, `TaskReminderEvent`, `.__construct()`
+- **Thin community `Community 763`** (3 nodes): `InvoiceUpdatedEvent.php`, `InvoiceUpdatedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 763`** (3 nodes): `TicketEvent.php`, `TicketEvent`, `.__construct()`
+- **Thin community `Community 764`** (3 nodes): `LeadEvent.php`, `LeadEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 764`** (3 nodes): `TicketReplyEvent.php`, `TicketReplyEvent`, `.__construct()`
+- **Thin community `Community 765`** (3 nodes): `LeadImportEvent.php`, `LeadImportEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 765`** (3 nodes): `TicketRequesterEvent.php`, `TicketRequesterEvent`, `.__construct()`
+- **Thin community `Community 766`** (3 nodes): `LeaveEvent.php`, `LeaveEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 766`** (3 nodes): `TimeTrackerReminderEvent.php`, `TimeTrackerReminderEvent`, `.__construct()`
+- **Thin community `Community 767`** (3 nodes): `MailTicketReplyEvent.php`, `MailTicketReplyEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 767`** (3 nodes): `TwoFactorCodeEvent.php`, `TwoFactorCodeEvent`, `.__construct()`
+- **Thin community `Community 768`** (3 nodes): `ModuleStatusChanged.php`, `ModuleStatusChanged`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 768`** (3 nodes): `UserLoginEvent.php`, `UserLoginEvent`, `.__construct()`
+- **Thin community `Community 769`** (3 nodes): `MonthlyAttendanceEvent.php`, `MonthlyAttendanceEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 769`** (3 nodes): `EmailVerificationEvent.php`, `EmailVerificationEvent`, `.__construct()`
+- **Thin community `Community 770`** (3 nodes): `NewCompanyCreatedEvent.php`, `NewCompanyCreatedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 770`** (3 nodes): `NewSupportTicketEvent.php`, `NewSupportTicketEvent`, `.__construct()`
+- **Thin community `Community 771`** (3 nodes): `NewContractEvent.php`, `NewContractEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 771`** (3 nodes): `OfflinePackageChangeConfirmationEvent.php`, `OfflinePackageChangeConfirmationEvent`, `.__construct()`
+- **Thin community `Community 772`** (3 nodes): `NewCreditNoteEvent.php`, `NewCreditNoteEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 772`** (3 nodes): `OfflinePackageChangeRequestEvent.php`, `OfflinePackageChangeRequestEvent`, `.__construct()`
+- **Thin community `Community 773`** (3 nodes): `NewEstimateEvent.php`, `NewEstimateEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 773`** (3 nodes): `PackageUpdateNotifyEvent.php`, `PackageUpdateNotifyEvent`, `.__construct()`
+- **Thin community `Community 774`** (3 nodes): `NewEstimateRequestEvent.php`, `NewEstimateRequestEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 774`** (3 nodes): `SupportTicketReplyEvent.php`, `SupportTicketReplyEvent`, `.__construct()`
+- **Thin community `Community 775`** (3 nodes): `NewExpenseEvent.php`, `NewExpenseEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 775`** (3 nodes): `SupportTicketRequesterEvent.php`, `SupportTicketRequesterEvent`, `.__construct()`
+- **Thin community `Community 776`** (3 nodes): `NewExpenseRecurringEvent.php`, `NewExpenseRecurringEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 776`** (3 nodes): `AttendanceReportController.php`, `AttendanceReportController`, `.__construct()`
+- **Thin community `Community 777`** (3 nodes): `NewInvoiceEvent.php`, `NewInvoiceEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 777`** (3 nodes): `AuditReportController.php`, `AuditReportController`, `.__construct()`
+- **Thin community `Community 778`** (3 nodes): `NewInvoiceRecurringEvent.php`, `NewInvoiceRecurringEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 778`** (3 nodes): `FinanceReportController.php`, `FinanceReportController`, `.__construct()`
+- **Thin community `Community 779`** (3 nodes): `NewIssueEvent.php`, `NewIssueEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 779`** (3 nodes): `MyCalendarController.php`, `MyCalendarController`, `.__construct()`
+- **Thin community `Community 780`** (3 nodes): `NewNoticeEvent.php`, `NewNoticeEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 780`** (3 nodes): `ProfileSettingController.php`, `ProfileSettingController`, `.__construct()`
+- **Thin community `Community 781`** (3 nodes): `NewOrderEvent.php`, `NewOrderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 781`** (3 nodes): `SalesReportController.php`, `SalesReportController`, `.__construct()`
+- **Thin community `Community 782`** (3 nodes): `NewPaymentEvent.php`, `NewPaymentEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 782`** (3 nodes): `ProfileSettingController.php`, `ProfileSettingController`, `.__construct()`
+- **Thin community `Community 783`** (3 nodes): `NewProductPurchaseEvent.php`, `NewProductPurchaseEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 783`** (3 nodes): `SupportTicketReplyController.php`, `SupportTicketReplyController`, `.__construct()`
+- **Thin community `Community 784`** (3 nodes): `NewProjectEvent.php`, `NewProjectEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 784`** (3 nodes): `TrustHosts.php`, `TrustHosts`, `.hosts()`
+- **Thin community `Community 785`** (3 nodes): `NewProjectMemberEvent.php`, `NewProjectMemberEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 785`** (3 nodes): `CoreRequest.php`, `CoreRequest`, `.formatErrors()`
+- **Thin community `Community 786`** (3 nodes): `NewProposalEvent.php`, `NewProposalEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 786`** (3 nodes): `StoreEmergencyContactRequest.php`, `StoreEmergencyContactRequest`, `.authorize()`
+- **Thin community `Community 787`** (3 nodes): `NewUserEvent.php`, `NewUserEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 787`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.rules()`
+- **Thin community `Community 788`** (3 nodes): `NewUserRegistrationViaInviteEvent.php`, `NewUserRegistrationViaInviteEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 788`** (3 nodes): `StoreTransaction.php`, `StoreTransaction`, `.authorize()`
+- **Thin community `Community 789`** (3 nodes): `NewUserSlackEvent.php`, `NewUserSlackEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 789`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`
+- **Thin community `Community 790`** (3 nodes): `OrderUpdatedEvent.php`, `OrderUpdatedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 790`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`
+- **Thin community `Community 791`** (3 nodes): `PaymentReminderEvent.php`, `PaymentReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 791`** (3 nodes): `StoreRecurringExpense.php`, `StoreRecurringExpense`, `.authorize()`
+- **Thin community `Community 792`** (3 nodes): `ProjectNoteEvent.php`, `ProjectNoteEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 792`** (3 nodes): `DeleteRequest.php`, `DeleteRequest`, `.authorize()`
+- **Thin community `Community 793`** (3 nodes): `ProjectNoteMentionEvent.php`, `ProjectNoteMentionEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 793`** (3 nodes): `StoreRequest.php`, `StoreRequest`, `.authorize()`
+- **Thin community `Community 794`** (3 nodes): `ProjectNoteUpdateEvent.php`, `ProjectNoteUpdateEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 794`** (3 nodes): `StoreRecurringInvoice.php`, `StoreRecurringInvoice`, `.authorize()`
+- **Thin community `Community 795`** (3 nodes): `ProjectReminderEvent.php`, `ProjectReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 795`** (3 nodes): `UpdateRecurringInvoice.php`, `UpdateRecurringInvoice`, `.authorize()`
+- **Thin community `Community 796`** (3 nodes): `PromotionAddedEvent.php`, `PromotionAddedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 796`** (3 nodes): `StoreLeadStage.php`, `StoreLeadStage`, `.authorize()`
+- **Thin community `Community 797`** (3 nodes): `RatingEvent.php`, `RatingEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 797`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`
+- **Thin community `Community 798`** (3 nodes): `RemovalRequestAdminEvent.php`, `RemovalRequestAdminEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 798`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`
+- **Thin community `Community 799`** (3 nodes): `RemovalRequestAdminLeadEvent.php`, `RemovalRequestAdminLeadEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 799`** (3 nodes): `StoreSubTask.php`, `StoreSubTask`, `.authorize()`
+- **Thin community `Community 800`** (3 nodes): `RemovalRequestApprovedRejectLeadEvent.php`, `RemovalRequestApprovedRejectLeadEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 800`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`
+- **Thin community `Community 801`** (3 nodes): `RemovalRequestApprovedRejectUserEvent.php`, `RemovalRequestApprovedRejectUserEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 801`** (3 nodes): `FileUploadListener.php`, `FileUploadListener`, `FileUploadListener.php`
+- **Thin community `Community 802`** (3 nodes): `RemovalRequestApproveRejectEvent.php`, `RemovalRequestApproveRejectEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 802`** (3 nodes): `EmailVerificationListener.php`, `EmailVerificationListener`, `.handle()`
+- **Thin community `Community 803`** (3 nodes): `ShiftRotationEvent.php`, `ShiftRotationEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 803`** (3 nodes): `PermissionType.php`, `PermissionType`, `.scopeOfType()`
+- **Thin community `Community 804`** (3 nodes): `SubTaskCompletedEvent.php`, `SubTaskCompletedEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 804`** (3 nodes): `PackageSetting.php`, `PackageSetting`, `.getAllPackagesAttribute()`
+- **Thin community `Community 805`** (3 nodes): `TaskCommentEvent.php`, `TaskCommentEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 805`** (3 nodes): `StripeSetting.php`, `StripeSetting`, `.getShowPayAttribute()`
+- **Thin community `Community 806`** (3 nodes): `TaskCommentMentionEvent.php`, `TaskCommentMentionEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 806`** (3 nodes): `AcceptEstimateObserver.php`, `AcceptEstimateObserver`, `.creating()`
+- **Thin community `Community 807`** (3 nodes): `TaskEvent.php`, `TaskEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 807`** (3 nodes): `AttendanceSettingObserver.php`, `AttendanceSettingObserver`, `.creating()`
+- **Thin community `Community 808`** (3 nodes): `TaskNoteEvent.php`, `TaskNoteEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 808`** (3 nodes): `ClientCategoryObserver.php`, `ClientCategoryObserver`, `.creating()`
+- **Thin community `Community 809`** (3 nodes): `TaskNoteMentionEvent.php`, `TaskNoteMentionEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 809`** (3 nodes): `ClientSubCategoryObserver.php`, `ClientSubCategoryObserver`, `.creating()`
+- **Thin community `Community 810`** (3 nodes): `TaskReminderEvent.php`, `TaskReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 810`** (3 nodes): `ClientUserNotesObserver.php`, `ClientUserNotesObserver`, `.creating()`
+- **Thin community `Community 811`** (3 nodes): `TicketEvent.php`, `TicketEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 811`** (3 nodes): `ContractSignObserver.php`, `ContractSignObserver`, `.creating()`
+- **Thin community `Community 812`** (3 nodes): `TicketReplyEvent.php`, `TicketReplyEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 812`** (3 nodes): `ContractTypeObserver.php`, `ContractTypeObserver`, `.creating()`
+- **Thin community `Community 813`** (3 nodes): `TicketRequesterEvent.php`, `TicketRequesterEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 813`** (3 nodes): `CurrencyFormatSettingObserver.php`, `CurrencyFormatSettingObserver`, `.creating()`
+- **Thin community `Community 814`** (3 nodes): `TimeTrackerReminderEvent.php`, `TimeTrackerReminderEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 814`** (3 nodes): `CustomFieldGroupObserver.php`, `CustomFieldGroupObserver`, `.creating()`
+- **Thin community `Community 815`** (3 nodes): `TwoFactorCodeEvent.php`, `TwoFactorCodeEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 815`** (3 nodes): `CustomLinkSettingObserver.php`, `CustomLinkSettingObserver`, `.creating()`
+- **Thin community `Community 816`** (3 nodes): `UserLoginEvent.php`, `UserLoginEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 816`** (3 nodes): `DiscussionFileObserver.php`, `DiscussionFileObserver`, `.creating()`
+- **Thin community `Community 817`** (3 nodes): `EmailVerificationEvent.php`, `EmailVerificationEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 817`** (3 nodes): `EmailNotificationSettingObserver.php`, `EmailNotificationSettingObserver`, `.creating()`
+- **Thin community `Community 818`** (3 nodes): `NewSupportTicketEvent.php`, `NewSupportTicketEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 818`** (3 nodes): `EmployeeSkillObserver.php`, `EmployeeSkillObserver`, `.creating()`
+- **Thin community `Community 819`** (3 nodes): `OfflinePackageChangeConfirmationEvent.php`, `OfflinePackageChangeConfirmationEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 819`** (3 nodes): `EmployeeTeamObserver.php`, `EmployeeTeamObserver`, `.creating()`
+- **Thin community `Community 820`** (3 nodes): `OfflinePackageChangeRequestEvent.php`, `OfflinePackageChangeRequestEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 820`** (3 nodes): `EventAttendeeObserver.php`, `EventAttendeeObserver`, `.creating()`
+- **Thin community `Community 821`** (3 nodes): `PackageUpdateNotifyEvent.php`, `PackageUpdateNotifyEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 821`** (3 nodes): `ExpensesCategoryObserver.php`, `ExpensesCategoryObserver`, `.creating()`
+- **Thin community `Community 822`** (3 nodes): `SupportTicketReplyEvent.php`, `SupportTicketReplyEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 822`** (3 nodes): `ExpensesCategoryRoleObserver.php`, `ExpensesCategoryRoleObserver`, `.creating()`
+- **Thin community `Community 823`** (3 nodes): `SupportTicketRequesterEvent.php`, `SupportTicketRequesterEvent`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 823`** (3 nodes): `FileStorageObserver.php`, `FileStorageObserver`, `.creating()`
+- **Thin community `Community 824`** (3 nodes): `AttendanceReportController.php`, `AttendanceReportController`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 824`** (3 nodes): `GdprSettingObserver.php`, `GdprSettingObserver`, `.creating()`
+- **Thin community `Community 825`** (3 nodes): `AuditReportController.php`, `AuditReportController`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 825`** (3 nodes): `GoogleCalendarModuleObserver.php`, `GoogleCalendarModuleObserver`, `.creating()`
+- **Thin community `Community 826`** (3 nodes): `MyCalendarController.php`, `MyCalendarController`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 826`** (3 nodes): `KnowledgeBaseCategoriesObserver.php`, `KnowledgeBaseCategoriesObserver`, `.creating()`
+- **Thin community `Community 827`** (3 nodes): `ProfileSettingController.php`, `ProfileSettingController`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 827`** (3 nodes): `LeaveSettingObserver.php`, `LeaveSettingObserver`, `.creating()`
+- **Thin community `Community 828`** (3 nodes): `SalesReportController.php`, `SalesReportController`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 828`** (3 nodes): `LogTimeForObserver.php`, `LogTimeForObserver`, `.creating()`
+- **Thin community `Community 829`** (3 nodes): `InvoiceController.php`, `InvoiceController`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 829`** (3 nodes): `NoticeViewObserver.php`, `NoticeViewObserver`, `.creating()`
+- **Thin community `Community 830`** (3 nodes): `ProfileSettingController.php`, `ProfileSettingController`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 830`** (3 nodes): `OfflinePaymentMethodObserver.php`, `OfflinePaymentMethodObserver`, `.creating()`
+- **Thin community `Community 831`** (3 nodes): `TrustHosts.php`, `TrustHosts`, `.hosts()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 831`** (3 nodes): `PinnedObserver.php`, `PinnedObserver`, `.creating()`
+- **Thin community `Community 832`** (3 nodes): `CoreRequest.php`, `CoreRequest`, `.formatErrors()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 832`** (3 nodes): `ProductCategoryObserver.php`, `ProductCategoryObserver`, `.creating()`
+- **Thin community `Community 833`** (3 nodes): `ProposalAcceptRequest.php`, `ProposalAcceptRequest`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 833`** (3 nodes): `ProductSubCategoryObserver.php`, `ProductSubCategoryObserver`, `.creating()`
+- **Thin community `Community 834`** (3 nodes): `StoreEmergencyContactRequest.php`, `StoreEmergencyContactRequest`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 834`** (3 nodes): `ProjectSettingObserver.php`, `ProjectSettingObserver`, `.creating()`
+- **Thin community `Community 835`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 835`** (3 nodes): `ProjectStatusSettingObserver.php`, `ProjectStatusSettingObserver`, `.creating()`
+- **Thin community `Community 836`** (3 nodes): `StoreTransaction.php`, `StoreTransaction`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 836`** (3 nodes): `ProjectTemplateObserver.php`, `ProjectTemplateObserver`, `.creating()`
+- **Thin community `Community 837`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 837`** (3 nodes): `RoleObserver.php`, `RoleObserver`, `.saving()`
+- **Thin community `Community 838`** (3 nodes): `StoreRecurringExpense.php`, `StoreRecurringExpense`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 838`** (3 nodes): `SkillObserver.php`, `SkillObserver`, `.creating()`
+- **Thin community `Community 839`** (3 nodes): `DeleteRequest.php`, `DeleteRequest`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 839`** (3 nodes): `StickyNoteObserver.php`, `StickyNoteObserver`, `.creating()`
+- **Thin community `Community 840`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 840`** (3 nodes): `TaskSettingObserver.php`, `TaskSettingObserver`, `.creating()`
+- **Thin community `Community 841`** (3 nodes): `UpdateRequest.php`, `UpdateRequest`, `.authorize()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 841`** (3 nodes): `ThemeSettingObserver.php`, `ThemeSettingObserver`, `.creating()`
+- **Thin community `Community 842`** (3 nodes): `DiscussionMentionListener.php`, `DiscussionMentionListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 842`** (3 nodes): `TicketChannelObserver.php`, `TicketChannelObserver`, `.creating()`
+- **Thin community `Community 843`** (3 nodes): `EventCompletedListener.php`, `EventCompletedListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 843`** (3 nodes): `TicketCustomFormObserver.php`, `TicketCustomFormObserver`, `.creating()`
+- **Thin community `Community 844`** (3 nodes): `EventInviteListener.php`, `EventInviteListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 844`** (3 nodes): `TicketEmailSettingObserver.php`, `TicketEmailSettingObserver`, `.creating()`
+- **Thin community `Community 845`** (3 nodes): `EventStatusNoteListener.php`, `EventStatusNoteListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 845`** (3 nodes): `TicketGroupObserver.php`, `TicketGroupObserver`, `.creating()`
+- **Thin community `Community 846`** (3 nodes): `FileUploadListener.php`, `FileUploadListener`, `FileUploadListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 846`** (3 nodes): `TicketTagListObserver.php`, `TicketTagListObserver`, `.creating()`
+- **Thin community `Community 847`** (3 nodes): `NewChatListener.php`, `NewChatListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 847`** (3 nodes): `TicketTagObserver.php`, `TicketTagObserver`, `.creating()`
+- **Thin community `Community 848`** (3 nodes): `NewEstimateRequestListener.php`, `NewEstimateRequestListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 848`** (3 nodes): `TicketTypeObserver.php`, `TicketTypeObserver`, `.creating()`
+- **Thin community `Community 849`** (3 nodes): `NewExpenseListener.php`, `NewExpenseListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 849`** (3 nodes): `UnitTypeObserver.php`, `UnitTypeObserver`, `.creating()`
+- **Thin community `Community 850`** (3 nodes): `NewIssueListener.php`, `NewIssueListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 850`** (3 nodes): `UniversalSearchObserver.php`, `UniversalSearchObserver`, `.creating()`
+- **Thin community `Community 851`** (3 nodes): `ProjectNoteMentionListener.php`, `ProjectNoteMentionListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 851`** (3 nodes): `UserActivityObserver.php`, `UserActivityObserver`, `.creating()`
+- **Thin community `Community 852`** (3 nodes): `TaskCommentMentionListener.php`, `TaskCommentMentionListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 852`** (3 nodes): `UserchatFileObserver.php`, `UserchatFileObserver`, `.creating()`
+- **Thin community `Community 853`** (3 nodes): `TaskListener.php`, `TaskListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 853`** (3 nodes): `UserLeadboardSettingObserver.php`, `UserLeadboardSettingObserver`, `.creating()`
+- **Thin community `Community 854`** (3 nodes): `EmailVerificationListener.php`, `EmailVerificationListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 854`** (3 nodes): `UserPermissionObserver.php`, `UserPermissionObserver`, `.saving()`
+- **Thin community `Community 855`** (3 nodes): `OfflinePackageChangeRequestListener.php`, `OfflinePackageChangeRequestListener`, `.handle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 855`** (3 nodes): `UserTaskboardSettingObserver.php`, `UserTaskboardSettingObserver`, `.creating()`
+- **Thin community `Community 856`** (3 nodes): `StripeSetting.php`, `StripeSetting`, `.getShowPayAttribute()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 856`** (3 nodes): `WeeklyTimesheetEntriesObserver.php`, `WeeklyTimesheetEntriesObserver`, `.creating()`
+- **Thin community `Community 857`** (3 nodes): `AcceptEstimateObserver.php`, `AcceptEstimateObserver`, `.creating()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 857`** (3 nodes): `WeeklyTimeSheetObserver.php`, `WeeklyTimeSheetObserver`, `.creating()`
+- **Thin community `Community 858`** (3 nodes): `GdprSettingObserver.php`, `GdprSettingObserver`, `.creating()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 858`** (3 nodes): `OfflineInvoiceObserver.php`, `OfflineInvoiceObserver`, `.saving()`
+- **Thin community `Community 859`** (3 nodes): `PinnedObserver.php`, `PinnedObserver`, `.creating()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 859`** (3 nodes): `PackageObserver.php`, `PackageObserver`, `.saving()`
+- **Thin community `Community 860`** (3 nodes): `UserActivityObserver.php`, `UserActivityObserver`, `.creating()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 860`** (3 nodes): `AuthServiceProvider.php`, `AuthServiceProvider`, `.boot()`
+- **Thin community `Community 861`** (3 nodes): `UserchatFileObserver.php`, `UserchatFileObserver`, `.creating()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 861`** (3 nodes): `FileStorageCustomConfigProvider.php`, `FileStorageCustomConfigProvider`, `.boot()`
+- **Thin community `Community 862`** (3 nodes): `UserPermissionObserver.php`, `UserPermissionObserver`, `.saving()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 862`** (3 nodes): `CompanyTransactionPurgeStep.php`, `CompanyTransactionPurgeStep`, `.__construct()`
+- **Thin community `Community 863`** (3 nodes): `AuthServiceProvider.php`, `AuthServiceProvider`, `.boot()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 863`** (3 nodes): `AppreciationFactory.php`, `AppreciationFactory`, `.definition()`
+- **Thin community `Community 864`** (3 nodes): `CompanyTransactionPurgeStep.php`, `CompanyTransactionPurgeStep`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 864`** (3 nodes): `ContractFactory.php`, `ContractFactory`, `.definition()`
+- **Thin community `Community 865`** (3 nodes): `AppreciationFactory.php`, `AppreciationFactory`, `.definition()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 865`** (3 nodes): `DealFactory.php`, `DealFactory`, `.definition()`
+- **Thin community `Community 866`** (3 nodes): `ContractFactory.php`, `ContractFactory`, `.definition()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 866`** (3 nodes): `LeaveFactory.php`, `LeaveFactory`, `.definition()`
+- **Thin community `Community 867`** (3 nodes): `DealFactory.php`, `DealFactory`, `.definition()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 867`** (3 nodes): `NoticeFactory.php`, `NoticeFactory`, `.definition()`
+- **Thin community `Community 868`** (3 nodes): `LeaveFactory.php`, `LeaveFactory`, `.definition()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 868`** (3 nodes): `ProductFactory.php`, `ProductFactory`, `.definition()`
+- **Thin community `Community 869`** (3 nodes): `NoticeFactory.php`, `NoticeFactory`, `.definition()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 869`** (3 nodes): `UserChatFactory.php`, `UserChatFactory`, `.definition()`
+- **Thin community `Community 870`** (3 nodes): `ProductFactory.php`, `ProductFactory`, `.definition()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 870`** (3 nodes): `UserFactory.php`, `UserFactory`, `.definition()`
+- **Thin community `Community 871`** (3 nodes): `UserChatFactory.php`, `UserChatFactory`, `.definition()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 879`** (3 nodes): `2022_08_29_103443_add_flag_code_column_to_language_settings.php`, `down()`, `up()`
+- **Thin community `Community 872`** (3 nodes): `UserFactory.php`, `UserFactory`, `.definition()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 880`** (3 nodes): `2022_09_00_000000_create_company_table.php`, `down()`, `up()`
+- **Thin community `Community 875`** (3 nodes): `2022_08_13_070443_add_task_unique_id_column_tasks_table.php`, `down()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 881`** (3 nodes): `2022_09_13_075642_add_customised_permission_column.php`, `down()`, `up()`
+- **Thin community `Community 882`** (3 nodes): `2022_09_13_075642_add_customised_permission_column.php`, `down()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 882`** (3 nodes): `2022_09_16_105720_update_permission_of_client_and_employee_document.php`, `down()`, `up()`
+- **Thin community `Community 883`** (3 nodes): `2022_09_16_105720_update_permission_of_client_and_employee_document.php`, `down()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 888`** (3 nodes): `2023_02_13_045833_add_report_column_in_log_time_table.php`, `down()`, `up()`
+- **Thin community `Community 903`** (3 nodes): `2024_01_04_114740_description_type_on_tr_front_details_table.php`, `setTextNullable()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 897`** (3 nodes): `2023_05_16_114755_file_upload_to_s3.php`, `down()`, `up()`
+- **Thin community `Community 925`** (3 nodes): `2024_06_27_080827_insert_row_in_taskboard_column.php`, `down()`, `up()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 898`** (3 nodes): `2023_06_12_094139_fix_file_upload_to_s3.php`, `down()`, `up()`
+- **Thin community `Community 989`** (3 nodes): `ContractTypeTableSeeder.php`, `ContractTypeTableSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 899`** (3 nodes): `2023_06_12_094906_fix_file_upload_to_s3_saas.php`, `down()`, `up()`
+- **Thin community `Community 990`** (3 nodes): `DatabaseSeeder.php`, `DatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 906`** (3 nodes): `2024_01_04_114740_description_type_on_tr_front_details_table.php`, `setTextNullable()`, `up()`
+- **Thin community `Community 991`** (3 nodes): `ProjectCategorySeeder.php`, `ProjectCategorySeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 919`** (3 nodes): `2024_05_30_114047_add_rtl_to_language_settings.php`, `down()`, `up()`
+- **Thin community `Community 992`** (3 nodes): `TaxTableSeeder.php`, `TaxTableSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 920`** (3 nodes): `2024_05_31_120806_remove_duplicate_permission_upsert.php`, `down()`, `up()`
+- **Thin community `Community 993`** (3 nodes): `TicketSettingSeeder.php`, `TicketSettingSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 922`** (3 nodes): `2024_06_04_083820_modify_status_column_in_pending_invoice_table.php`, `down()`, `up()`
+- **Thin community `Community 996`** (3 nodes): `AffiliateDatabaseSeeder.php`, `AffiliateDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 942`** (3 nodes): `2024_11_05_051148_update_task_short_code.php`, `down()`, `up()`
+- **Thin community `Community 997`** (3 nodes): `html()`, `label()`, `PaymentStatus.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 944`** (3 nodes): `2024_12_03_115823_company_id_milestone.php`, `down()`, `up()`
+- **Thin community `Community 998`** (3 nodes): `label()`, `YesNo.php`, `YesNo.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 948`** (3 nodes): `2025_01_10_214004_fix_shift_null_time_in_schedule.php`, `down()`, `up()`
+- **Thin community `Community 999`** (3 nodes): `affiliate::dashboard.companies`, `affiliate::dashboard.referrals`, `index.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 951`** (3 nodes): `2025_02_21_061631_add_package_in_packages_table.php`, `down()`, `up()`
+- **Thin community `Community 1002`** (3 nodes): `down()`, `up()`, `2020_02_28_161803_add_asset_module_modules_table.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 952`** (3 nodes): `2025_02_21_072348_edit_package_type_column_in_companies_table.php`, `down()`, `up()`
+- **Thin community `Community 1004`** (3 nodes): `down()`, `up()`, `2021_08_25_092728_alter_allowed_permission_column_in_asset_permissions_table.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 954`** (3 nodes): `2025_04_22_045326_add_company_id_to_employee_shift_schedules_table.php`, `down()`, `up()`
+- **Thin community `Community 1008`** (3 nodes): `AssetDatabaseSeeder.php`, `AssetDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 963`** (3 nodes): `2025_10_01_084513_add_alias_column_to_project_status_settings_table.php`, `down()`, `up()`
+- **Thin community `Community 1010`** (3 nodes): `down()`, `up()`, `2024_03_05_060918_add_biolink_module_table.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1001`** (3 nodes): `ContractTypeTableSeeder.php`, `ContractTypeTableSeeder`, `.run()`
+- **Thin community `Community 1011`** (3 nodes): `BiolinksDatabaseSeeder.php`, `BiolinksDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1002`** (3 nodes): `DatabaseSeeder.php`, `DatabaseSeeder`, `.run()`
+- **Thin community `Community 1012`** (3 nodes): `PhoneCollectionEmailEvent`, `.__construct()`, `PhoneCollectionEmailEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1003`** (3 nodes): `ProjectCategorySeeder.php`, `ProjectCategorySeeder`, `.run()`
+- **Thin community `Community 1013`** (3 nodes): `biolinks::biolinks.ajax.blocks`, `biolinks::biolinks.ajax.settings`, `edit.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1004`** (3 nodes): `TaxTableSeeder.php`, `TaxTableSeeder`, `.run()`
+- **Thin community `Community 1019`** (3 nodes): `BiometricDatabaseSeeder.php`, `BiometricDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1007`** (3 nodes): `AffiliateDatabaseSeeder.php`, `AffiliateDatabaseSeeder`, `.run()`
+- **Thin community `Community 1022`** (3 nodes): `LockoutEmailEvent`, `.__construct()`, `LockoutEmailEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1008`** (3 nodes): `html()`, `label()`, `PaymentStatus.php`
+- **Thin community `Community 1023`** (3 nodes): `DifferentIpListener`, `.handle()`, `DifferentIpListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1009`** (3 nodes): `label()`, `YesNo.php`, `YesNo.php`
+- **Thin community `Community 1027`** (3 nodes): `DeveloperToolsDatabaseSeeder.php`, `DeveloperToolsDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1010`** (3 nodes): `affiliate::dashboard.companies`, `affiliate::dashboard.referrals`, `index.blade.php`
+- **Thin community `Community 1032`** (3 nodes): `EInvoiceDatabaseSeeder.php`, `EInvoiceDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1013`** (3 nodes): `down()`, `up()`, `2020_02_28_161803_add_asset_module_modules_table.php`
+- **Thin community `Community 1033`** (3 nodes): `einvoice::settings.save-script`, `index.blade.php`, `modal.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1015`** (3 nodes): `down()`, `up()`, `2021_08_25_092728_alter_allowed_permission_column_in_asset_permissions_table.php`
+- **Thin community `Community 1037`** (3 nodes): `LanguagePackDatabaseSeeder.php`, `LanguagePackDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1016`** (3 nodes): `down()`, `up()`, `2023_05_19_070306_add_lost_status_table.php`
+- **Thin community `Community 1040`** (3 nodes): `LetterDatabaseSeeder.php`, `LetterDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1017`** (3 nodes): `down()`, `up()`, `2023_06_12_094141_fix_file_upload_to_s3.php`
+- **Thin community `Community 1041`** (3 nodes): `LineIntegrationDatabaseSeeder.php`, `LineIntegrationDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1021`** (3 nodes): `AssetDatabaseSeeder.php`, `AssetDatabaseSeeder`, `.run()`
+- **Thin community `Community 1043`** (3 nodes): `NoticePeriodEvent`, `.__construct()`, `NoticePeriodEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1022`** (3 nodes): `AssetTypeObserver.php`, `AssetTypeObserver`, `.creating()`
+- **Thin community `Community 1044`** (3 nodes): `OnboardingNotificationEvent`, `.__construct()`, `OnboardingNotificationEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1024`** (3 nodes): `down()`, `up()`, `2024_03_05_060918_add_biolink_module_table.php`
+- **Thin community `Community 1045`** (3 nodes): `BoardingUsers`, `.render()`, `BoardingUsers.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1025`** (3 nodes): `BiolinksDatabaseSeeder.php`, `BiolinksDatabaseSeeder`, `.run()`
+- **Thin community `Community 1046`** (3 nodes): `StartOnboarding`, `.render()`, `StartOnboarding.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1026`** (3 nodes): `PhoneCollectionEmailEvent`, `.__construct()`, `PhoneCollectionEmailEvent.php`
+- **Thin community `Community 1058`** (3 nodes): `down()`, `up()`, `2021_08_25_092728_alter_allowed_permission_column_in_payroll_permissions_table.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1027`** (3 nodes): `biolinks::biolinks.ajax.blocks`, `biolinks::biolinks.ajax.settings`, `edit.blade.php`
+- **Thin community `Community 1072`** (3 nodes): `PayrollDatabaseSeeder.php`, `PayrollDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1033`** (3 nodes): `BiometricDatabaseSeeder.php`, `BiometricDatabaseSeeder`, `.run()`
+- **Thin community `Community 1076`** (3 nodes): `PerformanceDatabaseSeeder.php`, `PerformanceDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1036`** (3 nodes): `LockoutEmailEvent`, `.__construct()`, `LockoutEmailEvent.php`
+- **Thin community `Community 1077`** (3 nodes): `CheckInReminderEvent`, `.__construct()`, `CheckInReminderEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1037`** (3 nodes): `DifferentIpListener`, `.handle()`, `DifferentIpListener.php`
+- **Thin community `Community 1078`** (3 nodes): `ObjectiveCreatedEvent`, `.__construct()`, `ObjectiveCreatedEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1041`** (3 nodes): `DeveloperToolsDatabaseSeeder.php`, `DeveloperToolsDatabaseSeeder`, `.run()`
+- **Thin community `Community 1079`** (3 nodes): `CheckInReminderListener`, `.handle()`, `CheckInReminderListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1046`** (3 nodes): `EInvoiceDatabaseSeeder.php`, `EInvoiceDatabaseSeeder`, `.run()`
+- **Thin community `Community 1081`** (3 nodes): `PolicyCentreDatabaseSeeder.php`, `PolicyCentreDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1047`** (3 nodes): `einvoice::settings.save-script`, `index.blade.php`, `modal.blade.php`
+- **Thin community `Community 1082`** (3 nodes): `PolicyAcknowledgedEvent`, `.__construct()`, `PolicyAcknowledgedEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1051`** (3 nodes): `LanguagePackDatabaseSeeder.php`, `LanguagePackDatabaseSeeder`, `.run()`
+- **Thin community `Community 1083`** (3 nodes): `PolicyPublishedEvent`, `.__construct()`, `PolicyPublishedEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1054`** (3 nodes): `LetterDatabaseSeeder.php`, `LetterDatabaseSeeder`, `.run()`
+- **Thin community `Community 1084`** (3 nodes): `SendReminderEvent`, `.__construct()`, `SendReminderEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1055`** (3 nodes): `LetterObserver.php`, `LetterObserver`, `.creating()`
+- **Thin community `Community 1091`** (3 nodes): `create.blade.php`, `edit.blade.php`, `production::boms.partials.form`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1056`** (3 nodes): `TemplateObserver.php`, `TemplateObserver`, `.creating()`
+- **Thin community `Community 1092`** (3 nodes): `create.blade.php`, `edit.blade.php`, `production::orders.partials.bom-fg-sync-script`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1057`** (3 nodes): `LineIntegrationDatabaseSeeder.php`, `LineIntegrationDatabaseSeeder`, `.run()`
+- **Thin community `Community 1093`** (3 nodes): `ProductionFgPolicySettings.php`, `ProductionFgPolicySettings`, `.__construct()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1059`** (3 nodes): `NoticePeriodEvent`, `.__construct()`, `NoticePeriodEvent.php`
+- **Thin community `Community 1096`** (3 nodes): `overview.blade.php`, `projectroadmap::table.members-list`, `projectroadmap::table.milestones-list`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1060`** (3 nodes): `OnboardingNotificationEvent`, `.__construct()`, `OnboardingNotificationEvent.php`
+- **Thin community `Community 1106`** (3 nodes): `PurchaseBillNumberSetting`, `.newFactory()`, `PurchaseBillNumberSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1061`** (3 nodes): `OnboardingStartListener`, `.__construct()`, `OnboardingStartListener.php`
+- **Thin community `Community 1107`** (3 nodes): `NewPurchaseOrderEvent`, `.__construct()`, `NewPurchaseOrderEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1062`** (3 nodes): `UserCreatedListener`, `.__construct()`, `UserCreatedListener.php`
+- **Thin community `Community 1108`** (3 nodes): `PurchaseInventoryEvent`, `.__construct()`, `PurchaseInventoryEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1063`** (3 nodes): `BoardingUsers`, `.render()`, `BoardingUsers.php`
+- **Thin community `Community 1109`** (3 nodes): `VendorCreditEvent`, `.__construct()`, `VendorCreditEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1064`** (3 nodes): `StartOnboarding`, `.render()`, `StartOnboarding.php`
+- **Thin community `Community 1110`** (3 nodes): `PurchaseInventoryListener`, `.handle()`, `PurchaseInventoryListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1076`** (3 nodes): `down()`, `up()`, `2021_08_25_092728_alter_allowed_permission_column_in_payroll_permissions_table.php`
+- **Thin community `Community 1112`** (3 nodes): `QRCodeDatabaseSeeder.php`, `QRCodeDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1078`** (3 nodes): `down()`, `up()`, `2022_08_18_071222_alter_in_salary_components_table.php`
+- **Thin community `Community 1123`** (3 nodes): `RecruitDatabaseSeeder.php`, `RecruitDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1081`** (3 nodes): `down()`, `up()`, `2022_09_01_000000_create_payroll_global_settings.php`
+- **Thin community `Community 1124`** (3 nodes): `SkillsTableSeeder.php`, `SkillsTableSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1092`** (3 nodes): `PayrollDatabaseSeeder.php`, `PayrollDatabaseSeeder`, `.run()`
+- **Thin community `Community 1125`** (3 nodes): `CandidateFollowUpReminderEvent`, `.__construct()`, `CandidateFollowUpReminderEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1093`** (3 nodes): `PayCodeStoreRequest.php`, `PayCodeStoreRequest`, `.authorize()`
+- **Thin community `Community 1126`** (3 nodes): `RecruitEmailNotificationSettingsController`, `.__construct()`, `RecruitEmailNotificationSettingsController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1094`** (3 nodes): `PayCodeUpdateRequest.php`, `PayCodeUpdateRequest`, `.authorize()`
+- **Thin community `Community 1127`** (3 nodes): `RecruitSettingController`, `.__construct()`, `RecruitSettingController.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1095`** (3 nodes): `PolicyStoreRequest.php`, `PolicyStoreRequest`, `.authorize()`
+- **Thin community `Community 1128`** (3 nodes): `StoreJobCategory.php`, `StoreJobCategory`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1096`** (3 nodes): `EmployeeMonthlySalaryObserver.php`, `EmployeeMonthlySalaryObserver`, `.creating()`
+- **Thin community `Community 1129`** (3 nodes): `StoreJobSubCategory.php`, `StoreJobSubCategory`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1097`** (3 nodes): `EmployeePayrollCycleObserver.php`, `EmployeePayrollCycleObserver`, `.creating()`
+- **Thin community `Community 1130`** (3 nodes): `StoreWorkExperience.php`, `StoreWorkExperience`, `.rules()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1098`** (3 nodes): `OvertimePolicyEmployeeObserver.php`, `OvertimePolicyEmployeeObserver`, `.creating()`
+- **Thin community `Community 1131`** (3 nodes): `JobCard`, `.__construct()`, `JobCard.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1099`** (3 nodes): `OvertimePolicyObserver.php`, `OvertimePolicyObserver`, `.creating()`
+- **Thin community `Community 1133`** (3 nodes): `ServerManagerDatabaseSeeder.php`, `ServerManagerDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1100`** (3 nodes): `OvertimeRequestObserver.php`, `OvertimeRequestObserver`, `.creating()`
+- **Thin community `Community 1134`** (3 nodes): `StoreDomainRequest`, `.attributes()`, `StoreDomainRequest.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1101`** (3 nodes): `PayrollSettingObserver.php`, `PayrollSettingObserver`, `.creating()`
+- **Thin community `Community 1137`** (3 nodes): `down()`, `up()`, `2021_10_21_063316_add_allowed_permissions.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1102`** (3 nodes): `SalaryGroupComponentObserver.php`, `SalaryGroupComponentObserver`, `.creating()`
+- **Thin community `Community 1145`** (3 nodes): `SmsLeaveListener`, `.handle()`, `SmsLeaveListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1103`** (3 nodes): `SalaryGroupObserver.php`, `SalaryGroupObserver`, `.creating()`
+- **Thin community `Community 1146`** (3 nodes): `SmsTicketListener`, `.handle()`, `SmsTicketListener.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1104`** (3 nodes): `SalaryPaymentMethodObserver.php`, `SalaryPaymentMethodObserver`, `.creating()`
+- **Thin community `Community 1150`** (3 nodes): `CompanyUrlEvent`, `.__construct()`, `CompanyUrlEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1105`** (3 nodes): `SalaryTdsObserver.php`, `SalaryTdsObserver`, `.creating()`
+- **Thin community `Community 1156`** (3 nodes): `WarehouseDatabaseSeeder.php`, `WarehouseDatabaseSeeder`, `.run()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1106`** (3 nodes): `SetObjectiveStatusCommand`, `.__construct()`, `SetObjectiveStatusCommand.php`
+- **Thin community `Community 1180`** (3 nodes): `MeetingHostEvent`, `.__construct()`, `MeetingHostEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1110`** (3 nodes): `PerformanceDatabaseSeeder.php`, `PerformanceDatabaseSeeder`, `.run()`
+- **Thin community `Community 1181`** (3 nodes): `MeetingHostUpdateEvent`, `.__construct()`, `MeetingHostUpdateEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1111`** (3 nodes): `CheckInReminderEvent`, `.__construct()`, `CheckInReminderEvent.php`
+- **Thin community `Community 1182`** (3 nodes): `MeetingUpdateEvent`, `.__construct()`, `MeetingUpdateEvent.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1112`** (3 nodes): `ObjectiveCreatedEvent`, `.__construct()`, `ObjectiveCreatedEvent.php`
+- **Thin community `Community 1183`** (3 nodes): `Base`, `Base.php`, `Base.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1113`** (3 nodes): `CheckInReminderListener`, `.handle()`, `CheckInReminderListener.php`
+- **Thin community `Community 1184`** (3 nodes): `CantDeleteException`, `.__construct()`, `CantDeleteException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1115`** (3 nodes): `PolicyCentreDatabaseSeeder.php`, `PolicyCentreDatabaseSeeder`, `.run()`
+- **Thin community `Community 1185`** (3 nodes): `HttpException`, `.__construct()`, `HttpException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1116`** (3 nodes): `PolicyAcknowledgedEvent`, `.__construct()`, `PolicyAcknowledgedEvent.php`
+- **Thin community `Community 1186`** (3 nodes): `IncorrectRelationshipModel`, `.__construct()`, `IncorrectRelationshipModel.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1117`** (3 nodes): `PolicyPublishedEvent`, `.__construct()`, `PolicyPublishedEvent.php`
+- **Thin community `Community 1187`** (3 nodes): `KeyNotFoundException`, `.__construct()`, `KeyNotFoundException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1118`** (3 nodes): `SendReminderEvent`, `.__construct()`, `SendReminderEvent.php`
+- **Thin community `Community 1188`** (3 nodes): `NotAPersistableModel`, `.__construct()`, `NotAPersistableModel.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1125`** (3 nodes): `DecideProductionReworkOrderRequest.php`, `DecideProductionReworkOrderRequest`, `.rules()`
+- **Thin community `Community 1189`** (3 nodes): `OutOfResultSetException`, `.__construct()`, `OutOfResultSetException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1126`** (3 nodes): `StoreProductionReworkOrderRequest.php`, `StoreProductionReworkOrderRequest`, `.rules()`
+- **Thin community `Community 1190`** (3 nodes): `RelationAlreadyExistsException`, `.__construct()`, `RelationAlreadyExistsException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1127`** (3 nodes): `create.blade.php`, `edit.blade.php`, `production::boms.partials.form`
+- **Thin community `Community 1191`** (3 nodes): `OAuth1`, `.generate()`, `OAuth1.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1128`** (3 nodes): `create.blade.php`, `edit.blade.php`, `production::orders.partials.bom-fg-sync-script`
+- **Thin community `Community 1192`** (3 nodes): `Package.php`, `Package`, `.version()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1129`** (3 nodes): `ProductionFgPolicySettings.php`, `ProductionFgPolicySettings`, `.__construct()`
+- **Thin community `Community 1193`** (3 nodes): `AlreadyAuthenticatedException`, `.__construct()`, `AlreadyAuthenticatedException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1132`** (3 nodes): `overview.blade.php`, `projectroadmap::table.members-list`, `projectroadmap::table.milestones-list`
+- **Thin community `Community 1194`** (3 nodes): `ConfigDoesntExistException`, `.__construct()`, `ConfigDoesntExistException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1138`** (3 nodes): `down()`, `up()`, `2024_04_29_122517_create_purchase_orders_table.php`
+- **Thin community `Community 1195`** (3 nodes): `MeetingParticipant.php`, `MeetingParticipant`, `.getApiMultipleDataField()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1143`** (3 nodes): `PurchaseBillNumberSetting`, `.newFactory()`, `PurchaseBillNumberSetting.php`
+- **Thin community `Community 1196`** (3 nodes): `WebinarParticipant.php`, `WebinarParticipant`, `.getApiMultipleDataField()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1144`** (3 nodes): `NewPurchaseOrderEvent`, `.__construct()`, `NewPurchaseOrderEvent.php`
+- **Thin community `Community 1197`** (3 nodes): `FileTooLargeException`, `.__construct()`, `FileTooLargeException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1145`** (3 nodes): `PurchaseInventoryEvent`, `.__construct()`, `PurchaseInventoryEvent.php`
+- **Thin community `Community 1198`** (3 nodes): `EntrustFacade`, `.getFacadeAccessor()`, `EntrustFacade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1146`** (3 nodes): `VendorCreditEvent`, `.__construct()`, `VendorCreditEvent.php`
+- **Thin community `Community 1199`** (3 nodes): `EntrustPermission`, `.__construct()`, `EntrustPermission.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1147`** (3 nodes): `StoreBill.php`, `StoreBill`, `.authorize()`
+- **Thin community `Community 1200`** (3 nodes): `EntrustRole`, `.__construct()`, `EntrustRole.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1148`** (3 nodes): `PurchaseStockAdjustmentObserver.php`, `PurchaseStockAdjustmentObserver`, `.saving()`
+- **Thin community `Community 1201`** (3 nodes): `departments-hierarchy.manage_hierarchy`, `chart_tree.blade.php`, `manage_hierarchy.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1150`** (3 nodes): `QRCodeDatabaseSeeder.php`, `QRCodeDatabaseSeeder`, `.run()`
+- **Thin community `Community 1202`** (3 nodes): `designations-hierarchy.manage_hierarchy`, `chart_tree.blade.php`, `manage_hierarchy.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1151`** (3 nodes): `down()`, `up()`, `2022_07_18_082515_add_column_in_recruit_job_applications_table.php`
+- **Thin community `Community 1203`** (3 nodes): `leaves.multiple-leave-table`, `multiple-leaves.blade.php`, `view-multiple-related-leave.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1155`** (3 nodes): `down()`, `up()`, `2023_06_12_094140_fix_file_upload_to_s3.php`
+- **Thin community `Community 1204`** (3 nodes): `notifications.`, `notifications.superadmin.`, `all_user_notifications.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1158`** (3 nodes): `down()`, `up()`, `2024_01_12_121345_change_recruit_job_experience_table.php`
+- **Thin community `Community 1205`** (3 nodes): `front-app.blade.php`, `super-admin.front.section.front_footer`, `super-admin.front.section.front_header`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1164`** (3 nodes): `down()`, `up()`, `2024_10_23_121345_change_source_id_table.php`
+- **Thin community `Community 1206`** (3 nodes): `quick-context.ps1`, `Show-FileHeader()`, `Show-FileQuick()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1165`** (3 nodes): `RecruitDatabaseSeeder.php`, `RecruitDatabaseSeeder`, `.run()`
+- **Thin community `Community 1211`** (2 nodes): `Kernel.php`, `Kernel`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1166`** (3 nodes): `SkillsTableSeeder.php`, `SkillsTableSeeder`, `.run()`
+- **Thin community `Community 1212`** (2 nodes): `EncryptCookies.php`, `EncryptCookies`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1167`** (3 nodes): `CandidateFollowUpReminderEvent`, `.__construct()`, `CandidateFollowUpReminderEvent.php`
+- **Thin community `Community 1213`** (2 nodes): `PreventRequestsDuringMaintenance.php`, `PreventRequestsDuringMaintenance`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1168`** (3 nodes): `down()`, `up()`, `2022_09_01_000000_create_recruit_global_settings.php`
+- **Thin community `Community 1214`** (2 nodes): `TrimStrings.php`, `TrimStrings`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1169`** (3 nodes): `StoreJobCategory.php`, `StoreJobCategory`, `.rules()`
+- **Thin community `Community 1215`** (2 nodes): `TrustProxies.php`, `TrustProxies`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1170`** (3 nodes): `StoreJobSubCategory.php`, `StoreJobSubCategory`, `.rules()`
+- **Thin community `Community 1216`** (2 nodes): `ClientCategory.php`, `ClientCategory`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1171`** (3 nodes): `StoreWorkExperience.php`, `StoreWorkExperience`, `.rules()`
+- **Thin community `Community 1217`** (2 nodes): `CustomModulePermission.php`, `CustomModulePermission`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1172`** (3 nodes): `FrontJobApplication`, `.authorize()`, `FrontJobApplication.php`
+- **Thin community `Community 1218`** (2 nodes): `DatabaseBackup.php`, `DatabaseBackup`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1173`** (3 nodes): `StoreFollowUpRequest`, `.authorize()`, `StoreFollowUpRequest.php`
+- **Thin community `Community 1219`** (2 nodes): `DiscussionCategory.php`, `DiscussionCategory`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1174`** (3 nodes): `HostInterviewListener`, `.__construct()`, `HostInterviewListener.php`
+- **Thin community `Community 1220`** (2 nodes): `Flag.php`, `Flag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1175`** (3 nodes): `RecruitApplicationStatusObserver.php`, `RecruitApplicationStatusObserver`, `.creating()`
+- **Thin community `Community 1221`** (2 nodes): `GdprSetting.php`, `GdprSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1176`** (3 nodes): `RecruitCandidateDatabaseObserver.php`, `RecruitCandidateDatabaseObserver`, `.creating()`
+- **Thin community `Community 1222`** (2 nodes): `LogTimeFor.php`, `LogTimeFor`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1177`** (3 nodes): `RecruitCustomQuestionObserver.php`, `RecruitCustomQuestionObserver`, `.creating()`
+- **Thin community `Community 1223`** (2 nodes): `Menu.php`, `Menu`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1178`** (3 nodes): `RecruitEmailNotificationObserver.php`, `RecruitEmailNotificationObserver`, `.creating()`
+- **Thin community `Community 1224`** (2 nodes): `MessageSetting.php`, `MessageSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1179`** (3 nodes): `RecruitFooterLinkObserver.php`, `RecruitFooterLinkObserver`, `.creating()`
+- **Thin community `Community 1225`** (2 nodes): `PurposeConsentUser.php`, `PurposeConsentUser`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1180`** (3 nodes): `RecruitInterviewEvaluationObserver.php`, `RecruitInterviewEvaluationObserver`, `.creating()`
+- **Thin community `Community 1226`** (2 nodes): `Qrcodes.php`, `Qrcodes`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1181`** (3 nodes): `RecruitInterviewStagesObserver.php`, `RecruitInterviewStagesObserver`, `.creating()`
+- **Thin community `Community 1227`** (2 nodes): `Session.php`, `Session`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1182`** (3 nodes): `RecruitJobCategoryObserver.php`, `RecruitJobCategoryObserver`, `.creating()`
+- **Thin community `Community 1228`** (2 nodes): `SignUpSetting.php`, `SignUpSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1183`** (3 nodes): `RecruitJobOfferLetterObserver.php`, `RecruitJobOfferLetterObserver`, `.creating()`
+- **Thin community `Community 1229`** (2 nodes): `Skill.php`, `Skill`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1184`** (3 nodes): `RecruitJobSubCategoryObserver.php`, `RecruitJobSubCategoryObserver`, `.creating()`
+- **Thin community `Community 1230`** (2 nodes): `TaskTagList.php`, `TaskTagList`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1185`** (3 nodes): `RecruitJobTypesObserver.php`, `RecruitJobTypesObserver`, `.creating()`
+- **Thin community `Community 1231`** (2 nodes): `Tax.php`, `Tax`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1186`** (3 nodes): `RecruitSalaryStructureObserver.php`, `RecruitSalaryStructureObserver`, `.creating()`
+- **Thin community `Community 1232`** (2 nodes): `TicketEmailSetting.php`, `TicketEmailSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1187`** (3 nodes): `RecruitSelectedSalaryComponentObserver.php`, `RecruitSelectedSalaryComponentObserver`, `.creating()`
+- **Thin community `Community 1233`** (2 nodes): `TicketSettingForAgents.php`, `TicketSettingForAgents`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1188`** (3 nodes): `RecruitWorkExperienceObserver.php`, `RecruitWorkExperienceObserver`, `.creating()`
+- **Thin community `Community 1234`** (2 nodes): `GlobalCurrency.php`, `GlobalCurrency`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1189`** (3 nodes): `JobCard`, `.__construct()`, `JobCard.php`
+- **Thin community `Community 1235`** (2 nodes): `PermissionRoleObserver.php`, `PermissionRoleObserver`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1191`** (3 nodes): `ServerManagerDatabaseSeeder.php`, `ServerManagerDatabaseSeeder`, `.run()`
+- **Thin community `Community 1236`** (2 nodes): `EventServiceProvider.php`, `EventServiceProvider`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1192`** (3 nodes): `StoreDomainRequest`, `.attributes()`, `StoreDomainRequest.php`
+- **Thin community `Community 1258`** (2 nodes): `BiometricSetting`, `BiometricSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1193`** (3 nodes): `UpdateDomainRequest`, `.attributes()`, `UpdateDomainRequest.php`
+- **Thin community `Community 1259`** (2 nodes): `biometric::devices.create-url`, `index.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1196`** (3 nodes): `down()`, `up()`, `2021_10_21_063316_add_allowed_permissions.php`
+- **Thin community `Community 1260`** (2 nodes): `EmployeePayrollCycle`, `EmployeePayrollCycle.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1207`** (3 nodes): `CompanyUrlEvent`, `.__construct()`, `CompanyUrlEvent.php`
+- **Thin community `Community 1261`** (2 nodes): `PayrollGlobalSetting`, `PayrollGlobalSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1213`** (3 nodes): `WarehouseDatabaseSeeder.php`, `WarehouseDatabaseSeeder`, `.run()`
+- **Thin community `Community 1262`** (2 nodes): `Dashboard`, `Dashboard.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1234`** (3 nodes): `down()`, `up()`, `2023_03_14_064145_create_zoom_notification_settings_1.table.php`
+- **Thin community `Community 1263`** (2 nodes): `OkrScoring`, `OkrScoring.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1238`** (3 nodes): `MeetingHostEvent`, `.__construct()`, `MeetingHostEvent.php`
+- **Thin community `Community 1264`** (2 nodes): `index.blade.php`, `performance::objectives.ajax.objectives`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1239`** (3 nodes): `MeetingHostUpdateEvent`, `.__construct()`, `MeetingHostUpdateEvent.php`
+- **Thin community `Community 1265`** (2 nodes): `create.blade.php`, `pricing::client_pricing.ajax.create`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1240`** (3 nodes): `MeetingUpdateEvent`, `.__construct()`, `MeetingUpdateEvent.php`
+- **Thin community `Community 1266`** (2 nodes): `edit.blade.php`, `pricing::client_pricing.ajax.edit`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1241`** (3 nodes): `ZoomNoteObserver.php`, `ZoomNoteObserver`, `.creating()`
+- **Thin community `Community 1267`** (2 nodes): `edit.blade.php`, `pricing::client_tiers.ajax.edit`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1242`** (3 nodes): `Base`, `Base.php`, `Base.php`
+- **Thin community `Community 1268`** (2 nodes): `create.blade.php`, `pricing::company_pricing.ajax.create`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1243`** (3 nodes): `CantDeleteException`, `.__construct()`, `CantDeleteException.php`
+- **Thin community `Community 1269`** (2 nodes): `edit.blade.php`, `pricing::company_pricing.ajax.edit`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1244`** (3 nodes): `HttpException`, `.__construct()`, `HttpException.php`
+- **Thin community `Community 1270`** (2 nodes): `create.blade.php`, `pricing::tiers.ajax.create`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1245`** (3 nodes): `IncorrectRelationshipModel`, `.__construct()`, `IncorrectRelationshipModel.php`
+- **Thin community `Community 1271`** (2 nodes): `edit.blade.php`, `pricing::tiers.ajax.edit`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1246`** (3 nodes): `KeyNotFoundException`, `.__construct()`, `KeyNotFoundException.php`
+- **Thin community `Community 1272`** (2 nodes): `create.blade.php`, `pricing::volume_rules.ajax.create`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1247`** (3 nodes): `NotAPersistableModel`, `.__construct()`, `NotAPersistableModel.php`
+- **Thin community `Community 1273`** (2 nodes): `edit.blade.php`, `pricing::volume_rules.ajax.edit`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1248`** (3 nodes): `OutOfResultSetException`, `.__construct()`, `OutOfResultSetException.php`
+- **Thin community `Community 1274`** (2 nodes): `show.blade.php`, `production::batches.partials.completion-workflow`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1249`** (3 nodes): `RelationAlreadyExistsException`, `.__construct()`, `RelationAlreadyExistsException.php`
+- **Thin community `Community 1275`** (2 nodes): `bom-line-row.blade.php`, `production::boms.partials.bom-line-unit-select`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1250`** (3 nodes): `ValidationFailedException`, `.__construct()`, `ValidationFailedException.php`
+- **Thin community `Community 1276`** (2 nodes): `form.blade.php`, `production::boms.partials.bom-line-row`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1251`** (3 nodes): `OAuth1`, `.generate()`, `OAuth1.php`
+- **Thin community `Community 1277`** (2 nodes): `show.blade.php`, `production::orders.partials.material-requirements`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1252`** (3 nodes): `Package.php`, `Package`, `.version()`
+- **Thin community `Community 1278`** (2 nodes): `OrderDeliveryItem`, `OrderDeliveryItem.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1253`** (3 nodes): `AlreadyAuthenticatedException`, `.__construct()`, `AlreadyAuthenticatedException.php`
+- **Thin community `Community 1279`** (2 nodes): `PurchaseOrderSetting`, `PurchaseOrderSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1254`** (3 nodes): `ConfigDoesntExistException`, `.__construct()`, `ConfigDoesntExistException.php`
+- **Thin community `Community 1280`** (2 nodes): `edit.blade.php`, `purchase::delivery-order.ajax.items`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1255`** (3 nodes): `Instance.php`, `.register()`, `Instance`
+- **Thin community `Community 1281`** (2 nodes): `files.blade.php`, `purchase::purchase-inventory.inventory-files.ajax-list`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1256`** (3 nodes): `MeetingParticipant.php`, `MeetingParticipant`, `.getApiMultipleDataField()`
+- **Thin community `Community 1282`** (2 nodes): `files.blade.php`, `purchase::purchase-products.product-files.ajax-list`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1257`** (3 nodes): `WebinarParticipant.php`, `WebinarParticipant`, `.getApiMultipleDataField()`
+- **Thin community `Community 1283`** (2 nodes): `ApplicationSource`, `ApplicationSource.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1258`** (3 nodes): `FileTooLargeException`, `.__construct()`, `FileTooLargeException.php`
+- **Thin community `Community 1284`** (2 nodes): `RecruitGlobalSetting`, `RecruitGlobalSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1259`** (3 nodes): `EntrustFacade`, `.getFacadeAccessor()`, `EntrustFacade.php`
+- **Thin community `Community 1285`** (2 nodes): `import_progress.blade.php`, `recruit::import.process-form`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1260`** (3 nodes): `EntrustPermission`, `.__construct()`, `EntrustPermission.php`
+- **Thin community `Community 1286`** (2 nodes): `createOfferLetter.blade.php`, `recruit::jobs.salary-components.default-structure`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1261`** (3 nodes): `EntrustRole`, `.__construct()`, `EntrustRole.php`
+- **Thin community `Community 1287`** (2 nodes): `test-sidebar.blade.php`, `servermanager::sections.sidebar`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1262`** (3 nodes): `departments-hierarchy.manage_hierarchy`, `chart_tree.blade.php`, `manage_hierarchy.blade.php`
+- **Thin community `Community 1289`** (2 nodes): `import.blade.php`, `warehouse::ajax.import`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1263`** (3 nodes): `designations-hierarchy.manage_hierarchy`, `chart_tree.blade.php`, `manage_hierarchy.blade.php`
+- **Thin community `Community 1292`** (2 nodes): `ZoomGlobalSetting`, `ZoomGlobalSetting.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1264`** (3 nodes): `leaves.multiple-leave-table`, `multiple-leaves.blade.php`, `view-multiple-related-leave.blade.php`
+- **Thin community `Community 1293`** (2 nodes): `StoreAddress.php`, `StoreAddress`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1265`** (3 nodes): `notifications.`, `notifications.superadmin.`, `all_user_notifications.blade.php`
+- **Thin community `Community 1294`** (2 nodes): `StoreUser.php`, `StoreUser`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1266`** (3 nodes): `front-app.blade.php`, `super-admin.front.section.front_footer`, `super-admin.front.section.front_header`
+- **Thin community `Community 1295`** (2 nodes): `UpdateAddress.php`, `UpdateAddress`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1267`** (3 nodes): `quick-context.ps1`, `Show-FileHeader()`, `Show-FileQuick()`
+- **Thin community `Community 1296`** (2 nodes): `UpdateUser.php`, `UpdateUser`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1272`** (2 nodes): `Kernel.php`, `Kernel`
+- **Thin community `Community 1297`** (2 nodes): `InvalidActionException`, `InvalidActionException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1273`** (2 nodes): `EncryptCookies.php`, `EncryptCookies`
+- **Thin community `Community 1298`** (2 nodes): `NodeNotFoundException`, `NodeNotFoundException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1274`** (2 nodes): `PreventRequestsDuringMaintenance.php`, `PreventRequestsDuringMaintenance`
+- **Thin community `Community 1299`** (2 nodes): `ApiResource.php`, `ApiResource`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1275`** (2 nodes): `TrimStrings.php`, `TrimStrings`
+- **Thin community `Community 1300`** (2 nodes): `IdentityProviderException`, `IdentityProviderException.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1276`** (2 nodes): `TrustProxies.php`, `TrustProxies`
+- **Thin community `Community 1301`** (2 nodes): `GenericProvider.php`, `GenericProvider`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1277`** (2 nodes): `ClientCategory.php`, `ClientCategory`
+- **Thin community `Community 1302`** (2 nodes): `Absentees.php`, `Absentees`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1278`** (2 nodes): `CustomModulePermission.php`, `CustomModulePermission`
+- **Thin community `Community 1303`** (2 nodes): `AuthenticationOption.php`, `AuthenticationOption`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1279`** (2 nodes): `DatabaseBackup.php`, `DatabaseBackup`
+- **Thin community `Community 1304`** (2 nodes): `CustomQuestion.php`, `CustomQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1280`** (2 nodes): `DiscussionCategory.php`, `DiscussionCategory`
+- **Thin community `Community 1305`** (2 nodes): `EmailNotification.php`, `EmailNotification`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1281`** (2 nodes): `Flag.php`, `Flag`
+- **Thin community `Community 1306`** (2 nodes): `Feature.php`, `Feature`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1282`** (2 nodes): `GdprSetting.php`, `GdprSetting`
+- **Thin community `Community 1307`** (2 nodes): `GlobalDialInCountry.php`, `GlobalDialInCountry`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1283`** (2 nodes): `LogTimeFor.php`, `LogTimeFor`
+- **Thin community `Community 1308`** (2 nodes): `GlobalDialInNumber.php`, `GlobalDialInNumber`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1284`** (2 nodes): `Menu.php`, `Menu`
+- **Thin community `Community 1309`** (2 nodes): `InMeeting.php`, `InMeeting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1285`** (2 nodes): `MessageSetting.php`, `MessageSetting`
+- **Thin community `Community 1310`** (2 nodes): `Invitation.php`, `Invitation`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1286`** (2 nodes): `PurposeConsentUser.php`, `PurposeConsentUser`
+- **Thin community `Community 1311`** (2 nodes): `LiveStream.php`, `LiveStream`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1287`** (2 nodes): `Qrcodes.php`, `Qrcodes`
+- **Thin community `Community 1312`** (2 nodes): `LiveStreamStatusSetting.php`, `LiveStreamStatusSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1288`** (2 nodes): `Session.php`, `Session`
+- **Thin community `Community 1313`** (2 nodes): `Participant.php`, `Participant`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1289`** (2 nodes): `SignUpSetting.php`, `SignUpSetting`
+- **Thin community `Community 1314`** (2 nodes): `PollQuestion.php`, `PollQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1290`** (2 nodes): `Skill.php`, `Skill`
+- **Thin community `Community 1315`** (2 nodes): `PollResult.php`, `PollResult`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1291`** (2 nodes): `TaskTagList.php`, `TaskTagList`
+- **Thin community `Community 1316`** (2 nodes): `Privilege.php`, `Privilege`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1292`** (2 nodes): `Tax.php`, `Tax`
+- **Thin community `Community 1317`** (2 nodes): `QA.php`, `QA`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1293`** (2 nodes): `TicketEmailSetting.php`, `TicketEmailSetting`
+- **Thin community `Community 1318`** (2 nodes): `QuestionAnswer.php`, `QuestionAnswer`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1294`** (2 nodes): `TicketSettingForAgents.php`, `TicketSettingForAgents`
+- **Thin community `Community 1319`** (2 nodes): `Recurrence.php`, `Recurrence`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1295`** (2 nodes): `GlobalCurrency.php`, `GlobalCurrency`
+- **Thin community `Community 1320`** (2 nodes): `RegistrantCustomQuestion.php`, `RegistrantCustomQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1296`** (2 nodes): `PermissionRoleObserver.php`, `PermissionRoleObserver`
+- **Thin community `Community 1321`** (2 nodes): `Telephony.php`, `Telephony`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1297`** (2 nodes): `EventServiceProvider.php`, `EventServiceProvider`
+- **Thin community `Community 1322`** (2 nodes): `TrackingField.php`, `TrackingField`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1319`** (2 nodes): `BiometricSetting`, `BiometricSetting.php`
+- **Thin community `Community 1323`** (2 nodes): `TrackingSource.php`, `TrackingSource`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1320`** (2 nodes): `biometric::devices.create-url`, `index.blade.php`
+- **Thin community `Community 1324`** (2 nodes): `Tsp.php`, `Tsp`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1321`** (2 nodes): `EmployeePayrollCycle`, `EmployeePayrollCycle.php`
+- **Thin community `Community 1325`** (2 nodes): `StoreAccount.php`, `StoreAccount`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1322`** (2 nodes): `PayrollGlobalSetting`, `PayrollGlobalSetting.php`
+- **Thin community `Community 1326`** (2 nodes): `StoreAssistant.php`, `StoreAssistant`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1323`** (2 nodes): `Dashboard`, `Dashboard.php`
+- **Thin community `Community 1327`** (2 nodes): `StoreCustomQuestion.php`, `StoreCustomQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1324`** (2 nodes): `OkrScoring`, `OkrScoring.php`
+- **Thin community `Community 1328`** (2 nodes): `StoreEmailNotification.php`, `StoreEmailNotification`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1325`** (2 nodes): `index.blade.php`, `performance::objectives.ajax.objectives`
+- **Thin community `Community 1329`** (2 nodes): `StoreGlobalDialInCountry.php`, `StoreGlobalDialInCountry`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1326`** (2 nodes): `create.blade.php`, `pricing::client_pricing.ajax.create`
+- **Thin community `Community 1330`** (2 nodes): `StoreGlobalDialInNumber.php`, `StoreGlobalDialInNumber`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1327`** (2 nodes): `edit.blade.php`, `pricing::client_pricing.ajax.edit`
+- **Thin community `Community 1331`** (2 nodes): `StoreMeetingSetting.php`, `StoreMeetingSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1328`** (2 nodes): `edit.blade.php`, `pricing::client_tiers.ajax.edit`
+- **Thin community `Community 1332`** (2 nodes): `StorePanelist.php`, `StorePanelist`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1329`** (2 nodes): `create.blade.php`, `pricing::company_pricing.ajax.create`
+- **Thin community `Community 1333`** (2 nodes): `StorePoll.php`, `StorePoll`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1330`** (2 nodes): `edit.blade.php`, `pricing::company_pricing.ajax.edit`
+- **Thin community `Community 1334`** (2 nodes): `StorePollQuestion.php`, `StorePollQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1331`** (2 nodes): `create.blade.php`, `pricing::tiers.ajax.create`
+- **Thin community `Community 1335`** (2 nodes): `StoreQuestionAnswer.php`, `StoreQuestionAnswer`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1332`** (2 nodes): `edit.blade.php`, `pricing::tiers.ajax.edit`
+- **Thin community `Community 1336`** (2 nodes): `StoreRecurrence.php`, `StoreRecurrence`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1333`** (2 nodes): `create.blade.php`, `pricing::volume_rules.ajax.create`
+- **Thin community `Community 1337`** (2 nodes): `StoreRegistrant.php`, `StoreRegistrant`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1334`** (2 nodes): `edit.blade.php`, `pricing::volume_rules.ajax.edit`
+- **Thin community `Community 1338`** (2 nodes): `StoreRegistrantCustomQuestion.php`, `StoreRegistrantCustomQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1335`** (2 nodes): `show.blade.php`, `production::batches.partials.completion-workflow`
+- **Thin community `Community 1339`** (2 nodes): `StoreRole.php`, `StoreRole`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1336`** (2 nodes): `bom-line-row.blade.php`, `production::boms.partials.bom-line-unit-select`
+- **Thin community `Community 1340`** (2 nodes): `StoreTrackingField.php`, `StoreTrackingField`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1337`** (2 nodes): `form.blade.php`, `production::boms.partials.bom-line-row`
+- **Thin community `Community 1341`** (2 nodes): `StoreUser.php`, `StoreUser`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1338`** (2 nodes): `show.blade.php`, `production::orders.partials.material-requirements`
+- **Thin community `Community 1342`** (2 nodes): `StoreWebinar.php`, `StoreWebinar`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1339`** (2 nodes): `OrderDeliveryItem`, `OrderDeliveryItem.php`
+- **Thin community `Community 1343`** (2 nodes): `StoreWebinarSetting.php`, `StoreWebinarSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1340`** (2 nodes): `PurchaseOrderSetting`, `PurchaseOrderSetting.php`
+- **Thin community `Community 1344`** (2 nodes): `UpdateAccount.php`, `UpdateAccount`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1341`** (2 nodes): `edit.blade.php`, `purchase::delivery-order.ajax.items`
+- **Thin community `Community 1345`** (2 nodes): `UpdateAssistant.php`, `UpdateAssistant`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1342`** (2 nodes): `files.blade.php`, `purchase::purchase-inventory.inventory-files.ajax-list`
+- **Thin community `Community 1346`** (2 nodes): `UpdateCustomQuestion.php`, `UpdateCustomQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1343`** (2 nodes): `files.blade.php`, `purchase::purchase-products.product-files.ajax-list`
+- **Thin community `Community 1347`** (2 nodes): `UpdateEmailNotification.php`, `UpdateEmailNotification`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1344`** (2 nodes): `ApplicationSource`, `ApplicationSource.php`
+- **Thin community `Community 1348`** (2 nodes): `UpdateFeature.php`, `UpdateFeature`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1345`** (2 nodes): `RecruitGlobalSetting`, `RecruitGlobalSetting.php`
+- **Thin community `Community 1349`** (2 nodes): `UpdateGlobalDialInCountry.php`, `UpdateGlobalDialInCountry`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1346`** (2 nodes): `import_progress.blade.php`, `recruit::import.process-form`
+- **Thin community `Community 1350`** (2 nodes): `UpdateGlobalDialInNumber.php`, `UpdateGlobalDialInNumber`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1347`** (2 nodes): `createOfferLetter.blade.php`, `recruit::jobs.salary-components.default-structure`
+- **Thin community `Community 1351`** (2 nodes): `UpdateInMeeting.php`, `UpdateInMeeting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1348`** (2 nodes): `test-sidebar.blade.php`, `servermanager::sections.sidebar`
+- **Thin community `Community 1352`** (2 nodes): `UpdateIntegration.php`, `UpdateIntegration`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1350`** (2 nodes): `import.blade.php`, `warehouse::ajax.import`
+- **Thin community `Community 1353`** (2 nodes): `UpdateLiveStream.php`, `UpdateLiveStream`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1353`** (2 nodes): `ZoomGlobalSetting`, `ZoomGlobalSetting.php`
+- **Thin community `Community 1354`** (2 nodes): `UpdateLiveStreamStatus.php`, `UpdateLiveStreamStatus`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1354`** (2 nodes): `StoreAddress.php`, `StoreAddress`
+- **Thin community `Community 1355`** (2 nodes): `UpdateLiveStreamStatusSetting.php`, `UpdateLiveStreamStatusSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1355`** (2 nodes): `StoreUser.php`, `StoreUser`
+- **Thin community `Community 1356`** (2 nodes): `UpdateMeeting.php`, `UpdateMeeting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1356`** (2 nodes): `UpdateAddress.php`, `UpdateAddress`
+- **Thin community `Community 1357`** (2 nodes): `UpdateMeetingSetting.php`, `UpdateMeetingSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1357`** (2 nodes): `UpdateUser.php`, `UpdateUser`
+- **Thin community `Community 1358`** (2 nodes): `UpdateOccurrence.php`, `UpdateOccurrence`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1358`** (2 nodes): `InvalidActionException`, `InvalidActionException.php`
+- **Thin community `Community 1359`** (2 nodes): `UpdatePoll.php`, `UpdatePoll`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1359`** (2 nodes): `NodeNotFoundException`, `NodeNotFoundException.php`
+- **Thin community `Community 1360`** (2 nodes): `UpdatePollQuestion.php`, `UpdatePollQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1360`** (2 nodes): `ApiResource.php`, `ApiResource`
+- **Thin community `Community 1361`** (2 nodes): `UpdateQuestion.php`, `UpdateQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1361`** (2 nodes): `IdentityProviderException`, `IdentityProviderException.php`
+- **Thin community `Community 1362`** (2 nodes): `UpdateRecording.php`, `UpdateRecording`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1362`** (2 nodes): `GenericProvider.php`, `GenericProvider`
+- **Thin community `Community 1363`** (2 nodes): `UpdateRecurrence.php`, `UpdateRecurrence`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1363`** (2 nodes): `Absentees.php`, `Absentees`
+- **Thin community `Community 1364`** (2 nodes): `UpdateRegistrationQuestion.php`, `UpdateRegistrationQuestion`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1364`** (2 nodes): `AuthenticationOption.php`, `AuthenticationOption`
+- **Thin community `Community 1365`** (2 nodes): `UpdateRole.php`, `UpdateRole`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1365`** (2 nodes): `CustomQuestion.php`, `CustomQuestion`
+- **Thin community `Community 1366`** (2 nodes): `UpdateScheduleMeeting.php`, `UpdateScheduleMeeting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1366`** (2 nodes): `EmailNotification.php`, `EmailNotification`
+- **Thin community `Community 1367`** (2 nodes): `UpdateSetting.php`, `UpdateSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1367`** (2 nodes): `Feature.php`, `Feature`
+- **Thin community `Community 1368`** (2 nodes): `UpdateTelephony.php`, `UpdateTelephony`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1368`** (2 nodes): `GlobalDialInCountry.php`, `GlobalDialInCountry`
+- **Thin community `Community 1369`** (2 nodes): `UpdateTrackingField.php`, `UpdateTrackingField`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1369`** (2 nodes): `GlobalDialInNumber.php`, `GlobalDialInNumber`
+- **Thin community `Community 1370`** (2 nodes): `UpdateTsp.php`, `UpdateTsp`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1370`** (2 nodes): `InMeeting.php`, `InMeeting`
+- **Thin community `Community 1371`** (2 nodes): `UpdateUser.php`, `UpdateUser`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1371`** (2 nodes): `Invitation.php`, `Invitation`
+- **Thin community `Community 1372`** (2 nodes): `UpdateWebinar.php`, `UpdateWebinar`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1372`** (2 nodes): `LiveStream.php`, `LiveStream`
+- **Thin community `Community 1373`** (2 nodes): `UpdateWebinarSetting.php`, `UpdateWebinarSetting`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1373`** (2 nodes): `LiveStreamStatusSetting.php`, `LiveStreamStatusSetting`
+- **Thin community `Community 1377`** (2 nodes): `app-settings.cron-message`, `cron-message.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1374`** (2 nodes): `Participant.php`, `Participant`
+- **Thin community `Community 1378`** (2 nodes): `contracts.renew.renew_history`, `renew.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1375`** (2 nodes): `PollQuestion.php`, `PollQuestion`
+- **Thin community `Community 1379`** (2 nodes): `credit-notes.ajax.show`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1376`** (2 nodes): `PollResult.php`, `PollResult`
+- **Thin community `Community 1380`** (2 nodes): `custom-modules.sections.version`, `custom.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1377`** (2 nodes): `Privilege.php`, `Privilege`
+- **Thin community `Community 1381`** (2 nodes): `attendance-settings.ajax.shift`, `index.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1378`** (2 nodes): `QA.php`, `QA`
+- **Thin community `Community 1382`** (2 nodes): `employees.ajax.document-expiry.show`, `documents.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1379`** (2 nodes): `QuestionAnswer.php`, `QuestionAnswer`
+- **Thin community `Community 1383`** (2 nodes): `estimates.ajax.show`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1380`** (2 nodes): `Recurrence.php`, `Recurrence`
+- **Thin community `Community 1384`** (2 nodes): `estimates-templates.ajax.show`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1381`** (2 nodes): `RegistrantCustomQuestion.php`, `RegistrantCustomQuestion`
+- **Thin community `Community 1385`** (2 nodes): `invoices.ajax.show`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1382`** (2 nodes): `Telephony.php`, `Telephony`
+- **Thin community `Community 1386`** (2 nodes): `leads.lead-files.thumbnail-list`, `files.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1383`** (2 nodes): `TrackingField.php`, `TrackingField`
+- **Thin community `Community 1387`** (2 nodes): `messages.user_list`, `index.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1384`** (2 nodes): `TrackingSource.php`, `TrackingSource`
+- **Thin community `Community 1388`** (2 nodes): `notifications.client.detail_`, `all_notifications.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1385`** (2 nodes): `Tsp.php`, `Tsp`
+- **Thin community `Community 1389`** (2 nodes): `orders.ajax.show`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1386`** (2 nodes): `StoreAccount.php`, `StoreAccount`
+- **Thin community `Community 1390`** (2 nodes): `proposal-template.ajax.show`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1387`** (2 nodes): `StoreAssistant.php`, `StoreAssistant`
+- **Thin community `Community 1391`** (2 nodes): `proposals.ajax.show`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1388`** (2 nodes): `StoreCustomQuestion.php`, `StoreCustomQuestion`
+- **Thin community `Community 1392`** (2 nodes): `reports.leave.ajax.show`, `show.blade.php`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1389`** (2 nodes): `StoreEmailNotification.php`, `StoreEmailNotification`
+- **Thin community `Community 1393`** (2 nodes): `topbar.blade.php`, `sections.timer_clock`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1390`** (2 nodes): `StoreGlobalDialInCountry.php`, `StoreGlobalDialInCountry`
+- **Thin community `Community 1394`** (2 nodes): `upgrade_plan.blade.php`, `super-admin.billing.plan`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1391`** (2 nodes): `StoreGlobalDialInNumber.php`, `StoreGlobalDialInNumber`
+- **Thin community `Community 1395`** (2 nodes): `pricing.blade.php`, `super-admin.front.section.pricing-plan`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1392`** (2 nodes): `StoreMeetingSetting.php`, `StoreMeetingSetting`
+- **Thin community `Community 1396`** (2 nodes): `lang.blade.php`, `super-admin.front-setting.faq-settings.faq-data`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1393`** (2 nodes): `StorePanelist.php`, `StorePanelist`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1394`** (2 nodes): `StorePoll.php`, `StorePoll`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1395`** (2 nodes): `StorePollQuestion.php`, `StorePollQuestion`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1396`** (2 nodes): `StoreQuestionAnswer.php`, `StoreQuestionAnswer`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1397`** (2 nodes): `StoreRecurrence.php`, `StoreRecurrence`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1398`** (2 nodes): `StoreRegistrant.php`, `StoreRegistrant`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1399`** (2 nodes): `StoreRegistrantCustomQuestion.php`, `StoreRegistrantCustomQuestion`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1400`** (2 nodes): `StoreRole.php`, `StoreRole`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1401`** (2 nodes): `StoreTrackingField.php`, `StoreTrackingField`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1402`** (2 nodes): `StoreUser.php`, `StoreUser`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1403`** (2 nodes): `StoreWebinar.php`, `StoreWebinar`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1404`** (2 nodes): `StoreWebinarSetting.php`, `StoreWebinarSetting`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1405`** (2 nodes): `UpdateAccount.php`, `UpdateAccount`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1406`** (2 nodes): `UpdateAssistant.php`, `UpdateAssistant`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1407`** (2 nodes): `UpdateCustomQuestion.php`, `UpdateCustomQuestion`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1408`** (2 nodes): `UpdateEmailNotification.php`, `UpdateEmailNotification`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1409`** (2 nodes): `UpdateFeature.php`, `UpdateFeature`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1410`** (2 nodes): `UpdateGlobalDialInCountry.php`, `UpdateGlobalDialInCountry`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1411`** (2 nodes): `UpdateGlobalDialInNumber.php`, `UpdateGlobalDialInNumber`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1412`** (2 nodes): `UpdateInMeeting.php`, `UpdateInMeeting`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1413`** (2 nodes): `UpdateIntegration.php`, `UpdateIntegration`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1414`** (2 nodes): `UpdateLiveStream.php`, `UpdateLiveStream`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1415`** (2 nodes): `UpdateLiveStreamStatus.php`, `UpdateLiveStreamStatus`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1416`** (2 nodes): `UpdateLiveStreamStatusSetting.php`, `UpdateLiveStreamStatusSetting`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1417`** (2 nodes): `UpdateMeeting.php`, `UpdateMeeting`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1418`** (2 nodes): `UpdateMeetingSetting.php`, `UpdateMeetingSetting`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1419`** (2 nodes): `UpdateOccurrence.php`, `UpdateOccurrence`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1420`** (2 nodes): `UpdatePoll.php`, `UpdatePoll`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1421`** (2 nodes): `UpdatePollQuestion.php`, `UpdatePollQuestion`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1422`** (2 nodes): `UpdateQuestion.php`, `UpdateQuestion`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1423`** (2 nodes): `UpdateRecording.php`, `UpdateRecording`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1424`** (2 nodes): `UpdateRecurrence.php`, `UpdateRecurrence`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1425`** (2 nodes): `UpdateRegistrationQuestion.php`, `UpdateRegistrationQuestion`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1426`** (2 nodes): `UpdateRole.php`, `UpdateRole`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1427`** (2 nodes): `UpdateScheduleMeeting.php`, `UpdateScheduleMeeting`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1428`** (2 nodes): `UpdateSetting.php`, `UpdateSetting`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1429`** (2 nodes): `UpdateTelephony.php`, `UpdateTelephony`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1430`** (2 nodes): `UpdateTrackingField.php`, `UpdateTrackingField`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1431`** (2 nodes): `UpdateTsp.php`, `UpdateTsp`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1432`** (2 nodes): `UpdateUser.php`, `UpdateUser`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1433`** (2 nodes): `UpdateWebinar.php`, `UpdateWebinar`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1434`** (2 nodes): `UpdateWebinarSetting.php`, `UpdateWebinarSetting`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1438`** (2 nodes): `app-settings.cron-message`, `cron-message.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1439`** (2 nodes): `contracts.renew.renew_history`, `renew.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1440`** (2 nodes): `credit-notes.ajax.show`, `show.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1441`** (2 nodes): `custom-modules.sections.version`, `custom.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1442`** (2 nodes): `attendance-settings.ajax.shift`, `index.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1443`** (2 nodes): `employees.ajax.document-expiry.show`, `documents.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1444`** (2 nodes): `estimates.ajax.show`, `show.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1445`** (2 nodes): `estimates-templates.ajax.show`, `show.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1446`** (2 nodes): `invoices.ajax.show`, `show.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1447`** (2 nodes): `leads.lead-files.thumbnail-list`, `files.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1448`** (2 nodes): `messages.user_list`, `index.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1449`** (2 nodes): `notifications.client.detail_`, `all_notifications.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1450`** (2 nodes): `orders.ajax.show`, `show.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1451`** (2 nodes): `proposal-template.ajax.show`, `show.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1452`** (2 nodes): `proposals.ajax.show`, `show.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1453`** (2 nodes): `reports.leave.ajax.show`, `show.blade.php`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1454`** (2 nodes): `topbar.blade.php`, `sections.timer_clock`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1455`** (2 nodes): `upgrade_plan.blade.php`, `super-admin.billing.plan`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1456`** (2 nodes): `pricing.blade.php`, `super-admin.front.section.pricing-plan`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1457`** (2 nodes): `lang.blade.php`, `super-admin.front-setting.faq-settings.faq-data`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 1458`** (2 nodes): `lang.blade.php`, `super-admin.front-setting.footer-setting.footer-data`
+- **Thin community `Community 1397`** (2 nodes): `lang.blade.php`, `super-admin.front-setting.footer-setting.footer-data`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `belongsTo()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 15`, `Community 17`, `Community 18`, `Community 19`, `Community 23`, `Community 25`, `Community 26`, `Community 27`, `Community 28`, `Community 30`, `Community 31`, `Community 36`, `Community 40`, `Community 42`, `Community 43`, `Community 63`, `Community 70`?**
-  _High betweenness centrality (0.039) - this node is a cross-community bridge._
-- **Why does `get()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 144`, `Community 17`, `Community 18`, `Community 19`, `Community 404`, `Community 405`, `Community 20`, `Community 23`, `Community 21`, `Community 25`, `Community 24`, `Community 27`, `Community 26`, `Community 30`, `Community 31`, `Community 36`, `Community 549`, `Community 166`, `Community 38`, `Community 43`, `Community 684`, `Community 942`, `Community 47`, `Community 944`, `Community 50`, `Community 322`, `Community 195`, `Community 83`?**
-  _High betweenness centrality (0.034) - this node is a cross-community bridge._
-- **Why does `save()` connect `Community 5` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 7`, `Community 8`, `Community 10`, `Community 11`, `Community 13`, `Community 15`, `Community 17`, `Community 18`, `Community 19`, `Community 20`, `Community 22`, `Community 23`, `Community 24`, `Community 25`, `Community 26`, `Community 27`, `Community 28`, `Community 30`, `Community 31`, `Community 32`, `Community 35`, `Community 36`, `Community 40`, `Community 41`, `Community 42`, `Community 50`, `Community 58`, `Community 66`, `Community 75`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Are the 1310 inferred relationships involving `abort_403()` (e.g. with `.__construct()` and `.adminSpecific()`) actually correct?**
-  _`abort_403()` has 1310 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `belongsTo()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 5`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 18`, `Community 19`, `Community 23`, `Community 25`, `Community 26`, `Community 27`, `Community 32`, `Community 36`, `Community 43`, `Community 45`, `Community 55`, `Community 63`?**
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **Why does `get()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 261`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 13`, `Community 14`, `Community 15`, `Community 144`, `Community 16`, `Community 18`, `Community 19`, `Community 20`, `Community 21`, `Community 406`, `Community 23`, `Community 407`, `Community 25`, `Community 26`, `Community 24`, `Community 22`, `Community 925`, `Community 32`, `Community 34`, `Community 35`, `Community 166`, `Community 44`, `Community 45`, `Community 57`, `Community 576`, `Community 323`, `Community 198`, `Community 199`, `Community 842`, `Community 76`, `Community 851`, `Community 852`, `Community 855`, `Community 89`, `Community 479`, `Community 875`?**
+  _High betweenness centrality (0.035) - this node is a cross-community bridge._
+- **Why does `hasMany()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 42`, `Community 10`, `Community 11`, `Community 15`, `Community 18`, `Community 24`, `Community 25`, `Community 26`?**
+  _High betweenness centrality (0.028) - this node is a cross-community bridge._
+- **Are the 1311 inferred relationships involving `abort_403()` (e.g. with `.__construct()` and `.adminSpecific()`) actually correct?**
+  _`abort_403()` has 1311 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 1228 inferred relationships involving `get()` (e.g. with `.handle()` and `.handle()`) actually correct?**
   _`get()` has 1228 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 1085 inferred relationships involving `save()` (e.g. with `.storeClockIn()` and `.update()`) actually correct?**
-  _`save()` has 1085 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 1086 inferred relationships involving `save()` (e.g. with `.storeClockIn()` and `.update()`) actually correct?**
+  _`save()` has 1086 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 686 inferred relationships involving `belongsTo()` (e.g. with `.estimate()` and `.awardTo()`) actually correct?**
   _`belongsTo()` has 686 INFERRED edges - model-reasoned connections that need verification._

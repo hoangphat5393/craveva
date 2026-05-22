@@ -27,11 +27,11 @@
                 <thead>
                     <tr>
                         <th>@lang('production::app.componentProduct')</th>
-                        <th>@lang('production::app.materialQtyPerFgUnit')</th>
+                        <th>@lang('production::app.materialQtyPerManufacturedProductUnit')</th>
                         <th>@lang('production::app.bomWastePercent')</th>
                         <th>@lang('production::app.materialTotalRequired')</th>
                         @if (!empty($materialRequirementsShowStock))
-                            <th>@lang('production::app.materialAvailableInRmWarehouse')</th>
+                            <th>@lang('production::app.materialAvailableInRawMaterialWarehouse')</th>
                             <th>@lang('production::app.materialShortfall')</th>
                         @endif
                     </tr>

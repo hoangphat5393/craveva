@@ -612,75 +612,122 @@
 
 
     @php
-        $aiWorkspaceWidgetUrl = global_setting()->aiWorkspaceWidgetScriptUrl();
-        $aiWorkspaceApiKey = global_setting()->ai_workspace_api_key;
+        $aiAssistantWidgetUrl = global_setting()->aiAssistantWidgetScriptUrl();
+        $aiAssistantWidgetApiKey = global_setting()->ai_assistant_widget_api_key;
     @endphp
-    @if ($aiWorkspaceWidgetUrl)
-        <!-- Chat Module Component (External Widget Integration) -->
-        <div id="ai-chatbot-container" style="display: none;"></div>
+    @if ($aiAssistantWidgetUrl)
+        <!-- AI Assistant Widget host (Craveva widget nodes are appended to document.body) -->
+        <div id="ai-chatbot-container" class="d-none" aria-hidden="true"></div>
 
         <script>
             $(document).ready(function() {
-                const aiWorkspaceKey = 'ai_workspace_active';
-                const container = $('#ai-chatbot-container');
-                const widgetScriptUrl = @json($aiWorkspaceWidgetUrl);
-                const aiWorkspaceApiKey = @json($aiWorkspaceApiKey);
+                const widgetScriptUrl = @json($aiAssistantWidgetUrl);
+                const aiAssistantWidgetApiKey = @json($aiAssistantWidgetApiKey);
                 let isScriptLoaded = false;
+                let isWidgetOpen = false;
+
+                function getCravevaWidgetElements() {
+                    return {
+                        button: document.querySelector('.craveva-chat-button'),
+                        window: document.getElementById('craveva-chat-window'),
+                    };
+                }
+
+                function setCravevaWidgetVisible(visible) {
+                    const {
+                        button,
+                        window: chatWindow
+                    } = getCravevaWidgetElements();
+
+                    [button, chatWindow].forEach((element) => {
+                        if (!element) {
+                            return;
+                        }
+
+                        element.style.display = visible ? '' : 'none';
+                        element.setAttribute('aria-hidden', visible ? 'false' : 'true');
+                    });
+                }
+
+                function waitForCravevaWidget(maxWaitMs = 10000) {
+                    return new Promise((resolve) => {
+                        const startedAt = Date.now();
+
+                        const timer = setInterval(() => {
+                            if (getCravevaWidgetElements().button) {
+                                clearInterval(timer);
+                                resolve(true);
+
+                                return;
+                            }
+
+                            if (Date.now() - startedAt >= maxWaitMs) {
+                                clearInterval(timer);
+                                resolve(false);
+                            }
+                        }, 100);
+                    });
+                }
 
                 function loadWidget() {
-                    if (isScriptLoaded) return;
-
-                    const observer = new MutationObserver((mutations) => {
-                        mutations.forEach((mutation) => {
-                            mutation.addedNodes.forEach((node) => {
-                                if (node.nodeType === 1 && node.parentNode === document.body) {
-                                    container.append(node);
-                                }
-                            });
-                        });
-                    });
-
-                    observer.observe(document.body, {
-                        childList: true
-                    });
-
-                    const script = document.createElement('script');
-                    script.src = widgetScriptUrl;
-                    script.async = true;
-                    if (aiWorkspaceApiKey) {
-                        script.setAttribute('data-api-key', aiWorkspaceApiKey);
+                    if (isScriptLoaded) {
+                        return waitForCravevaWidget();
                     }
-                    script.onload = () => {
-                        setTimeout(() => observer.disconnect(), 5000);
-                    };
-                    document.body.appendChild(script);
-                    isScriptLoaded = true;
+
+                    return new Promise((resolve) => {
+                        const script = document.createElement('script');
+                        script.src = widgetScriptUrl;
+                        script.async = true;
+
+                        if (aiAssistantWidgetApiKey) {
+                            script.setAttribute('data-api-key', aiAssistantWidgetApiKey);
+                        }
+
+                        script.onload = () => {
+                            isScriptLoaded = true;
+                            waitForCravevaWidget().then(resolve);
+                        };
+
+                        script.onerror = () => resolve(false);
+                        document.body.appendChild(script);
+                    });
                 }
 
                 function showChat() {
-                    loadWidget();
-                    container.show();
-                    container[0].offsetHeight;
-                    container.addClass('active');
-                    localStorage.setItem(aiWorkspaceKey, 'true');
+                    loadWidget().then((ready) => {
+                        if (!ready) {
+                            return;
+                        }
+
+                        setCravevaWidgetVisible(true);
+
+                        const {
+                            button
+                        } = getCravevaWidgetElements();
+                        if (button) {
+                            button.click();
+                        }
+
+                        isWidgetOpen = true;
+                    });
                 }
 
                 function hideChat() {
-                    container.removeClass('active');
-                    setTimeout(() => {
-                        container.hide();
-                    }, 400);
-                    localStorage.setItem(aiWorkspaceKey, 'false');
+                    setCravevaWidgetVisible(false);
+                    isWidgetOpen = false;
                 }
 
-                $(document).on('click', '#ai-workspace-menu-item a', function(e) {
-                    e.preventDefault();
-
-                    if (container.hasClass('active')) {
+                function toggleAiAssistantWidget() {
+                    if (isWidgetOpen) {
                         hideChat();
                     } else {
                         showChat();
                     }
+                }
+
+                $(document).on('click', '#ai-assistant-widget-menu-item a', function(e) {
+                    e.preventDefault();
+                    toggleAiAssistantWidget();
                 });
             });
         </script>

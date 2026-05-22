@@ -1,7 +1,7 @@
 <div class="col-lg-12 col-md-12 ntfcn-tab-content-left w-100 ml-3 ">
     <div class="row">
         <div class="col-lg-12 mb-2">
-            <p class="f-14 text-dark-grey">@lang('modules.accountSettings.aiWorkspaceHelp')</p>
+            <p class="f-14 text-dark-grey">@lang('modules.accountSettings.aiWorkspacePageHelp')</p>
         </div>
         <div class="col-lg-6 mb-0">
             <x-forms.text :fieldLabel="__('modules.accountSettings.aiWorkspaceAgentId')" :fieldPlaceholder="__('placeholders.id')" fieldName="ai_workspace_agent_id" fieldId="ai_workspace_agent_id" :fieldValue="global_setting()->ai_workspace_agent_id" />

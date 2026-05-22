@@ -249,6 +249,7 @@ class GlobalSetting extends BaseModel
         'google_map_key' => 'encrypted',
         'google_client_secret' => 'encrypted',
         'ai_workspace_api_key' => 'encrypted',
+        'ai_assistant_widget_api_key' => 'encrypted',
     ];
 
     public $dates = ['last_cron_run'];
@@ -731,12 +732,28 @@ class GlobalSetting extends BaseModel
 
     public function aiWorkspaceWidgetScriptUrl(): ?string
     {
-        if (empty($this->ai_workspace_agent_id) || empty($this->ai_workspace_api_base)) {
+        return $this->aiAgentWidgetScriptUrl(
+            $this->ai_workspace_agent_id,
+            $this->ai_workspace_api_base
+        );
+    }
+
+    public function aiAssistantWidgetScriptUrl(): ?string
+    {
+        return $this->aiAgentWidgetScriptUrl(
+            $this->ai_assistant_widget_agent_id,
+            $this->ai_assistant_widget_api_base
+        );
+    }
+
+    public function aiAgentWidgetScriptUrl(?string $agentId, ?string $apiBase): ?string
+    {
+        if (empty($agentId) || empty($apiBase)) {
             return null;
         }
 
-        $base = rtrim((string) $this->ai_workspace_api_base, '/');
+        $base = rtrim((string) $apiBase, '/');
 
-        return $base . '/api/v1/agents/' . $this->ai_workspace_agent_id . '/widget.js';
+        return $base . '/api/v1/agents/' . $agentId . '/widget.js';
     }
 }

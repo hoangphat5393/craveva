@@ -39,7 +39,7 @@ class ProductionBomController extends AccountBaseController
         $query = ProductionBom::query()
             ->with(['outputProduct'])
             ->where('company_id', $companyId)
-            ->withCount(['items'])
+            ->withCount(['items', 'productionOrders'])
             ->orderByDesc('id');
 
         if ($request->filled('output_product_id')) {

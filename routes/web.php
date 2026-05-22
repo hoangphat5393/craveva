@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AiWorkspaceController;
 use App\Http\Controllers\AppreciationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceReportController;
@@ -244,6 +245,7 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('account-unverified', [DashboardController::class, 'accountUnverified'])->name('account_unverified');
     Route::get('checklist', [DashboardController::class, 'checklist'])->name('checklist');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('ai-workspace', [AiWorkspaceController::class, 'index'])->name('ai-workspace.index');
     Route::get('dashboard-advanced', [DashboardController::class, 'advancedDashboard'])->name('dashboard.advanced');
     Route::post('dashboard/widget/{dashboardType}', [DashboardController::class, 'widget'])->name('dashboard.widget');
     Route::post('dashboard/week-timelog', [DashboardController::class, 'weekTimelog'])->name('dashboard.week_timelog');
@@ -1061,7 +1063,7 @@ Route::get('/test-broadcast', function () {
 
         return response()->json(['success' => true, 'message' => 'Event broadcasted successfully']);
     } catch (Throwable $e) {
-        return response()->json(['success' => false, 'message' => 'Error: '.$e->getMessage()]);
+        return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
     }
 })->name('test-broadcast');
 

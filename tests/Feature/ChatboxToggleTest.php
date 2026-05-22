@@ -13,14 +13,14 @@ class ChatboxToggleTest extends TestCase
 {
     use DatabaseTransactions;
 
-    protected function seedAiWorkspaceGlobalConfig(): void
+    protected function seedAiAssistantWidgetGlobalConfig(): void
     {
         $global = GlobalSetting::first();
         if ($global) {
             $global->update([
-                'ai_workspace_agent_id' => '69ccc35e7d0ece6ff702487b',
-                'ai_workspace_api_base' => 'https://ai.craveva.com',
-                'ai_workspace_api_key' => null,
+                'ai_assistant_widget_agent_id' => '69ccc35e7d0ece6ff702487b',
+                'ai_assistant_widget_api_base' => 'https://ai.craveva.com',
+                'ai_assistant_widget_api_key' => null,
             ]);
             cache()->forget('global_setting');
         }
@@ -58,7 +58,7 @@ class ChatboxToggleTest extends TestCase
     #[Test]
     public function it_contains_chatbox_container_in_layout()
     {
-        $this->seedAiWorkspaceGlobalConfig();
+        $this->seedAiAssistantWidgetGlobalConfig();
 
         $user = $this->getAuthenticatableUser();
         $this->actingAs($user);
@@ -72,7 +72,7 @@ class ChatboxToggleTest extends TestCase
     #[Test]
     public function it_contains_toggle_logic_in_layout()
     {
-        $this->seedAiWorkspaceGlobalConfig();
+        $this->seedAiAssistantWidgetGlobalConfig();
 
         $user = $this->getAuthenticatableUser();
         $this->actingAs($user);
@@ -83,13 +83,14 @@ class ChatboxToggleTest extends TestCase
         // Check for key functions
         $response->assertSee('function showChat()', false);
         $response->assertSee('function hideChat()', false);
-        $response->assertSee('const aiWorkspaceKey = \'ai_workspace_active\';', false);
+        $response->assertSee('function toggleAiAssistantWidget()', false);
+        $response->assertSee('function setCravevaWidgetVisible(', false);
     }
 
     #[Test]
     public function it_does_not_auto_show_chatbox_on_load()
     {
-        $this->seedAiWorkspaceGlobalConfig();
+        $this->seedAiAssistantWidgetGlobalConfig();
 
         $user = $this->getAuthenticatableUser();
         $this->actingAs($user);
@@ -104,6 +105,7 @@ class ChatboxToggleTest extends TestCase
         // or check that it IS present but commented out.
 
         // Let's verify the container is hidden by default
-        $response->assertSee('id="ai-chatbot-container" style="display: none;"', false);
+        $response->assertSee('id="ai-chatbot-container"', false);
+        $response->assertSee('class="d-none"', false);
     }
 }

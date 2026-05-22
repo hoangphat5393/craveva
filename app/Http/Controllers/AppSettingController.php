@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Http\Requests\Admin\App\UpdateAiAssistantWidgetSetting;
 use App\Http\Requests\Admin\App\UpdateAiWorkspaceSetting;
 use App\Http\Requests\Admin\App\UpdateAppSetting;
 use App\Models\Company;
@@ -44,7 +45,11 @@ class AppSettingController extends AccountBaseController
     {
         $tab = request('tab');
 
-        $this->activeSettingMenu = $tab === 'ai-workspace-setting' ? 'ai_workspace_settings' : 'app_settings';
+        $this->activeSettingMenu = match ($tab) {
+            'ai-workspace-setting' => 'ai_workspace_settings',
+            'ai-assistant-widget-setting' => 'ai_assistant_widget_settings',
+            default => 'app_settings',
+        };
 
         switch ($tab) {
 
@@ -66,6 +71,11 @@ class AppSettingController extends AccountBaseController
                 abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
 
                 $this->view = 'app-settings.ajax.ai-workspace-setting';
+                break;
+            case 'ai-assistant-widget-setting':
+                abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
+
+                $this->view = 'app-settings.ajax.ai-assistant-widget-setting';
                 break;
             default:
                 $this->view = 'app-settings.ajax.app-setting';
@@ -128,6 +138,15 @@ class AppSettingController extends AccountBaseController
                 $aiWorkspaceRequest->withValidator($validator);
                 $validator->validate();
                 $this->updateAiWorkspaceSetting($request);
+                break;
+            case 'ai-assistant-widget-setting':
+                abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
+                $aiAssistantWidgetRequest = UpdateAiAssistantWidgetSetting::createFrom($request);
+                $aiAssistantWidgetRequest->setContainer(app())->setRedirector(app('redirect'));
+                $validator = Validator::make($request->all(), $aiAssistantWidgetRequest->rules());
+                $aiAssistantWidgetRequest->withValidator($validator);
+                $validator->validate();
+                $this->updateAiAssistantWidgetSetting($request);
                 break;
             default:
                 $this->updateAppSetting($request);
@@ -257,18 +276,41 @@ class AppSettingController extends AccountBaseController
 
     public function updateAiWorkspaceSetting(Request $request): void
     {
+        $this->updateAiAgentSetting($request, [
+            'agent_id' => 'ai_workspace_agent_id',
+            'api_base' => 'ai_workspace_api_base',
+            'api_key' => 'ai_workspace_api_key',
+            'api_key_remove' => 'ai_workspace_api_key_remove',
+        ]);
+    }
+
+    public function updateAiAssistantWidgetSetting(Request $request): void
+    {
+        $this->updateAiAgentSetting($request, [
+            'agent_id' => 'ai_assistant_widget_agent_id',
+            'api_base' => 'ai_assistant_widget_api_base',
+            'api_key' => 'ai_assistant_widget_api_key',
+            'api_key_remove' => 'ai_assistant_widget_api_key_remove',
+        ]);
+    }
+
+    /**
+     * @param  array{agent_id: string, api_base: string, api_key: string, api_key_remove: string}  $fields
+     */
+    protected function updateAiAgentSetting(Request $request, array $fields): void
+    {
         $globalSetting = GlobalSetting::first();
-        $globalSetting->ai_workspace_agent_id = $request->filled('ai_workspace_agent_id')
-            ? $request->input('ai_workspace_agent_id')
+        $globalSetting->{$fields['agent_id']} = $request->filled($fields['agent_id'])
+            ? $request->input($fields['agent_id'])
             : null;
-        $globalSetting->ai_workspace_api_base = $request->filled('ai_workspace_api_base')
-            ? rtrim((string) $request->input('ai_workspace_api_base'), '/')
+        $globalSetting->{$fields['api_base']} = $request->filled($fields['api_base'])
+            ? rtrim((string) $request->input($fields['api_base']), '/')
             : null;
 
-        if ($request->boolean('ai_workspace_api_key_remove')) {
-            $globalSetting->ai_workspace_api_key = null;
-        } elseif ($request->filled('ai_workspace_api_key')) {
-            $globalSetting->ai_workspace_api_key = $request->input('ai_workspace_api_key');
+        if ($request->boolean($fields['api_key_remove'])) {
+            $globalSetting->{$fields['api_key']} = null;
+        } elseif ($request->filled($fields['api_key'])) {
+            $globalSetting->{$fields['api_key']} = $request->input($fields['api_key']);
         }
 
         $globalSetting->save();

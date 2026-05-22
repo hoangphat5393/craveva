@@ -469,6 +469,7 @@ return [
         'weeklyTimesheets' => 'Bảng thời gian hàng tuần',
         'affiliates' => 'chi nhánh',
         'aiWorkspace' => 'Không gian làm việc AI',
+        'aiAssistantWidget' => 'Widget trợ lý AI',
         'workManagement' => 'Quản lý công việc',
         'sales' => 'Kinh doanh',
         'operations' => 'Vận hành',

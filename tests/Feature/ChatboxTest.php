@@ -68,7 +68,7 @@ class ChatboxTest extends TestCase
      *
      * @return void
      */
-    public function test_ai_workspace_menu_item_is_visible()
+    public function test_ai_assistant_widget_menu_item_is_visible()
     {
         // 1. Get an authenticatable user (UserAuth)
         $userAuth = $this->getAuthenticatableUser();
@@ -83,15 +83,15 @@ class ChatboxTest extends TestCase
         }
 
         $backup = [
-            'ai_workspace_agent_id' => $global->ai_workspace_agent_id,
-            'ai_workspace_api_base' => $global->ai_workspace_api_base,
-            'ai_workspace_api_key' => $global->ai_workspace_api_key,
+            'ai_assistant_widget_agent_id' => $global->ai_assistant_widget_agent_id,
+            'ai_assistant_widget_api_base' => $global->ai_assistant_widget_api_base,
+            'ai_assistant_widget_api_key' => $global->ai_assistant_widget_api_key,
         ];
 
         $global->update([
-            'ai_workspace_agent_id' => '69ccc35e7d0ece6ff702487b',
-            'ai_workspace_api_base' => 'https://ai.craveva.com',
-            'ai_workspace_api_key' => null,
+            'ai_assistant_widget_agent_id' => '69ccc35e7d0ece6ff702487b',
+            'ai_assistant_widget_api_base' => 'https://ai.craveva.com',
+            'ai_assistant_widget_api_key' => null,
         ]);
         cache()->forget('global_setting');
 
@@ -107,7 +107,7 @@ class ChatboxTest extends TestCase
             $response = $this->get(route('dashboard'));
 
             $response->assertStatus(200);
-            $response->assertSee('id="ai-workspace-menu-item"', false);
+            $response->assertSee('id="ai-assistant-widget-menu-item"', false);
         } finally {
             $global->update($backup);
             cache()->forget('global_setting');
@@ -133,15 +133,15 @@ class ChatboxTest extends TestCase
         }
 
         $backup = [
-            'ai_workspace_agent_id' => $global->ai_workspace_agent_id,
-            'ai_workspace_api_base' => $global->ai_workspace_api_base,
-            'ai_workspace_api_key' => $global->ai_workspace_api_key,
+            'ai_assistant_widget_agent_id' => $global->ai_assistant_widget_agent_id,
+            'ai_assistant_widget_api_base' => $global->ai_assistant_widget_api_base,
+            'ai_assistant_widget_api_key' => $global->ai_assistant_widget_api_key,
         ];
 
         $global->update([
-            'ai_workspace_agent_id' => '69ccc35e7d0ece6ff702487b',
-            'ai_workspace_api_base' => 'https://ai.craveva.com',
-            'ai_workspace_api_key' => null,
+            'ai_assistant_widget_agent_id' => '69ccc35e7d0ece6ff702487b',
+            'ai_assistant_widget_api_base' => 'https://ai.craveva.com',
+            'ai_assistant_widget_api_key' => null,
         ]);
         cache()->forget('global_setting');
 
@@ -150,7 +150,7 @@ class ChatboxTest extends TestCase
 
             $response = $this->get(route('dashboard'));
 
-            $response->assertSee('id="ai-chatbot-container" style="display: none;"', false);
+            $response->assertSee('id="ai-chatbot-container"', false);
 
             $response->assertSee('css/app-custom.css');
             $response->assertSee('?v=');

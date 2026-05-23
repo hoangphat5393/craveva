@@ -7,6 +7,17 @@
     $showTrackInventory = $hasProduct ? !$serviceType : true;
     $trackInventoryChecked = $hasProduct && (int) $product->track_inventory === 1;
     $showOpeningStock = $hasProduct ? !$serviceType && $trackInventoryChecked : false;
+    $warehouseStockUi = in_array('warehouse', user_modules() ?: [], true)
+        || in_array('production', user_modules() ?: [], true);
+    $activeWarehouseCount = 0;
+    if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && \Illuminate\Support\Facades\Schema::hasTable('warehouses')) {
+        $activeWarehouseCount = \Modules\Warehouse\Entities\Warehouse::where('company_id', company()->id)
+            ->where('status', 'active')->count();
+    }
+    $openingStockFieldHelp = __('purchase::app.openingStockFieldHelp');
+    if ($warehouseStockUi) {
+        $openingStockFieldHelp .= ' '.__('purchase::app.openingStockFieldHelpExtended');
+    }
 @endphp
 
 {{-- 1. Identity --}}
@@ -207,13 +218,21 @@
             </div>
         </div>
         <div class="col-12 track_inventory {{ $showOpeningStock ? '' : 'd-none' }}">
+            @if ($warehouseStockUi && $activeWarehouseCount === 0)
+                <div class="alert alert-warning mb-3" role="alert">
+                    @lang('purchase::app.openingStockNoWarehouseAlert')
+                    @if (Route::has('warehouse.index') && in_array('warehouse', user_modules() ?: [], true))
+                        <a href="{{ route('warehouse.index') }}" class="alert-link">@lang('warehouse::app.warehouses')</a>
+                    @endif
+                </div>
+            @endif
             <div class="row">
                 <div class="col-lg-4 col-md-6">
                     @if ($hasProduct && $trackInventoryChecked && $trackInventoryDisabled)
-                        <x-forms.text fieldId="opening_stock" fieldRequired="true" fieldReadOnly="true" :fieldLabel="__('purchase::app.openingStock')" fieldName="opening_stock" :fieldPlaceholder="__('purchase::placeholders.openingStock')" :fieldValue="$product->quantityInventory->net_quantity ?? ''" :popover="__('purchase::app.availableStock')">
+                        <x-forms.text fieldId="opening_stock" fieldRequired="true" fieldReadOnly="true" :fieldLabel="__('purchase::app.openingStock')" fieldName="opening_stock" :fieldPlaceholder="__('purchase::placeholders.openingStock')" :fieldValue="$product->quantityInventory->net_quantity ?? ''" :popover="__('purchase::app.openingStockPopoverHelp')" :fieldHelp="$openingStockFieldHelp">
                         </x-forms.text>
                     @else
-                        <x-forms.number fieldId="opening_stock" fieldRequired="true" :fieldLabel="__('purchase::app.openingStock')" fieldName="opening_stock" :fieldPlaceholder="__('purchase::placeholders.openingStock')" :fieldValue="$hasProduct ? $product->opening_stock : ''" :popover="__('purchase::app.availableStock')">
+                        <x-forms.number fieldId="opening_stock" fieldRequired="true" :fieldLabel="__('purchase::app.openingStock')" fieldName="opening_stock" :fieldPlaceholder="__('purchase::placeholders.openingStock')" :fieldValue="$hasProduct ? $product->opening_stock : ''" :popover="__('purchase::app.openingStockPopoverHelp')" :fieldHelp="$openingStockFieldHelp">
                         </x-forms.number>
                     @endif
                 </div>

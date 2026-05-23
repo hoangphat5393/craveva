@@ -19,6 +19,7 @@
 - Khuyến nghị vận hành: dùng `Add Inventory` làm nguồn chính để set/chỉnh tồn (có log nghiệp vụ rõ ràng).
 - `Opening stock` ở màn Product chỉ nên dùng một lần khi onboarding nhanh master data; tránh dùng lặp lại sau go-live.
 - Không khởi tạo tồn hai lần cho cùng thời điểm (vừa nhập `opening_stock`, vừa tạo phiếu `Add Inventory`) để tránh lệch tồn.
+- **Chi tiết kỹ thuật + lộ trình P0/P1/P2 (2026-05-20):** [`13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`](13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md) — case Opening 100 / Inventory 0 / Production shortfall; P0 UX **không** thêm select kho trên form Product.
 
 ### 2) Ý nghĩa `Reserved Quantity` ở form `Add Inventory`
 

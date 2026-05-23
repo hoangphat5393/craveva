@@ -3,6 +3,7 @@
 return [
     'trackInventoryMsg' => 'You can\'t enable/disable inventory tracking once you\'ve created transactions for this item.',
     'openingStockRequired' => 'Opening stock required if you have enabled track inventory.',
+    'openingStockNoDefaultWarehouse' => 'No default warehouse for this company. Run :command first, then save again.',
     'ratePerUnitRequired' => 'Rate per unit required if you have enabled track inventory.',
     'sellingPriceRequired' => 'Selling price required if you have enabled sales information.',
     'purchasePriceRequired' => 'Purchase price required if you have enabled purchase information.',

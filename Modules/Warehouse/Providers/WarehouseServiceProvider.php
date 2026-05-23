@@ -5,12 +5,15 @@ namespace Modules\Warehouse\Providers;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Modules\Warehouse\Console\BackfillOpeningStockToDefaultWarehouseCommand;
+use Modules\Warehouse\Console\EnsureDefaultWarehouseForCompaniesCommand;
 use Modules\Warehouse\Console\WarehouseBatchDedupeCommand;
 use Modules\Warehouse\Console\WarehouseDemoCleanupCommand;
 use Modules\Warehouse\Console\WarehouseReconciliationReportCommand;
 use Modules\Warehouse\Contracts\SalesReturnInboundGateInterface;
 use Modules\Warehouse\Services\AllowAllSalesReturnInboundGate;
 use Modules\Warehouse\Services\CreditNoteWarehouseStockService;
+use Modules\Warehouse\Services\EnsureDefaultWarehouseService;
 use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 use Modules\Warehouse\Services\ProductSellableUnitsService;
 use Modules\Warehouse\Services\ProductUnitConversionSyncService;
@@ -69,6 +72,7 @@ class WarehouseServiceProvider extends ServiceProvider
         $this->app->singleton(ProductSellableUnitsService::class);
         $this->app->singleton(ProductUnitQuantityHintService::class);
         $this->app->singleton(WarehouseReconciliationService::class);
+        $this->app->singleton(EnsureDefaultWarehouseService::class);
         $this->app->singleton(WarehouseQueryService::class);
         $this->app->register(RouteServiceProvider::class);
     }
@@ -82,6 +86,8 @@ class WarehouseServiceProvider extends ServiceProvider
             WarehouseBatchDedupeCommand::class,
             WarehouseDemoCleanupCommand::class,
             WarehouseReconciliationReportCommand::class,
+            EnsureDefaultWarehouseForCompaniesCommand::class,
+            BackfillOpeningStockToDefaultWarehouseCommand::class,
         ]);
     }
 

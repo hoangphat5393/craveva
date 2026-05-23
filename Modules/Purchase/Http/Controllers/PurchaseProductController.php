@@ -22,6 +22,7 @@ use App\Scopes\ActiveScope;
 use App\Traits\ImportExcel;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +39,7 @@ use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
 use Modules\Purchase\Events\PurchaseInventoryEvent;
 use Modules\Purchase\Http\Requests\Product\StorePurchaseProductRequest;
 use Modules\Purchase\Http\Requests\Product\UpdatePurchaseProductRequest;
+use Modules\Purchase\Services\ProductOpeningStockWarehouseSync;
 use Modules\Warehouse\Services\ProductUnitConversionSyncService;
 
 class PurchaseProductController extends AccountBaseController
@@ -189,31 +191,9 @@ class PurchaseProductController extends AccountBaseController
             return Reply::error($exception->getMessage());
         }
 
-        if (! is_null($request->track_inventory)) {
-            $addStock = PurchaseStockAdjustment::where('product_id', $product->id)->first();
-
-            if (! $addStock) {
-                $inventory = new PurchaseInventory;
-
-                $addStock = new PurchaseStockAdjustment;
-                $addStock->product_id = $product->id;
-            } else {
-                $inventory = PurchaseInventory::where('id', $addStock->inventory_id)->first();
-            }
-
-            $inventory->date = Carbon::today()->format('Y-m-d');
-            $inventory->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
-            $inventory->reason_id = null;
-            $inventory->save();
-
-            $addStock->inventory_id = $inventory->id;
-            $addStock->reason_id = null;
-            $addStock->date = Carbon::today()->format('Y-m-d');
-            $addStock->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
-            $addStock->net_quantity = $request->opening_stock ?: null;
-            $addStock->changed_value = $request->rate_per_unit ?: null;
-            $addStock->status = 'converted';
-            $addStock->save();
+        $trackInventoryError = $this->persistTrackInventoryFromRequest($request, $product);
+        if ($trackInventoryError !== null) {
+            return $trackInventoryError;
         }
 
         // To add custom fields data
@@ -469,31 +449,9 @@ class PurchaseProductController extends AccountBaseController
             return Reply::error($exception->getMessage());
         }
 
-        if (! is_null($request->track_inventory)) {
-            $addStock = PurchaseStockAdjustment::where('product_id', $product->id)->first();
-
-            if (! $addStock) {
-                $inventory = new PurchaseInventory;
-
-                $addStock = new PurchaseStockAdjustment;
-                $addStock->product_id = $product->id;
-            } else {
-                $inventory = PurchaseInventory::where('id', $addStock->inventory_id)->first();
-            }
-
-            $inventory->date = Carbon::today()->format('Y-m-d');
-            $inventory->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
-            $inventory->reason_id = null;
-            $inventory->save();
-
-            $addStock->inventory_id = $inventory->id;
-            $addStock->reason_id = null;
-            $addStock->date = Carbon::today()->format('Y-m-d');
-            $addStock->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
-            $addStock->net_quantity = $request->opening_stock ?: null;
-            $addStock->changed_value = $request->rate_per_unit ?: null;
-            $addStock->status = 'converted';
-            $addStock->save();
+        $trackInventoryError = $this->persistTrackInventoryFromRequest($request, $product);
+        if ($trackInventoryError !== null) {
+            return $trackInventoryError;
         }
 
         // To add custom fields data
@@ -503,6 +461,58 @@ class PurchaseProductController extends AccountBaseController
         }
 
         return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('purchase-products.index'), 'productID' => $product->id, 'defaultImage' => $request->default_image ?? 0]);
+    }
+
+    /**
+     * @return JsonResponse|null
+     */
+    protected function persistTrackInventoryFromRequest(Request $request, PurchaseProduct $product)
+    {
+        if (is_null($request->track_inventory)) {
+            return null;
+        }
+
+        $addStock = PurchaseStockAdjustment::where('product_id', $product->id)->first();
+
+        if (! $addStock) {
+            $inventory = new PurchaseInventory;
+
+            $addStock = new PurchaseStockAdjustment;
+            $addStock->product_id = $product->id;
+        } else {
+            $inventory = PurchaseInventory::where('id', $addStock->inventory_id)->first();
+        }
+
+        $inventory->date = Carbon::today()->format('Y-m-d');
+        $inventory->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
+        $inventory->reason_id = null;
+        $inventory->save();
+
+        $addStock->inventory_id = $inventory->id;
+        $addStock->reason_id = null;
+        $addStock->date = Carbon::today()->format('Y-m-d');
+        $addStock->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
+        $addStock->net_quantity = $request->opening_stock ?: null;
+        $addStock->changed_value = $request->rate_per_unit ?: null;
+        $addStock->status = 'converted';
+        $addStock->save();
+
+        $openingQty = (float) ($request->opening_stock ?? 0);
+
+        if ($openingQty > 0.0000001 && class_exists(ProductOpeningStockWarehouseSync::class)) {
+            try {
+                app(ProductOpeningStockWarehouseSync::class)->syncFromProductSave(
+                    $product,
+                    $addStock,
+                    $inventory,
+                    $openingQty
+                );
+            } catch (\RuntimeException $exception) {
+                return Reply::error($exception->getMessage());
+            }
+        }
+
+        return null;
     }
 
     protected function assignProductUnitConversionFormData(?PurchaseProduct $product): void

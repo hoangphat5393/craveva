@@ -14,6 +14,7 @@ use App\Models\SuperAdmin\FrontDetail;
 use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\User;
 use DateTimeZone;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 
 class AppSettingController extends AccountBaseController
 {
@@ -160,7 +162,7 @@ class AppSettingController extends AccountBaseController
         return Reply::success(__('messages.updateSuccess'));
     }
 
-    public function globalSettingSave($request)
+    public function globalSettingSave(UpdateAppSetting $request): void
     {
         $globalSetting = GlobalSetting::first();
 
@@ -186,9 +188,8 @@ class AppSettingController extends AccountBaseController
         $globalSetting->save();
     }
 
-    public function updateAppSetting($request)
+    public function updateAppSetting(UpdateAppSetting $request): void
     {
-
         if (! user()->is_superadmin) {
             $setting = company();
             $setting->currency_id = $request->currency_id;
@@ -202,6 +203,11 @@ class AppSettingController extends AccountBaseController
             $setting->datatable_row_limit = $request->datatable_row_limit;
             $setting->save();
             $setting->refresh();
+
+            if ($request->currency_id) {
+                session()->forget('currency_format_setting');
+                currency_format_setting($setting->currency_id);
+            }
         }
 
         Artisan::call('update-exchange-rate');
@@ -223,13 +229,6 @@ class AppSettingController extends AccountBaseController
 
         session()->forget('isRtl');
 
-        if (! user()->is_superadmin) {
-            if ($request->currency_id) {
-                \session()->forget('currency_format_setting');
-                currency_format_setting($setting->currency_id);
-            }
-        }
-
         if (user()->is_superadmin) {
             $this->globalSettingSave($request);
         }
@@ -239,7 +238,7 @@ class AppSettingController extends AccountBaseController
         $this->resetCache();
     }
 
-    public function updateFileUploadSetting($request)
+    public function updateFileUploadSetting(UpdateAppSetting $request): void
     {
         if (! empty($request->allowed_file_types)) {
             $allowed_file_types = $request->allowed_file_types;
@@ -258,7 +257,7 @@ class AppSettingController extends AccountBaseController
         $globalSetting->save();
     }
 
-    public function updateClientSignupSetting($request)
+    public function updateClientSignupSetting(UpdateAppSetting $request): void
     {
         $setting = \company();
         $setting->allow_client_signup = $request->allow_client_signup == 'on' ? 1 : 0;
@@ -266,7 +265,7 @@ class AppSettingController extends AccountBaseController
         $setting->save();
     }
 
-    public function updateGoogleMapSetting(UpdateAppSetting $request)
+    public function updateGoogleMapSetting(UpdateAppSetting $request): void
     {
         $globalSetting = \global_setting();
         $globalSetting->google_map_key = $request->google_map_key;

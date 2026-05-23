@@ -21,6 +21,7 @@ use Modules\Warehouse\Services\WarehouseUnitConversionService;
  *     waste_percent: float,
  *     total_required: float,
  *     unit_label: string|null,
+ *     unit_label_base: string|null,
  *     available_in_rm_warehouse: float|null,
  *     shortfall: float|null,
  * }
@@ -81,7 +82,8 @@ class ProductionOrderMaterialRequirementsSummary
                 'quantity_per_fg_unit' => $perFg,
                 'waste_percent' => $wastePercent,
                 'total_required' => $totalRequired,
-                'unit_label' => $component['unit_label_base'] ?? $component['unit_label'],
+                'unit_label' => $component['unit_label'],
+                'unit_label_base' => $component['unit_label_base'] ?? $component['unit_label'],
                 'available_in_rm_warehouse' => $available,
                 'shortfall' => $shortfall,
             ];

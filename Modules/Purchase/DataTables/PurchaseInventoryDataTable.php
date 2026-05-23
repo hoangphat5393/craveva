@@ -36,7 +36,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 }
 
                 $fieldName = Str::slug($field->name, '_');
-                $this->customFieldAliasMap[$fieldName] = 'cf_'.$fieldName.'_'.$field->id;
+                $this->customFieldAliasMap[$fieldName] = 'cf_' . $fieldName . '_' . $field->id;
             }
         }
     }
@@ -52,7 +52,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
         $datatables = datatables()->eloquent($query);
 
         $datatables->addColumn('check', function ($row) {
-            return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
+            return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
         });
 
         $datatables->editColumn('id', function ($row) {
@@ -94,7 +94,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 return $name !== '' ? $name : '--';
             }
 
-            return $name !== '' ? $name.' ('.$code.')' : $code;
+            return $name !== '' ? $name . ' (' . $code . ')' : $code;
         });
 
         // 4. Available Quantity (Calculated)
@@ -121,35 +121,26 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         // 7. Stock Health / Status
         $datatables->editColumn('status', function ($row) {
-            $stock = $row->stocks->first();
             $qty = isset($row->wh_total_qty) ? (float) $row->wh_total_qty : 0;
             $expDate = ! empty($row->wh_nearest_expiration_date) ? Carbon::parse($row->wh_nearest_expiration_date) : null;
 
             $badges = [];
 
-            // Base Status (Active/Inactive)
-            $productStatus = optional(optional($stock)->product)->status ?? 'inactive';
-            if ($productStatus == 'active') {
-                $badges[] = '<i class="fa fa-circle text-light-green f-10" title="'.__('app.active').'"></i>';
-            } else {
-                $badges[] = '<i class="fa fa-circle text-red f-10" title="'.__('app.inactive').'"></i>';
-            }
-
             // Health Indicators
             if ($qty <= 0) {
-                $badges[] = '<span class="badge badge-danger">'.__('app.critical').'</span>';
+                $badges[] = '<span class="badge badge-danger">' . __('app.critical') . '</span>';
             } elseif ($qty < 10) { // Threshold can be dynamic later
-                $badges[] = '<span class="badge badge-warning">'.__('app.low').'</span>';
+                $badges[] = '<span class="badge badge-warning">' . __('app.low') . '</span>';
             } else {
-                $badges[] = '<span class="badge badge-success">'.__('app.normal').'</span>';
+                $badges[] = '<span class="badge badge-success">' . __('app.normal') . '</span>';
             }
 
             // Expiration Warning
             if ($expDate) {
                 if ($expDate->isPast()) {
-                    $badges[] = '<span class="badge badge-danger">'.__('app.expired').'</span>';
+                    $badges[] = '<span class="badge badge-danger">' . __('app.expired') . '</span>';
                 } elseif ($expDate->isFuture() && $expDate->diffInDays(now()) < 30) {
-                    $badges[] = '<span class="badge badge-warning">'.__('purchase::modules.inventory.nearExpiryStatus').'</span>';
+                    $badges[] = '<span class="badge badge-warning">' . __('purchase::modules.inventory.nearExpiryStatus') . '</span>';
                 }
             }
 
@@ -245,7 +236,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
                     continue;
                 }
 
-                $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_'.$fieldName.'_'.$field->id);
+                $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_' . $fieldName . '_' . $field->id);
 
                 $datatables->addColumn($fieldName, function ($row) use ($alias) {
                     return $row->{$alias} ?? null;
@@ -259,19 +250,19 @@ class PurchaseInventoryDataTable extends BaseDataTable
             $action = '<div class="task_view">
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
 
             if ($this->editInventoryPermission == 'all' || ($this->deleteInventoryPermission == 'added' && user()->id == $row->added_by)) {
-                $action .= '<a href="'.route('purchase-inventory.show', [$row->id]).'" class="dropdown-item openRightModal" data-inventory-id="'.$row->id.'"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
+                $action .= '<a href="' . route('purchase-inventory.show', [$row->id]) . '" class="dropdown-item openRightModal" data-inventory-id="' . $row->id . '"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
             }
 
             if ($this->deleteInventoryPermission == 'all' || ($this->deleteInventoryPermission == 'added' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-inventory-id="'.$row->id.'">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-inventory-id="' . $row->id . '">
                                 <i class="fa fa-trash mr-2"></i>
-                                '.trans('app.delete').'
+                                ' . trans('app.delete') . '
                             </a>';
             }
 
@@ -284,7 +275,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         $datatables->addIndexColumn();
         $datatables->smart(false);
-        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
+        $datatables->setRowId(fn($row) => 'row-' . $row->id);
 
         $datatables->rawColumns(['check', 'product_name', 'status', 'action', 'inventory_value', 'expiration_date']);
 
@@ -324,12 +315,12 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $model->where(function ($query) {
-                $query->where('purchase_stock_adjustments.type', 'like', '%'.request('searchText').'%')
-                    ->orWhere('purchase_stock_adjustments.net_quantity', 'like', '%'.request('searchText').'%')
-                    ->orWhere('purchase_stock_adjustments.reference_number', 'like', '%'.request('searchText').'%')
-                    ->orWhere('purchase_stock_adjustments.description', 'like', '%'.request('searchText').'%')
-                    ->orWhere('products.name', 'like', '%'.request('searchText').'%')
-                    ->orWhere('products.sku', 'like', '%'.request('searchText').'%');
+                $query->where('purchase_stock_adjustments.type', 'like', '%' . request('searchText') . '%')
+                    ->orWhere('purchase_stock_adjustments.net_quantity', 'like', '%' . request('searchText') . '%')
+                    ->orWhere('purchase_stock_adjustments.reference_number', 'like', '%' . request('searchText') . '%')
+                    ->orWhere('purchase_stock_adjustments.description', 'like', '%' . request('searchText') . '%')
+                    ->orWhere('products.name', 'like', '%' . request('searchText') . '%')
+                    ->orWhere('products.sku', 'like', '%' . request('searchText') . '%');
             });
         }
 
@@ -385,7 +376,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 }
 
                 $fieldName = Str::slug($field->name, '_');
-                $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_'.$fieldName.'_'.$field->id);
+                $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_' . $fieldName . '_' . $field->id);
 
                 // Prevent duplicate column in SELECT when multiple fields map to same alias
                 if (in_array($alias, $addedAliases)) {
@@ -395,16 +386,16 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 $addedAliases[] = $alias;
 
                 // Create a unique alias for each custom field join to avoid collisions
-                $tableAlias = 'cf_table_'.$field->id;
+                $tableAlias = 'cf_table_' . $field->id;
 
                 // Join custom_fields_data table for each field
-                $model->leftJoin('custom_fields_data as '.$tableAlias, function ($join) use ($tableAlias, $field) {
-                    $join->on('purchase_inventory_adjustment.id', '=', $tableAlias.'.model_id')
-                        ->where($tableAlias.'.custom_field_id', '=', $field->id)
-                        ->where($tableAlias.'.model', '=', PurchaseInventory::CUSTOM_FIELD_MODEL);
+                $model->leftJoin('custom_fields_data as ' . $tableAlias, function ($join) use ($tableAlias, $field) {
+                    $join->on('purchase_inventory_adjustment.id', '=', $tableAlias . '.model_id')
+                        ->where($tableAlias . '.custom_field_id', '=', $field->id)
+                        ->where($tableAlias . '.model', '=', PurchaseInventory::CUSTOM_FIELD_MODEL);
                 });
 
-                $model->addSelect(DB::raw('MAX('.$tableAlias.'.value) as '.$alias));
+                $model->addSelect(DB::raw('MAX(' . $tableAlias . '.value) as ' . $alias));
                 $fieldCount++;
             }
         }
@@ -434,10 +425,10 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 }',
             ])
             ->buttons(
-                Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]),
+                Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]),
                 Button::make([
                     'extend' => 'colvis',
-                    'text' => '<i class="fa fa-columns"></i> '.trans('app.columns'),
+                    'text' => '<i class="fa fa-columns"></i> ' . trans('app.columns'),
                     'columns' => ':not(:first):not(:last):not(.not-column-chooser)',
                 ])
             );
@@ -504,7 +495,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
                         $column['visible'] = ($field->visible == 'true');
                         $column['exportable'] = ($field->export == 1);
 
-                        $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_'.$fieldName.'_'.$field->id);
+                        $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_' . $fieldName . '_' . $field->id);
                         $column['data'] = $alias;
                         $column['name'] = $alias;
 

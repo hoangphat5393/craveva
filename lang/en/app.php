@@ -186,6 +186,7 @@ return [
         'settings' => 'Settings',
         'help' => 'Help',
         'aiWorkspace' => 'AI Workspace',
+        'aiAssistantWidget' => 'AI Assistant Widget',
         'workManagement' => 'Work Management',
         'sales' => 'Sales',
         'discountRules' => 'Discountrules',

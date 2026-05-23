@@ -50,12 +50,25 @@
                                 @endif
                             </td>
                             <td>{{ $formatQty((float) ($row['waste_percent'] ?? 0)) }}%</td>
-                            <td>{{ $formatQty((float) $row['total_required']) }}</td>
+                            <td>
+                                {{ $formatQty((float) $row['total_required']) }}
+                                @if (!empty($row['unit_label_base']))
+                                    <span class="text-muted">{{ $row['unit_label_base'] }}</span>
+                                @endif
+                            </td>
                             @if (!empty($materialRequirementsShowStock))
-                                <td>{{ $formatQty((float) ($row['available_in_rm_warehouse'] ?? 0)) }}</td>
+                                <td>
+                                    {{ $formatQty((float) ($row['available_in_rm_warehouse'] ?? 0)) }}
+                                    @if (!empty($row['unit_label_base']))
+                                        <span class="text-muted">{{ $row['unit_label_base'] }}</span>
+                                    @endif
+                                </td>
                                 <td>
                                     @if (($row['shortfall'] ?? null) !== null && (float) $row['shortfall'] > 0)
                                         <span class="text-danger font-weight-bold">{{ $formatQty((float) $row['shortfall']) }}</span>
+                                        @if (!empty($row['unit_label_base']))
+                                            <span class="text-muted">{{ $row['unit_label_base'] }}</span>
+                                        @endif
                                     @else
                                         —
                                     @endif

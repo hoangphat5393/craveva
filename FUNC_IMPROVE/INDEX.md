@@ -34,6 +34,7 @@ Các file **`BIOMIXING_*`** và audit tách **`BIOMIXING_MIGRATION_AUDIT_2026_VI
 - `FUNC_IMPROVE/10_UX_UI_IMPROVEMENT_BACKLOG.md`
 - `FUNC_IMPROVE/11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` — phân tích shadow/Yield/UOM; **chỉ bật sau khi được xác nhận** (xem mục governance trong file).
 - `FUNC_IMPROVE/12_AI_THIRDPARTY_SO_OPTIONS_VI.md` — AI / third-party tạo SO: webhook vs API, phương án thay thế, trạng thái code hiện tại
+- `FUNC_IMPROVE/13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md` — Opening stock vs tồn warehouse; P0 UX/help; P1 sync có điều kiện; ảnh hưởng khi tắt module kho
 - `FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md` — **gộp (2026-05-12)** từ `13_` + `14_` + `15_`: kiểm tra repo & prompt rollout; kế hoạch triển khai + checklist; prompt tab **API** + ringfence (mục **Part 1–3** trong file)
 - `FUNC_LOGIC/SURVEY_SYSTEM_WIDE_API_AND_REST_VI.md` — khảo sát API `/api` toàn repo & REST (tham chiếu chéo)
 

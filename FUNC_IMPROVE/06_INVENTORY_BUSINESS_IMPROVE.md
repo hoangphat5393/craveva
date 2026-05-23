@@ -20,6 +20,7 @@
 - `Opening stock` ở màn Product chỉ nên dùng một lần khi onboarding nhanh master data; tránh dùng lặp lại sau go-live.
 - Không khởi tạo tồn hai lần cho cùng thời điểm (vừa nhập `opening_stock`, vừa tạo phiếu `Add Inventory`) để tránh lệch tồn.
 - **Chi tiết kỹ thuật + lộ trình P0/P1/P2 (2026-05-20):** [`13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`](13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md) — case Opening 100 / Inventory 0 / Production shortfall; P0 UX **không** thêm select kho trên form Product.
+- **Production FG không lên Inventory list (2026-05-23):** gap ledger — **P1c Done:** [`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md); backfill `production:backfill-fg-inventory-ledger`.
 
 ### 2) Ý nghĩa `Reserved Quantity` ở form `Add Inventory`
 

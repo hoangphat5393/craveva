@@ -10,6 +10,7 @@ use Modules\Production\Entities\ProductionBatchOutput;
 use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
+use Modules\Purchase\Services\ProductionFgInventoryLedgerSync;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Services\StockMovementService;
 use Modules\Warehouse\Services\WarehouseUnitConversionService;
@@ -24,6 +25,7 @@ class ProductionPostingService
         protected StockMovementService $stockMovementService,
         protected ProductionFgQuantityPolicyService $fgQuantityPolicy,
         protected WarehouseUnitConversionService $unitConversionService,
+        protected ProductionFgInventoryLedgerSync $fgInventoryLedgerSync,
     ) {}
 
     public function releaseOrder(ProductionOrder $order): void
@@ -249,6 +251,8 @@ class ProductionPostingService
 
             $output->posted_at = now();
             $output->save();
+
+            $this->fgInventoryLedgerSync->ensureLedgerLineAfterFgReceipt($output->fresh());
 
             $batch->refresh();
             $hasUnpostedOutputs = $batch->outputs()->whereNull('posted_at')->exists();

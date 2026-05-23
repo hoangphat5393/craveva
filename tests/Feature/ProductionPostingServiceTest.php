@@ -76,6 +76,40 @@ beforeEach(function (): void {
         $table->timestamps();
     });
 
+    Schema::create('webhooks_settings', function ($table): void {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->string('name')->nullable();
+        $table->string('webhook_for')->nullable();
+        $table->string('status')->default('active');
+        $table->timestamps();
+    });
+
+    Schema::create('purchase_inventory_adjustment', function ($table): void {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->date('date')->nullable();
+        $table->string('type')->nullable();
+        $table->unsignedBigInteger('warehouse_id')->nullable();
+        $table->timestamps();
+    });
+
+    Schema::create('purchase_stock_adjustments', function ($table): void {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->unsignedBigInteger('inventory_id')->nullable();
+        $table->unsignedBigInteger('product_id')->nullable();
+        $table->unsignedBigInteger('warehouse_id')->nullable();
+        $table->string('type')->nullable();
+        $table->date('date')->nullable();
+        $table->string('batch_number')->nullable();
+        $table->string('reference_number')->nullable();
+        $table->text('description')->nullable();
+        $table->decimal('net_quantity', 20, 4)->nullable();
+        $table->string('status')->nullable();
+        $table->timestamps();
+    });
+
     Schema::create('stock_movements', function ($table): void {
         $table->id();
         $table->unsignedInteger('company_id')->nullable();
@@ -152,6 +186,9 @@ afterEach(function (): void {
     Schema::dropIfExists('production_orders');
     Schema::dropIfExists('production_bom_items');
     Schema::dropIfExists('production_boms');
+    Schema::dropIfExists('webhooks_settings');
+    Schema::dropIfExists('purchase_stock_adjustments');
+    Schema::dropIfExists('purchase_inventory_adjustment');
     Schema::dropIfExists('stock_movements');
     Schema::dropIfExists('product_unit_conversions');
     Schema::dropIfExists('warehouse_product_stock');
@@ -238,11 +275,20 @@ it('posts RM consumption then FG receipt via warehouse stock movements', functio
         ->where('batch_number', 'FG-LOT-1')
         ->first();
 
+    $ledgerLine = DB::table('purchase_stock_adjustments')
+        ->where('company_id', 1)
+        ->where('product_id', 2)
+        ->where('warehouse_id', 1)
+        ->first();
+
     expect($fgBatch)->not->toBeNull()
         ->and((float) $fgBatch->quantity)->toBe(100.0)
         ->and($output->fresh()->posted_at)->not->toBeNull()
         ->and($order->fresh()->status)->toBe(ProductionOrder::STATUS_COMPLETED)
-        ->and($order->fresh()->completed_at)->not->toBeNull();
+        ->and($order->fresh()->completed_at)->not->toBeNull()
+        ->and($ledgerLine)->not->toBeNull()
+        ->and((float) $ledgerLine->net_quantity)->toBe(100.0)
+        ->and($ledgerLine->batch_number)->toBe('FG-LOT-1');
 });
 
 it('posts RM consumption in product base unit when line unit_id differs from base (P2-UOM-OUTBOUND)', function (): void {

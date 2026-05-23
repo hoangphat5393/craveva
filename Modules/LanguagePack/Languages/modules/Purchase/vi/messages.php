@@ -4,6 +4,7 @@ return [
     'trackInventoryMsg' => 'Không thể bật/tắt theo dõi tồn kho sau khi đã có phát sinh kho cho sản phẩm này.',
     'openingStockRequired' => 'Tồn đầu kỳ là bắt buộc khi bật theo dõi tồn kho.',
     'openingStockNoDefaultWarehouse' => 'Công ty chưa có kho mặc định. Chạy :command trước, sau đó lưu lại.',
+    'productionFgInventoryLedgerDescription' => 'Nhập kho thành phẩm từ sản xuất (lô :batch)',
     'ratePerUnitRequired' => 'Tỷ lệ trên mỗi đơn vị được yêu cầu nếu bạn đã bật theo dõi hàng tồn kho.',
     'sellingPriceRequired' => 'Giá bán là bắt buộc nếu bạn đã bật thông tin bán hàng.',
     'purchasePriceRequired' => 'Giá vốn là bắt buộc khi bật thông tin mua / giá vốn.',

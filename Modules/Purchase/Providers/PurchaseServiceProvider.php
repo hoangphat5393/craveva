@@ -4,6 +4,7 @@ namespace Modules\Purchase\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Modules\Purchase\Console\ActivateModuleCommand;
+use Modules\Purchase\Console\BackfillProductionFgInventoryLedgerCommand;
 use Modules\Purchase\Console\GrnMigrateDataCommand;
 use Modules\Purchase\Console\GrnMigrateRollbackCommand;
 use Modules\Purchase\Console\SalesDoMigrateDataCommand;
@@ -32,7 +33,7 @@ class PurchaseServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
         $this->registerCommands();
     }
 
@@ -54,11 +55,11 @@ class PurchaseServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.'/../Config/config.php' => config_path('purchase.php'),
+            __DIR__ . '/../Config/config.php' => config_path('purchase.php'),
         ]);
 
         $this->mergeConfigFrom(
-            __DIR__.'/../Config/config.php',
+            __DIR__ . '/../Config/config.php',
             'purchase'
         );
 
@@ -77,7 +78,7 @@ class PurchaseServiceProvider extends ServiceProvider
     {
         $viewPath = base_path('resources/views/modules/purchase');
 
-        $sourcePath = __DIR__.'/../Resources/views';
+        $sourcePath = __DIR__ . '/../Resources/views';
 
         $this->publishes([
             $sourcePath => $viewPath,
@@ -93,12 +94,14 @@ class PurchaseServiceProvider extends ServiceProvider
      */
     public function registerTranslations()
     {
-        $moduleLangPath = __DIR__.'/../Resources/lang';
+        $moduleLangPath = __DIR__ . '/../Resources/lang';
         $publishedPath = base_path('resources/lang/modules/purchase');
 
         // LanguagePack source first; module/published paths override (see AppServiceProvider app merge).
-        if (class_exists(Module::class)
-            && Module::has('LanguagePack')) {
+        if (
+            class_exists(Module::class)
+            && Module::has('LanguagePack')
+        ) {
             $languagePackPurchasePath = module_path('LanguagePack', 'Languages/modules/Purchase');
             if (is_dir($languagePackPurchasePath)) {
                 $this->loadTranslationsFrom($languagePackPurchasePath, 'purchase');
@@ -123,7 +126,7 @@ class PurchaseServiceProvider extends ServiceProvider
     {
         if (! app()->environment('production') && $this->app->runningInConsole()) {
             if (class_exists('Illuminate\Database\Eloquent\Factory')) {
-                app()->make('Illuminate\Database\Eloquent\Factory')->load(__DIR__.'/../Database/factories');
+                app()->make('Illuminate\Database\Eloquent\Factory')->load(__DIR__ . '/../Database/factories');
             }
         }
     }
@@ -146,6 +149,7 @@ class PurchaseServiceProvider extends ServiceProvider
         $this->commands(
             [
                 ActivateModuleCommand::class,
+                BackfillProductionFgInventoryLedgerCommand::class,
                 SalesDoMigrationRehearsalCommand::class,
                 SalesDoReconciliationReportCommand::class,
                 SalesDoMigrateDataCommand::class,

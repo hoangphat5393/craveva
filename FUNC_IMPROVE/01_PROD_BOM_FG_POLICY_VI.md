@@ -86,6 +86,7 @@ Co, trong nhieu doanh nghiep la tinh huong hop le (overshoot theo me/may, hao hu
 - Enforcement/phan quyen duyet variance cho moi tenant (khong chi co action approve).
 - Enforce cong thuc Yield/UOM dai tra (hien uu tien shadow + governance).
 - ~~**P0 — Post RM quy doi UOM**~~ **Fixed 2026-05-20** — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md).
+- ~~**P1c — Post FG → Inventory ledger**~~ **Done 2026-05-23** — [`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](./16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md).
 - Ho tro **nhieu batch / lenh**: chia planned RM theo allocation (hien MVP chi nut snapshot khi **1 batch**).
 
 ## 9) Specification Reconciliation Process (bat buoc truoc khi danh dau Done)

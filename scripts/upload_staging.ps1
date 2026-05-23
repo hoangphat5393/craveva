@@ -172,14 +172,19 @@ fi
 
 # Lệnh bảo trì (Permissions, Migration, Optimize)
 # Publish ngôn ngữ từ UI cần www-data ghi được resources/lang — xem SERVER_RUNBOOK_VI §4.8.
-sudo chown -R hoangphat5393:www-data .
+# FPM (www-data) phải ghi storage/framework/sessions — xem SERVER_RUNBOOK_VI §4.6.
+sudo chown -R '__RB_GITUSER__':www-data .
 sudo mkdir -p lang resources/lang storage/logs
+sudo mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data
 sudo mkdir -p public/user-uploads public/user-uploads/temp public/user-uploads/front/client
 sudo chown -R www-data:www-data storage bootstrap/cache
 sudo chown -R www-data:www-data public/user-uploads
-sudo chmod -R 775 storage bootstrap/cache
+sudo chmod -R ug+rwX storage bootstrap/cache
 sudo chmod -R 775 public/user-uploads
 sudo chmod 2777 storage/logs
+sudo find storage bootstrap/cache -type d -exec chmod g+s {} \; 2>/dev/null || true
+sudo find storage/framework/sessions -type f ! -user www-data -delete 2>/dev/null || true
+sudo -u www-data touch storage/framework/sessions/.deploy_write_test && sudo rm -f storage/framework/sessions/.deploy_write_test
 sudo chmod -R ug+rwX Modules/LanguagePack/Languages resources/lang lang
 sudo find Modules/LanguagePack/Languages resources/lang lang -type d -exec chmod g+s {} \; 2>/dev/null || true
 for d in Modules/*/Resources/lang; do

@@ -1,0 +1,1 @@
+{"sessionId":"9a239f","hypothesisId":"A","location":"ssh:staging_fix","message":"post-fix storage sessions verify","data":{"touchTest":"OK_sessions","sessionsOwner":"www-data:www-data","sessionsMode":"drwxrwsr-x","optimizeClear":"success"},"timestamp":1747986300000,"runId":"post-fix"}

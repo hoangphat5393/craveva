@@ -108,7 +108,10 @@ Nên: `* * * * * cd <APP> && sudo -u www-data /usr/bin/php artisan schedule:run 
 APP=/var/www/craveva-staging/current/craveva   # hoặc path hub
 ps aux | grep 'php-fpm: pool' | grep -v grep | head -3
 ps aux | grep 'queue:work' | grep -v grep
+namei -l "$APP/storage/framework/sessions" 2>/dev/null | tail -8
 namei -l "$APP/storage/framework/cache/data" 2>/dev/null | tail -15
+ls -la "$APP/storage/framework/sessions" | head -5
+sudo -u www-data touch "$APP/storage/framework/sessions/.write_test" && sudo rm -f "$APP/storage/framework/sessions/.write_test" && echo OK_sessions
 ```
 
 ### 4.6 Sửa quyền (staging path mẫu — đổi `APP` trên hub)
@@ -127,6 +130,8 @@ sudo setfacl -dR -m u:www-data:rwX,u:$DEPLOY_USER:rwX "$APP/storage" "$APP/boots
 sudo -u www-data php "$APP/artisan" cache:clear
 sudo systemctl reload php8.3-fpm
 ```
+
+**Script trong repo:** `scripts/staging_fix_storage_permissions.sh` (chạy trên server với `APP=... bash scripts/staging_fix_storage_permissions.sh`). Deploy từ Windows: `scripts/upload_staging.ps1` cuối script đã chạy bước tương tự + `touch` kiểm tra sessions.
 
 **Tuỳ chọn:** `CACHE_DRIVER=redis` nếu đã có Redis — giảm ghi file cache; vẫn cần quyền `storage/logs`.
 

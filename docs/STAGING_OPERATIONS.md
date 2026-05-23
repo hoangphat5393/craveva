@@ -10,6 +10,16 @@
 
 - **Ngôn ngữ `en` (không `eng`):** xem [SERVER_RUNBOOK_VI §6](SERVER_RUNBOOK_VI.md#6-ngôn-ngữ-en-không-dùng-eng).
 - **Git deploy, `sudo -u www-data`, Supervisor, quyền storage:** xem [SERVER_RUNBOOK_VI](SERVER_RUNBOOK_VI.md).
+- **Session / cache `Permission denied` trên `storage/framework/sessions` hoặc `storage/framework/cache/data`:** PHP-FPM chạy **`www-data`**; thường do **`git pull` tay** không chạy bước chmod sau deploy, hoặc chạy **`sudo php artisan`** (root) tạo file storage sai owner. Sửa một lần trên server:
+
+```bash
+APP=/var/www/craveva-staging/current/craveva
+bash "$APP/scripts/staging_fix_storage_permissions.sh"
+# hoặc xem SERVER_RUNBOOK_VI §4.6
+```
+
+Deploy đầy đủ từ máy dev: `.\scripts\upload_staging.ps1` (cuối script đã `chown www-data` + kiểm tra ghi sessions).
+
 - **Language Pack — Publish / Publish All báo `Permission denied` trên `resources/lang/...`:** PHP-FPM chạy user **`www-data`**; thư mục đích phải **ghi được** theo [SERVER_RUNBOOK_VI §4.8](SERVER_RUNBOOK_VI.md#48-language-pack--sync-keys--publish-all-ghi-file-trong-repo). Script **`scripts/upload_staging.ps1`** và **`scripts/upload_hub.ps1`** (sau chỉnh 2026-04) đã thêm `chmod ug+rwX` + `g+s` cho `resources/lang`, `lang/`, `Modules/LanguagePack/Languages` và `Modules/*/Resources/lang`. Trên server **đã lỗi sẵn**, SSH một lần (đổi `APP` / user deploy nếu khác):
 
 ```bash

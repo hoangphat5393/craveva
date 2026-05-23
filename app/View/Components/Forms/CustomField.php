@@ -11,15 +11,19 @@ class CustomField extends Component
 
     public $model;
 
+    /** When true: no outer p-20; grid matches purchase product form (col-lg-4). */
+    public bool $compact;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($fields, $model = false)
+    public function __construct($fields, $model = false, bool $compact = false)
     {
         $this->fields = $fields;
         $this->model = $model;
+        $this->compact = $compact;
     }
 
     /**

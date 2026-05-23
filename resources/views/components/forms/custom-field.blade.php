@@ -4,135 +4,76 @@
     }
 </style>
 @if (isset($fields) && count($fields) > 0)
-    <div {{ $attributes->merge(['class' => 'row p-20']) }}>
+    <div {{ $attributes->merge(['class' => 'row' . ($compact ? '' : ' p-20')]) }}>
         @foreach ($fields as $field)
-            <div class="col-md-4">
+            <div class="{{ $compact ? 'col-lg-4 col-md-6' : 'col-md-4' }}">
                 <div class="form-group">
                     @if ($field->type == 'text')
-                        <x-forms.text fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            :fieldPlaceholder="__($field->label)" :fieldRequired="$field->required == 'yes' ? 'true' : 'false'" :fieldValue="$model->custom_fields_data['field_' . $field->id] ?? ''">
+                        <x-forms.text fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldPlaceholder="__($field->label)" :fieldRequired="$field->required == 'yes' ? 'true' : 'false'" :fieldValue="$model->custom_fields_data['field_' . $field->id] ?? ''">
                         </x-forms.text>
                     @elseif($field->type == 'password')
-                        <x-forms.password fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            :fieldPlaceholder="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false" :fieldValue="$model->custom_fields_data['field_' . $field->id] ?? ''">
+                        <x-forms.password fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldPlaceholder="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false" :fieldValue="$model->custom_fields_data['field_' . $field->id] ?? ''">
                         </x-forms.password>
                     @elseif($field->type == 'number')
-                        <x-forms.number fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            :fieldPlaceholder="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false" :fieldValue="$model->custom_fields_data['field_' . $field->id] ?? ''">
+                        <x-forms.number fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldPlaceholder="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false" :fieldValue="$model->custom_fields_data['field_' . $field->id] ?? ''">
                         </x-forms.number>
                     @elseif($field->type == 'textarea')
-                        <x-forms.textarea :fieldLabel="__($field->label)"
-                            fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldRequired="($field->required === 'yes') ? true : false"
-                            :fieldPlaceholder="__($field->label)" :fieldValue="$model->custom_fields_data['field_' . $field->id] ?? ''">
+                        <x-forms.textarea :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]" fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldRequired="($field->required === 'yes') ? true : false" :fieldPlaceholder="__($field->label)" :fieldValue="$model->custom_fields_data['field_' . $field->id] ?? ''">
                         </x-forms.textarea>
                     @elseif($field->type == 'radio')
                         <div class="form-group my-3">
-                            <x-forms.label fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                                :fieldLabel="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false">
+                            <x-forms.label fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldLabel="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false">
                             </x-forms.label>
                             <div class="d-flex flex-wrap">
-                                <input type="hidden" name="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                                    id="{{ $field->field_name . '_' . $field->id }}" />
+                                <input type="hidden" name="custom_fields_data[{{ $field->name . '_' . $field->id }}]" id="{{ $field->field_name . '_' . $field->id }}" />
                                 @foreach ($field->values as $key => $value)
-                                    <x-forms.radio fieldId="optionsRadios{{ $key . $field->id }}" :fieldLabel="$value"
-                                        fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                                        :fieldValue="$value" :checked="$model && $model->custom_fields_data['field_' . $field->id] == $value
-                                            ? true
-                                            : false" :fieldRequired="($field->required === 'yes') ? true : false" />
+                                    <x-forms.radio fieldId="optionsRadios{{ $key . $field->id }}" :fieldLabel="$value" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldValue="$value" :checked="$model && $model->custom_fields_data['field_' . $field->id] == $value ? true : false" :fieldRequired="($field->required === 'yes') ? true : false" />
                                 @endforeach
                             </div>
                         </div>
                     @elseif($field->type == 'select')
                         <div class="form-group my-3">
-                            <x-forms.label fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                                :fieldLabel="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false">
+                            <x-forms.label fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldLabel="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false">
                             </x-forms.label>
-                            <select name="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                                class="form-control select-picker">
+                            <select name="custom_fields_data[{{ $field->name . '_' . $field->id }}]" class="form-control select-picker">
                                 @foreach ($field->values as $key => $value)
-                                    <option value="{{ $key }}"
-                                        @if (
-                                            $model &&
-                                                isset($model->custom_fields_data['field_' . $field->id]) &&
-                                                $model->custom_fields_data['field_' . $field->id] == $key) selected @endif>
+                                    <option value="{{ $key }}" @if ($model && isset($model->custom_fields_data['field_' . $field->id]) && $model->custom_fields_data['field_' . $field->id] == $key) selected @endif>
                                         {{ $value }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                     @elseif($field->type == 'date')
-                        <x-forms.datepicker custom="true"
-                            fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldRequired="($field->required === 'yes') ? true : false"
-                            :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            :fieldValue="$model && $model->custom_fields_data['field_' . $field->id] != ''
-                                ? \Carbon\Carbon::parse($model->custom_fields_data['field_' . $field->id])->format(
-                                    companyOrGlobalSetting()->date_format,
-                                )
-                                : now()->format(companyOrGlobalSetting()->date_format)" :fieldPlaceholder="__($field->label)" />
+                        <x-forms.datepicker custom="true" fieldId="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldRequired="($field->required === 'yes') ? true : false" :fieldLabel="__($field->label)" fieldName="custom_fields_data[{{ $field->name . '_' . $field->id }}]" :fieldValue="$model && $model->custom_fields_data['field_' . $field->id] != '' ? \Carbon\Carbon::parse($model->custom_fields_data['field_' . $field->id])->format(companyOrGlobalSetting()->date_format) : now()->format(companyOrGlobalSetting()->date_format)" :fieldPlaceholder="__($field->label)" />
                     @elseif($field->type == 'checkbox')
                         <div class="col-md-12 p-0">
                             <div class="form-group my-3">
-                                <x-forms.label
-                                    fieldId="custom_fields_data[{{ $field->field_name . '_' . $field->id }}]"
-                                    :fieldLabel="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false">
+                                <x-forms.label fieldId="custom_fields_data[{{ $field->field_name . '_' . $field->id }}]" :fieldLabel="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false">
                                 </x-forms.label>
                                 <div class="d-flex flex-wrap checkbox-{{ $field->id }}">
                                     @php
                                         $checkedValues = '';
 
                                         foreach (json_decode($field->values) as $key => $value) {
-                                            if (
-                                                $model &&
-                                                $model->custom_fields_data['field_' . $field->id] != '' &&
-                                                in_array(
-                                                    $value,
-                                                    explode(', ', $model->custom_fields_data['field_' . $field->id]),
-                                                )
-                                            ) {
+                                            if ($model && $model->custom_fields_data['field_' . $field->id] != '' && in_array($value, explode(', ', $model->custom_fields_data['field_' . $field->id]))) {
                                                 $checkedValues .= $checkedValues == '' ? $value : ', ' . $value;
                                             }
                                         }
                                     @endphp
 
-                                    <input type="hidden"
-                                        name="custom_fields_data[{{ $field->field_name . '_' . $field->id }}]"
-                                        id="{{ $field->field_name . '_' . $field->id }}" value="{{ $checkedValues }}">
+                                    <input type="hidden" name="custom_fields_data[{{ $field->field_name . '_' . $field->id }}]" id="{{ $field->field_name . '_' . $field->id }}" value="{{ $checkedValues }}">
                                     @foreach (json_decode($field->values) as $key => $value)
                                         <div class="col-6 p-0">
 
-                                            <x-forms.checkbox fieldId="optionsRadios{{ $key . $field->id }}"
-                                                :fieldLabel="$value" :fieldName="$field->field_name . '_' . $field->id . '[]'" :fieldValue="$value"
-                                                :checked="$model &&
-                                                    $model->custom_fields_data['field_' . $field->id] != '' &&
-                                                    in_array(
-                                                        $value,
-                                                        explode(
-                                                            ', ',
-                                                            $model->custom_fields_data['field_' . $field->id],
-                                                        ),
-                                                    )"
-                                                onchange="checkboxChange('checkbox-{{ $field->id }}', '{{ $field->field_name . '_' . $field->id }}')"
-                                                :fieldRequired="($field->required === 'yes') ? true : false" />
+                                            <x-forms.checkbox fieldId="optionsRadios{{ $key . $field->id }}" :fieldLabel="$value" :fieldName="$field->field_name . '_' . $field->id . '[]'" :fieldValue="$value" :checked="$model && $model->custom_fields_data['field_' . $field->id] != '' && in_array($value, explode(', ', $model->custom_fields_data['field_' . $field->id]))" onchange="checkboxChange('checkbox-{{ $field->id }}', '{{ $field->field_name . '_' . $field->id }}')" :fieldRequired="($field->required === 'yes') ? true : false" />
                                         </div>
                                     @endforeach
                                 </div>
                             </div>
                         </div>
                     @elseif ($field->type == 'file')
-                        <input type="hidden" name="custom_fields_data[{{ $field->name . '_' . $field->id }}]"
-                            value="{{ $model ? $model->custom_fields_data['field_' . $field->id] : '' }}">
-                        <x-forms.file class="custom-field-file" :fieldLabel="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false" :fieldName="'custom_fields_data[' . $field->name . '_' . $field->id . ']'"
-                            :fieldId="'custom_fields_data[' . $field->name . '_' . $field->id . ']'" :fieldValue="$model
-                                ? ($model->custom_fields_data['field_' . $field->id] != ''
-                                    ? asset_url_local_s3(
-                                        'custom_fields/' . $model->custom_fields_data['field_' . $field->id],
-                                    )
-                                    : '')
-                                : ''" />
+                        <input type="hidden" name="custom_fields_data[{{ $field->name . '_' . $field->id }}]" value="{{ $model ? $model->custom_fields_data['field_' . $field->id] : '' }}">
+                        <x-forms.file class="custom-field-file" :fieldLabel="__($field->label)" :fieldRequired="($field->required === 'yes') ? true : false" :fieldName="'custom_fields_data[' . $field->name . '_' . $field->id . ']'" :fieldId="'custom_fields_data[' . $field->name . '_' . $field->id . ']'" :fieldValue="$model ? ($model->custom_fields_data['field_' . $field->id] != '' ? asset_url_local_s3('custom_fields/' . $model->custom_fields_data['field_' . $field->id]) : '') : ''" />
                     @endif
 
                     <div class="form-control-focus"></div>

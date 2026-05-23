@@ -231,6 +231,22 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 
 **File:** `Modules/Purchase/DataTables/PurchaseInventoryDataTable.php`, `Modules/Production/Support/ProductionProductUnitLabelMap.php`, `Modules/Production/Resources/views/boms/partials/form.blade.php`, `Modules/Production/Resources/views/boms/index.blade.php`, `Modules/Production/Resources/views/orders/index.blade.php`, `Modules/Production/Resources/views/orders/show.blade.php`, `Modules/Production/Http/Controllers/ProductionBomController.php`, `Modules/Production/Http/Controllers/ProductionOrderController.php`.
 
+### 11.3 Production order create/edit — select lớn (FG + BOM)
+
+Danh sách **Manufactured product** và **Bill of materials** có thể rất dài (~10k SKU). **Không** dùng `<select>` scroll thuần; bắt buộc **Bootstrap select-picker** có tìm kiếm.
+
+| Field                                          | Component                                                     | Search             | Nhãn option                                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------- |
+| **Manufactured product** (`output_product_id`) | `<x-forms.select :search="true">` → `data-live-search="true"` | Gõ tên hoặc SKU    | `ProductionProductSelectLabel::forProduct($p)` → `Tên (SKU)`; `data-tokens` = SKU để live-search khớp mã |
+| **Bill of materials** (`production_bom_id`)    | Cùng `:search="true"`                                         | Gõ tên FG / mã BOM | `ProductionBom::labelForSelect()` (đã có `FG — code`)                                                    |
+| **Linked sales order**                         | Đã có `:search="true"`                                        | —                  | —                                                                                                        |
+
+- **Controller:** `ProductionOrderController::addProductData()` load FG với `id`, `name`, `sku` (không đổi query scope `forBomOutput()`).
+- **JS:** `production::orders.partials.bom-fg-sync-script` — sau khi đổi BOM vẫn gọi `selectpicker('refresh')` trên `#output_product_id` / `#production_bom_id`.
+- **Tham chiếu pattern SKU:** `resources/views/orders/ajax/create.blade.php`, `invoices/ajax/edit.blade.php` (`data-content` + SKU trong ngoặc).
+
+**File:** `Modules/Production/Support/ProductionProductSelectLabel.php`, `Modules/Production/Resources/views/orders/create.blade.php`, `Modules/Production/Resources/views/orders/edit.blade.php`, `tests/Unit/ProductionProductSelectLabelTest.php`.
+
 ---
 
 ## 12. Lỗi validation & phản hồi AJAX trên form create/edit
@@ -366,4 +382,4 @@ window.apiHttp
 
 ---
 
-_Cập nhật: 2026-05-21 — §12 gộp chuẩn validation hai lớp (FE + server). Trước: §7 textarea; §12.2.1 `showErrorsLaravel.js`._
+_Cập nhật: 2026-05-23 — §11.3 Production order FG/BOM searchable select + nhãn SKU. Trước: 2026-05-21 — §12 gộp chuẩn validation hai lớp (FE + server)._

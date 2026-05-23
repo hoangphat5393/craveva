@@ -10,6 +10,10 @@
             </div>
         </div>
 
+        @php
+            use Modules\Production\Support\ProductionProductSelectLabel;
+        @endphp
+
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0 pl-3">
@@ -25,13 +29,17 @@
                 <form method="post" action="{{ route('production.orders.update', $order) }}" class="bg-white rounded p-4">
                     @csrf
                     @method('put')
-                    <x-forms.select fieldId="output_product_id" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
+                    <x-forms.select fieldId="output_product_id" :search="true" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
                         @foreach ($finishedGoods as $p)
-                            <option value="{{ $p->id }}" @selected(old('output_product_id', $order->output_product_id) == $p->id)>{{ $p->name }}</option>
+                            @php
+                                $fgSelectLabel = ProductionProductSelectLabel::forProduct($p);
+                                $fgSku = trim((string) ($p->sku ?? ''));
+                            @endphp
+                            <option value="{{ $p->id }}" data-content="{{ $fgSelectLabel }}" @if ($fgSku !== '') data-tokens="{{ $fgSku }}" @endif @selected(old('output_product_id', $order->output_product_id) == $p->id)>{{ $fgSelectLabel }}</option>
                         @endforeach
                     </x-forms.select>
 
-                    <x-forms.select fieldId="production_bom_id" :fieldLabel="__('production::app.bom') . ' (' . __('app.optional') . ')'" fieldName="production_bom_id" :fieldRequired="false">
+                    <x-forms.select fieldId="production_bom_id" :search="true" :fieldLabel="__('production::app.bom') . ' (' . __('app.optional') . ')'" fieldName="production_bom_id" :fieldRequired="false">
                         <option value="">—</option>
                         @foreach ($boms as $bom)
                             <option value="{{ $bom->id }}" data-output-product-id="{{ $bom->output_product_id }}" @selected(old('production_bom_id', $order->production_bom_id) == $bom->id)>

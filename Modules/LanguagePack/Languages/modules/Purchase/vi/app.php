@@ -33,6 +33,7 @@ return [
     'productFormSectionInventory' => 'Kho & hạn dùng',
     'productFormSectionDetails' => 'Mô tả & thuộc tính',
     'productFormSectionMedia' => 'Hình ảnh',
+    'productFormSectionAdditionalInfo' => 'Thông tin bổ sung',
     'trackInventory' => 'Theo dõi tồn kho (sản phẩm này)',
     'purchaseInformation' => 'Giá vốn / thông tin mua',
     'addVendorNote' => 'Thêm ghi chú của nhà cung cấp',

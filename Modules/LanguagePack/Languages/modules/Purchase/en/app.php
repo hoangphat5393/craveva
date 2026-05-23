@@ -33,6 +33,7 @@ return [
     'productFormSectionInventory' => 'Inventory & shelf life',
     'productFormSectionDetails' => 'Description & attributes',
     'productFormSectionMedia' => 'Images',
+    'productFormSectionAdditionalInfo' => 'Additional information',
     'trackInventory' => 'Track Inventory for this Item',
     'purchaseInformation' => 'Purchase Information',
     'addVendorNote' => 'Add Vendor Note',

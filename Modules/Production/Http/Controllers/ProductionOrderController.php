@@ -59,7 +59,7 @@ class ProductionOrderController extends AccountBaseController
         $this->orders = $query->paginate(25)->withQueryString();
 
         $pageOutputProducts = $this->orders->getCollection()
-            ->map(static fn(ProductionOrder $order): ?Product => $order->outputProduct)
+            ->map(static fn (ProductionOrder $order): ?Product => $order->outputProduct)
             ->filter()
             ->unique('id')
             ->values();
@@ -181,7 +181,7 @@ class ProductionOrderController extends AccountBaseController
                 ProductionBatch::query()->create([
                     'company_id' => $order->company_id,
                     'production_order_id' => $order->id,
-                    'batch_code' => 'PB-' . $order->id . '-' . strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
+                    'batch_code' => 'PB-'.$order->id.'-'.strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
                 ]);
             }
         } catch (\Throwable $e) {
@@ -213,7 +213,7 @@ class ProductionOrderController extends AccountBaseController
             ->where('company_id', $companyId)
             ->forBomOutput()
             ->orderBy('name')
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'sku']);
 
         $this->boms = ProductionBom::query()
             ->with(['outputProduct:id,name'])
@@ -251,15 +251,15 @@ class ProductionOrderController extends AccountBaseController
             }
 
             if ($recentSalesOrders->contains(
-                static fn(Order $row): bool => (int) $row->id === (int) $linkedSalesOrder->id
+                static fn (Order $row): bool => (int) $row->id === (int) $linkedSalesOrder->id
             )) {
                 return $recentSalesOrders;
             }
 
             return $recentSalesOrders
                 ->prepend($linkedSalesOrder)
-                ->unique(static fn(Order $row): int => (int) $row->id)
-                ->sortByDesc(static fn(Order $row): int => (int) $row->id)
+                ->unique(static fn (Order $row): int => (int) $row->id)
+                ->sortByDesc(static fn (Order $row): int => (int) $row->id)
                 ->values();
         };
 
@@ -275,10 +275,10 @@ class ProductionOrderController extends AccountBaseController
 
         $this->projects = config('production.ui.show_linked_project_on_order_form')
             ? Project::query()
-            ->where('company_id', $companyId)
-            ->orderByDesc('id')
-            ->limit(250)
-            ->get(['id', 'project_name'])
+                ->where('company_id', $companyId)
+                ->orderByDesc('id')
+                ->limit(250)
+                ->get(['id', 'project_name'])
             : collect();
     }
 

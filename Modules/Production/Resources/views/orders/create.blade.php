@@ -11,6 +11,8 @@
         </div>
 
         @php
+            use Modules\Production\Support\ProductionProductSelectLabel;
+
             $soPrefill = $salesOrderPrefill ?? null;
             $defaultOutputProductId = old('output_product_id', $soPrefill['output_product_id'] ?? null);
             $defaultBomId = old('production_bom_id', $soPrefill['production_bom_id'] ?? null);
@@ -40,14 +42,18 @@
             <div class="col-lg-8">
                 <form method="post" action="{{ route('production.orders.store') }}" class="bg-white rounded p-4">
                     @csrf
-                    <x-forms.select fieldId="output_product_id" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
+                    <x-forms.select fieldId="output_product_id" :search="true" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
                         <option value="">—</option>
                         @foreach ($finishedGoods as $p)
-                            <option value="{{ $p->id }}" @selected((string) $defaultOutputProductId === (string) $p->id)>{{ $p->name }}</option>
+                            @php
+                                $fgSelectLabel = ProductionProductSelectLabel::forProduct($p);
+                                $fgSku = trim((string) ($p->sku ?? ''));
+                            @endphp
+                            <option value="{{ $p->id }}" data-content="{{ $fgSelectLabel }}" @if ($fgSku !== '') data-tokens="{{ $fgSku }}" @endif @selected((string) $defaultOutputProductId === (string) $p->id)>{{ $fgSelectLabel }}</option>
                         @endforeach
                     </x-forms.select>
 
-                    <x-forms.select fieldId="production_bom_id" :fieldLabel="__('production::app.bom') . ' (' . __('app.optional') . ')'" fieldName="production_bom_id" :fieldRequired="false">
+                    <x-forms.select fieldId="production_bom_id" :search="true" :fieldLabel="__('production::app.bom') . ' (' . __('app.optional') . ')'" fieldName="production_bom_id" :fieldRequired="false">
                         <option value="">—</option>
                         @foreach ($boms as $bom)
                             <option value="{{ $bom->id }}" data-output-product-id="{{ $bom->output_product_id }}" @selected((string) $defaultBomId === (string) $bom->id)>

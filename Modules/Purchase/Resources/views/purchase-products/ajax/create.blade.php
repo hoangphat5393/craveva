@@ -53,10 +53,8 @@
 
                             @if (isset($fields) && count($fields) > 0)
                                 <div class="col-12 purchase-product-form-section">
-                                    @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('app.customFields')])
-                                    <div class="row">
-                                        <x-forms.custom-field :fields="$fields" class="row w-100 p-0 m-0"></x-forms.custom-field>
-                                    </div>
+                                    @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionAdditionalInfo')])
+                                    <x-forms.custom-field :fields="$fields" :compact="true" class="w-100 m-0"></x-forms.custom-field>
                                 </div>
                             @endif
 

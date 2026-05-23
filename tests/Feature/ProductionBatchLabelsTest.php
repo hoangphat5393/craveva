@@ -37,7 +37,7 @@ it('exposes de-abbreviated production batch labels in en and vi', function (): v
 
     expect(__('production::app.rawMaterialsUsed'))->not->toContain('(RM)')
         ->and(__('production::app.postRawMaterialUsageRequiresLines'))->not->toContain('RM consumption')
-        ->and(__('production::app.bomComponentQty'))->toBe('Quantity per unit')
+        ->and(__('production::app.bomComponentQty'))->toBe('Qty / 1 manufactured product')
         ->and(__('production::app.bomComponentQty'))->not->toContain('FG')
         ->and(__('production::app.requestRework'))->toBe('Send for rework');
 });

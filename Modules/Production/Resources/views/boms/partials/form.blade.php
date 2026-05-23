@@ -22,6 +22,8 @@
             ->all();
     }
 
+    $showBomWasteUi = (bool) config('production.ui.show_bom_waste_percent_ui', false);
+
     $bomFgUnitByProductId = $bomFgUnitByProductId ?? $finishedGoods->keyBy('id')->map(static fn($p) => optional($p->unit)->unit_type ?? '—');
     $bomComponentUnitByProductId = $bomComponentUnitByProductId ?? $componentProducts->keyBy('id')->map(static fn($p) => optional($p->unit)->unit_type ?? '—');
     $bomUnitsByProductId = $bomUnitsByProductId ?? [];
@@ -135,8 +137,10 @@
 <h6 class="f-14 text-dark-grey font-weight-bold mb-1">@lang('production::app.bomLines')</h6>
 <p class="f-12 text-dark-grey mb-1">@lang('production::app.bomComponentHelpForManufacturedProduct')</p>
 <p class="f-12 text-muted mb-1">@lang('production::app.bomCostingHelp')</p>
-<p class="f-12 text-muted mb-1">@lang('production::app.bomUomSelectHelpForManufacturedProduct')</p>
-<p class="f-12 text-muted mb-2">@lang('production::app.bomWastePercentHelp')</p>
+<p class="f-12 text-muted mb-2">@lang('production::app.bomUomSelectHelpForManufacturedProduct')</p>
+@if ($showBomWasteUi)
+    <p class="f-12 text-muted mb-2">@lang('production::app.bomWastePercentHelp')</p>
+@endif
 @if ($componentProducts->isEmpty())
     <div class="alert alert-warning f-13">@lang('production::app.bomNoComponents')</div>
 @else
@@ -159,9 +163,10 @@
         <thead>
             <tr class="f-14 text-dark-grey">
                 <th>@lang('production::app.componentProduct')</th>
-                <th style="width: 150px;">@lang('production::app.bomComponentUom')</th>
-                <th style="width: 140px;">@lang('production::app.bomComponentQty')</th>
-                <th style="width: 100px;">@lang('production::app.bomWastePercent')</th>
+                <th style="min-width: 220px;">@lang('production::app.bomComponentQtyAndUom')</th>
+                @if ($showBomWasteUi)
+                    <th style="width: 100px;">@lang('production::app.bomWastePercent')</th>
+                @endif
                 <th style="width: 110px;" class="text-right">@lang('production::app.bomComponentUnitCost')</th>
                 <th style="width: 110px;" class="text-right">@lang('production::app.bomComponentLineTotal')</th>
                 <th style="width: 48px;"></th>
@@ -179,6 +184,7 @@
                     'unitsForRow' => $lineRow['units_for_row'],
                     'lineUnitCost' => $lineRow['unit_cost'],
                     'lineExtendedCost' => $lineRow['line_total'],
+                    'showBomWasteUi' => $showBomWasteUi,
                 ])
             @endforeach
         </tbody>
@@ -211,6 +217,7 @@
             const bomCurrencyPosition = @json($bomCurrencySetting->currency_position ?? 'left');
             const bomCurrencyDecimals = {{ (int) ($bomCurrencySetting->no_of_decimal ?? 2) }};
             const bomCostDash = '—';
+            const showBomWasteUi = @json($showBomWasteUi);
             const bomTotalCostEl = document.getElementById('bom-total-component-cost');
             const msgComponentAlreadyOnBom = @json(__('production::app.bomComponentAlreadyOnBom'));
             const msgComponentMustDifferFromOutput = @json(__('production::app.bomComponentMustDifferFromManufacturedProduct'));
@@ -487,22 +494,26 @@
                 tr.dataset.rowIndex = String(newIndex);
                 tr.dataset.productId = pid;
                 tr.dataset.unitId = '';
+                const wasteCellHtml = showBomWasteUi ? `
+                    <td>
+                        <input type="number" step="0.01" min="0" max="100" name="items[${newIndex}][waste_percent]" class="form-control height-35 f-14 bom-line-waste" value="0">
+                    </td>
+                ` : '';
                 tr.innerHTML = `
                     <td class="align-middle">
                         <span class="f-14 text-dark-grey bom-line-product-name"></span>
                         <input type="hidden" name="items[${newIndex}][component_product_id]" class="bom-line-component-id" value="">
                     </td>
                     <td class="align-middle">
-                        <select name="items[${newIndex}][unit_id]" class="form-control height-35 f-14 w-100 bom-line-unit-select">
-                            <option value="">—</option>
-                        </select>
+                        <div class="d-flex flex-wrap align-items-center" style="gap: 0.35rem;">
+                            <select name="items[${newIndex}][unit_id]" class="form-control height-35 f-14 bom-line-unit-select" style="min-width: 6rem; flex: 0 1 auto;">
+                                <option value="">—</option>
+                            </select>
+                            <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14 bom-line-quantity flex-grow-1" style="min-width: 5rem;" value="1">
+                        </div>
+                        ${showBomWasteUi ? '' : `<input type="hidden" name="items[${newIndex}][waste_percent]" class="bom-line-waste" value="0">`}
                     </td>
-                    <td>
-                        <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14 bom-line-quantity" value="1">
-                    </td>
-                    <td>
-                        <input type="number" step="0.01" min="0" max="100" name="items[${newIndex}][waste_percent]" class="form-control height-35 f-14 bom-line-waste" value="0">
-                    </td>
+                    ${showBomWasteUi ? wasteCellHtml : ''}
                     <td class="bom-line-unit-cost f-14 text-dark-grey align-middle text-right">${bomCostDash}</td>
                     <td class="bom-line-extended-cost f-14 text-dark-grey align-middle text-right">${bomCostDash}</td>
                     <td class="text-right align-middle">

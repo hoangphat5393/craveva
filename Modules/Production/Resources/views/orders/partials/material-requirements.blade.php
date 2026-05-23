@@ -6,6 +6,8 @@
     $formatQty = static function (float $value): string {
         return rtrim(rtrim(number_format($value, 4, '.', ''), '0'), '.') ?: '0';
     };
+
+    $showBomWasteUi = (bool) config('production.ui.show_bom_waste_percent_ui', false);
 @endphp
 
 @if (count($materialRequirements) > 0)
@@ -28,7 +30,9 @@
                     <tr>
                         <th>@lang('production::app.componentProduct')</th>
                         <th>@lang('production::app.materialQtyPerManufacturedProductUnit')</th>
-                        <th>@lang('production::app.bomWastePercent')</th>
+                        @if ($showBomWasteUi)
+                            <th>@lang('production::app.bomWastePercent')</th>
+                        @endif
                         <th>@lang('production::app.materialTotalRequired')</th>
                         @if (!empty($materialRequirementsShowStock))
                             <th>@lang('production::app.materialAvailableInRawMaterialWarehouse')</th>
@@ -49,7 +53,9 @@
                                     <span class="text-muted">{{ $row['unit_label'] }}</span>
                                 @endif
                             </td>
-                            <td>{{ $formatQty((float) ($row['waste_percent'] ?? 0)) }}%</td>
+                            @if ($showBomWasteUi)
+                                <td>{{ $formatQty((float) ($row['waste_percent'] ?? 0)) }}%</td>
+                            @endif
                             <td>
                                 {{ $formatQty((float) $row['total_required']) }}
                                 @if (!empty($row['unit_label_base']))

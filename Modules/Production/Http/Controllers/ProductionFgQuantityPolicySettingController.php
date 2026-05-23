@@ -16,7 +16,7 @@ class ProductionFgQuantityPolicySettingController extends AccountBaseController
     {
         parent::__construct();
 
-        $this->pageTitle = 'production::app.fgQuantityPolicySettingsHeading';
+        $this->pageTitle = 'production::app.productionSettingsHeading';
         $this->activeSettingMenu = 'production_fg_quantity_policy';
 
         $this->middleware(function ($request, $next) {
@@ -46,6 +46,7 @@ class ProductionFgQuantityPolicySettingController extends AccountBaseController
         ]) : []);
 
         $this->fgPolicySettings = $settings;
+        $this->yieldUomShadowEnabled = (bool) config('production.phase2.yield_uom_shadow_enabled', false);
 
         return view('production::fg-quantity-policy.index', $this->data);
     }

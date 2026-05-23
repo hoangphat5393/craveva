@@ -87,7 +87,8 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         ->withSession($session)
         ->get(route('production.orders.index'))
         ->assertSuccessful()
-        ->assertSee(__('modules.invoices.unitType'), false);
+        ->assertSee(__('modules.invoices.unitType'), false)
+        ->assertSee('http-test · '.$version, false);
 
     $this->actingAs($fix['userAuth'], 'web')
         ->withSession($session)

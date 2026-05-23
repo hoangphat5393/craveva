@@ -99,33 +99,51 @@
                     </div>
                 @endif
                 @if ($order->bom_snapshot_at)
+                    @php
+                        $formatSnapshotQty = static function (float $value): string {
+                            return rtrim(rtrim(number_format($value, 4, '.', ''), '0'), '.') ?: '0';
+                        };
+                        $showBomSnapshotShadowColumn = $showBomSnapshotShadowColumn ?? (bool) config('production.phase2.yield_uom_shadow_enabled', false);
+                    @endphp
                     <div class="col-12 mb-2">
                         <span class="text-dark-grey d-block mb-1">@lang('production::app.bomSnapshotTitle')</span>
                         <p class="f-13 text-muted mb-1">
                             @lang('production::app.bomSnapshotCapturedAt'): {{ $order->bom_snapshot_at }}
-                            · @lang('production::app.bomSnapshotPlannedFgQty'): {{ $order->bom_snapshot_planned_quantity }}
+                            · @lang('production::app.bomSnapshotPlannedManufacturedProductQty'): {{ $order->bom_snapshot_planned_quantity }}
                         </p>
                         <table class="table table-sm border f-13 mb-0">
                             <thead>
                                 <tr>
                                     <th>@lang('production::app.componentProduct')</th>
                                     <th>@lang('production::app.bomComponentQtyFrozen')</th>
-                                    <th>@lang('production::app.bomComponentQtyShadow')</th>
+                                    @if ($showBomSnapshotShadowColumn)
+                                        <th>@lang('production::app.bomComponentQtyShadow')</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($order->bomSnapshotItems as $snap)
+                                    @php
+                                        $snapUnit = $snap->unit?->unit_type ?? $snap->componentProduct?->unit?->unit_type;
+                                    @endphp
                                     <tr>
                                         <td>{{ $snap->componentProduct?->name ?? $snap->component_product_id }}</td>
-                                        <td>{{ $snap->quantity_per_fg_unit }}</td>
                                         <td>
-                                            @if ($snap->quantity_per_fg_unit_base_shadow !== null)
-                                                {{ rtrim(rtrim(number_format((float) $snap->quantity_per_fg_unit_base_shadow, 6, '.', ''), '0'), '.') }}
-                                                <span class="text-muted">(@lang('production::app.shadowModeLabel'))</span>
-                                            @else
-                                                —
+                                            {{ $formatSnapshotQty((float) $snap->quantity_per_fg_unit) }}
+                                            @if ($snapUnit)
+                                                <span class="text-muted">{{ $snapUnit }}</span>
                                             @endif
                                         </td>
+                                        @if ($showBomSnapshotShadowColumn)
+                                            <td>
+                                                @if ($snap->quantity_per_fg_unit_base_shadow !== null)
+                                                    {{ $formatSnapshotQty((float) $snap->quantity_per_fg_unit_base_shadow) }}
+                                                    <span class="text-muted">(@lang('production::app.shadowModeLabel'))</span>
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </tbody>

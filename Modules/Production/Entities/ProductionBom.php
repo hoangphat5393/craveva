@@ -65,15 +65,38 @@ class ProductionBom extends BaseModel
         $fgName = trim((string) ($this->outputProduct?->name ?? ''));
 
         if ($fgName === '') {
-            $fgName = __('production::app.manufacturedProduct') . ' #' . $this->output_product_id;
+            $fgName = __('production::app.manufacturedProduct').' #'.$this->output_product_id;
         }
 
         $code = trim((string) ($this->code ?? ''));
 
         if ($code !== '') {
-            return $fgName . ' — ' . $code;
+            return $fgName.' — '.$code;
         }
 
-        return $fgName . ' ' . __('production::app.bomSelectIdLabel', ['id' => $this->id]);
+        return $fgName.' '.__('production::app.bomSelectIdLabel', ['id' => $this->id]);
+    }
+
+    /**
+     * Compact BOM label for production order list (code · version), without repeating FG name.
+     */
+    public function listLabelForOrderIndex(): string
+    {
+        $code = trim((string) ($this->code ?? ''));
+        $version = trim((string) ($this->version ?? ''));
+
+        if ($code !== '' && $version !== '') {
+            return $code.' · '.$version;
+        }
+
+        if ($code !== '') {
+            return $code;
+        }
+
+        if ($version !== '') {
+            return $version;
+        }
+
+        return __('production::app.bomSelectIdLabel', ['id' => $this->id]);
     }
 }

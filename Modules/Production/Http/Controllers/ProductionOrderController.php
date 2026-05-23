@@ -49,7 +49,7 @@ class ProductionOrderController extends AccountBaseController
         $companyId = (int) company()->id;
 
         $query = ProductionOrder::query()
-            ->with(['outputProduct'])
+            ->with(['outputProduct', 'bom'])
             ->orderByDesc('id');
 
         if ($request->filled('status')) {
@@ -113,9 +113,11 @@ class ProductionOrderController extends AccountBaseController
             'fgWarehouse',
             'salesOrder',
             'project',
-            'bomSnapshotItems.componentProduct',
+            'bomSnapshotItems.componentProduct.unit',
+            'bomSnapshotItems.unit',
         ]);
         $this->order = $order;
+        $this->showBomSnapshotShadowColumn = (bool) config('production.phase2.yield_uom_shadow_enabled', false);
 
         $fgUnitMap = $order->outputProduct !== null
             ? ProductionProductUnitLabelMap::forProducts(collect([$order->outputProduct]), (int) company()->id)

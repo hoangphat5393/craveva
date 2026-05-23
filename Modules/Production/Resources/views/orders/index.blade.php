@@ -79,6 +79,7 @@
                         <th class="f-14 text-dark-grey">ID</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.manufacturedProduct')</th>
                         <th class="f-14 text-dark-grey">@lang('modules.invoices.unitType')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.bom')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.plannedQty')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.status')</th>
                         <th class="f-14 text-dark-grey text-right">@lang('app.action')</th>
@@ -90,6 +91,16 @@
                             <td>{{ $order->id }}</td>
                             <td>{{ $order->outputProduct?->name ?? '—' }}</td>
                             <td class="text-dark-grey">{{ $orderListFgUnitByProductId->get((string) $order->output_product_id) ?? ($orderListFgUnitByProductId->get($order->output_product_id) ?? '—') }}</td>
+                            <td class="f-14">
+                                @if ($order->bom)
+                                    <a href="{{ route('production.boms.show', $order->bom) }}" class="text-dark-grey">{{ $order->bom->listLabelForOrderIndex() }}</a>
+                                    @if ($order->bom_snapshot_at)
+                                        <span class="badge badge-secondary f-10 ml-1" title="@lang('production::app.bomSnapshotTitle')">@lang('production::app.bomSnapshotFrozenBadge')</span>
+                                    @endif
+                                @else
+                                    —
+                                @endif
+                            </td>
                             <td>{{ $order->planned_quantity }}</td>
                             <td>{{ __('production::app.statusLabels.' . $order->status) }}</td>
                             <td class="text-right">
@@ -100,7 +111,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-5">
+                            <td colspan="7" class="p-5">
                                 <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>

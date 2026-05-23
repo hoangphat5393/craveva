@@ -14,6 +14,7 @@
     $bomCostSummary = $bomCostSummary ?? ['lines' => [], 'total' => null];
     $bom->loadCount('productionOrders');
     $editable = $bom->production_orders_count === 0;
+    $showBomWasteUi = (bool) config('production.ui.show_bom_waste_percent_ui', false);
 @endphp
 
 @section('content')
@@ -63,7 +64,7 @@
                     <span class="font-weight-normal">{{ $bom->code ?: '—' }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <span class="text-dark-grey d-block mb-1">@lang('production::app.bomDefault')</span>
+                    <span class="text-dark-grey d-block mb-1">@lang('production::app.bomDefaultForManufacturedProduct')</span>
                     <span class="font-weight-normal">{{ $bom->is_default ? __('app.yes') : __('app.no') }}</span>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -91,9 +92,10 @@
                     <tr>
                         <th class="f-14 text-dark-grey">#</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.componentProduct')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.bomComponentUom')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.bomComponentQty')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.bomWastePercent')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.bomComponentQtyAndUom')</th>
+                        @if ($showBomWasteUi)
+                            <th class="f-14 text-dark-grey">@lang('production::app.bomWastePercent')</th>
+                        @endif
                         <th class="f-14 text-dark-grey text-right">@lang('production::app.bomComponentUnitCost')</th>
                         <th class="f-14 text-dark-grey text-right">@lang('production::app.bomComponentLineTotal')</th>
                     </tr>
@@ -111,15 +113,19 @@
                                     <span class="text-dark-grey f-12 d-block">{{ ProductType::labelFor($line->componentProduct->type) }}</span>
                                 @endif
                             </td>
-                            <td class="f-14">{{ $line->unit?->unit_type ?? ($line->componentProduct?->unit?->unit_type ?? '—') }}</td>
-                            <td class="f-14">{{ $formatQuantity($line->quantity) }}</td>
-                            <td class="f-14">{{ rtrim(rtrim(number_format((float) ($line->waste_percent ?? 0), 2, '.', ''), '0'), '.') }}%</td>
+                            <td class="f-14">
+                                {{ $formatQuantity($line->quantity) }}
+                                <span class="text-muted">{{ $line->unit?->unit_type ?? ($line->componentProduct?->unit?->unit_type ?? '') }}</span>
+                            </td>
+                            @if ($showBomWasteUi)
+                                <td class="f-14">{{ rtrim(rtrim(number_format((float) ($line->waste_percent ?? 0), 2, '.', ''), '0'), '.') }}%</td>
+                            @endif
                             <td class="f-14 text-right">{{ $formatBomCost($lineCost['unit_cost']) }}</td>
                             <td class="f-14 text-right">{{ $formatBomCost($lineCost['line_total']) }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="p-5">
+                            <td colspan="{{ $showBomWasteUi ? 6 : 5 }}" class="p-5">
                                 <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
                             </td>
                         </tr>
@@ -128,7 +134,7 @@
                 @if ($bom->items->isNotEmpty())
                     <tfoot>
                         <tr class="bg-additional-grey">
-                            <td colspan="6" class="f-14 text-dark-grey font-weight-bold text-right">@lang('production::app.bomTotalComponentCost')</td>
+                            <td colspan="{{ $showBomWasteUi ? 5 : 4 }}" class="f-14 text-dark-grey font-weight-bold text-right">@lang('production::app.bomTotalComponentCostPerManufacturedProduct')</td>
                             <td class="f-14 text-right font-weight-bold">{{ $formatBomCost($bomCostSummary['total']) }}</td>
                         </tr>
                     </tfoot>

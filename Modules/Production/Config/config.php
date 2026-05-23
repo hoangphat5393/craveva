@@ -9,6 +9,11 @@ return [
      */
     'ui' => [
         'show_linked_project_on_order_form' => false,
+        /*
+         * BOM / material-requirements waste % column. Backend still stores waste_percent (default 0).
+         * Set true when PM enables scrap allowance in UI again.
+         */
+        'show_bom_waste_percent_ui' => false,
     ],
 
     'phase2' => [

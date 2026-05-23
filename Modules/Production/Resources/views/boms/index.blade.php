@@ -41,7 +41,7 @@
                         <th class="f-14 text-dark-grey">@lang('production::app.bomVersion')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomCode')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.bomLines')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.bomDefault')</th>
+                        <th class="f-14 text-dark-grey">@lang('production::app.bomDefaultForManufacturedProduct')</th>
                         <th class="f-14 text-dark-grey text-right">@lang('app.action')</th>
                     </tr>
                 </thead>

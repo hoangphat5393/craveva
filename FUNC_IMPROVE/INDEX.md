@@ -35,6 +35,8 @@ Các file **`BIOMIXING_*`** và audit tách **`BIOMIXING_MIGRATION_AUDIT_2026_VI
 - `FUNC_IMPROVE/11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` — phân tích shadow/Yield/UOM; **chỉ bật sau khi được xác nhận** (xem mục governance trong file).
 - `FUNC_IMPROVE/12_AI_THIRDPARTY_SO_OPTIONS_VI.md` — AI / third-party tạo SO: webhook vs API, phương án thay thế, trạng thái code hiện tại
 - `FUNC_IMPROVE/13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md` — Opening stock vs tồn warehouse; P0 UX/help; P1 sync có điều kiện; ảnh hưởng khi tắt module kho
+- `FUNC_IMPROVE/14_CLIENT_LISTING_TABLE_UX_PLAN_VI.md` — Kế hoạch UX bảng Clients (PM): Pricing Tier vs Custom Field; phase 1 không đổi logic/DB; DB consolidation phase 7
+- `FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md` — **Living doc:** lỗ hổng quy đổi UOM khi Post RM (doc-to-code); plan vá: `15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md`
 - `FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md` — **gộp (2026-05-12)** từ `13_` + `14_` + `15_`: kiểm tra repo & prompt rollout; kế hoạch triển khai + checklist; prompt tab **API** + ringfence (mục **Part 1–3** trong file)
 - `FUNC_LOGIC/SURVEY_SYSTEM_WIDE_API_AND_REST_VI.md` — khảo sát API `/api` toàn repo & REST (tham chiếu chéo)
 
@@ -42,6 +44,7 @@ Các file **`BIOMIXING_*`** và audit tách **`BIOMIXING_MIGRATION_AUDIT_2026_VI
 
 - **Documentation audit (định kỳ):** [`AUDIT_IMPROVE_2026_VI.md`](AUDIT_IMPROVE_2026_VI.md)
 - **Audit 3 thư mục (2026-05-21):** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md) — sync `PROJECT BIOMIXING` · `FUNC_LOGIC` · `FUNC_IMPROVE`
+- **2026-05-20:** Production outbound UOM gap — `15_*` + `FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md`
 - **2026-05-12:** ba file AI → SO webhook (`13_`…`15_`) đã gộp thành [`SO_AI_WEBHOOK_PROMPTS_VI.md`](SO_AI_WEBHOOK_PROMPTS_VI.md) (Part 1–3); không dùng lại prefix `13_`–`15_` cho tài liệu mới.
 - Keep numbering stable for planning sequence.
 - New improvement documents should follow next numeric prefix.

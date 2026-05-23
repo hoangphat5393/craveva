@@ -116,4 +116,16 @@ Một loạt `.md` dưới `FUNC_BUG/`, `FUNC_IMPORT/`, `FUNC_IMPROVE/`, `FUNC_L
 | **Living docs** | `BIOMIXING_GAP_STATUS_VI.md`, `PHASE2_PM_PLAN_VI.md`, `P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md` (DoD + §16).                                                   |
 | **FUNC_LOGIC**  | `FLOW_ADD_PRODUCT.md` §9; `AUDIT_LOGIC_2026_VI.md` §11.                                                                                                   |
 
-_Bản ghi: audit 2026-05-09 (layout phẳng, gỡ `BIOMIXING/`); bổ sung §7 + kiểm kê §2 ngày 2026-05-12; §8 đổi tên rút gọn cùng ngày; **§9 chu kỳ 2026-05-13** — đồng bộ tài liệu REST inbound + `md_master_sync` + `upload_staging.ps1` (xem `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md` §10); **§10 chu kỳ 2026-05-21** — audit 3 thư mục + P2-UOM/SKU doc-to-code._
+## 11) Chu kỳ 2026-05-20 — Production outbound UOM (doc-to-code gap)
+
+| Việc           | Chi tiết                                                                                                   |
+| -------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Living doc** | [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)                             |
+| **Plan vá**    | [`15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md`](15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md)                   |
+| **FUNC_BUG**   | [`../FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md`](../FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md)             |
+| **Reconcile**  | `BIOMIXING_GAP_STATUS` — P2-UOM **partial**; `P2_PRODUCT_UOM` §16; `DOCUMENTATION_AUDIT_CROSS_FOLDER` §3.4 |
+| **Không**      | Không nhầm với shadow UOM (`11_SHADOW_*`) hay import (`FUNC_IMPORT`)                                       |
+
+---
+
+_Bản ghi: audit 2026-05-09 (layout phẳng, gỡ `BIOMIXING/`); bổ sung §7 + kiểm kê §2 ngày 2026-05-12; §8 đổi tên rút gọn cùng ngày; **§9 chu kỳ 2026-05-13** — đồng bộ tài liệu REST inbound + `md_master_sync` + `upload_staging.ps1` (xem `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md` §10); **§10 chu kỳ 2026-05-21** — audit 3 thư mục + P2-UOM/SKU doc-to-code; **§11 chu kỳ 2026-05-20** — Production post RM UOM gap._

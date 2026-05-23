@@ -94,18 +94,18 @@ beforeEach(function (): void {
         $table->timestamps();
     });
 
-    $migration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
+    $migration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
     $migration->up();
 
-    $productionFgQuantityPolicyMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
+    $productionFgQuantityPolicyMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
     $productionFgQuantityPolicyMigration->up();
 
-    $bomSnapshotMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
+    $bomSnapshotMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
     $bomSnapshotMigration->up();
-    $yieldUomShadowMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
+    $yieldUomShadowMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
     $yieldUomShadowMigration->up();
 
-    $wastePercentMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_20_160000_add_waste_percent_to_production_bom_tables.php';
+    $wastePercentMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_20_160000_add_waste_percent_to_production_bom_tables.php';
     $wastePercentMigration->up();
 
     DB::table('companies')->insert([
@@ -243,6 +243,61 @@ it('posts RM consumption then FG receipt via warehouse stock movements', functio
         ->and($output->fresh()->posted_at)->not->toBeNull()
         ->and($order->fresh()->status)->toBe(ProductionOrder::STATUS_COMPLETED)
         ->and($order->fresh()->completed_at)->not->toBeNull();
+});
+
+it('posts RM consumption in product base unit when line unit_id differs from base (P2-UOM-OUTBOUND)', function (): void {
+    DB::table('products')->where('id', 1)->update([
+        'unit_id' => 99,
+        'updated_at' => now(),
+    ]);
+
+    DB::table('product_unit_conversions')->insert([
+        'company_id' => 1,
+        'product_id' => 1,
+        'unit_id' => 10,
+        'factor_to_base' => 0.001,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    DB::table('warehouse_product_batches')->where('id', 1)->update([
+        'quantity' => 1000,
+        'updated_at' => now(),
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => null,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-UOM-OUT',
+    ]);
+
+    ProductionBatchConsumption::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'component_product_id' => 1,
+        'warehouse_product_batch_id' => 1,
+        'planned_quantity' => 100,
+        'unit_id' => 10,
+        'actual_quantity' => null,
+        'line_order' => 0,
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->releaseOrder($order);
+    $service->postConsumptionsForBatch($batch->fresh());
+
+    expect((float) DB::table('warehouse_product_batches')->where('id', 1)->value('quantity'))->toBe(999.9)
+        ->and($batch->fresh()->posted_consumptions_at)->not->toBeNull();
 });
 
 it('defers batch receipt and order completion until every output line on the batch is posted', function (): void {

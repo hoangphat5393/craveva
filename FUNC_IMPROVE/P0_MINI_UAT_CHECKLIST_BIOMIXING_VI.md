@@ -50,6 +50,20 @@ Hướng dẫn: đánh dấu **Pass / Fail / N/A**; ghi **ISS-xxx** nếu lỗi;
 
 ---
 
+## Luồng D — Production (trừ NL — UOM)
+
+> **Đã vá code 2026-05-20** — UAT Luồng D: BOM line **g** trên SP **kg** → sau Post RM, tồn giảm **0,1** (không **100**). Ref: [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md).
+
+| Bước | Mô tả ngắn                                   | Kết quả | Ghi chú |
+| ---- | -------------------------------------------- | ------- | ------- |
+| D1   | Lệnh SX + lô; planned RM có ĐVT khác base SP |         |         |
+| D2   | Post RM; đối chiếu Inventory (đơn vị gốc)    |         |         |
+| D3   | Tổng NL trên lệnh SX khớp số trừ thực tế     |         |         |
+
+**Kết luận luồng D:** Pass / Fail / **Blocked (PROD-UOM-001)** — Ngày: **\_\_\_\_**
+
+---
+
 ## Tổng kết
 
 | Mục                                     | Giá trị    |

@@ -241,7 +241,7 @@ class ProductionPostingService
             'manufacturing_date' => $output->manufacturing_date?->format('Y-m-d'),
             'reference_type' => ProductionBatch::class,
             'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-fg-receipt:'.$output->id,
+            'idempotency_key' => 'production-fg-receipt:' . $output->id,
         ];
 
         DB::transaction(function () use ($payload, $output, $batch, $order): void {
@@ -283,16 +283,25 @@ class ProductionPostingService
 
     protected function postSingleConsumption(ProductionBatch $batch, ProductionBatchConsumption $consumption, int $companyId, int $rmWarehouseId): void
     {
-        $qty = $consumption->actual_quantity ?? $consumption->planned_quantity;
-        if ($qty <= 0) {
+        $qtyEntered = (float) ($consumption->actual_quantity ?? $consumption->planned_quantity);
+        if ($qtyEntered <= 0) {
             throw new InvalidArgumentException(__('production::app.consumptionQtyMustBePositive'));
         }
+
+        $productId = (int) $consumption->component_product_id;
+        $unitId = $consumption->unit_id !== null ? (int) $consumption->unit_id : null;
+        $qtyBase = $this->unitConversionService->convertToBase(
+            $companyId,
+            $productId,
+            $qtyEntered,
+            $unitId,
+        );
 
         $allocations = $this->resolveWarehouseBatchAllocationsForConsumption(
             $consumption,
             $companyId,
             $rmWarehouseId,
-            (float) $qty,
+            $qtyBase,
             $consumption->warehouse_product_batch_id !== null ? (int) $consumption->warehouse_product_batch_id : null,
         );
 
@@ -314,7 +323,7 @@ class ProductionPostingService
                 'batch_id' => (int) $allocation['batch_id'],
                 'reference_type' => ProductionBatch::class,
                 'reference_id' => (int) $batch->id,
-                'idempotency_key' => 'production-consume:'.$consumption->id.':'.$index,
+                'idempotency_key' => 'production-consume:' . $consumption->id . ':' . $index,
             ];
 
             $this->stockMovementService->recordOutbound($payload);
@@ -364,7 +373,7 @@ class ProductionPostingService
             ->where('warehouse_id', $rmWarehouseId)
             ->where('product_id', (int) $consumption->component_product_id)
             ->where('quantity', '>', 0)
-            ->when($preferredBatchId !== null, fn ($query) => $query->where('id', '!=', (int) $preferredBatchId))
+            ->when($preferredBatchId !== null, fn($query) => $query->where('id', '!=', (int) $preferredBatchId))
             ->orderByDesc('quantity')
             ->orderBy('id')
             ->get(['id', 'quantity', 'reserved_quantity']);

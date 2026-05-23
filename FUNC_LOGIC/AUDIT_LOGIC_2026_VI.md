@@ -183,7 +183,17 @@ rg "AiOrderWebhookController|ai-order-webhook" FUNC_LOGIC FUNC_IMPROVE docs --gl
 
 ---
 
-## 11) Chu kỳ 2026-05-21 — P2-UOM + SKU auto + audit 3 thư mục
+## 11) Chu kỳ 2026-05-20 — Production post RM UOM (tham chiếu FUNC_IMPROVE)
+
+| Việc               | Chi tiết                                                                                                                                                                                  |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Logic kho**      | `StockMovementService` + `WarehouseUnitConversionService` — đúng khi payload có `unit_id`                                                                                                 |
+| **Production gap** | `ProductionPostingService::postSingleConsumption` chưa truyền `unit_id` — xem [`FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) |
+| **FUNC_LOGIC**     | Không thêm flow file riêng; Production spec nằm `FUNC_IMPROVE` theo convention `AUDIT_LOGIC` §Production                                                                                  |
+
+---
+
+## 12) Chu kỳ 2026-05-21 — P2-UOM + SKU auto + audit 3 thư mục
 
 | Việc                | Chi tiết                                                                                                                                                                                             |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

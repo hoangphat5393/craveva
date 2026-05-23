@@ -4,6 +4,7 @@ namespace Modules\Production\Entities;
 
 use App\Models\BaseModel;
 use App\Models\Product;
+use App\Models\UnitType;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
@@ -51,5 +52,10 @@ class ProductionBatchConsumption extends BaseModel
     public function warehouseProductBatch(): BelongsTo
     {
         return $this->belongsTo(WarehouseProductBatch::class, 'warehouse_product_batch_id');
+    }
+
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(UnitType::class, 'unit_id');
     }
 }

@@ -50,7 +50,8 @@ class ProductionBatchController extends AccountBaseController
         $batch->load([
             'order.outputProduct',
             'order.bomSnapshotItems.componentProduct',
-            'consumptions.componentProduct',
+            'consumptions.componentProduct.unit',
+            'consumptions.unit',
             'consumptions.warehouseProductBatch',
             'outputs',
             'reworkOrders',
@@ -81,6 +82,9 @@ class ProductionBatchController extends AccountBaseController
             && in_array($order->status, [ProductionOrder::STATUS_RELEASED, ProductionOrder::STATUS_IN_PROGRESS], true);
 
         $this->batchWorkflowSteps = app(ProductionBatchWorkflowSteps::class)->forBatch($batch);
+        $this->showBatchConsumptionShadowColumn = (bool) config('production.phase2.yield_uom_shadow_enabled', false);
+        $this->batchCountOnOrder = $order->batches()->count();
+        $this->orderPlannedQuantity = (float) $order->planned_quantity;
 
         return view('production::batches.show', $this->data);
     }

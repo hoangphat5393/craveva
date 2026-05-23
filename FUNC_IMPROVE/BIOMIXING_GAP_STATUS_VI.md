@@ -1,7 +1,8 @@
 # Biomixing — trạng thái Phase 1 & 2 (đối chiếu code)
 
-**Cập nhật:** 2026-05-21  
-**Audit tài liệu:** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](./DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)
+**Cập nhật:** 2026-05-20  
+**Audit tài liệu:** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](./DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)  
+**UOM post lô:** [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) — **Fixed 2026-05-20**
 **Nguồn yêu cầu gốc:** `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md` (gộp từ PM_REQUEST, PM REQUEST CHAT, RTF).  
 **Multi-tenant / rủi ro B2B vs Production:** [`BIOMIXING_MULTITENANT_RISKS_VI.md`](./BIOMIXING_MULTITENANT_RISKS_VI.md)
 
@@ -84,12 +85,13 @@
 
 ### Còn lại (Phase 2+ / UAT)
 
-| ID            | Hạng mục                                                                                                                                                                                                                                                 |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P2-1 / P2-UOM | **✅ Code 2026-05-20/21** — A: UI SP + `product_unit_conversions`; B: SO, Báo giá, Hóa đơn, PO (chọn UOM → giá); C: BOM hint + NL SX quy base. **UAT:** một lượt theo plan. [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md) |
-| P2-SKU        | **✅ 2026-05-21** — SKU tự động khi tạo SP (Purchase): `{PREFIX}-{TYPE}-{SEQ}` theo `company_id`; placeholder «Tự động» / Auto-generated. `ProductSkuGenerator`, `product_sku_sequences`.                                                                |
-| P2+           | Phiên bản BOM V2; UAT Oldtown ký PM                                                                                                                                                                                                                      |
-| —             | Email/Estimate Request Phase 1 (tùy chọn)                                                                                                                                                                                                                |
+| ID              | Hạng mục                                                                                                                                                                                  |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-1 / P2-UOM   | **✅ Code** — A/B/C + post lô `convertToBase` (2026-05-20). **UAT:** Oldtown + Luồng D. [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                      |
+| P2-UOM-OUTBOUND | **✅ Fixed 2026-05-20** — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)                                                                                |
+| P2-SKU          | **✅ 2026-05-21** — SKU tự động khi tạo SP (Purchase): `{PREFIX}-{TYPE}-{SEQ}` theo `company_id`; placeholder «Tự động» / Auto-generated. `ProductSkuGenerator`, `product_sku_sequences`. |
+| P2+             | Phiên bản BOM V2; UAT Oldtown ký PM                                                                                                                                                       |
+| —               | Email/Estimate Request Phase 1 (tùy chọn)                                                                                                                                                 |
 
 Chi tiết kỹ thuật: `FUNC_IMPROVE/PHASE2_PM_PLAN_VI.md`, `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`.
 

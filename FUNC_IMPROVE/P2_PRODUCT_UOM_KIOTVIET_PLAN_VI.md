@@ -198,11 +198,12 @@ ProductUnitPriceResolver
 
 ### Giai đoạn C — Biomixing
 
-| #   | Việc                                                    |
-| --- | ------------------------------------------------------- |
-| C1  | BOM báo giá: hiển thị quy đổi SL (read-only)            |
-| C2  | Tổng NL lệnh SX: optional `convertToBase` (flag tenant) |
-| C3  | Bật `yield_uom_shadow_enabled` sau sign-off             |
+| #   | Việc                                                                                                                                        |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1  | BOM báo giá: hiển thị quy đổi SL (read-only)                                                                                                |
+| C2  | Tổng NL lệnh SX: `convertToBase` — **✅** `ProductionOrderMaterialRequirementsSummary`                                                      |
+| C2b | **Post RM outbound** `convertToBase` — **✅ 2026-05-20** → [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) |
+| C3  | Bật `yield_uom_shadow_enabled` sau sign-off                                                                                                 |
 
 ---
 
@@ -284,6 +285,7 @@ Cờ gợi ý: `multi_unit_enabled` per company (ẩn block UOM nếu tắt).
 ### C
 
 - [x] BOM hiển thị quy đổi; NL SX tổng theo base.
+- [x] Post RM consumption quy base — [`15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md) (Done 2026-05-20).
 - [ ] Shadow yield UOM nếu PM ký (`yield_uom_shadow_enabled`).
 
 ---
@@ -323,8 +325,8 @@ Cờ gợi ý: `multi_unit_enabled` per company (ẩn block UOM nếu tắt).
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
 | **A**   | ✅ Done    | `PurchaseProductController` + blades `product-unit-conversions*`; migration `selling_price`, `for_sale`, `sort_order` |
 | **B**   | ✅ Done    | `DocumentLineUnitPricing`, route `orders/product-unit-price`, partials SO/Estimate/Invoice/PO                         |
-| **C**   | ✅ Done    | `ProductUnitQuantityHintService` (estimate BOM); `ProductionOrderMaterialRequirementsSummary`                         |
-| **UAT** | ⏳ Pending | Checklist §11 — một lượt Product → SO → Estimate → PO → Production                                                    |
+| **C**   | ✅ Done    | Order totals + post lô (`ProductionPostingService` 2026-05-20)                                                        |
+| **UAT** | ⏳ Pending | Checklist §11 + Luồng D (`P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`)                                                     |
 
 **Audit tài liệu:** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](./DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)
 

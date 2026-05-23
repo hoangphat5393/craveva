@@ -53,7 +53,16 @@
             </div>
         </div>
 
-        <h5 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.rawMaterialsUsed')</h5>
+        <h5 class="f-14 text-dark-grey font-weight-bold mb-2">@lang('production::app.rawMaterialsUsed')</h5>
+        <p class="f-13 text-muted mb-3">
+            @lang('production::app.batchRmConsumptionIntro')
+            @if (($batchCountOnOrder ?? 1) > 1)
+                <span class="d-block mt-1">@lang('production::app.batchRmMultiBatchSplitNote', [
+                    'order_qty' => $formatQuantity($orderPlannedQuantity ?? (float) $batch->order->planned_quantity),
+                    'batch_count' => (int) ($batchCountOnOrder ?? 1),
+                ])</span>
+            @endif
+        </p>
         @if (!empty($canApplyBomSnapshotPlanned) && $canApplyBomSnapshotPlanned)
             <div class="bg-white rounded p-3 mb-3 f-14">
                 <form method="post" action="{{ route('production.batches.apply-planned-from-bom-snapshot', $batch) }}" class="mb-2">
@@ -71,8 +80,16 @@
                     <tr>
                         <th class="f-14 text-dark-grey">@lang('production::app.rawMaterialProduct')</th>
                         <th class="f-14 text-dark-grey">@lang('production::app.rawMaterialBatchId')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.plannedQuantityLine')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.plannedQuantityLineShadow')</th>
+                        <th class="f-14 text-dark-grey">
+                            @if ($batch->posted_consumptions_at)
+                                @lang('production::app.batchRmPlannedConsumptionColumnPosted')
+                            @else
+                                @lang('production::app.batchRmPlannedConsumptionColumn')
+                            @endif
+                        </th>
+                        @if ($showBatchConsumptionShadowColumn ?? (bool) config('production.phase2.yield_uom_shadow_enabled', false))
+                            <th class="f-14 text-dark-grey">@lang('production::app.batchRmPlannedConsumptionShadowColumn')</th>
+                        @endif
                         <th class="f-14 text-dark-grey">@lang('production::app.rawMaterialBatch')</th>
                     </tr>
                 </thead>
@@ -84,15 +101,30 @@
                                     ({{ $line->warehouseProductBatch->batch_number ?? '—' }})
                                 @endif
                             </td>
-                            <td>{{ $formatQuantity($line->actual_quantity ?? $line->planned_quantity) }}</td>
                             <td>
-                                @if ($line->planned_quantity_shadow !== null)
-                                    {{ $formatQuantity($line->planned_quantity_shadow) }}
-                                    <div class="text-muted f-12 mt-1">@lang('production::app.shadowModeLabel')</div>
+                                @php
+                                    $consumptionQty = $line->actual_quantity ?? $line->planned_quantity;
+                                    $consumptionUnit = $line->unit?->unit_type ?? $line->componentProduct?->unit?->unit_type;
+                                @endphp
+                                @if ($consumptionQty !== null && (float) $consumptionQty > 0)
+                                    {{ $formatQuantity((float) $consumptionQty) }}
+                                    @if ($consumptionUnit)
+                                        <span class="text-muted">{{ $consumptionUnit }}</span>
+                                    @endif
                                 @else
-                                    —
+                                    <span class="text-warning" title="@lang('production::app.batchRmMissingPlannedQtyHint')">—</span>
                                 @endif
                             </td>
+                            @if ($showBatchConsumptionShadowColumn ?? (bool) config('production.phase2.yield_uom_shadow_enabled', false))
+                                <td>
+                                    @if ($line->planned_quantity_shadow !== null)
+                                        {{ $formatQuantity($line->planned_quantity_shadow) }}
+                                        <div class="text-muted f-12 mt-1">@lang('production::app.shadowModeLabel')</div>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                            @endif
                             <td>
                                 @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at === null && $line->warehouse_product_batch_id === null)
                                     @php

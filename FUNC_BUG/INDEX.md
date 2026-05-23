@@ -22,6 +22,10 @@ Navigation index for bug, incident, and troubleshooting documents.
 - `FUNC_BUG/PRICING_VISIBLE_STAGING_NOT_LOCAL.md`
 - `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md`
 
+## Production / warehouse (known functional gaps)
+
+- `FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md` — Post RM consumption không quy đổi UOM (Open P0); spec: `FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`
+
 ## QA, performance, and data quality
 
 - `FUNC_BUG/CLIENT_DATATABLE_PERFORMANCE.md`

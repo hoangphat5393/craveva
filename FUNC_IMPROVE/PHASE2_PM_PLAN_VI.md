@@ -83,12 +83,13 @@ Module **`Production`** (`/account/production/...`) đã có nền (ước ~**70
 
 ### Ưu tiên thấp / Phase 2+ (P2)
 
-| #    | Việc                                                                                                                                                             |
-| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P2-1 | **UOM + UOM price** — **✅ code 2026-05-20/21** (A→B→C); **UAT** còn lại. Chi tiết: [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md) |
-| P2-2 | Phiên bản BOM V1/V2, lưu trữ                                                                                                                                     |
-| P2-3 | Multi-batch planning nâng cao                                                                                                                                    |
-| P2-4 | Receiving QC GRN, CCP cứng, AI validate certs (proposal Phase 3)                                                                                                 |
+| #               | Việc                                                                                                                                                      |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-1            | **UOM + UOM price** — **✅ code** (A→B→C + post lô 2026-05-20). UAT còn lại. [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md) |
+| P2-UOM-OUTBOUND | **✅ Fixed 2026-05-20** — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)                                                |
+| P2-2            | Phiên bản BOM V1/V2, lưu trữ                                                                                                                              |
+| P2-3            | Multi-batch planning nâng cao                                                                                                                             |
+| P2-4            | Receiving QC GRN, CCP cứng, AI validate certs (proposal Phase 3)                                                                                          |
 
 ---
 

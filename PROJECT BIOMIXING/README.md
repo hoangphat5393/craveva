@@ -17,10 +17,11 @@ Toàn bộ **Markdown triển khai** nằm tại:
 
 ## Living documentation (trạng thái code — đọc trước demo/UAT)
 
-| Mục                 | File                                                                                                                                                      |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Gap / đã làm gì** | [`FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`](../FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md)                                                                   |
-| **Phase 1 / 2 PM**  | [`FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md), [`PHASE2_PM_PLAN_VI.md`](../FUNC_IMPROVE/PHASE2_PM_PLAN_VI.md) |
-| **UOM + giá (P2)**  | [`FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](../FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                                                   |
-| **Audit 3 thư mục** | [`FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](../FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)                           |
-| **Luồng kho / SO**  | [`FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`](../FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md)                                                             |
+| Mục                    | File                                                                                                                                                      |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Gap / đã làm gì**    | [`FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`](../FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md)                                                                   |
+| **Phase 1 / 2 PM**     | [`FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md), [`PHASE2_PM_PLAN_VI.md`](../FUNC_IMPROVE/PHASE2_PM_PLAN_VI.md) |
+| **UOM + giá (P2)**     | [`FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](../FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                                                   |
+| **Post RM UOM (Open)** | [`FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) — trừ tồn lô SX phải đọc trước UAT post       |
+| **Audit 3 thư mục**    | [`FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](../FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)                           |
+| **Luồng kho / SO**     | [`FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`](../FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md)                                                             |

@@ -21,6 +21,7 @@
 - Một Production Order chỉ chọn **một BOM**.
 - `planned_quantity` trên dòng tiêu hao RM = `quantity_per_fg_unit` (trong snapshot) × `bom_snapshot_planned_quantity`.
 - Đây là con số dùng cho **vận hành thật**: gán lô, post outbound RM, cân đối với FG policy, v.v.
+- **Lưu ý (2026-05-20):** Post outbound phải **quy đổi ĐVT** qua `unit_id` — gap riêng, **không** do shadow: [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md).
 
 ---
 

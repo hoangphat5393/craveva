@@ -7,8 +7,7 @@
 ---
 
 ## 1. Phân loại vấn đề
-
-| Câu hỏi                                     | Trả lời                                                                                             |
+223223                                        |
 | ------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Post FG có ghi kho đúng không?              | **Có** — `StockMovementService::recordInbound` → `warehouse_product_batches`, Trace, Stock batches. |
 | Inventory list / Products có tự hiện không? | **Trước P1c: Không** — thiếu dòng `purchase_inventory_adjustment` + `purchase_stock_adjustments`.   |

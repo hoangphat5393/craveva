@@ -3,7 +3,7 @@
         <x-form id="save-stock-data-form">
             <div class="add-client bg-white rounded">
                 <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">
-                    @lang('warehouse::app.addStock')
+                    @lang('warehouse::app.adjustStockAction')
                 </h4>
 
                 <div class="p-20">

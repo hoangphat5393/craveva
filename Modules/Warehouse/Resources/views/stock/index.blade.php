@@ -72,7 +72,7 @@
             <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
                 @if ($addStockPerm == 'all' || $addStockPerm == 'added')
                     <x-forms.link-primary :link="route('warehouse.stock.create')" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ route('warehouse.stock.index') }}">
-                        @lang('warehouse::app.addStock')
+                        @lang('warehouse::app.adjustStockAction')
                     </x-forms.link-primary>
                 @endif
                 @if ($transferPerm == 'all' || $transferPerm == 'added')

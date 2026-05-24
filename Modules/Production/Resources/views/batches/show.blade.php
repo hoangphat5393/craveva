@@ -40,7 +40,7 @@
             <div class="row f-14">
                 <div class="col-md-4 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.status') (@lang('app.order'))</span>
-                    <span class="font-weight-normal">{{ __('production::app.statusLabels.' . $batch->order->status) }}</span>
+                    <span class="font-weight-normal">@include('production::partials.order-status-badge', ['status' => $batch->order->status])</span>
                 </div>
                 <div class="col-md-4 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.rawMaterialsDeductedAt')</span>

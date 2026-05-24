@@ -6,7 +6,7 @@
             <div class="col-lg-12">
                 <div class="bg-white rounded">
                     <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">
-                        @lang('warehouse::app.adjustStock')
+                        @lang('warehouse::app.adjustStockAction')
                     </h4>
                     <div class="p-20">
                         <x-form id="createStock" method="POST" action="{{ route('warehouse.stock.store') }}">

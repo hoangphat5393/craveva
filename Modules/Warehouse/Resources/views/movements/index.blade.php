@@ -57,8 +57,8 @@
                 <div class="select-status">
                     <select class="form-control select-picker" name="movement_type" id="warehouse-movements-type" data-container="body" data-size="8">
                         <option value="">@lang('warehouse::app.allMovementTypes')</option>
-                        <option value="inbound" @selected(request('movement_type') === 'inbound')>@lang('warehouse::app.movementInbound')</option>
-                        <option value="outbound" @selected(request('movement_type') === 'outbound')>@lang('warehouse::app.movementOutbound')</option>
+                        <option value="inbound" @selected(request('movement_type') === 'inbound')>@lang('warehouse::app.inbound')</option>
+                        <option value="outbound" @selected(request('movement_type') === 'outbound')>@lang('warehouse::app.outbound')</option>
                     </select>
                 </div>
             </div>
@@ -115,9 +115,9 @@
                             <td class="text-nowrap">{{ $movement->created_at->timezone(company()->timezone)->format(company()->date_format . ' H:i') }}</td>
                             <td>
                                 @if ($movement->movement_type === 'inbound')
-                                    <span class="badge badge-success">@lang('warehouse::app.movementInbound')</span>
+                                    <span class="badge badge-success">@lang('warehouse::app.inbound')</span>
                                 @elseif ($movement->movement_type === 'outbound')
-                                    <span class="badge badge-warning">@lang('warehouse::app.movementOutbound')</span>
+                                    <span class="badge badge-warning">@lang('warehouse::app.outbound')</span>
                                 @else
                                     <span class="badge badge-secondary">{{ $movement->movement_type }}</span>
                                 @endif

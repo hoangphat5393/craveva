@@ -124,6 +124,56 @@ Ví dụ khung (Orders — toàn bộ trong menu):
 - **Ưu tiên:** cùng pattern chấm `text-dark-green` / `text-red` + `f-10`.
 - **Badge:** chỉ khi toàn bộ màn đồng nhất badge (`badge-success` / `badge-danger`) — không trộn chấm + badge trên cùng một bảng.
 
+### 5.4 Trạng thái dạng **badge** (list / detail chỉ đọc)
+
+Dùng khi cột **Status** (hoặc Stock Health, trạng thái nghiệp vụ) **không** chỉnh inline — cần **đọc nhanh** bằng màu nền, giống **Purchase Inventory → Stock Health**.
+
+#### 5.4.1 Markup chuẩn (Bootstrap 4 theme Hub)
+
+```html
+<span class="badge badge-success">Completed</span>
+```
+
+- **Class:** `badge badge-{variant}` — variant ∈ `success`, `warning`, `danger`, `info`, `secondary`, `primary` (theme sẵn có).
+- **Không** hard-code màu hex; **không** trộn chấm tròn (§5.1) và badge trên **cùng một bảng**.
+- **Nhãn:** luôn qua `__()` / `trans()` (vd. `production::app.statusLabels.{value}`).
+- **DataTable:** cột badge trả HTML → khai báo `rawColumns`; escape label bằng `e()` trong PHP.
+
+#### 5.4.2 Map màu gợi ý (semantic)
+
+| Ý nghĩa                   | `badge-*`   | Ví dụ module                                                  |
+| ------------------------- | ----------- | ------------------------------------------------------------- |
+| Ổn / hoàn tất / active    | `success`   | Inventory **Normal**; Production **completed**                |
+| Đang xử lý / cảnh báo nhẹ | `warning`   | Inventory **Low**, near expiry; Production **in_progress**    |
+| Lỗi / hủy / critical      | `danger`    | Inventory **Critical**, **Expired**; Production **cancelled** |
+| Đã phát hành / info       | `info`      | Production **released**                                       |
+| Nháp / trung tính         | `secondary` | Production **draft**                                          |
+
+**Tham chiếu Inventory (DataTable):** `Modules/Purchase/DataTables/PurchaseInventoryDataTable.php` — `editColumn('stock_health', ...)`.
+
+**Tham chiếu Production orders (Blade list + detail):**
+
+- Map + HTML: `Modules/Production/Support/ProductionOrderStatusBadge.php`
+- Partial: `Modules/Production/Resources/views/partials/order-status-badge.blade.php`
+- List: `Modules/Production/Resources/views/orders/index.blade.php`
+
+#### 5.4.3 Cách copy sang module mới
+
+1. Tạo class `{Module}{Entity}StatusBadge` với `VARIANT_BY_STATUS`, `label()`, `html()` (hoặc Blade component `@props(['variant','label'])`).
+2. Dùng **hằng status** từ Entity (không magic string rải rác).
+3. List Blade: `@include('…order-status-badge', ['status' => $row->status])` hoặc `{!! StatusBadge::html($row->status) !!}`.
+4. Detail header: cùng partial — đồng nhất list ↔ show.
+5. Test unit: mỗi status → đúng `badge-{variant}` + label đã dịch.
+
+#### 5.4.4 Khi nào dùng badge vs §6 (select inline)
+
+| Pattern              | Dùng khi                                                                |
+| -------------------- | ----------------------------------------------------------------------- |
+| **§5.4 Badge**       | Chỉ đọc; trạng thái đổi qua workflow / nút trên detail, không trên list |
+| **§6 Select inline** | User được đổi trạng thái **trực tiếp trên list** (Orders)               |
+
+Production orders → **badge (§5.4)**. Sales orders → **inline select (§6)**.
+
 ---
 
 ## 6. Trạng thái đa giá trị + chỉnh inline trên list (kế thừa Orders — **UI + UX**)
@@ -203,7 +253,7 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 - [ ] Primary / secondary đúng component Hub.
 - [ ] Filter + search + reset (nếu là list có lọc).
 - [ ] **Cột Action (§4):** `task_view` + `task_view_more` + `icon-options-vertical`, menu `dropdown-menu-right`, icon `mr-2`, quyền + thứ tự mục.
-- [ ] Trạng thái: pattern **§5** hoặc **§6** và map màu nhất quán.
+- [ ] Trạng thái: pattern **§5** (chấm), **§5.4** (badge readonly), hoặc **§6** (inline select) — **một** pattern mỗi bảng; map màu nhất quán.
 - [ ] Inline status: **focus prev**, **revert** khi lỗi, refresh bảng.
 - [ ] Textarea mô tả: `rows` theo §7.
 - [ ] DataTable: CSS/JS đủ; `rawColumns` đủ.
@@ -382,4 +432,4 @@ window.apiHttp
 
 ---
 
-_Cập nhật: 2026-05-23 — §11.3 Production order FG/BOM searchable select + nhãn SKU. Trước: 2026-05-21 — §12 gộp chuẩn validation hai lớp (FE + server)._
+_Cập nhật: 2026-05-23 — §5.4 badge trạng thái readonly (Inventory / Production orders); §11.3 Production order FG/BOM searchable select. Trước: 2026-05-21 — §12 validation hai lớp._

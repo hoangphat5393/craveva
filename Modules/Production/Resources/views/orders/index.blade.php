@@ -32,7 +32,7 @@
                     <select class="form-control select-picker" name="status" id="production-orders-status-filter" data-container="body" data-size="8">
                         <option value="" @selected(!request()->filled('status'))>@lang('app.all')</option>
                         @foreach (['draft', 'released', 'in_progress', 'completed', 'cancelled'] as $st)
-                            <option value="{{ $st }}" @selected(request('status') === $st)>{{ ucfirst(str_replace('_', ' ', $st)) }}</option>
+                            <option value="{{ $st }}" @selected(request('status') === $st)>{{ __('production::app.statusLabels.' . $st) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -102,7 +102,7 @@
                                 @endif
                             </td>
                             <td>{{ $order->planned_quantity }}</td>
-                            <td>{{ __('production::app.statusLabels.' . $order->status) }}</td>
+                            <td>@include('production::partials.order-status-badge', ['status' => $order->status])</td>
                             <td class="text-right">
                                 <a href="{{ route('production.orders.show', $order) }}" class="btn btn-secondary rounded f-14 btn-sm">
                                     <i class="fa fa-eye mr-1"></i>@lang('app.view')

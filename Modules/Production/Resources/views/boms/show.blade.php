@@ -25,7 +25,7 @@
                     @lang('app.back')
                 </x-forms.link-secondary>
                 @if ($editable && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true))
-                    <x-forms.link-primary :link="route('production.boms.edit', $bom)" class="float-left mr-2" icon="pencil-alt">
+                    <x-forms.link-primary :link="route('production.boms.edit', [$bom, 'redirect_url' => route('production.boms.show', $bom)])" class="float-left mr-2 openRightModal" icon="pencil-alt">
                         @lang('app.edit')
                     </x-forms.link-primary>
                     <form method="post" action="{{ route('production.boms.destroy', $bom) }}" class="d-inline" onsubmit="return confirm(@json(__('app.areYouSure')));">

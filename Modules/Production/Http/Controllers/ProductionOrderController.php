@@ -2,10 +2,12 @@
 
 namespace Modules\Production\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Project;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -50,7 +52,7 @@ class ProductionOrderController extends AccountBaseController
         return $dataTable->render('production::orders.index', $this->data);
     }
 
-    public function create(Request $request): View
+    public function create(Request $request): View|array
     {
         $this->assertAddProductionOrders();
 
@@ -62,15 +64,30 @@ class ProductionOrderController extends AccountBaseController
             : null;
         $this->addProductData(null, $this->prefillSalesOrderId);
 
+        if ($request->ajax()) {
+            $html = view('production::orders.ajax.create', $this->data)->render();
+
+            return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
+        }
+
+        $this->view = 'production::orders.ajax.create';
+
         return view('production::orders.create', $this->data);
     }
 
-    public function store(StoreProductionOrderRequest $request): RedirectResponse
+    public function store(StoreProductionOrderRequest $request): RedirectResponse|JsonResponse
     {
         $order = ProductionOrder::query()->create(array_merge($request->validated(), [
             'company_id' => company()->id,
             'status' => ProductionOrder::STATUS_DRAFT,
         ]));
+
+        if ($request->ajax()) {
+            return response()->json(Reply::successWithData(__('messages.recordSaved'), [
+                'redirectUrl' => $request->input('redirect_url', route('production.orders.index')),
+                'orderId' => $order->id,
+            ]));
+        }
 
         return redirect()
             ->route('production.orders.show', $order)
@@ -117,7 +134,7 @@ class ProductionOrderController extends AccountBaseController
         return view('production::orders.show', $this->data);
     }
 
-    public function edit(ProductionOrder $order): View
+    public function edit(ProductionOrder $order): View|array
     {
         $this->assertEditProductionOrders();
         $this->assertOrderInCompany($order);
@@ -127,16 +144,31 @@ class ProductionOrderController extends AccountBaseController
         $this->order = $order;
         $this->addProductData($order);
 
+        if (request()->ajax()) {
+            $html = view('production::orders.ajax.edit', $this->data)->render();
+
+            return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
+        }
+
+        $this->view = 'production::orders.ajax.edit';
+
         return view('production::orders.edit', $this->data);
     }
 
-    public function update(UpdateProductionOrderRequest $request, ProductionOrder $order): RedirectResponse
+    public function update(UpdateProductionOrderRequest $request, ProductionOrder $order): RedirectResponse|JsonResponse
     {
         $this->assertEditProductionOrders();
         $this->assertOrderInCompany($order);
         abort_if($order->status !== ProductionOrder::STATUS_DRAFT, 403);
 
         $order->update($request->validated());
+
+        if ($request->ajax()) {
+            return response()->json(Reply::successWithData(__('messages.updateSuccess'), [
+                'redirectUrl' => $request->input('redirect_url', route('production.orders.index')),
+                'orderId' => $order->id,
+            ]));
+        }
 
         return redirect()
             ->route('production.orders.show', $order)
@@ -160,7 +192,7 @@ class ProductionOrderController extends AccountBaseController
                 ProductionBatch::query()->create([
                     'company_id' => $order->company_id,
                     'production_order_id' => $order->id,
-                    'batch_code' => 'PB-' . $order->id . '-' . strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
+                    'batch_code' => 'PB-'.$order->id.'-'.strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
                 ]);
             }
         } catch (\Throwable $e) {
@@ -230,15 +262,15 @@ class ProductionOrderController extends AccountBaseController
             }
 
             if ($recentSalesOrders->contains(
-                static fn(Order $row): bool => (int) $row->id === (int) $linkedSalesOrder->id
+                static fn (Order $row): bool => (int) $row->id === (int) $linkedSalesOrder->id
             )) {
                 return $recentSalesOrders;
             }
 
             return $recentSalesOrders
                 ->prepend($linkedSalesOrder)
-                ->unique(static fn(Order $row): int => (int) $row->id)
-                ->sortByDesc(static fn(Order $row): int => (int) $row->id)
+                ->unique(static fn (Order $row): int => (int) $row->id)
+                ->sortByDesc(static fn (Order $row): int => (int) $row->id)
                 ->values();
         };
 
@@ -254,10 +286,10 @@ class ProductionOrderController extends AccountBaseController
 
         $this->projects = config('production.ui.show_linked_project_on_order_form')
             ? Project::query()
-            ->where('company_id', $companyId)
-            ->orderByDesc('id')
-            ->limit(250)
-            ->get(['id', 'project_name'])
+                ->where('company_id', $companyId)
+                ->orderByDesc('id')
+                ->limit(250)
+                ->get(['id', 'project_name'])
             : collect();
     }
 

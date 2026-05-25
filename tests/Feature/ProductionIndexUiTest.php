@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Modules\Production\Entities\ProductionBom;
+use Modules\Production\Entities\ProductionBomItem;
+use Modules\Production\Entities\ProductionOrder;
 
 uses(DatabaseTransactions::class);
 
@@ -29,6 +32,8 @@ it('renders production order and bom indexes with the shared datatable mechanism
     expect($ordersContent)->toContain('id="production-orders-table"');
     expect($ordersContent)->toContain(__('production::app.newOrder'));
     expect($ordersContent)->toContain(__('production::app.status'));
+    expect($ordersContent)->toContain('openRightModal');
+    expect($ordersContent)->toContain('redirect_url=');
     expect($ordersContent)->not->toContain('production-list-footer');
 
     $bomsContent = $this->actingAs($fix['userAuth'], 'web')
@@ -42,6 +47,8 @@ it('renders production order and bom indexes with the shared datatable mechanism
     expect($bomsContent)->toContain('id="production-boms-table"');
     expect($bomsContent)->toContain(__('production::app.newBom'));
     expect($bomsContent)->toContain(__('modules.invoices.unitType'));
+    expect($bomsContent)->toContain('openRightModal');
+    expect($bomsContent)->toContain('redirect_url=');
 });
 
 it('returns datatable json for production order and bom ajax requests', function (): void {
@@ -109,4 +116,104 @@ it('returns datatable json for production order and bom ajax requests', function
         'recordsFiltered',
         'data',
     ]);
+});
+
+it('returns ajax modal payloads for production order and bom create and edit screens', function (): void {
+    $fix = productionTenantFlowFixtures();
+    if ($fix === null) {
+        return;
+    }
+
+    $session = [
+        'company' => $fix['company'],
+        'multi_company_selected' => 1,
+        'user_company_count' => 1,
+    ];
+
+    $headers = [
+        'X-Requested-With' => 'XMLHttpRequest',
+        'Accept' => 'application/json',
+    ];
+
+    $bom = ProductionBom::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'output_product_id' => (int) $fix['fg']->id,
+        'version' => 'modal-test-' . uniqid(),
+        'code' => 'modal-bom',
+        'is_default' => false,
+        'created_by' => $fix['user']->id,
+        'updated_by' => $fix['user']->id,
+    ]);
+
+    $editableBom = ProductionBom::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'output_product_id' => (int) $fix['fg']->id,
+        'version' => 'editable-modal-test-' . uniqid(),
+        'code' => 'editable-modal-bom',
+        'is_default' => false,
+        'created_by' => $fix['user']->id,
+        'updated_by' => $fix['user']->id,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => (int) $fix['rm']->id,
+        'quantity' => 1,
+        'sort_order' => 0,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'production_bom_id' => $editableBom->id,
+        'component_product_id' => (int) $fix['rm']->id,
+        'quantity' => 1,
+        'sort_order' => 0,
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'output_product_id' => (int) $fix['fg']->id,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => (int) $fix['rmWarehouse']->id,
+        'fg_warehouse_id' => (int) $fix['fgWarehouse']->id,
+        'planned_quantity' => 10,
+        'status' => ProductionOrder::STATUS_DRAFT,
+    ]);
+
+    $orderCreateResponse = $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->withHeaders($headers)
+        ->get(route('production.orders.create', ['redirect_url' => route('production.orders.index')]));
+
+    $orderCreateResponse->assertSuccessful();
+    expect((string) $orderCreateResponse->json('html'))->toContain('save-production-order-form');
+    expect((string) $orderCreateResponse->json('html'))->toContain('save-production-order-button');
+
+    $orderEditResponse = $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->withHeaders($headers)
+        ->get(route('production.orders.edit', [$order, 'redirect_url' => route('production.orders.index')]));
+
+    $orderEditResponse->assertSuccessful();
+    expect((string) $orderEditResponse->json('html'))->toContain('update-production-order-form');
+    expect((string) $orderEditResponse->json('html'))->toContain('update-production-order-button');
+
+    $bomCreateResponse = $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->withHeaders($headers)
+        ->get(route('production.boms.create', ['redirect_url' => route('production.boms.index')]));
+
+    $bomCreateResponse->assertSuccessful();
+    expect((string) $bomCreateResponse->json('html'))->toContain('save-production-bom-form');
+    expect((string) $bomCreateResponse->json('html'))->toContain('save-production-bom-button');
+
+    $bomEditResponse = $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->withHeaders($headers)
+        ->get(route('production.boms.edit', [$editableBom, 'redirect_url' => route('production.boms.index')]));
+
+    $bomEditResponse->assertSuccessful();
+    expect((string) $bomEditResponse->json('html'))->toContain('update-production-bom-form');
+    expect((string) $bomEditResponse->json('html'))->toContain('update-production-bom-button');
 });

@@ -48,17 +48,25 @@ class ProductionBomController extends AccountBaseController
         return $dataTable->render('production::boms.index', $this->data);
     }
 
-    public function create(): View
+    public function create(Request $request): View|array
     {
         $this->assertAddProductionBoms();
         $this->pageTitle = __('production::app.newBom');
 
         $this->addProductData();
 
+        if ($request->ajax()) {
+            $html = view('production::boms.ajax.create', $this->data)->render();
+
+            return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
+        }
+
+        $this->view = 'production::boms.ajax.create';
+
         return view('production::boms.create', $this->data);
     }
 
-    public function store(StoreProductionBomRequest $request): RedirectResponse
+    public function store(StoreProductionBomRequest $request): RedirectResponse|JsonResponse
     {
         $this->assertAddProductionBoms();
 
@@ -97,6 +105,13 @@ class ProductionBomController extends AccountBaseController
             return $bom;
         });
 
+        if ($request->ajax()) {
+            return response()->json(Reply::successWithData(__('messages.recordSaved'), [
+                'redirectUrl' => $request->input('redirect_url', route('production.boms.index')),
+                'bomId' => $bom->id,
+            ]));
+        }
+
         return redirect()
             ->route('production.boms.show', $bom)
             ->with('success', __('messages.recordSaved'));
@@ -109,7 +124,7 @@ class ProductionBomController extends AccountBaseController
 
         $bom->load(['items.componentProduct.unit', 'items.unit', 'outputProduct.unit']);
 
-        $this->pageTitle = __('production::app.bomDetail') . ' ' . $bom->version;
+        $this->pageTitle = __('production::app.bomDetail').' '.$bom->version;
         $this->bom = $bom;
         $this->bomCostSummary = app(ProductionBomLineCostCalculator::class)
             ->summarizeSavedLines($bom, (int) company()->id);
@@ -117,7 +132,7 @@ class ProductionBomController extends AccountBaseController
         return view('production::boms.show', $this->data);
     }
 
-    public function edit(ProductionBom $bom): View
+    public function edit(ProductionBom $bom): View|array
     {
         $this->assertEditProductionBoms();
         $this->assertBomInCompany($bom);
@@ -130,10 +145,18 @@ class ProductionBomController extends AccountBaseController
 
         $this->addProductData();
 
+        if (request()->ajax()) {
+            $html = view('production::boms.ajax.edit', $this->data)->render();
+
+            return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
+        }
+
+        $this->view = 'production::boms.ajax.edit';
+
         return view('production::boms.edit', $this->data);
     }
 
-    public function update(UpdateProductionBomRequest $request, ProductionBom $bom): RedirectResponse
+    public function update(UpdateProductionBomRequest $request, ProductionBom $bom): RedirectResponse|JsonResponse
     {
         $this->assertEditProductionBoms();
         $this->assertBomInCompany($bom);
@@ -171,6 +194,13 @@ class ProductionBomController extends AccountBaseController
                 ]);
             }
         });
+
+        if ($request->ajax()) {
+            return response()->json(Reply::successWithData(__('messages.updateSuccess'), [
+                'redirectUrl' => $request->input('redirect_url', route('production.boms.index')),
+                'bomId' => $bom->id,
+            ]));
+        }
 
         return redirect()
             ->route('production.boms.show', $bom)

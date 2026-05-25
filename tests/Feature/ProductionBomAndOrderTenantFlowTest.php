@@ -14,7 +14,7 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         return;
     }
 
-    $version = 't-http-' . uniqid('', true);
+    $version = 't-http-'.uniqid('', true);
 
     $this->actingAs($fix['userAuth'], 'web')
         ->withSession([
@@ -88,6 +88,7 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         ->get(route('production.orders.index'))
         ->assertSuccessful()
         ->assertSee(__('modules.invoices.unitType'), false)
+        ->assertSee(__('production::app.materialAvailabilityShortColumn'), false)
         ->assertSee('production-orders-table', false);
 
     $datatableResponse = $this->actingAs($fix['userAuth'], 'web')
@@ -102,6 +103,7 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
             ['data' => 'fg_unit_type', 'name' => 'output_unit_types.unit_type'],
             ['data' => 'bom_label', 'name' => 'boms.code', 'searchable' => false, 'orderable' => false],
             ['data' => 'planned_quantity', 'name' => 'production_orders.planned_quantity'],
+            ['data' => 'material_availability', 'searchable' => false, 'orderable' => false],
             ['data' => 'status', 'name' => 'production_orders.status'],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
         ], [
@@ -111,7 +113,7 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
 
     $datatableResponse->assertSuccessful();
     $matchingRow = collect($datatableResponse->json('data'))
-        ->first(fn(array $row): bool => str_contains((string) ($row['bom_label'] ?? ''), 'http-test'));
+        ->first(fn (array $row): bool => str_contains((string) ($row['bom_label'] ?? ''), 'http-test'));
 
     expect($matchingRow)->not->toBeNull();
     expect((string) ($matchingRow['bom_label'] ?? ''))->toContain('http-test');

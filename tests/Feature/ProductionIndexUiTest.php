@@ -34,6 +34,7 @@ it('renders production order and bom indexes with the shared datatable mechanism
     expect($ordersContent)->toContain('id="production-orders-table"');
     expect($ordersContent)->toContain(__('production::app.newOrder'));
     expect($ordersContent)->toContain(__('production::app.status'));
+    expect($ordersContent)->toContain(__('production::app.materialAvailabilityShortColumn'));
     expect($ordersContent)->toContain('openRightModal');
     expect($ordersContent)->toContain('redirect_url=');
     expect($ordersContent)->not->toContain('production-list-footer');
@@ -79,6 +80,7 @@ it('returns datatable json for production order and bom ajax requests', function
             ['data' => 'fg_unit_type', 'name' => 'output_unit_types.unit_type'],
             ['data' => 'bom_label', 'name' => 'boms.code', 'searchable' => false, 'orderable' => false],
             ['data' => 'planned_quantity', 'name' => 'production_orders.planned_quantity'],
+            ['data' => 'material_availability', 'searchable' => false, 'orderable' => false],
             ['data' => 'status', 'name' => 'production_orders.status'],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
         ], [
@@ -120,7 +122,7 @@ it('returns datatable json for production order and bom ajax requests', function
     ]);
 });
 
-it('shows sufficient and shortfall RM badges in production order datatable status column', function (): void {
+it('shows sufficient and shortfall badges in the separate production order stock status column', function (): void {
     $fix = productionTenantFlowFixtures();
     if ($fix === null) {
         return;
@@ -206,6 +208,7 @@ it('shows sufficient and shortfall RM badges in production order datatable statu
             ['data' => 'fg_unit_type', 'name' => 'output_unit_types.unit_type'],
             ['data' => 'bom_label', 'name' => 'boms.code', 'searchable' => false, 'orderable' => false],
             ['data' => 'planned_quantity', 'name' => 'production_orders.planned_quantity'],
+            ['data' => 'material_availability', 'searchable' => false, 'orderable' => false],
             ['data' => 'status', 'name' => 'production_orders.status'],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
         ], [
@@ -218,11 +221,17 @@ it('shows sufficient and shortfall RM badges in production order datatable statu
     $rows = collect($datatableResponse->json('data'))->keyBy('id');
     $enoughStatusHtml = (string) data_get($rows->get($enoughOrder->id), 'status', '');
     $shortfallStatusHtml = (string) data_get($rows->get($shortfallOrder->id), 'status', '');
+    $enoughMaterialAvailabilityHtml = (string) data_get($rows->get($enoughOrder->id), 'material_availability', '');
+    $shortfallMaterialAvailabilityHtml = (string) data_get($rows->get($shortfallOrder->id), 'material_availability', '');
 
-    expect($enoughStatusHtml)->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
-    expect($enoughStatusHtml)->toContain('badge-success');
-    expect($shortfallStatusHtml)->toContain(__('production::app.materialAvailabilityLabels.shortfall'));
-    expect($shortfallStatusHtml)->toContain('badge-danger');
+    expect($enoughStatusHtml)->not->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
+    expect($shortfallStatusHtml)->not->toContain(__('production::app.materialAvailabilityLabels.shortfall'));
+    expect($enoughMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
+    expect($enoughMaterialAvailabilityHtml)->toContain('badge-success');
+    expect($enoughMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
+    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.shortfall'));
+    expect($shortfallMaterialAvailabilityHtml)->toContain('badge-danger');
+    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.shortfall'));
 });
 
 it('returns ajax modal payloads for production order and bom create and edit screens', function (): void {

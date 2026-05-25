@@ -230,9 +230,14 @@ return [
     'materialRequirementsTitle' => 'Tổng nguyên liệu cho lệnh này',
     'materialRequirementsHelp' => 'Theo BOM: SL / 1 TP × (1 + % hao hụt) × SL kế hoạch (:qty). So sánh tồn kho kho NL trước khi phát hành.',
     'materialRequirementsShortfallWarning' => 'Có nguyên liệu chưa đủ tồn tại kho NL đã chọn.',
+    'materialAvailabilityShortColumn' => 'NVL',
     'materialAvailabilityLabels' => [
         'sufficient' => 'Đủ nguyên liệu',
         'shortfall' => 'Thiếu nguyên liệu',
+    ],
+    'materialAvailabilityShortLabels' => [
+        'sufficient' => 'Đủ',
+        'shortfall' => 'Thiếu',
     ],
     'materialQtyPerFgUnit' => 'SL / 1 TP',
     'materialQtyPerManufacturedProductUnit' => 'SL / 1 sản phẩm sản xuất',

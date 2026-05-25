@@ -73,6 +73,7 @@ class ProductionOrdersDataTable extends BaseDataTable
         });
 
         $datatables->editColumn('status', fn (ProductionOrder $row): string => $this->statusColumnHtml($row));
+        $datatables->addColumn('material_availability', fn (ProductionOrder $row): string => $this->materialAvailabilityColumnHtml($row));
 
         $datatables->addColumn('action', function (ProductionOrder $row): string {
             $canView = in_array($this->viewProductionOrderPermission, ['all', 'added', 'owned', 'both'], true);
@@ -108,7 +109,7 @@ class ProductionOrdersDataTable extends BaseDataTable
 
         $datatables->smart(false);
         $datatables->setRowId(fn (ProductionOrder $row): string => 'row-'.$row->id);
-        $datatables->rawColumns(['action', 'bom_label', 'status']);
+        $datatables->rawColumns(['action', 'bom_label', 'status', 'material_availability']);
 
         return $datatables;
     }
@@ -233,6 +234,15 @@ class ProductionOrdersDataTable extends BaseDataTable
                 'name' => 'production_orders.planned_quantity',
                 'title' => __('production::app.plannedQty'),
             ],
+            __('production::app.materialAvailabilityShortColumn') => [
+                'data' => 'material_availability',
+                'name' => 'material_availability',
+                'title' => __('production::app.materialAvailabilityShortColumn'),
+                'orderable' => false,
+                'searchable' => false,
+                'exportable' => false,
+                'className' => 'text-center',
+            ],
             __('production::app.status') => [
                 'data' => 'status',
                 'name' => 'production_orders.status',
@@ -250,30 +260,32 @@ class ProductionOrdersDataTable extends BaseDataTable
 
     protected function statusColumnHtml(ProductionOrder $row): string
     {
-        $status = (string) $row->status;
-        $html = ProductionOrderStatusBadge::html($status);
+        return ProductionOrderStatusBadge::html((string) $row->status);
+    }
 
-        if (! in_array($status, [
+    protected function materialAvailabilityColumnHtml(ProductionOrder $row): string
+    {
+        if (! in_array((string) $row->status, [
             ProductionOrder::STATUS_DRAFT,
             ProductionOrder::STATUS_RELEASED,
             ProductionOrder::STATUS_IN_PROGRESS,
         ], true)) {
-            return $html;
+            return '<span class="text-lightest">—</span>';
         }
 
         $hasShortfall = $this->materialRequirementsSummary->shortfallStateForOrder($row);
 
         if ($hasShortfall === null) {
-            return $html;
+            return '<span class="text-lightest">—</span>';
         }
 
-        $availabilityBadgeClass = $hasShortfall ? 'danger' : 'success';
-        $availabilityLabel = __(
+        $variant = $hasShortfall ? 'danger' : 'success';
+        $fullLabel = __(
             $hasShortfall
                 ? 'production::app.materialAvailabilityLabels.shortfall'
                 : 'production::app.materialAvailabilityLabels.sufficient'
         );
 
-        return $html.'<div class="mt-1"><span class="badge badge-'.$availabilityBadgeClass.'">'.e($availabilityLabel).'</span></div>';
+        return '<span class="badge badge-'.$variant.'" data-toggle="tooltip" title="'.e($fullLabel).'">'.e($fullLabel).'</span>';
     }
 }

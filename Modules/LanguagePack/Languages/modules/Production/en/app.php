@@ -229,6 +229,7 @@ return [
     'reason' => 'Reason',
     'materialRequirementsTitle' => 'Total raw materials for this order',
     'materialRequirementsShortfallWarning' => 'One or more materials are below required quantity in the linked raw material warehouse.',
+    'materialAvailabilityShortColumn' => 'Stock Status',
     'materialAvailabilityLabels' => [
         'sufficient' => 'Materials ready',
         'shortfall' => 'Material shortfall',

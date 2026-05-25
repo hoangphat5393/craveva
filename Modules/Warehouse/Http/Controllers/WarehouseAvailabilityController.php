@@ -67,7 +67,7 @@ class WarehouseAvailabilityController
                 ->where('user_auth_id', $auth->id)
                 ->whereNotNull('company_id')
                 ->pluck('company_id')
-                ->map(fn($id) => (int) $id)
+                ->map(fn ($id) => (int) $id)
                 ->unique()
                 ->values()
                 ->all();
@@ -106,7 +106,7 @@ class WarehouseAvailabilityController
     private function denyWarehouseAvailability(): never
     {
         throw new HttpResponseException(response()->json([
-            'message' => __('Forbidden'),
+            'message' => __('warehouse::app.err_permission_denied'),
         ], 403));
     }
 }

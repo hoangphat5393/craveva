@@ -165,6 +165,7 @@ class InvoiceSettingController extends AccountBaseController
             $setting->order_prefix = $request->order_prefix;
             $setting->order_number_separator = $request->order_number_separator;
             $setting->order_digit = $request->order_digit;
+            $setting->order_terms = $request->order_terms;
         }
 
         $setting->proposal_prefix = $request->proposal_prefix;

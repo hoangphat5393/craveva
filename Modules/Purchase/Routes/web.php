@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Purchase\Http\Controllers\DeliveryOrderController;
+use Modules\Purchase\Http\Controllers\DeliveryOrderSettingsController;
 use Modules\Purchase\Http\Controllers\PurchaseBillController;
 use Modules\Purchase\Http\Controllers\PurchaseContactController;
 use Modules\Purchase\Http\Controllers\PurchaseInventoryController;
@@ -103,6 +104,9 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
 
     // Purchase Settings
     Route::resource('purchase-settings', PurchaseSettingController::class);
+    Route::get('delivery-order-settings', [DeliveryOrderSettingsController::class, 'index'])->name('delivery-order-settings.index');
+    Route::post('delivery-order-settings/update/{id}', [DeliveryOrderSettingsController::class, 'update'])->name('delivery-order-settings.update');
+
     Route::post('purchase-settings/update-prefix/{id}', [PurchaseSettingController::class, 'updatePrefix'])->name('purchase_settings.update_prefix');
     Route::resource('purchase-smtp-settings', PurchaseSmtpSettingController::class);
 

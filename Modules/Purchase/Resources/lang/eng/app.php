@@ -59,6 +59,7 @@ return [
     'menu' => [
         'purchase' => 'Purchase',
         'purchaseSettings' => 'Purchase Settings',
+        'deliveryOrderSettings' => 'Delivery Order Settings',
         'purchaseNotificationSettings' => 'Purchase Notification Settings',
         'new-purchase-bill' => 'New Purchase Bill',
         'new-purchase-inventory' => 'New Purchase Inventory',

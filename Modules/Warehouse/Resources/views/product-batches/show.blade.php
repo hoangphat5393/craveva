@@ -52,15 +52,39 @@
                         </thead>
                         <tbody>
                             @foreach ($movements as $m)
+                                @php
+                                    $movementLabel = match ($m->movement_type) {
+                                        'inbound' => __('warehouse::app.inbound'),
+                                        'outbound' => __('warehouse::app.outbound'),
+                                        default => $m->movement_type,
+                                    };
+                                    $referenceBase = $m->reference_type ? (str_contains($m->reference_type, '\\') ? class_basename($m->reference_type) : $m->reference_type) : '';
+                                    $referenceKey = strtolower($referenceBase);
+                                    $referenceLabel = match ($referenceKey) {
+                                        'manual_warehouse_stock' => __('warehouse::app.reference_manual_warehouse_stock'),
+                                        'manual_transfer' => __('warehouse::app.reference_manual_transfer'),
+                                        'invoice' => __('warehouse::app.reference_invoice'),
+                                        'invoice_stock_reversal' => __('warehouse::app.reference_invoice_stock_reversal'),
+                                        'creditnotes' => __('warehouse::app.reference_credit_notes'),
+                                        'credit_note_stock_reversal' => __('warehouse::app.reference_credit_note_stock_reversal'),
+                                        'purchasevendorcredit' => __('warehouse::app.reference_purchase_vendor_credit'),
+                                        'purchase_vendor_credit_stock_reversal' => __('warehouse::app.reference_purchase_vendor_credit_stock_reversal'),
+                                        'salesshipment' => __('warehouse::app.reference_sales_shipment'),
+                                        'sales_shipment_stock_reversal' => __('warehouse::app.reference_sales_shipment_stock_reversal'),
+                                        'productionbatch' => __('warehouse::app.reference_production_batch'),
+                                        'transfer' => __('warehouse::app.reference_transfer'),
+                                        default => $m->reference_type ? \Illuminate\Support\Str::headline(str_replace('_', ' ', $referenceBase)) : '—',
+                                    };
+                                @endphp
                                 <tr>
                                     <td>{{ $m->id }}</td>
-                                    <td>{{ $m->movement_type }}</td>
+                                    <td>{{ $movementLabel }}</td>
                                     <td>{{ $formatQuantity($m->quantity) }}</td>
                                     <td>{{ $m->warehouse_from_id ?? '—' }}</td>
                                     <td>{{ $m->warehouse_to_id ?? '—' }}</td>
                                     <td>
                                         @if ($m->reference_type && $m->reference_id)
-                                            {{ class_basename($m->reference_type) }} #{{ $m->reference_id }}
+                                            {{ $referenceLabel }} #{{ $m->reference_id }}
                                         @else
                                             —
                                         @endif

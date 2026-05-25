@@ -1,7 +1,10 @@
 # Biomixing - Luong nghiep vu Phase 1 + Phase 2 (ban PM)
 
-Ngay cap nhat: 2026-05-08  
+Ngay cap nhat: 2026-05-24  
 Muc tieu: PM/BA doc 1 file la nam duoc luong nghiep vu Phase 1 va Phase 2, khong can mo nhieu tai lieu.
+
+**Luong nghiep vu chuan (LIVE — cap nhat moi dot):** `FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`  
+**Tai lieu ky thuat dong bo:** `FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md` · **Audit phase:** `FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`
 
 ---
 
@@ -63,9 +66,9 @@ Muc tieu: PM/BA doc 1 file la nam duoc luong nghiep vu Phase 1 va Phase 2, khong
 
 ### 3.4 Trang thai hien tai (tom tat)
 
-- **Gan day du MVP (~80%)**.
-- Da co BOM CRUD, order lifecycle, snapshot BOM, planned RM co test.
-- Con backlog multi-batch planning nang cao va mot so hardening.
+- **Gan day du MVP (~85%)**.
+- Da co BOM CRUD, order lifecycle, snapshot BOM, planned RM co test, post RM/FG, **P1c** dong bo Inventory sau post FG (`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`).
+- Con backlog multi-batch planning nang cao, UX variance badge (UX-008), UAT sign-off pilot.
 
 ---
 
@@ -95,3 +98,6 @@ Muc tieu: PM/BA doc 1 file la nam duoc luong nghiep vu Phase 1 va Phase 2, khong
 - `PROJECT BIOMIXING/PHASE_BUSINESS_CONTEXT_AND_APPROVAL_NOTES_VI.md`
 - `PROJECT BIOMIXING/BIOMIXING_PHASE1_MANAGEMENT_ONEPAGER_VI.md`
 - `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`
+- `FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`
+- `FUNC_IMPROVE/PHASE2_PM_PLAN_VI.md`
+- `FUNC_IMPROVE/P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` (luong A–E)

@@ -30,7 +30,7 @@
                             <x-forms.textarea fieldId="description" :fieldLabel="__('warehouse::app.description')" fieldName="description" :fieldValue="old('description')" />
                         </div>
                         <div class="col-lg-6 col-md-6">
-                            <x-forms.select fieldId="status" :fieldLabel="__('app.status')" fieldName="status">
+                            <x-forms.select fieldId="status" :fieldLabel="__('warehouse::app.statusLabel')" fieldName="status">
                                 <option value="active" @selected(old('status', 'active') === 'active')>@lang('app.active')</option>
                                 <option value="inactive" @selected(old('status') === 'inactive')>@lang('app.inactive')</option>
                             </x-forms.select>
@@ -55,7 +55,7 @@
 </div>
 
 <script>
-    const getReadableApiError = (error, fallbackMessage = 'Unable to create warehouse.') => {
+    const getReadableApiError = (error, fallbackMessage = @json(__('warehouse::app.unableCreateWarehouse'))) => {
         const err = error?.responseJSON || error?.response?.data || {};
         const errors = err?.errors || {};
         const lines = [];
@@ -94,7 +94,7 @@
                 const readableMessage = getReadableApiError(err);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Validation failed',
+                    title: @json(__('warehouse::app.validationFailedTitle')),
                     text: readableMessage,
                     timer: 7000,
                     timerProgressBar: true,

@@ -43,6 +43,6 @@ class WarehouseCompanyFlowSettingController extends AccountBaseController
             $request->validated()
         );
 
-        return Reply::success(__('messages.updateSuccess'));
+        return Reply::success(__('warehouse::app.success_warehouse_flow_settings_updated'));
     }
 }

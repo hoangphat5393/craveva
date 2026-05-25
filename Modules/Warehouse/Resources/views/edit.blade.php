@@ -35,7 +35,7 @@
                                     <x-forms.textarea fieldId="description" :fieldLabel="__('warehouse::app.description')" fieldName="description" :fieldValue="old('description', $warehouse->description)" />
                                 </div>
                                 <div class="col-lg-6 col-md-6">
-                                    <x-forms.select fieldName="status" fieldId="status" :fieldLabel="__('app.status')">
+                                    <x-forms.select fieldName="status" fieldId="status" :fieldLabel="__('warehouse::app.statusLabel')">
                                         <option value="active" @selected(old('status', $warehouse->status) === 'active')>@lang('app.active')</option>
                                         <option value="inactive" @selected(old('status', $warehouse->status) === 'inactive')>@lang('app.inactive')</option>
                                     </x-forms.select>

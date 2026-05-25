@@ -1,0 +1,26 @@
+---
+description: When changing Biomixing / Production / Estimate Phase 1 / Warehouse pilot business logic, keep the live business flow doc in sync.
+globs:
+  - Modules/Production/**
+  - Modules/Purchase/Services/ProductionFgInventoryLedgerSync.php
+  - Modules/Warehouse/**
+  - app/**/Estimate*
+  - FUNC_IMPROVE/BIOMIXING*.md
+  - FUNC_IMPROVE/1*_*.md
+  - FUNC_IMPROVE/P0_*.md
+  - FUNC_IMPROVE/PHASE*.md
+alwaysApply: false
+---
+
+# Biomixing — cập nhật luồng nghiệp vụ LIVE
+
+**SSOT luồng nghiệp vụ:** `FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`
+
+Khi thay đổi **thứ tự bước**, **cửa gate**, **tồn kho / SSOT**, **config pilot**, hoặc **vá lỗi nghiệp vụ** liên quan Biomixing:
+
+1. Cập nhật bảng bước / mermaid / § Cấu hình trong file LIVE ở trên.
+2. Thêm một dòng vào **§9 Changelog** (ngày + mô tả ngắn + link epic nếu có).
+3. Nếu đổi trạng thái triển khai: cập nhật `BIOMIXING_GAP_STATUS_VI.md` và (khi cần) `BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`.
+4. Không nhân bản sơ đồ sang `PROJECT BIOMIXING/` — chỉ link LIVE doc.
+
+**Đọc trước khi sửa Production posting:** §3 LIVE doc (batch 5 bước, P1c, variance).

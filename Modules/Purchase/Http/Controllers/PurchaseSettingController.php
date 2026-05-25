@@ -146,6 +146,5 @@ class PurchaseSettingController extends AccountBaseController
         cache()->forget('purchase_setting_'.$purchaseSetting->company_id);
 
         return Reply::success(__('messages.updateSuccess'));
-
     }
 }

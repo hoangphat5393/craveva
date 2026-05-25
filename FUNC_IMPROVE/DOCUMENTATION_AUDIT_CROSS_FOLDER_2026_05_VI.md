@@ -1,19 +1,20 @@
 # Documentation audit — `PROJECT BIOMIXING` · `FUNC_LOGIC` · `FUNC_IMPROVE`
 
-**Cập nhật:** 2026-05-20  
+**Cập nhật:** 2026-05-24  
 **Phạm vi:** Documentation audit · sync · spec reconciliation · doc-to-code validation · knowledge base cleanup  
-**Nguồn sự thật triển khai:** code (`app/`, `Modules/`), tests, [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md)
+**Nguồn sự thật triển khai:** code (`app/`, `Modules/`), tests, [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md)  
+**Sync manifest Biomixing:** [`BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](./BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md)
 
 ---
 
 ## 1. Executive summary
 
-| Khía cạnh                                | Kết luận                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Cấu trúc 3 thư mục**                   | Đúng: PM/diagram → `PROJECT BIOMIXING/`; logic kho/SO/PO → `FUNC_LOGIC/`; plan & gap → `FUNC_IMPROVE/`.                                                                                                                                                                                                                                                                                                                                                      |
-| **Living docs (đọc trước khi demo/UAT)** | [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md), [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) (nếu post RM), [`PHASE1_PM_STATUS_LIVE_VI.md`](./PHASE1_PM_STATUS_LIVE_VI.md), [`PHASE2_PM_PLAN_VI.md`](./PHASE2_PM_PLAN_VI.md), [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md), [`FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`](../FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md). |
-| **Doc-to-code (2026-05-20)**             | **P2-UOM** A–B–C + post lô ✅ (vá `PROD-UOM-001`). SKU auto ✅. [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md).                                                                                                                                                                                                                                                                                                            |
-| **Technical debt (docs)**                | Nhiều file `BIOMIXING_*` / audit 2026-02–04 mô tả kho «Partial» — vẫn giữ lịch sử; đọc kèm baseline 2026. **Đã sửa:** `BIOMIXING_GAP_STATUS` không ghi «P2-UOM hoàn tất» cho post lô.                                                                                                                                                                                                                                                                        |
+| Khía cạnh                                | Kết luận                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cấu trúc 3 thư mục**                   | Đúng: PM/diagram → `PROJECT BIOMIXING/`; logic kho/SO/PO → `FUNC_LOGIC/`; plan & gap → `FUNC_IMPROVE/`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **Living docs (đọc trước khi demo/UAT)** | [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md), [`BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`](./BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md), [`BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](./BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md), [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md), [`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](./16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md), [`PHASE1_PM_STATUS_LIVE_VI.md`](./PHASE1_PM_STATUS_LIVE_VI.md), [`PHASE2_PM_PLAN_VI.md`](./PHASE2_PM_PLAN_VI.md), [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md), [`FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`](../FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md). |
+| **Doc-to-code (2026-05-24)**             | P2-UOM + post RM ✅ · P1c FG→Inventory ✅ · Opening stock P1 ✅ · SKU auto ✅. Audit test bundles pass (xem [`BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`](./BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Technical debt (docs)**                | Nhiều file `BIOMIXING_*` / audit 2026-02–04 mô tả kho «Partial» — vẫn giữ lịch sử; đọc kèm baseline 2026. **Đã sửa:** `BIOMIXING_GAP_STATUS` không ghi «P2-UOM hoàn tất» cho post lô.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ---
 
@@ -30,7 +31,8 @@ FUNC_LOGIC/            → Flow kỹ thuật, quy trình SO/PO/GRN/kho, glossary
 | Yêu cầu PM Gary (gốc)         | `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`                                                                 |
 | Phase 1 đủ chưa / UAT báo giá | `FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`                                                                    |
 | Phase 2 / lệnh SX / BOM       | `FUNC_IMPROVE/PHASE2_PM_PLAN_VI.md`, `PROJECT BIOMIXING/UI_RUNBOOK_PHASE2_*.md`                               |
-| Trạng thái code vs proposal   | **`FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`**                                                                 |
+| Trạng thái code vs proposal   | **`FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`**, **`BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`**               |
+| Doc sync manifest             | **`FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`**                                                 |
 | Đa đơn vị + giá (KiotViet)    | `FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`                                                             |
 | SO → PO → GRN → kho           | `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`, `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`    |
 | Thêm sản phẩm / import        | `FUNC_LOGIC/FLOW_ADD_PRODUCT.md` (đã sync SKU auto)                                                           |
@@ -76,6 +78,17 @@ FUNC_LOGIC/            → Flow kỹ thuật, quy trình SO/PO/GRN/kho, glossary
 
 Đối chiếu đầy đủ vẫn tại [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md) — **khớp code** cho P0-3…P1-4, PDF BOM, SO→Production order.
 
+### 3.5 Production FG → Purchase Inventory (P1c — 2026-05-23)
+
+| Kiểm tra                                                         | Kết quả                                                                               |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `ProductionFgInventoryLedgerSync` sau `postFinishedGoodsReceipt` | ✅                                                                                    |
+| Không double inbound (chỉ ledger row + `net_quantity` refresh)   | ✅                                                                                    |
+| Backfill `production:backfill-fg-inventory-ledger`               | ✅                                                                                    |
+| Test                                                             | ✅ `ProductionFgInventoryLedgerSyncTest`, assert trong `ProductionPostingServiceTest` |
+
+**Canonical:** [`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](./16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md) · Liên quan opening stock: [`13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`](./13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md)
+
 ---
 
 ## 4. Spec reconciliation — lệch giữa PM / plan / code
@@ -92,13 +105,13 @@ FUNC_LOGIC/            → Flow kỹ thuật, quy trình SO/PO/GRN/kho, glossary
 
 ## 5. Knowledge base cleanup (đề xuất ưu tiên)
 
-| Ưu tiên | File / nhóm                                                                                                                        | Đề xuất                                                |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| P0      | `BIOMIXING_GAP_STATUS_VI.md`, `15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`, `PHASE2_PM_PLAN_VI.md`, `P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md` | Giữ — cập nhật mỗi sprint / khi vá bug                 |
-| P1      | `FUNC_LOGIC/FLOW_ADD_PRODUCT.md`, `GLOSSARY_PURCHASE_ERP_VI.json`                                                                  | Đã sync SKU/UOM                                        |
-| P2      | `BIOMIXING_GAP_ANALYSIS.md`, `BIOMIXING_FLOW_CRACEVA_GAP.md`                                                                       | Giữ + banner «đọc kèm GAP_STATUS 2026-05»              |
-| P3      | `BIOMIXING_PROPOSAL_REVISED.md`, timeline EN đã xóa                                                                                | Chỉ sales narrative                                    |
-| Archive | `CURSOR_AND_GIT_ACTIVITY_REPORT_* - bk.md`, `purchase_lang_audit_report.csv`                                                       | Di chuyển `archive/` hoặc ghi «historical» trong INDEX |
+| Ưu tiên | File / nhóm                                                                                                                                                                          | Đề xuất                                                |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| P0      | `BIOMIXING_GAP_STATUS_VI.md`, `BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`, `BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`, `15_*`, `16_*`, `PHASE2_PM_PLAN_VI.md`, `P2_PRODUCT_UOM_*` | Giữ — cập nhật mỗi sprint / khi vá bug                 |
+| P1      | `FUNC_LOGIC/FLOW_ADD_PRODUCT.md`, `GLOSSARY_PURCHASE_ERP_VI.json`                                                                                                                    | Đã sync SKU/UOM                                        |
+| P2      | `BIOMIXING_GAP_ANALYSIS.md`, `BIOMIXING_FLOW_CRACEVA_GAP.md`                                                                                                                         | Giữ + banner «đọc kèm GAP_STATUS 2026-05»              |
+| P3      | `BIOMIXING_PROPOSAL_REVISED.md`, timeline EN đã xóa                                                                                                                                  | Chỉ sales narrative                                    |
+| Archive | `CURSOR_AND_GIT_ACTIVITY_REPORT_* - bk.md`, `purchase_lang_audit_report.csv`                                                                                                         | Di chuyển `archive/` hoặc ghi «historical» trong INDEX |
 
 Chi tiết file `BIOMIXING_*` lỗi thời: [`BIOMIXING_DOC_AUDIT_2026_VI.md`](./BIOMIXING_DOC_AUDIT_2026_VI.md).
 
@@ -125,6 +138,18 @@ php artisan languagepack:publish-translation --no-interaction
 ---
 
 ## 8. Changelog sync
+
+### 2026-05-24 — Documentation sync + full process audit
+
+| File                                                                      | Nội dung                          |
+| ------------------------------------------------------------------------- | --------------------------------- |
+| **`BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`**                          | Manifest sync + ma trận chức năng |
+| **`BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`**                          | Audit phase, P0, go-live          |
+| `DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`                          | §1, §3.5, living docs             |
+| `BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`, `BIOMIXING_FULL_DEMO_RUNBOOK_VI.md` | Test + Luồng E + backfill         |
+| `PHASE2_PM_PLAN_VI.md`, `P0_MINI_UAT_*`, `P0_QA_BA_*`                     | P1c, UAT                          |
+| `PROJECT BIOMIXING/README.md`, `PHASE1_2_BUSINESS_FLOW_PM_VI.md`          | Hub links                         |
+| `FUNC_IMPROVE/INDEX.md`, `10_UX_UI_*` (UX-008)                            | Index + backlog                   |
 
 ### 2026-05-20 — Production outbound UOM
 

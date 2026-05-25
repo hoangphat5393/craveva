@@ -30,7 +30,6 @@
     @endif
 
     <style>
-
         .bg-grey {
             background-color: #F2F4F7;
         }
@@ -230,11 +229,11 @@
         }
 
         .note-text {
-            max-width:175px;
+            max-width: 175px;
         }
 
         .word-break {
-            word-wrap:break-word;
+            word-wrap: break-word;
             word-break: break-all;
         }
 
@@ -259,8 +258,6 @@
         .border-bottom-0 {
             border-bottom: 0 !important;
         }
-
-
     </style>
 </head>
 
@@ -269,8 +266,7 @@
         <tbody>
             <!-- Table Row Start -->
             <tr>
-                <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}"
-                        id="logo" /></td>
+                <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}" id="logo" /></td>
                 <td align="right" class="f-21 text-black font-weight-700 text-uppercase">@lang('app.order')</td>
             </tr>
             <!-- Table Row End -->
@@ -323,7 +319,7 @@
                                         <span class="text-grey ">
                                             @lang('modules.invoices.project')</span><br>
                                         @if ($order->project)
-                                        {{$order->project->project_name}}
+                                            {{ $order->project->project_name }}
                                         @endif
                                     </p>
                                 </td>
@@ -334,27 +330,27 @@
                                 @if (($invoiceSetting->show_client_name == 'yes' || $invoiceSetting->show_client_email == 'yes' || $invoiceSetting->show_client_phone == 'yes' || $invoiceSetting->show_client_company_name == 'yes' || $invoiceSetting->show_client_company_address == 'yes') && $client)
                                     <p class="line-height mb-0">
                                         <span class="text-grey ">
-                                            @lang("modules.invoices.billedTo")</span><br>
+                                            @lang('modules.invoices.billedTo')</span><br>
 
-                                            @if ($client->name && $invoiceSetting->show_client_name == 'yes')
-                                                {{ $client->name_salutation }}<br>
-                                            @endif
+                                        @if ($client->name && $invoiceSetting->show_client_name == 'yes')
+                                            {{ $client->name_salutation }}<br>
+                                        @endif
 
-                                            @if ($client->email && $invoiceSetting->show_client_email == 'yes')
-                                                {{ $client->email }}<br>
-                                            @endif
+                                        @if ($client->email && $invoiceSetting->show_client_email == 'yes')
+                                            {{ $client->email }}<br>
+                                        @endif
 
-                                            @if ($client->mobile && $invoiceSetting->show_client_phone == 'yes')
-                                                {{ $client->mobile_with_phonecode }}<br>
-                                            @endif
+                                        @if ($client->mobile && $invoiceSetting->show_client_phone == 'yes')
+                                            {{ $client->mobile_with_phonecode }}<br>
+                                        @endif
 
-                                            @if ($client->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
-                                                {{ $client->clientDetails->company_name }}<br>
-                                            @endif
+                                        @if ($client->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
+                                            {{ $client->clientDetails->company_name }}<br>
+                                        @endif
 
-                                            @if ($client->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
-                                                {!! nl2br($client->clientDetails->address) !!}
-                                            @endif
+                                        @if ($client->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
+                                            {!! nl2br($client->clientDetails->address) !!}
+                                        @endif
                                     </p>
                                 @endif
 
@@ -365,15 +361,14 @@
                             </td>
                             <td class="f-14 text-black">
                                 @if ($order->show_shipping_address == 'yes' && $client->clientDetails->shipping_address && $invoiceSetting->show_client_company_address == 'yes')
-                                    <p class="line-height"><span
-                                            class="text-grey ">@lang('app.shippingAddress')</span><br>
+                                    <p class="line-height"><span class="text-grey ">@lang('app.shippingAddress')</span><br>
                                         {!! nl2br($client->clientDetails->shipping_address) !!}</p>
                                 @endif
                             </td>
                             <td align="right">
                                 <br />
                                 <div class="text-uppercase bg-white unpaid rightaligned">
-                                    @lang('modules.invoices.'.$order->status)
+                                    @lang('modules.invoices.' . $order->status)
                                 </div>
                             </td>
                         </tr>
@@ -390,14 +385,14 @@
         <!-- Table Row Start -->
         <tr class="main-table-heading text-grey">
             <td width="40%">@lang('app.description')</td>
-            @if($invoiceSetting->hsn_sac_code_show)
-                <td align="right">@lang("app.hsnSac")</td>
+            @if ($invoiceSetting->hsn_sac_code_show)
+                <td align="right">@lang('app.hsnSac')</td>
             @endif
             <th class="qty">@lang('modules.invoices.qty')</th>
             s<td align="right">@lang('app.sku')</td>
-            <td align="right">@lang("modules.invoices.unitPrice")</td>
-            <td align="right">@lang("modules.invoices.tax")</td>
-            <td align="right" width="{{ $invoiceSetting->hsn_sac_code_show ? '17%' : '20%' }}">@lang("modules.invoices.amount")
+            <td align="right">@lang('modules.invoices.unitPrice')</td>
+            <td align="right">@lang('modules.invoices.tax')</td>
+            <td align="right" width="{{ $invoiceSetting->hsn_sac_code_show ? '17%' : '20%' }}">@lang('modules.invoices.amount')
                 ({{ $order->currency->currency_code }})</td>
         </tr>
         <!-- Table Row End -->
@@ -408,10 +403,13 @@
                     <td width="40%" class="border-bottom-0 word-break">
                         {{ $item->item_name }}
                     </td>
-                    @if($invoiceSetting->hsn_sac_code_show)
+                    @if ($invoiceSetting->hsn_sac_code_show)
                         <td align="right" width="10%" class="border-bottom-0">{{ $item->hsn_sac_code ? $item->hsn_sac_code : '--' }}</td>
                     @endif
-                    <td align="right" width="10%" class="border-bottom-0">{{ $item->quantity }}@if($item->unit)<br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>@endif</td>
+                    <td align="right" width="10%" class="border-bottom-0">{{ $item->quantity }}@if ($item->unit)
+                            <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
+                        @endif
+                    </td>
                     <td align="right" width="10%" class="border-bottom-0"><span class="f-11 text-grey">{{ $item->sku }}</td>
                     <td align="right" class="border-bottom-0">{{ currency_format($item->unit_price, $order->currency_id, false) }}</td>
                     <td align="right" class="border-bottom-0">{{ $item->tax_list }}</td>
@@ -419,21 +417,20 @@
                 </tr>
                 <!-- Table Row End -->
                 @if ($item->item_summary != '' || $item->orderItemImage)
-                {{-- DOMPDF HACK FOR RENDER IN TABLE --}}
-                </table>
-                    <div class="f-13 summary text-black border-bottom-0 word-break">
-                        {!! nl2br(pdfStripTags($item->item_summary)) !!}
-                        @if ($item->orderItemImage)
-                            <p class="mt-2">
-                                <img src="{{ $item->orderItemImage->file_url }}" width="60" height="60"
-                                    class="img-thumbnail">
-                            </p>
-                        @endif
-                    </div>
-                {{-- DOMPDF HACK FOR RENDER IN TABLE --}}
-                <table class="bg-white" border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
-                @endif
-            @endif
+                    {{-- DOMPDF HACK FOR RENDER IN TABLE --}}
+    </table>
+    <div class="f-13 summary text-black border-bottom-0 word-break">
+        {!! nl2br(pdfStripTags($item->item_summary)) !!}
+        @if ($item->orderItemImage)
+            <p class="mt-2">
+                <img src="{{ $item->orderItemImage->file_url }}" width="60" height="60" class="img-thumbnail">
+            </p>
+        @endif
+    </div>
+    {{-- DOMPDF HACK FOR RENDER IN TABLE --}}
+    <table class="bg-white" border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+        @endif
+        @endif
         @endforeach
         <!-- Table Row Start -->
         <tr>
@@ -441,13 +438,13 @@
                 <table width="100%" border="0" class="b-collapse">
                     <!-- Table Row Start -->
                     <tr align="right" class="text-grey">
-                        <td width="50%" class="subtotal">@lang("modules.invoices.subTotal")</td>
+                        <td width="50%" class="subtotal">@lang('modules.invoices.subTotal')</td>
                     </tr>
                     <!-- Table Row End -->
                     @if ($discount != 0 && $discount != '')
                         <!-- Table Row Start -->
                         <tr align="right" class="text-grey">
-                            <td width="50%" class="subtotal">@lang("modules.invoices.discount")
+                            <td width="50%" class="subtotal">@lang('modules.invoices.discount')
                             </td>
                         </tr>
                         <!-- Table Row End -->
@@ -461,7 +458,7 @@
                     @endforeach
                     <!-- Table Row Start -->
                     <tr align="right" class="balance text-black">
-                        <td width="50%" class="balance-left">@lang("modules.invoices.total")</td>
+                        <td width="50%" class="balance-left">@lang('modules.invoices.total')</td>
                     </tr>
                     <!-- Table Row End -->
 
@@ -502,9 +499,9 @@
         </tr>
     </table>
     @if ($order->note != '')
-    <table class="bg-white" border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
-        <tbody>
-            <!-- Table Row Start -->
+        <table class="bg-white" border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+            <tbody>
+                <!-- Table Row Start -->
                 <tr>
                     <td height="10">&nbsp;</td>
                 </tr>
@@ -524,40 +521,42 @@
                     </tr>
                 @endif
 
-            <!-- Table Row End -->
-        </tbody>
-    </table>
+                <!-- Table Row End -->
+            </tbody>
+        </table>
     @endif
 
-{{--Custom fields data--}}
-@if(isset($fields) && count($fields) > 0)
-    <div class="page_break"></div>
-    <h3 class="box-title m-t-20 text-center h3-border"> @lang('modules.projects.otherInfo')</h3>
-    <table class="bg-white" border="0" cellspacing="0" cellpadding="0" width="100%" role="presentation">
-        @foreach($fields as $field)
-            <tr>
-                <td style="text-align: left;background: none;">
-                    <div class="f-14">{{ $field->label }}</div>
-                    <p class="f-14 line-height text-grey" id="notes">
-                        @if( $field->type == 'text' || $field->type == 'password' || $field->type == 'number' || $field->type == 'textarea')
-                            {{$order->custom_fields_data['field_'.$field->id] ?? '-'}}
-                        @elseif($field->type == 'radio')
-                            {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? $order->custom_fields_data['field_'.$field->id] : '-' }}
-                        @elseif($field->type == 'select')
-                            {{ (!is_null($order->custom_fields_data['field_'.$field->id]) && $order->custom_fields_data['field_'.$field->id] != '') ? $field->values[$order->custom_fields_data['field_'.$field->id]] : '-' }}
-                        @elseif($field->type == 'checkbox')
-                            {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? $order->custom_fields_data['field_'.$field->id] : '-' }}
-                        @elseif($field->type == 'date')
-                            {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? \Carbon\Carbon::parse($order->custom_fields_data['field_'.$field->id])->translatedFormat($order->company->date_format) : '--'}}
-                        @endif
-                    </p>
-                </td>
-            </tr>
-        @endforeach
-    </table>
-    </div>
+    @include('partials.company-document-terms-pdf')
 
-@endif
+    {{-- Custom fields data --}}
+    @if (isset($fields) && count($fields) > 0)
+        <div class="page_break"></div>
+        <h3 class="box-title m-t-20 text-center h3-border"> @lang('modules.projects.otherInfo')</h3>
+        <table class="bg-white" border="0" cellspacing="0" cellpadding="0" width="100%" role="presentation">
+            @foreach ($fields as $field)
+                <tr>
+                    <td style="text-align: left;background: none;">
+                        <div class="f-14">{{ $field->label }}</div>
+                        <p class="f-14 line-height text-grey" id="notes">
+                            @if ($field->type == 'text' || $field->type == 'password' || $field->type == 'number' || $field->type == 'textarea')
+                                {{ $order->custom_fields_data['field_' . $field->id] ?? '-' }}
+                            @elseif($field->type == 'radio')
+                                {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? $order->custom_fields_data['field_' . $field->id] : '-' }}
+                            @elseif($field->type == 'select')
+                                {{ !is_null($order->custom_fields_data['field_' . $field->id]) && $order->custom_fields_data['field_' . $field->id] != '' ? $field->values[$order->custom_fields_data['field_' . $field->id]] : '-' }}
+                            @elseif($field->type == 'checkbox')
+                                {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? $order->custom_fields_data['field_' . $field->id] : '-' }}
+                            @elseif($field->type == 'date')
+                                {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? \Carbon\Carbon::parse($order->custom_fields_data['field_' . $field->id])->translatedFormat($order->company->date_format) : '--' }}
+                            @endif
+                        </p>
+                    </td>
+                </tr>
+            @endforeach
+        </table>
+        </div>
+
+    @endif
 
 </body>
 

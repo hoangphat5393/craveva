@@ -21,6 +21,7 @@ uses(DatabaseTransactions::class);
 
 it('registers the sales order settings routes', function (): void {
     expect(Route::has('sales-order-settings.index'))->toBeTrue();
+    expect(Route::has('sales-order-settings.update-order-settings'))->toBeTrue();
     expect(Route::has('sales-order-settings.regenerate-webhook-secret'))->toBeTrue();
     expect(Route::has('sales-order-settings.update-integration-permissions'))->toBeTrue();
 });
@@ -98,8 +99,8 @@ function salesOrderSettingsFinanceUser(): ?array
         ],
     );
 
-    Cache::forget('permission-manage_finance_setting-' . $user->id);
-    Cache::forget('user_modules_' . $user->id);
+    Cache::forget('permission-manage_finance_setting-'.$user->id);
+    Cache::forget('user_modules_'.$user->id);
 
     return ['company' => $company, 'user' => $user->fresh(), 'userAuth' => $userAuth];
 }
@@ -156,6 +157,7 @@ it('shows company id on sales order settings for authorized user', function (): 
         ->get(route('sales-order-settings.index'));
 
     $response->assertOk();
+    $response->assertSee(__('modules.orders.orderSettingsTab'), false);
     $response->assertSee((string) $fix['company']->id, false);
     $response->assertSee('btn-copy', false);
     $response->assertSee(__('modules.orders.apiIntegrationIntro'), false);
@@ -246,8 +248,8 @@ it('returns forbidden for employee without manage finance setting', function ():
         ],
     );
 
-    Cache::forget('permission-manage_finance_setting-' . $user->id);
-    Cache::forget('user_modules_' . $user->id);
+    Cache::forget('permission-manage_finance_setting-'.$user->id);
+    Cache::forget('user_modules_'.$user->id);
 
     $response = $this->actingAs($userAuth, 'web')
         ->withSession([

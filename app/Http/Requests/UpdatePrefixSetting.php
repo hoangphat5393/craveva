@@ -42,6 +42,7 @@ class UpdatePrefixSetting extends FormRequest
         if (in_array('orders', user_modules())) {
             $rules['order_prefix'] = 'required';
             $rules['order_digit'] = 'nullable|integer|min:0|max:10';
+            $rules['order_terms'] = 'nullable|string';
         }
 
         $rules['proposal_prefix'] = 'required';

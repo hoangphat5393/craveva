@@ -2,7 +2,7 @@
 
 **Mục đích:** Tóm các **khái niệm** và **lưu ý vận hành/kho** thường gây nhầm giữa B2B, PO và Production — bổ sung cho playbook triển khai; **không** thay thế `FUNC_LOGIC` hay spec kỹ thuật chi tiết.
 
-**Đọc cùng:** `BIOMIXING_PLAYBOOK_P0P1_VI.md`, `BIOMIXING_BASELINE_PREP_2026_VI.md`.
+**Đọc cùng:** **`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`** (luồng bước chuẩn — LIVE) · `BIOMIXING_PLAYBOOK_P0P1_VI.md` · `BIOMIXING_BASELINE_PREP_2026_VI.md`.
 
 **Cập nhật:** 2026-05
 

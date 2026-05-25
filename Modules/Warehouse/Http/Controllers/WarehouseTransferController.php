@@ -83,17 +83,17 @@ class WarehouseTransferController extends AccountBaseController
             'quantity' => 'required|numeric|min:0.01',
             'description' => 'nullable|string|max:255',
         ], [
-            'warehouse_from_id.required' => __('The source warehouse field is required.'),
-            'warehouse_from_id.exists' => __('The selected source warehouse is invalid for this company.'),
+            'warehouse_from_id.required' => __('warehouse::app.validation_source_warehouse_required'),
+            'warehouse_from_id.exists' => __('warehouse::app.validation_source_warehouse_invalid_company'),
             'warehouse_from_id.different' => __('warehouse::app.err_transfer_same_warehouse'),
-            'warehouse_to_id.required' => __('The destination warehouse field is required.'),
-            'warehouse_to_id.exists' => __('The selected destination warehouse is invalid for this company.'),
-            'product_id.required' => __('The product field is required.'),
-            'product_id.exists' => __('The selected product is invalid for this company.'),
-            'quantity.required' => __('The quantity field is required.'),
-            'quantity.numeric' => __('The quantity must be a number.'),
-            'quantity.min' => __('The quantity must be greater than 0.'),
-            'description.max' => __('The description may not be greater than :max characters.'),
+            'warehouse_to_id.required' => __('warehouse::app.validation_destination_warehouse_required'),
+            'warehouse_to_id.exists' => __('warehouse::app.validation_destination_warehouse_invalid_company'),
+            'product_id.required' => __('warehouse::app.validation_product_required'),
+            'product_id.exists' => __('warehouse::app.validation_product_invalid_company'),
+            'quantity.required' => __('warehouse::app.validation_quantity_required'),
+            'quantity.numeric' => __('warehouse::app.validation_quantity_numeric'),
+            'quantity.min' => __('warehouse::app.validation_quantity_positive'),
+            'description.max' => __('warehouse::app.validation_description_max'),
         ], [
             'warehouse_from_id' => __('source warehouse'),
             'warehouse_to_id' => __('destination warehouse'),
@@ -116,12 +116,12 @@ class WarehouseTransferController extends AccountBaseController
             ]);
 
             if ($request->ajax()) {
-                session()->flash('success', __('messages.recordSaved'));
+                session()->flash('success', __('warehouse::app.success_warehouse_transfer_saved'));
 
                 return response()->json(Reply::redirect(route('warehouse.stock.index')));
             }
 
-            return redirect()->route('warehouse.stock.index')->with('success', __('messages.recordSaved'));
+            return redirect()->route('warehouse.stock.index')->with('success', __('warehouse::app.success_warehouse_transfer_saved'));
         } catch (\Throwable $e) {
             return $this->handleWarehouseThrowable($request, 'Warehouse transfer store', $e, $request->except(['_token']));
         }

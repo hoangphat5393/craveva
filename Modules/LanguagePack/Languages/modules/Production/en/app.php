@@ -210,6 +210,7 @@ return [
     'fgVarianceApproval' => 'Variance approval',
     'fgVarianceApproved' => 'Approved',
     'fgVariancePendingApproval' => 'Pending approval',
+    'fgVarianceNotRequired' => 'Not required',
     'approveVariance' => 'Approve variance',
     'fgVarianceApprovalRequired' => 'Variance approval is required before adding finished goods to stock.',
     'fgVarianceAlreadyPosted' => 'This finished product line is already posted.',

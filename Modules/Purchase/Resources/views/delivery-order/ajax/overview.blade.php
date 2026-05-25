@@ -263,17 +263,29 @@
                 @endif
             </table>
 
-            <table width="100%" class="mt-4">
+            @php
+                $deliveryOrderTermsText = trim((string) ($purchaseSetting->delivery_order_terms ?? '')) !== '' ? (string) $purchaseSetting->delivery_order_terms : (string) ($purchaseSetting->purchase_terms ?? '');
+            @endphp
+            <table width="100%" class="mt-4 inv-note">
                 <tr>
-                    <td>
+                    <td height="30" colspan="2"></td>
+                </tr>
+                <tr>
+                    <td>@lang('app.note')</td>
+                    <td style="text-align: right;">@lang('purchase::modules.purchaseSettings.deliveryOrderTerms')</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: text-top">
                         <p class="text-dark-grey">
                             @if ($delivery->purchaseOrder && $delivery->purchaseOrder->note)
-                                <strong>@lang('app.note')</strong><br>
                                 {!! nl2br($delivery->purchaseOrder->note) !!}
                             @else
                                 --
                             @endif
                         </p>
+                    </td>
+                    <td style="text-align: right;">
+                        <p class="text-dark-grey">{!! nl2br($deliveryOrderTermsText) !!}</p>
                     </td>
                 </tr>
             </table>

@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Modules\Purchase\DataTables\DeliveryOrderDataTable;
 use Modules\Purchase\Entities\PurchaseOrder;
+use Modules\Purchase\Entities\PurchaseSetting;
 use Modules\Purchase\Services\GrnService;
 use Modules\Purchase\Support\FlowPermission;
 use Modules\Purchase\Support\GrnRuntime;
@@ -57,6 +58,7 @@ class DeliveryOrderController extends AccountBaseController
 
         $this->pageTitle = $this->delivery->delivery_number;
         $this->settings = company();
+        $this->purchaseSetting = purchase_setting();
 
         $tab = request('tab');
 
@@ -126,6 +128,7 @@ class DeliveryOrderController extends AccountBaseController
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
         $this->warehouses = $this->warehouseList();
         $this->nextDeliveryNumber = $this->nextDeliveryNumber();
+        $this->purchaseSetting = purchase_setting();
 
         if (request()->ajax()) {
             $html = view('purchase::delivery-order.ajax.create', $this->data)->render();
@@ -146,6 +149,7 @@ class DeliveryOrderController extends AccountBaseController
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
         $this->warehouses = $this->warehouseList();
         $this->deliveryItems = $this->delivery->items;
+        $this->purchaseSetting = purchase_setting();
 
         if (request()->ajax()) {
             $html = view('purchase::delivery-order.ajax.edit', $this->data)->render();
@@ -196,6 +200,7 @@ class DeliveryOrderController extends AccountBaseController
         $this->delivery = $this->queryByCompany()->with('items', 'items.purchaseItem', 'purchaseOrder', 'purchaseOrder.items', 'purchaseOrder.items.unit', 'purchaseOrder.vendor', 'purchaseOrder.address', 'warehouse')->findOrFail($id);
         $this->company = $this->delivery->company;
         $this->invoiceSetting = $this->company->invoiceSetting;
+        $this->purchaseSetting = PurchaseSetting::where('company_id', $this->company->id)->first();
 
         $pdf = app('dompdf.wrapper');
         $pdf->setOption('enable_php', true);

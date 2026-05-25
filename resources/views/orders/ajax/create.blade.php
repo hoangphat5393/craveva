@@ -426,13 +426,13 @@
                 </x-forms.label>
                 <textarea class="form-control" name="note" id="note" rows="4" placeholder="@lang('placeholders.invoices.note')"></textarea>
             </div>
-            <div class="col-md-6 col-sm-12 p-0 c-inv-note-terms">
-                <x-forms.label fieldId="" :fieldLabel="__('modules.invoiceSettings.invoiceTerms')">
-                </x-forms.label>
-                <p>
-                    {!! nl2br($invoiceSetting->invoice_terms) !!}
-                </p>
-            </div>
+            @php
+                $orderTermsText = trim((string) ($invoiceSetting->order_terms ?? '')) !== '' ? (string) $invoiceSetting->order_terms : (string) ($invoiceSetting->invoice_terms ?? '');
+            @endphp
+            @include('partials.company-document-terms-readonly', [
+                'termsText' => $orderTermsText,
+                'label' => __('modules.invoiceSettings.orderTerms'),
+            ])
         </div>
         <!-- NOTE AND TERMS AND CONDITIONS END -->
 

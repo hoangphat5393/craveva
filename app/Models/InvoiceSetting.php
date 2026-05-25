@@ -6,6 +6,7 @@ use App\Traits\HasCompany;
 use App\Traits\HasMaskImage;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\InvoiceSetting
@@ -20,11 +21,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $template
  * @property int $due_after
  * @property string $invoice_terms
+ * @property string|null $order_terms
  * @property string|null $other_info
  * @property string|null $gst_number
  * @property string|null $show_gst
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $logo
  * @property int $send_reminder
  * @property string|null $locale
@@ -71,7 +73,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $show_client_phone
  * @property string|null $show_client_company_address
  * @property string|null $show_client_company_name
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  *
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceSetting whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceSetting whereReminder($value)
@@ -94,7 +96,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $authorised_signatory_signature
  * @property-read mixed $authorised_signatory_signature_url
  * @property-read mixed $is_chinese_lang
- * @property-read \App\Models\UnitType|null $unit
+ * @property-read UnitType|null $unit
  *
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceSetting whereAuthorisedSignatory($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceSetting whereAuthorisedSignatorySignature($value)
@@ -119,7 +121,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class InvoiceSetting extends BaseModel
 {
-    use HasCompany,HasMaskImage;
+    use HasCompany, HasMaskImage;
 
     protected $appends = ['logo_url', 'authorised_signatory_signature_url', 'is_chinese_lang'];
 
@@ -135,7 +137,6 @@ class InvoiceSetting extends BaseModel
                 return (is_null($this->logo)) ? $this->company->logo_url : $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
             },
         );
-
     }
 
     public function getAuthorisedSignatorySignatureUrlAttribute()
@@ -150,7 +151,6 @@ class InvoiceSetting extends BaseModel
                 return (is_null($this->authorised_signatory_signature)) ? '' : $this->generateMaskedImageAppUrl('app-logo/'.$this->authorised_signatory_signature);
             },
         );
-
     }
 
     public function getIsChineseLangAttribute()

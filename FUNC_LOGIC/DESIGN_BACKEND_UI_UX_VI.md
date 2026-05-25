@@ -432,4 +432,166 @@ window.apiHttp
 
 ---
 
-_Cập nhật: 2026-05-23 — §5.4 badge trạng thái readonly (Inventory / Production orders); §11.3 Production order FG/BOM searchable select. Trước: 2026-05-21 — §12 validation hai lớp._
+## 13. Điều khoản chứng từ theo công ty (PO / SO / DO)
+
+**Mô hình:** một bộ text **theo công ty**, không lưu snapshot trên từng PO/SO/DO. Sửa trong Settings → mọi chứng từ (cũ/mới) đọc lại giá trị hiện tại khi mở form hoặc tải PDF.
+
+| Loại chứng từ        | Cấu hình                                                                     | Cột DB                                   | Fallback khi trống |
+| -------------------- | ---------------------------------------------------------------------------- | ---------------------------------------- | ------------------ |
+| Purchase order       | **Settings → Purchase → Purchase Settings**                                  | `purchase_settings.purchase_terms`       | —                  |
+| Sale order           | **Settings → Invoice Settings → Prefix** (khi bật module Orders)             | `invoice_settings.order_terms`           | `invoice_terms`    |
+| Delivery order (GRN) | **Settings → Delivery Order Settings** (menu riêng, như Sale Order Settings) | `purchase_settings.delivery_order_terms` | `purchase_terms`   |
+
+**UI form create/edit:** cột **Note** (textarea, theo từng chứng từ nếu có) + cột **Terms** read-only (`<p>{!! nl2br(...) !!}</p>`). Tham chiếu: `Modules/Purchase/Resources/views/purchase-order/ajax/create.blade.php`, partial `resources/views/partials/company-document-terms-readonly.blade.php`.
+
+**Show/overview:** bảng `inv-note` hai cột (note trái, terms phải) — `purchase-order/ajax/overview.blade.php`, `orders/ajax/show.blade.php`, `delivery-order/ajax/overview.blade.php`.
+
+**PDF SO:** `resources/views/partials/company-document-terms-pdf.blade.php` include trong `resources/views/orders/pdf/invoice-*.blade.php`. **PDF DO:** `delivery-order/pdf/delivery-order-1.blade.php`.
+
+**Lưu ý:** một số template PDF PO cũ (`purchase-order/pdf/invoice-1`…`4`) vẫn in `invoice_terms` — khác với `purchase_terms` trên form PO.
+
+---
+
+## 14. Chuẩn admin list view (DataTable-only)
+
+Mục này chốt **một cơ chế duy nhất** cho admin list view: mọi màn dạng bảng quản trị chuẩn phải dùng **Yajra DataTable** như `Product`. Không giữ thêm nhánh legacy kiểu Blade table + `paginate()` + `links()` cho các màn list chuẩn nữa.
+
+### 14.1 Màn nguồn tham chiếu
+
+- **Chuẩn gốc:** `Modules/Purchase/Resources/views/purchase-products/index.blade.php`
+- **Bản Warehouse đã chuyển cùng engine:** `Modules/Warehouse/Resources/views/index.blade.php`
+- **DataTable class tham chiếu:** `Modules/Purchase/DataTables/PurchaseProductsDataTable.php`, `Modules/Warehouse/DataTables/WarehouseDataTable.php`
+
+### 14.2 Cơ chế duy nhất bắt buộc
+
+1. **Controller**
+    - Render bằng `$dataTable->render(...)`
+    - Không trả về list chuẩn bằng `view(...)->with($rows->paginate(...))`
+
+2. **View**
+    - Render table bằng `{!! $dataTable->table(...) !!}`
+    - Include `@include('sections.datatable_js')`
+    - Filter đẩy param vào DataTable qua `preXhr.dt`
+
+3. **Data**
+    - Sort/search/pagination/order state đi qua DataTable class
+    - Default order cấu hình trong builder hoặc `query()`
+    - Không dựng sort thủ công bằng query string ở Blade
+
+4. **Footer**
+    - Dùng footer mặc định của DataTable: `length`, `info`, `pagination`
+    - Không tự render `Show X entries / Showing A to B / links()` riêng cho admin list chuẩn
+
+5. **Quy định chốt**
+    - Không có option legacy/manual list cho admin data grid chuẩn
+    - Không tạo engine list thứ hai / thứ ba trong cùng nhóm màn hình
+
+### 14.3 Cấu trúc chuẩn
+
+1. **`@section('filter-section')`** dùng `x-filters.filter-box`
+    - Filter nằm một hàng
+    - Search input ở cùng hàng filter
+    - Nút `Clear Filters` ẩn/hiện theo state
+    - JS filter gọi `window.LaravelDataTables["..."].draw(true)`
+
+2. **Action bar**
+    - Wrapper: `<div class="d-flex justify-content-between action-bar ...">`
+    - Cụm trái: `#table-actions`
+    - Cụm phải: bulk action / quick action
+    - Nút `Export` / `Columns` do DataTable buttons append vào `#table-actions`
+
+3. **Table wrapper**
+    - Dùng: `d-flex flex-column w-tables rounded mt-3 bg-white table-responsive`
+    - Table bên trong phải là output của `{!! $dataTable->table(...) !!}`
+
+4. **Sort và cột**
+    - Cột khai báo trong DataTable class (`name`, `title`, `orderable`, `searchable`, `visible`)
+    - Không dựng `sortClass()` / `sortIndicatorClass()` ở Blade
+    - Không dựng `<a href="?sort_by=...">` cho admin list chuẩn
+
+5. **Bulk action**
+    - Dùng `x-datatable.actions`
+    - Checkbox row dùng `datatable_ids[]` + `dataTableRowCheck(...)`
+    - Chỉ hiện khi permission cho phép
+
+6. **Callback sau draw**
+    - Re-init `selectpicker`, tooltip, dropdown, nút action trong `fnDrawCallback`
+    - Không phụ thuộc vào reload full page để refresh UI state
+
+### 14.4 Pattern cũ phải loại bỏ
+
+- `->paginate($perPage)` trong controller cho admin list chuẩn
+- `{{ $rows->links(...) }}` trong Blade của admin list chuẩn
+- `<table> ... @forelse ... </table>` tự render cho admin data grid chuẩn
+- Submit filter rồi reload full page chỉ để đổi search / sort / per-page
+- Giữ một màn dùng DataTable, màn cạnh bên lại dùng manual pagination
+- Tự làm footer/list info riêng khi DataTable đã có sẵn
+
+### 14.5 Kế hoạch chuyển đổi Warehouse còn lại
+
+Các màn dưới đây hiện vẫn là legacy manual list và phải chuyển sang cùng cơ chế với `Product` và `Warehouse index`:
+
+1. **`warehouse.product-batches.index`**
+    - File hiện tại: `Modules/Warehouse/Http/Controllers/WarehouseProductBatchController.php`, `Modules/Warehouse/Resources/views/product-batches/index.blade.php`
+    - Mức độ: thấp nhất, ít cột, ít action, phù hợp để làm màn mẫu migration đầu tiên
+    - Việc cần làm:
+        - Tạo `WarehouseProductBatchesDataTable`
+        - Controller inject DataTable và render bằng `$dataTable->render(...)`
+        - Chuyển filter `warehouse_id`, `search` sang `preXhr.dt`
+        - Bỏ `paginate()`, `links()`, `per_page` footer thủ công
+
+2. **`warehouse.movements.index`**
+    - File hiện tại: `Modules/Warehouse/Http/Controllers/WarehouseMovementController.php`, `Modules/Warehouse/Resources/views/movements/index.blade.php`
+    - Mức độ: trung bình
+    - Điểm lưu ý:
+        - Đang dùng `WarehouseQueryService`
+        - Có logic map `reference_type` sang label thân thiện
+    - Việc cần làm:
+        - Tạo `WarehouseMovementsDataTable`
+        - Giữ query gốc trong service hoặc chuyển vào DataTable query builder
+        - Chuyển logic `reference_label`, badge `movement_type`, format quantity vào `editColumn()`
+        - Bỏ manual filter + manual footer
+
+3. **`warehouse.stock.index`**
+    - File hiện tại: `Modules/Warehouse/Http/Controllers/WarehouseStockController.php`, `Modules/Warehouse/Resources/views/stock/index.blade.php`
+    - Mức độ: cao nhất, làm sau cùng
+    - Điểm lưu ý:
+        - Có `inventoryReconciliationWidget`
+        - Có `appendSellableMetrics(...)`
+        - Có onboarding empty state + link sang `PO / DO / Inventory`
+    - Việc cần làm:
+        - Tạo `WarehouseStockDataTable`
+        - Giữ widget ngoài table, chỉ chuyển phần list sang DataTable
+        - Di chuyển format quantity, badge warehouse type, default warehouse label vào column callbacks
+        - Thiết kế lại empty state theo cách tương thích DataTable
+        - Bỏ manual `paginate()`, `links()`, `per_page`, debounce submit full page
+
+### 14.6 Thứ tự triển khai chuẩn
+
+1. Chuyển `product-batches` trước để chốt pattern ít rủi ro
+2. Chuyển `movements` thứ hai để xử lý dứt điểm mapping reference/status trong DataTable
+3. Chuyển `stock` cuối cùng vì đây là màn nhiều business state nhất
+
+Mỗi màn sau khi chuyển phải đi đủ checklist:
+
+- Tạo DataTable class riêng
+- Controller nhận DataTable qua dependency injection
+- View dùng `{!! $dataTable->table(...) !!}`
+- Include `sections.datatable_js`
+- Filter đi qua `preXhr.dt`
+- Không còn `paginate()` / `links()` / footer manual trong view
+- Có focused test cho HTML page và AJAX JSON của DataTable
+
+### 14.7 Áp dụng cho chức năng mới
+
+Khi dựng list view mới trong `Warehouse / Purchase / Production / các module admin khác`, mặc định copy từ:
+
+1. `Modules/Purchase/Resources/views/purchase-products/index.blade.php`
+2. `Modules/Purchase/DataTables/PurchaseProductsDataTable.php`
+3. `Modules/Warehouse/DataTables/WarehouseDataTable.php` nếu cần pattern gần Warehouse hơn
+
+Không tự làm thêm kiểu load list khác.
+
+---
+
+_Cập nhật: 2026-05-25 — §14 chốt DataTable-only cho admin list và thêm roadmap chuyển `Warehouse stock / movements / product-batches`. Trước: 2026-05-24 — §13 điều khoản PO/SO/DO theo công ty. Trước nữa: 2026-05-23 — §5.4 badge; §11.3 Production searchable select._

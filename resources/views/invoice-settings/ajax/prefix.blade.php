@@ -3,126 +3,72 @@
     @if (in_array('invoices', user_modules()))
         <div class="row">
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.invoicePrefix')"
-                              :fieldPlaceholder="__('placeholders.invoices.invoicePrefix')" fieldName="invoice_prefix"
-                              fieldId="invoice_prefix" :fieldValue="$invoiceSetting->invoice_prefix"
-                              fieldRequired="true"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.invoicePrefix')" :fieldPlaceholder="__('placeholders.invoices.invoicePrefix')" fieldName="invoice_prefix" fieldId="invoice_prefix" :fieldValue="$invoiceSetting->invoice_prefix" fieldRequired="true" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                              :fieldLabel="__('modules.invoiceSettings.invoiceNumberSeparator')"
-                              :fieldPlaceholder="__('placeholders.invoices.invoiceNumberSeparator')"
-                              fieldName="invoice_number_separator" fieldId="invoice_number_separator"
-                              :fieldValue="$invoiceSetting->invoice_number_separator"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.invoiceNumberSeparator')" :fieldPlaceholder="__('placeholders.invoices.invoiceNumberSeparator')" fieldName="invoice_number_separator" fieldId="invoice_number_separator" :fieldValue="$invoiceSetting->invoice_number_separator" />
             </div>
             <div class="col-lg-3">
-                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.invoiceDigit')"
-                                fieldName="invoice_digit"
-                                minValue="0"
-                                maxValue="10"
-                                fieldId="invoice_digit" :fieldValue="$invoiceSetting->invoice_digit"/>
+                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.invoiceDigit')" fieldName="invoice_digit" minValue="0" maxValue="10" fieldId="invoice_digit" :fieldValue="$invoiceSetting->invoice_digit" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.invoiceLookLike')"
-                              fieldId="invoice_look_like"
-                              fieldName="invoice_look_like" fieldReadOnly="true"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.invoiceLookLike')" fieldId="invoice_look_like" fieldName="invoice_look_like" fieldReadOnly="true" />
             </div>
         </div>
         <div class="row">
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.credit_notePrefix')"
-                              :fieldPlaceholder="__('placeholders.invoices.creditNotePrefix')"
-                              fieldName="credit_note_prefix" fieldRequired="true" fieldId="credit_note_prefix"
-                              :fieldValue="$invoiceSetting->credit_note_prefix"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.credit_notePrefix')" :fieldPlaceholder="__('placeholders.invoices.creditNotePrefix')" fieldName="credit_note_prefix" fieldRequired="true" fieldId="credit_note_prefix" :fieldValue="$invoiceSetting->credit_note_prefix" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                              :fieldLabel="__('modules.invoiceSettings.credit_noteNumberSeparator')"
-                              :fieldPlaceholder="__('placeholders.invoices.credit_noteNumberSeparator')"
-                              fieldName="credit_note_number_separator" fieldId="credit_note_number_separator"
-                              :fieldValue="$invoiceSetting->credit_note_number_separator"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.credit_noteNumberSeparator')" :fieldPlaceholder="__('placeholders.invoices.credit_noteNumberSeparator')" fieldName="credit_note_number_separator" fieldId="credit_note_number_separator" :fieldValue="$invoiceSetting->credit_note_number_separator" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.number class="mr-0 mr-lg-2 mr-md-2"
-                                :fieldLabel="__('modules.invoiceSettings.credit_noteDigit')"
-                                fieldName="credit_note_digit"
-                                minValue="0"
-                                maxValue="10"
-                                fieldId="credit_note_digit" :fieldValue="$invoiceSetting->credit_note_digit"/>
+                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.credit_noteDigit')" fieldName="credit_note_digit" minValue="0" maxValue="10" fieldId="credit_note_digit" :fieldValue="$invoiceSetting->credit_note_digit" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                              :fieldLabel="__('modules.invoiceSettings.credit_noteLookLike')"
-                              fieldName="credit_note_look_like"
-                              fieldId="credit_note_look_like" fieldValue="" fieldReadOnly="true"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.credit_noteLookLike')" fieldName="credit_note_look_like" fieldId="credit_note_look_like" fieldValue="" fieldReadOnly="true" />
             </div>
         </div>
     @endif
     @if (in_array('estimates', user_modules()))
         <div class="row">
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimatePrefix')"
-                              :fieldPlaceholder="__('placeholders.invoices.estimatePrefix')" fieldName="estimate_prefix"
-                              fieldRequired="true" fieldId="estimate_prefix"
-                              :fieldValue="$invoiceSetting->estimate_prefix"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimatePrefix')" :fieldPlaceholder="__('placeholders.invoices.estimatePrefix')" fieldName="estimate_prefix" fieldRequired="true" fieldId="estimate_prefix" :fieldValue="$invoiceSetting->estimate_prefix" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                              :fieldLabel="__('modules.invoiceSettings.estimateNumberSeparator')"
-                              :fieldPlaceholder="__('placeholders.invoices.estimateNumberSeparator')"
-                              fieldName="estimate_number_separator" fieldId="estimate_number_separator"
-                              :fieldValue="$invoiceSetting->estimate_number_separator"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateNumberSeparator')" :fieldPlaceholder="__('placeholders.invoices.estimateNumberSeparator')" fieldName="estimate_number_separator" fieldId="estimate_number_separator" :fieldValue="$invoiceSetting->estimate_number_separator" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateDigit')"
-                                fieldName="estimate_digit"
-                                minValue="0"
-                                maxValue="10"
-                                fieldId="estimate_digit" :fieldValue="$invoiceSetting->estimate_digit"/>
+                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateDigit')" fieldName="estimate_digit" minValue="0" maxValue="10" fieldId="estimate_digit" :fieldValue="$invoiceSetting->estimate_digit" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateLookLike')"
-                              fieldName="estimate_look_like"
-                              fieldId="estimate_look_like" fieldValue="" fieldReadOnly="true"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateLookLike')" fieldName="estimate_look_like" fieldId="estimate_look_like" fieldValue="" fieldReadOnly="true" />
             </div>
         </div>
 
         <div class="row">
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateRequestPrefix')"
-                              :fieldPlaceholder="__('placeholders.invoices.estimateRequestPrefix')" fieldName="estimate_request_prefix"
-                              fieldRequired="true" fieldId="estimate_request_prefix"
-                              :fieldValue="$invoiceSetting->estimate_request_prefix"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateRequestPrefix')" :fieldPlaceholder="__('placeholders.invoices.estimateRequestPrefix')" fieldName="estimate_request_prefix" fieldRequired="true" fieldId="estimate_request_prefix" :fieldValue="$invoiceSetting->estimate_request_prefix" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                              :fieldLabel="__('modules.invoiceSettings.estimateRequestNumberSeparator')"
-                              :fieldPlaceholder="__('placeholders.invoices.estimateNumberSeparator')"
-                              fieldName="estimate_request_number_separator" fieldId="estimate_request_number_separator"
-                              :fieldValue="$invoiceSetting->estimate_request_number_separator"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateRequestNumberSeparator')" :fieldPlaceholder="__('placeholders.invoices.estimateNumberSeparator')" fieldName="estimate_request_number_separator" fieldId="estimate_request_number_separator" :fieldValue="$invoiceSetting->estimate_request_number_separator" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateRequestDigit')"
-                                fieldName="estimate_request_digit"
-                                minValue="0"
-                                maxValue="10"
-                                fieldId="estimate_request_digit" :fieldValue="$invoiceSetting->estimate_request_digit"/>
+                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateRequestDigit')" fieldName="estimate_request_digit" minValue="0" maxValue="10" fieldId="estimate_request_digit" :fieldValue="$invoiceSetting->estimate_request_digit" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateRequestLookLike')"
-                              fieldName="estimate_request_look_like"
-                              fieldId="estimate_request_look_like" fieldValue="" fieldReadOnly="true"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.estimateRequestLookLike')" fieldName="estimate_request_look_like" fieldId="estimate_request_look_like" fieldValue="" fieldReadOnly="true" />
             </div>
         </div>
     @endif
@@ -130,62 +76,38 @@
     @if (in_array('orders', user_modules()))
         <div class="row">
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderPrefix')"
-                              :fieldPlaceholder="__('modules.invoiceSettings.orderPrefix')" fieldName="order_prefix"
-                              fieldRequired="true" fieldId="order_prefix" :fieldValue="$invoiceSetting->order_prefix"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderPrefix')" :fieldPlaceholder="__('modules.invoiceSettings.orderPrefix')" fieldName="order_prefix" fieldRequired="true" fieldId="order_prefix" :fieldValue="$invoiceSetting->order_prefix" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                              :fieldLabel="__('modules.invoiceSettings.orderNumberSeparator')"
-                              :fieldPlaceholder="__('modules.invoiceSettings.orderNumberSeparator')"
-                              fieldName="order_number_separator" fieldId="order_number_separator"
-                              :fieldValue="$invoiceSetting->order_number_separator"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderNumberSeparator')" :fieldPlaceholder="__('modules.invoiceSettings.orderNumberSeparator')" fieldName="order_number_separator" fieldId="order_number_separator" :fieldValue="$invoiceSetting->order_number_separator" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderDigit')"
-                                fieldName="order_digit"
-                                minValue="0"
-                                maxValue="10"
-                                fieldId="order_digit" :fieldValue="$invoiceSetting->order_digit" />
+                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderDigit')" fieldName="order_digit" minValue="0" maxValue="10" fieldId="order_digit" :fieldValue="$invoiceSetting->order_digit" />
             </div>
 
             <div class="col-lg-3">
-                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderLookLike')"
-                              fieldName="order_look_like"
-                              fieldId="order_look_like" fieldValue="" fieldReadOnly="true"/>
+                <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderLookLike')" fieldName="order_look_like" fieldId="order_look_like" fieldValue="" fieldReadOnly="true" />
             </div>
         </div>
     @endif
 
     <div class="row">
         <div class="col-lg-3">
-            <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.proposalPrefix')"
-                            :fieldPlaceholder="__('placeholders.invoices.proposalPrefix')" fieldName="proposal_prefix"
-                            fieldRequired="true" fieldId="proposal_prefix" :fieldValue="$invoiceSetting->proposal_prefix"/>
+            <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.proposalPrefix')" :fieldPlaceholder="__('placeholders.invoices.proposalPrefix')" fieldName="proposal_prefix" fieldRequired="true" fieldId="proposal_prefix" :fieldValue="$invoiceSetting->proposal_prefix" />
         </div>
 
         <div class="col-lg-3">
-            <x-forms.text class="mr-0 mr-lg-2 mr-md-2"
-                            :fieldLabel="__('modules.invoiceSettings.proposalNumberSeparator')"
-                            :fieldPlaceholder="__('placeholders.invoices.proposalNumberSeparator')"
-                            fieldName="proposal_number_separator" fieldId="proposal_number_separator"
-                            :fieldValue="$invoiceSetting->proposal_number_separator"/>
+            <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.proposalNumberSeparator')" :fieldPlaceholder="__('placeholders.invoices.proposalNumberSeparator')" fieldName="proposal_number_separator" fieldId="proposal_number_separator" :fieldValue="$invoiceSetting->proposal_number_separator" />
         </div>
 
         <div class="col-lg-3">
-            <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.proposalDigit')"
-                            fieldName="proposal_digit"
-                            minValue="0"
-                            maxValue="10"
-                            fieldId="proposal_digit" :fieldValue="$invoiceSetting->proposal_digit"/>
+            <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.proposalDigit')" fieldName="proposal_digit" minValue="0" maxValue="10" fieldId="proposal_digit" :fieldValue="$invoiceSetting->proposal_digit" />
         </div>
 
         <div class="col-lg-3">
-            <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.proposalLookLike')"
-                            fieldName="proposal_look_like"
-                            fieldId="proposal_look_like" fieldValue="" fieldReadOnly="true"/>
+            <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.proposalLookLike')" fieldName="proposal_look_like" fieldId="proposal_look_like" fieldValue="" fieldReadOnly="true" />
         </div>
     </div>
 </div>
@@ -201,7 +123,7 @@
 
 <script>
     // save prefix setting
-    $('#save-prefix-form').click(function () {
+    $('#save-prefix-form').click(function() {
         $.easyAjax({
             url: "{{ route('invoice_settings.update_prefix', $invoiceSetting->id) }}",
             container: '#editSettings',
@@ -212,17 +134,17 @@
             disableButton: true,
             blockUI: true,
             buttonSelector: "#save-prefix-form",
-            success: function () {
+            success: function() {
                 window.location.reload();
             }
         })
     });
 
-    $('#invoice_prefix, #invoice_number_separator, #invoice_digit, #estimate_prefix,#estimate_number_separator, #estimate_digit, #credit_note_prefix, #credit_note_number_separator, #credit_note_digit, #order_prefix, #order_number_separator, #order_digit').on('keyup', function () {
+    $('#invoice_prefix, #invoice_number_separator, #invoice_digit, #estimate_prefix,#estimate_number_separator, #estimate_digit, #credit_note_prefix, #credit_note_number_separator, #credit_note_digit, #order_prefix, #order_number_separator, #order_digit').on('keyup', function() {
         genrateInvoiceNumber();
     });
 
-    $('#estimate_request_prefix, #estimate_request_number_separator, #estimate_request_digit, #proposal_prefix, #proposal_number_separator, #proposal_digit').on('keyup', function () {
+    $('#estimate_request_prefix, #estimate_request_number_separator, #estimate_request_digit, #proposal_prefix, #proposal_number_separator, #proposal_digit').on('keyup', function() {
         genrateInvoiceNumber();
     });
 

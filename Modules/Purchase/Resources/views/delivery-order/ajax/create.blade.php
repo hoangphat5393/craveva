@@ -1,5 +1,7 @@
-@php($grnLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.deliveryOrders' : 'purchase::app.menu.goodsReceivedNote')
-@php($grnRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn')
+@php
+    $grnLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.deliveryOrders' : 'purchase::app.menu.goodsReceivedNote';
+    $grnRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn';
+@endphp
 <div class="row">
     <div class="col-sm-12">
         <x-form id="save-delivery-order-form">
@@ -44,10 +46,7 @@
                                     <x-forms.select fieldId="warehouse_id" :fieldLabel="__('purchase::modules.deliveryOrder.warehouse')" fieldName="warehouse_id" search="true">
                                         <option value="">@lang('purchase::modules.deliveryOrder.selectWarehouse')</option>
                                         @foreach ($warehouses as $wh)
-                                            <option value="{{ $wh->id }}">{{ $wh->name }}@if (!empty($wh->code))
-                                                    ({{ $wh->code }})
-                                                @endif
-                                            </option>
+                                            <option value="{{ $wh->id }}">{{ $wh->name }}{{ !empty($wh->code) ? ' (' . $wh->code . ')' : '' }}</option>
                                         @endforeach
                                     </x-forms.select>
                                 </div>
@@ -67,6 +66,17 @@
                             <div class="col-md-12" id="items-list"></div>
                         </div>
                     </div>
+                </div>
+
+                @php
+                    $deliveryOrderTermsText = trim((string) ($purchaseSetting->delivery_order_terms ?? '')) !== '' ? (string) $purchaseSetting->delivery_order_terms : (string) ($purchaseSetting->purchase_terms ?? '');
+                @endphp
+                <div class="row p-20 border-top-grey">
+                    @include('partials.company-document-terms-readonly', [
+                        'termsText' => $deliveryOrderTermsText,
+                        'label' => __('purchase::modules.purchaseSettings.deliveryOrderTerms'),
+                        'wrapperClass' => 'col-md-12 col-sm-12 p-0 c-inv-note-terms',
+                    ])
                 </div>
 
                 <x-form-actions>

@@ -500,6 +500,7 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     /* Orders */
     Route::resource('orders', OrderController::class);
     Route::get('sales-order-settings', [SalesOrderSettingsController::class, 'index'])->name('sales-order-settings.index');
+    Route::post('sales-order-settings/update-order-settings/{id}', [SalesOrderSettingsController::class, 'updateOrderSettings'])->name('sales-order-settings.update-order-settings');
     Route::post('sales-order-settings/regenerate-webhook-secret', [SalesOrderSettingsController::class, 'regenerateWebhookSecret'])->name('sales-order-settings.regenerate-webhook-secret');
     Route::post('sales-order-settings/integration-permissions', [SalesOrderSettingsController::class, 'updateIntegrationPermissions'])->name('sales-order-settings.update-integration-permissions');
 
@@ -1063,7 +1064,7 @@ Route::get('/test-broadcast', function () {
 
         return response()->json(['success' => true, 'message' => 'Event broadcasted successfully']);
     } catch (Throwable $e) {
-        return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        return response()->json(['success' => false, 'message' => 'Error: '.$e->getMessage()]);
     }
 })->name('test-broadcast');
 

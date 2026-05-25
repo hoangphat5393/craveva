@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Requests\UpdateSalesOrderAiIntegrationPermissionsRequest;
+use App\Http\Requests\UpdateSalesOrderSettingsRequest;
 use App\Models\ClientDetails;
 use App\Models\Company;
+use App\Models\InvoiceSetting;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 
@@ -28,7 +32,57 @@ class SalesOrderSettingsController extends AccountBaseController
         });
     }
 
-    public function index(): View
+    public function index(): View|Response|array
+    {
+        $tab = request('tab');
+
+        if ($tab === 'order-settings') {
+            $this->invoiceSetting = invoice_setting();
+            $this->view = 'sales-order-settings.ajax.order-settings';
+            $this->activeTab = 'order-settings';
+
+            if (request()->ajax()) {
+                $html = view($this->view, $this->data)->render();
+
+                return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
+            }
+
+            return view('sales-order-settings.index', $this->data);
+        }
+
+        $this->populateApiIntegrationTabData();
+
+        $this->view = 'sales-order-settings.ajax.api-integration';
+        $this->activeTab = 'api-integration';
+
+        if (request()->ajax()) {
+            $html = view($this->view, $this->data)->render();
+
+            return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
+        }
+
+        return view('sales-order-settings.index', $this->data);
+    }
+
+    public function updateOrderSettings(UpdateSalesOrderSettingsRequest $request, int $id): mixed
+    {
+        $setting = InvoiceSetting::findOrFail($id);
+
+        abort_403((int) $setting->company_id !== (int) company()->id);
+
+        $setting->order_prefix = $request->order_prefix;
+        $setting->order_number_separator = $request->order_number_separator;
+        $setting->order_digit = $request->order_digit;
+        $setting->order_terms = $request->order_terms;
+        $setting->save();
+
+        session()->forget('invoice_setting');
+        session()->forget('company');
+
+        return Reply::success(__('messages.updateSuccess'));
+    }
+
+    private function populateApiIntegrationTabData(): void
     {
         $baseUrl = rtrim((string) config('app.url'), '/');
         $globalSecret = (string) config('app.ai_order_webhook_secret', '');
@@ -115,8 +169,6 @@ class SalesOrderSettingsController extends AccountBaseController
             $this->aiOrderRestCurlExamplePut = $this->buildAiOrderRestCurlExample('PUT', $restOne, $companySecret, $updateBodyPretty);
             $this->aiOrderRestCurlExampleDelete = $this->buildAiOrderRestCurlExample('DELETE', $restOne, $companySecret, null);
         }
-
-        return view('sales-order-settings.index', $this->data);
     }
 
     public function regenerateWebhookSecret(): RedirectResponse

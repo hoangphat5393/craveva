@@ -1,6 +1,6 @@
 # Phase 2 — Lập kế hoạch sản xuất (sau Sales Order)
 
-_Cập nhật: **21/05/2026** · Phase 1: [`PHASE1_PM_STATUS_LIVE_VI.md`](./PHASE1_PM_STATUS_LIVE_VI.md) · Spec Gary: [`PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`](../PROJECT%20BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md) (Phần B)_
+_Cập nhật: **24/05/2026** · Phase 1: [`PHASE1_PM_STATUS_LIVE_VI.md`](./PHASE1_PM_STATUS_LIVE_VI.md) · Doc sync: [`BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](./BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md) · Spec Gary: [`PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`](../PROJECT%20BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md) (Phần B)_
 
 ---
 
@@ -83,13 +83,14 @@ Module **`Production`** (`/account/production/...`) đã có nền (ước ~**70
 
 ### Ưu tiên thấp / Phase 2+ (P2)
 
-| #               | Việc                                                                                                                                                      |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P2-1            | **UOM + UOM price** — **✅ code** (A→B→C + post lô 2026-05-20). UAT còn lại. [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md) |
-| P2-UOM-OUTBOUND | **✅ Fixed 2026-05-20** — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)                                                |
-| P2-2            | Phiên bản BOM V1/V2, lưu trữ                                                                                                                              |
-| P2-3            | Multi-batch planning nâng cao                                                                                                                             |
-| P2-4            | Receiving QC GRN, CCP cứng, AI validate certs (proposal Phase 3)                                                                                          |
+| #               | Việc                                                                                                                                                                                                  |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-1            | **UOM + UOM price** — **✅ code** (A→B→C + post lô 2026-05-20). UAT còn lại. [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                                             |
+| P2-UOM-OUTBOUND | **✅ Fixed 2026-05-20** — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)                                                                                            |
+| **P1c**         | **Post FG → Inventory list** — **✅ 2026-05-23** [`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](./16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md); backfill `production:backfill-fg-inventory-ledger` |
+| P2-2            | Phiên bản BOM V1/V2, lưu trữ                                                                                                                                                                          |
+| P2-3            | Multi-batch planning nâng cao                                                                                                                                                                         |
+| P2-4            | Receiving QC GRN, CCP cứng, AI validate certs (proposal Phase 3)                                                                                                                                      |
 
 ---
 
@@ -135,7 +136,8 @@ Chi tiết: [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLA
 - [x] Hệ thống **hiển thị tổng nguyên liệu** cần cho SL đơn (ví dụ 3.000 gói → kg đường/kem/cà phê).
 - [x] Dropdown BOM **không** trộn NL với thành phẩm.
 - [x] Hoàn thành batch → **trừ NL, cộng TP** đúng trên tồn (có checklist UX trên màn lô).
-- [ ] PM/UAT ký trên staging với 1 case Oldtown (hoặc case thật).
+- [x] Post FG → dòng **Inventory** (Purchase ledger) đồng bộ với warehouse on-hand — **P1c** (code + test; UAT Luồng E).
+- [ ] PM/UAT ký trên staging với 1 case Oldtown (hoặc case thật), gồm **Luồng E** (FG hiện Inventory).
 - [ ] Regression: `.\scripts\test.ps1` (full) pass; test Production liên quan pass.
 
 **Chưa bắt buộc trong Phase 2:** Giao hàng, hóa đơn, AI, Project tasks in MS sense.
@@ -165,14 +167,16 @@ Chi tiết: [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLA
 
 ## 9. Tài liệu tham chiếu
 
-| File                                                   | Dùng khi                           |
-| ------------------------------------------------------ | ---------------------------------- |
-| `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`          | Phần B — Gary                      |
-| `PROJECT BIOMIXING/PHASE1_2_BUSINESS_FLOW_PM_VI.md`    | Luồng PM 1+2                       |
-| `PROJECT BIOMIXING/BIOMIXING_PHASES_1_4_SUMMARY_VI.md` | Bản đồ 4 phase                     |
-| `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`           | Chi tiết dev Production            |
-| `FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`      | Epic đa đơn vị SP + kho (KiotViet) |
-| `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`             | UAT matrix                         |
+| File                                                        | Dùng khi                           |
+| ----------------------------------------------------------- | ---------------------------------- |
+| `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`               | Phần B — Gary                      |
+| `PROJECT BIOMIXING/PHASE1_2_BUSINESS_FLOW_PM_VI.md`         | Luồng PM 1+2                       |
+| `PROJECT BIOMIXING/BIOMIXING_PHASES_1_4_SUMMARY_VI.md`      | Bản đồ 4 phase                     |
+| `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`                | Chi tiết dev Production            |
+| `FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`   | Audit phase + go-live              |
+| `FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md` | P1c FG → Inventory                 |
+| `FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`           | Epic đa đơn vị SP + kho (KiotViet) |
+| `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`                  | UAT matrix                         |
 
 ---
 

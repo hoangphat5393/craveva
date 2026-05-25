@@ -1,5 +1,7 @@
-@php($grnLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.deliveryOrders' : 'purchase::app.menu.goodsReceivedNote')
-@php($grnRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn')
+@php
+    $grnLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.deliveryOrders' : 'purchase::app.menu.goodsReceivedNote';
+    $grnRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn';
+@endphp
 <div class="row">
     <div class="col-sm-12">
         <x-form id="update-delivery-order-form" method="PUT">
@@ -68,6 +70,17 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                @php
+                    $deliveryOrderTermsText = trim((string) ($purchaseSetting->delivery_order_terms ?? '')) !== '' ? (string) $purchaseSetting->delivery_order_terms : (string) ($purchaseSetting->purchase_terms ?? '');
+                @endphp
+                <div class="row p-20 border-top-grey">
+                    @include('partials.company-document-terms-readonly', [
+                        'termsText' => $deliveryOrderTermsText,
+                        'label' => __('purchase::modules.purchaseSettings.deliveryOrderTerms'),
+                        'wrapperClass' => 'col-md-12 col-sm-12 p-0 c-inv-note-terms',
+                    ])
                 </div>
 
                 <x-form-actions>

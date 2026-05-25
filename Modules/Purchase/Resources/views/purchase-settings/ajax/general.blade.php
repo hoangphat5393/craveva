@@ -46,7 +46,7 @@
             <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.purchaseSettings.vendorCreditExample')" fieldId="vendor_credit_look_like" fieldName="vendor_credit_look_like" fieldReadOnly="true" />
         </div>
         <div class="col-lg-12 mt-3">
-            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.purchaseSettings.termsAndCondition')" fieldId="purchase_terms" fieldName="purchase_terms" :fieldValue="$purchaseSetting->purchase_terms" />
+            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.purchaseSettings.purchaseOrderTerms')" fieldId="purchase_terms" fieldName="purchase_terms" :fieldValue="$purchaseSetting->purchase_terms" />
         </div>
     </div>
 </div>
@@ -64,6 +64,11 @@
     // save prefix setting
     $('#save-prefix-form').click(function() {
         window.apiHttp.postUrlEncoded("{{ route('purchase_settings.update_prefix', $purchaseSetting->id) }}", $('#editSettings').serialize())
+            .then(function(response) {
+                if (response && response.status === 'success') {
+                    showSettingsSaveSuccessToast(response.message);
+                }
+            })
             .catch(function(err) {
                 $.handleApiFormError(err);
             });

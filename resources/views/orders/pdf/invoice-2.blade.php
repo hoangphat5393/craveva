@@ -5,6 +5,7 @@
   This template is under Invoicebus Template License, see https://invoicebus.com/templates/license/
 -->
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>@lang('app.order')</title>
@@ -17,19 +18,87 @@
 
     <style>
         /* Reset styles */
-        html, body, div, span, applet, object, iframe,
-        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-        a, abbr, acronym, address, big, cite, code,
-        del, dfn, em, img, ins, kbd, q, s, samp,
-        small, strike, strong, sub, sup, tt, var,
-        b, u, i, center,
-        dl, dt, dd, ol, ul, li,
-        fieldset, form, label, legend,
-        table, caption, tbody, tfoot, thead, tr, th, td,
-        article, aside, canvas, details, embed,
-        figure, figcaption, footer, header, hgroup,
-        menu, nav, output, ruby, section, summary,
-        time, mark, audio, video {
+        html,
+        body,
+        div,
+        span,
+        applet,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        a,
+        abbr,
+        acronym,
+        address,
+        big,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        img,
+        ins,
+        kbd,
+        q,
+        s,
+        samp,
+        small,
+        strike,
+        strong,
+        sub,
+        sup,
+        tt,
+        var,
+        b,
+        u,
+        i,
+        center,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td,
+        article,
+        aside,
+        canvas,
+        details,
+        embed,
+        figure,
+        figcaption,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        output,
+        ruby,
+        section,
+        summary,
+        time,
+        mark,
+        audio,
+        video {
             margin: 0;
             padding: 0;
             border: 0;
@@ -42,7 +111,8 @@
             line-height: 1;
         }
 
-        ol, ul {
+        ol,
+        ul {
             list-style: none;
         }
 
@@ -50,16 +120,23 @@
             border-collapse: collapse;
         }
 
-        caption, th, td {
+        caption,
+        th,
+        td {
             text-align: left;
             font-weight: normal;
             vertical-align: middle;
         }
 
-        q, blockquote {
+        q,
+        blockquote {
             quotes: none;
         }
-        q:before, q:after, blockquote:before, blockquote:after {
+
+        q:before,
+        q:after,
+        blockquote:before,
+        blockquote:after {
             content: "";
             content: none;
         }
@@ -68,7 +145,19 @@
             border: none;
         }
 
-        article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        main,
+        menu,
+        nav,
+        section,
+        summary {
             display: block;
         }
 
@@ -78,7 +167,8 @@
          * Instead wrap everything in one main <div id="container"> element where you may change
          * something like the font or the background of the invoice
          */
-        html, body {
+        html,
+        body {
             /* MOVE ALONG, NOTHING TO CHANGE HERE! */
         }
 
@@ -95,7 +185,9 @@
             display: none;
         }
 
-        b, strong, .bold {
+        b,
+        strong,
+        .bold {
             font-weight: bold;
         }
 
@@ -117,26 +209,32 @@
             float: left;
             margin-right: 20px;
         }
+
         #memo .logo img {
             height: 50px;
         }
+
         #memo .company-info {
             /*float: right;*/
             text-align: right;
         }
+
         #memo .company-info .company-name {
             font-size: 20px;
             text-align: right;
         }
+
         #memo .company-info .spacer {
             height: 15px;
             display: block;
         }
+
         #memo .company-info div {
             font-size: 12px;
             text-align: right;
             line-height: 18px;
         }
+
         #memo:after {
             content: '';
             display: block;
@@ -149,13 +247,15 @@
             line-height: 18px;
         }
 
-        #invoice-info table{
+        #invoice-info table {
             width: 30%;
         }
-        #invoice-info > div {
+
+        #invoice-info>div {
             float: left;
         }
-        #invoice-info > div > span {
+
+        #invoice-info>div>span {
             display: block;
             min-width: 100px;
             min-height: 18px;
@@ -173,22 +273,27 @@
             min-width: 220px;
             line-height: 18px;
         }
-        #client-info > div {
+
+        #client-info>div {
             margin-bottom: 3px;
         }
+
         #client-info span {
             display: block;
         }
-        #client-info > span {
+
+        #client-info>span {
             margin-bottom: 3px;
         }
 
         #invoice-title-number {
             margin-top: 30px;
         }
+
         #invoice-title-number #title {
             font-size: 35px;
         }
+
         #invoice-title-number #number {
             text-align: left;
             font-size: 20px;
@@ -197,50 +302,62 @@
         table {
             table-layout: fixed;
         }
-        table th, table td {
+
+        table th,
+        table td {
             vertical-align: top;
             word-break: keep-all;
             word-wrap: break-word;
         }
 
-        #items .first-cell, #items table th:first-child, #items table td:first-child {
+        #items .first-cell,
+        #items table th:first-child,
+        #items table td:first-child {
             width: 18px;
             text-align: right;
         }
+
         #items table {
             border-collapse: collapse;
             width: 100%;
             border: 1px solid #000000
         }
+
         #items table th {
             font-weight: bold;
             padding: 12px 10px;
             text-align: right;
             border-bottom: 1px solid #444;
         }
+
         #items table th:nth-child(2) {
             width: 30%;
             text-align: left;
         }
+
         #items table th:last-child {
             text-align: right;
         }
+
         #items table td {
             border-right: 1px solid #b6b6b6;
             padding: 7px 10px;
             text-align: right;
         }
+
         #items table td:first-child {
             text-align: left;
         }
+
         #items table td:nth-child(2) {
             text-align: left;
         }
+
         #items table td:last-child {
             border-right: none !important;
         }
 
-        #terms > div {
+        #terms>div {
             min-height: 30px;
         }
 
@@ -248,6 +365,7 @@
             color: #707070;
             font-size: 12px;
         }
+
         .payment-info div {
             display: inline-block;
             min-width: 10px;
@@ -258,7 +376,7 @@
             border-color: #F8ED31 !important;
         }
 
-        .item-summary{
+        .item-summary {
             font-size: 11px;
             margin-top: 10px;
             margin-bottom: 10px;
@@ -276,28 +394,34 @@
             /* Here goes your print styles */
         }
 
-        .page_break { page-break-before: always; }
+        .page_break {
+            page-break-before: always;
+        }
 
         .h3-border {
             border-bottom: 1px solid #AAAAAA;
         }
-        table td.text-center
-        {
+
+        table td.text-center {
             text-align: center;
         }
-        table td.text-right
-        {
+
+        table td.text-right {
             text-align: right;
         }
 
-        #itemsPayment .first-cell, #itemsPayment table th:first-child, #itemsPayment table td:first-child {
+        #itemsPayment .first-cell,
+        #itemsPayment table th:first-child,
+        #itemsPayment table td:first-child {
             width: 18px;
             text-align: right;
         }
+
         #itemsPayment table {
             border-collapse: separate;
             width: 100%;
         }
+
         #itemsPayment table th {
             font-weight: bold;
             padding: 12px 10px;
@@ -305,274 +429,281 @@
             border-bottom: 1px solid #444;
             text-transform: uppercase;
         }
+
         #itemsPayment table th:nth-child(2) {
             width: 30%;
             text-align: left;
         }
+
         #itemsPayment table th:last-child {
             text-align: right;
         }
+
         #itemsPayment table td {
             border-right: 1px solid #b6b6b6;
             padding: 15px 10px;
             text-align: right;
         }
+
         #itemsPayment table td:first-child {
             text-align: left;
             /*border-right: none !important;*/
         }
+
         #itemsPayment table td:nth-child(2) {
             text-align: left;
         }
+
         #itemsPayment table td:last-child {
             border-right: none !important;
         }
 
         .word-break {
-            word-wrap:break-word;
+            word-wrap: break-word;
             word-break: break-all;
         }
-
-
     </style>
 </head>
+
 <body>
-<div id="container">
-    <div class="invoice-top">
-        <section id="memo">
-            <div class="logo">
-                <img src="{{ invoice_setting()->logo_url }}" />
-            </div>
-
-            <div class="company-info">
-                <span class="company-name">
-                    {{ company()->company_name }}
-                </span>
-
-                <span class="spacer"></span>
-
-                <div>
-                    @if (!is_null($settings) && $order->address)
-                        {!! nl2br($order->address->address) !!}
-                    @endif
+    <div id="container">
+        <div class="invoice-top">
+            <section id="memo">
+                <div class="logo">
+                    <img src="{{ invoice_setting()->logo_url }}" />
                 </div>
 
-                <span class="clearfix"></span>
+                <div class="company-info">
+                    <span class="company-name">
+                        {{ company()->company_name }}
+                    </span>
 
-                <div>{{ company()->company_phone }}
+                    <span class="spacer"></span>
 
-                <span class="clearfix"></span>
+                    <div>
+                        @if (!is_null($settings) && $order->address)
+                            {!! nl2br($order->address->address) !!}
+                        @endif
+                    </div>
 
-                @if ($invoiceSetting->show_gst == 'yes' && $order->address)
-                    <div>{{ $order->address->tax_name }}: {{ $order->address->tax_number }}</div>
                     <span class="clearfix"></span>
-                @endif
-            </div>
 
-        </section>
+                    <div>{{ company()->company_phone }}
 
-        <section id="invoice-info">
-            <table>
-                <tr>
-                    <td>@lang('modules.orders.orderDate'):</td>
-                    <td>{{ \Carbon\Carbon::parse($order->order_date)->translatedFormat(company()->date_format) }}</td>
-                </tr>
-                <tr>
-                    <td>@lang('app.status'):</td>
-                    <td>@lang('modules.invoices.'.$order->status)</td>
-                </tr>
+                        <span class="clearfix"></span>
 
-            </table>
-
-            <section id="invoice-title-number">
-
-                <span id="number">{{ $order->order_number }}</span>
+                        @if ($invoiceSetting->show_gst == 'yes' && $order->address)
+                            <div>{{ $order->address->tax_name }}: {{ $order->address->tax_number }}</div>
+                            <span class="clearfix"></span>
+                        @endif
+                    </div>
 
             </section>
-        </section>
 
-        @if($order->client && $order->clientDetails)
-            <section id="client-info">
-                @if(($order->client->name || $order->client->email || $order->client->mobile || $order->clientDetails->company_name || $order->clientDetails->address )
-                    && ($invoiceSetting->show_client_name == 'yes' || $invoiceSetting->show_client_email == 'yes' || $invoiceSetting->show_client_phone == 'yes' || $invoiceSetting->show_client_company_name == 'yes' || $invoiceSetting->show_client_company_address == 'yes'))
-                    @if ($order->project)
-                    <span>@lang('modules.invoices.project'):</span>
-                    <div>
-                        <span class="bold">{{$order->project->project_name}}</span>
-                    </div>
-                    @endif
+            <section id="invoice-info">
+                <table>
+                    <tr>
+                        <td>@lang('modules.orders.orderDate'):</td>
+                        <td>{{ \Carbon\Carbon::parse($order->order_date)->translatedFormat(company()->date_format) }}</td>
+                    </tr>
+                    <tr>
+                        <td>@lang('app.status'):</td>
+                        <td>@lang('modules.invoices.' . $order->status)</td>
+                    </tr>
 
-                    <span>@lang('modules.invoices.billedTo'):</span>
+                </table>
 
-                    @if ($order->client->name && $invoiceSetting->show_client_name == 'yes')
-                        <div>
-                            <span class="bold">{{ $order->client->name_salutation }}</span>
-                        </div>
-                    @endif
+                <section id="invoice-title-number">
 
-                    @if ($order->client->email && $invoiceSetting->show_client_email == 'yes')
-                        <div>
-                            <span>{{ $order->client->email }}</span>
-                        </div>
-                    @endif
+                    <span id="number">{{ $order->order_number }}</span>
 
-                    @if ($order->client->mobile && $invoiceSetting->show_client_phone == 'yes')
-                        <div>
-                            <span>{{ $order->client->mobile_with_phonecode }}</span>
-                        </div>
-                    @endif
-
-                    @if ($order->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
-                        <div>
-                            <span>{{ $order->clientDetails->company_name }}</span>
-                        </div>
-                    @endif
-
-                    @if ($order->client->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
-                        <div>
-                            <b>@lang('app.address') :</b>
-                            <span>{!! nl2br($order->clientDetails->address) !!}</span>
-                        </div>
-                    @endif
-
-                    @if ($order->show_shipping_address == 'yes' && $order->client->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
-                        <div class="mb-3">
-                            <b>@lang('app.address') :</b>
-                            <div>{!! nl2br($order->clientDetails->address) !!}</div>
-                        </div>
-                    @endif
-                @endif
-
-                @if ($order->show_shipping_address === 'yes')
-                    <div>
-                        <b>@lang('app.shippingAddress') :</b>
-                        <div>{!! nl2br($order->clientDetails->shipping_address) !!}</div>
-                    </div>
-                @endif
-
-                @if($invoiceSetting->show_gst == 'yes' && !is_null($order->clientDetails) && !is_null($order->clientDetails->gst_number))
-                    <div>
-                        <span> @lang('app.gstIn'): {{ $order->clientDetails->gst_number }} </span>
-                    </div>
-                @endif
+                </section>
             </section>
-        @endif
-        <div class="clearfix"></div>
-    </div>
 
+            @if ($order->client && $order->clientDetails)
+                <section id="client-info">
+                    @if (
+                        ($order->client->name || $order->client->email || $order->client->mobile || $order->clientDetails->company_name || $order->clientDetails->address) &&
+                            ($invoiceSetting->show_client_name == 'yes' || $invoiceSetting->show_client_email == 'yes' || $invoiceSetting->show_client_phone == 'yes' || $invoiceSetting->show_client_company_name == 'yes' || $invoiceSetting->show_client_company_address == 'yes'))
+                        @if ($order->project)
+                            <span>@lang('modules.invoices.project'):</span>
+                            <div>
+                                <span class="bold">{{ $order->project->project_name }}</span>
+                            </div>
+                        @endif
 
-    <div class="invoice-body">
-        <section id="items">
+                        <span>@lang('modules.invoices.billedTo'):</span>
 
-            <table cellpadding="0" cellspacing="0">
+                        @if ($order->client->name && $invoiceSetting->show_client_name == 'yes')
+                            <div>
+                                <span class="bold">{{ $order->client->name_salutation }}</span>
+                            </div>
+                        @endif
 
-                <tr>
-                    <th>#</th> <!-- Dummy cell for the row number and row commands -->
-                    <th>@lang("modules.invoices.item")</th>
-                    @if($invoiceSetting->hsn_sac_code_show)
-                        <th>@lang("app.hsnSac")</th>
+                        @if ($order->client->email && $invoiceSetting->show_client_email == 'yes')
+                            <div>
+                                <span>{{ $order->client->email }}</span>
+                            </div>
+                        @endif
+
+                        @if ($order->client->mobile && $invoiceSetting->show_client_phone == 'yes')
+                            <div>
+                                <span>{{ $order->client->mobile_with_phonecode }}</span>
+                            </div>
+                        @endif
+
+                        @if ($order->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
+                            <div>
+                                <span>{{ $order->clientDetails->company_name }}</span>
+                            </div>
+                        @endif
+
+                        @if ($order->client->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
+                            <div>
+                                <b>@lang('app.address') :</b>
+                                <span>{!! nl2br($order->clientDetails->address) !!}</span>
+                            </div>
+                        @endif
+
+                        @if ($order->show_shipping_address == 'yes' && $order->client->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
+                            <div class="mb-3">
+                                <b>@lang('app.address') :</b>
+                                <div>{!! nl2br($order->clientDetails->address) !!}</div>
+                            </div>
+                        @endif
                     @endif
-                    @if ($order->unit != null)
-                    <th class="qty">{{ $order->unit->unit_type }}</th>
-                    @else
-                    <th class="qty"> </th>
-                    @endif
-                    <th>@lang("app.sku")</th>
-                    <th>@lang("modules.invoices.unitPrice")</th>
-                    <th>@lang("modules.invoices.tax")</th>
-                    <th>@lang("modules.invoices.price") ({!! htmlentities($order->currency->currency_code)  !!})</th>
-                </tr>
 
-                <?php $count = 0; ?>
-                @foreach($order->items->sortBy('field_order') as $item)
-                    @if($item->type == 'item')
-                        <tr data-iterate="item">
-                            <td>{{ ++$count }}</td> <!-- Don't remove this column as it's needed for the row commands -->
-                            <td class="word-break">
-                                {{ $item->item_name }}
-                                @if(!is_null($item->item_summary))
-                                    <p class="item-summary word-break">{!! nl2br(pdfStripTags($item->item_summary)) !!}</p>
+                    @if ($order->show_shipping_address === 'yes')
+                        <div>
+                            <b>@lang('app.shippingAddress') :</b>
+                            <div>{!! nl2br($order->clientDetails->shipping_address) !!}</div>
+                        </div>
+                    @endif
+
+                    @if ($invoiceSetting->show_gst == 'yes' && !is_null($order->clientDetails) && !is_null($order->clientDetails->gst_number))
+                        <div>
+                            <span> @lang('app.gstIn'): {{ $order->clientDetails->gst_number }} </span>
+                        </div>
+                    @endif
+                </section>
+            @endif
+            <div class="clearfix"></div>
+        </div>
+
+
+        <div class="invoice-body">
+            <section id="items">
+
+                <table cellpadding="0" cellspacing="0">
+
+                    <tr>
+                        <th>#</th> <!-- Dummy cell for the row number and row commands -->
+                        <th>@lang('modules.invoices.item')</th>
+                        @if ($invoiceSetting->hsn_sac_code_show)
+                            <th>@lang('app.hsnSac')</th>
+                        @endif
+                        @if ($order->unit != null)
+                            <th class="qty">{{ $order->unit->unit_type }}</th>
+                        @else
+                            <th class="qty"> </th>
+                        @endif
+                        <th>@lang('app.sku')</th>
+                        <th>@lang('modules.invoices.unitPrice')</th>
+                        <th>@lang('modules.invoices.tax')</th>
+                        <th>@lang('modules.invoices.price') ({!! htmlentities($order->currency->currency_code) !!})</th>
+                    </tr>
+
+                    <?php $count = 0; ?>
+                    @foreach ($order->items->sortBy('field_order') as $item)
+                        @if ($item->type == 'item')
+                            <tr data-iterate="item">
+                                <td>{{ ++$count }}</td> <!-- Don't remove this column as it's needed for the row commands -->
+                                <td class="word-break">
+                                    {{ $item->item_name }}
+                                    @if (!is_null($item->item_summary))
+                                        <p class="item-summary word-break">{!! nl2br(pdfStripTags($item->item_summary)) !!}</p>
+                                    @endif
+                                    @if ($item->orderItemImage)
+                                        <p class="mt-2">
+                                            <img src="{{ $item->orderItemImage->file_url }}" width="60" height="60" class="img-thumbnail">
+                                        </p>
+                                    @endif
+                                </td>
+                                @if ($invoiceSetting->hsn_sac_code_show)
+                                    <td>{{ $item->hsn_sac_code ? $item->hsn_sac_code : '--' }}</td>
                                 @endif
-                                @if ($item->orderItemImage)
-                                    <p class="mt-2">
-                                        <img src="{{ $item->orderItemImage->file_url }}" width="60" height="60" class="img-thumbnail">
-                                    </p>
-                                @endif
-                            </td>
-                            @if($invoiceSetting->hsn_sac_code_show)
-                                <td>{{ $item->hsn_sac_code ? $item->hsn_sac_code : '--' }}</td>
-                            @endif
-                            <td>{{ $item->quantity }}</td>
-                            <td>{{ $item->sku }}</td>
-                            <td>{{ currency_format($item->unit_price, $order->currency_id, false) }}</td>
-                            <td>{{ $item->tax_list }}</td>
-                            <td>{{ currency_format($item->amount, $order->currency_id, false) }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->sku }}</td>
+                                <td>{{ currency_format($item->unit_price, $order->currency_id, false) }}</td>
+                                <td>{{ $item->tax_list }}</td>
+                                <td>{{ currency_format($item->amount, $order->currency_id, false) }}</td>
+                            </tr>
+                        @endif
+                    @endforeach
+
+                </table>
+
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}">@lang('modules.invoices.subTotal'):</td>
+                        <td>{{ currency_format($order->sub_total, $order->currency_id, false) }}</td>
+                    </tr>
+                    @if ($discount != 0 && $discount != '')
+                        <tr data-iterate="tax">
+                            <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}">@lang('modules.invoices.discount'):</td>
+                            <td>-{{ currency_format($discount, $order->currency_id, false) }}</td>
                         </tr>
                     @endif
-                @endforeach
+                    @foreach ($taxes as $key => $tax)
+                        <tr data-iterate="tax">
+                            <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}">{{ $key }}:</td>
+                            <td>{{ currency_format($tax, $order->currency_id, false) }}</td>
+                        </tr>
+                    @endforeach
+                    <tr class="amount-total">
+                        <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}">
+                            @lang('modules.invoices.total'):
+                        </td>
+                        <td>
+                            {{ currency_format($order->total, $order->currency_id, false) }}
+                        </td>
+                    </tr>
+                </table>
 
-            </table>
+            </section>
 
-            <table cellpadding="0" cellspacing="0">
-                <tr>
-                    <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}">@lang("modules.invoices.subTotal"):</td>
-                    <td>{{ currency_format($order->sub_total, $order->currency_id, false) }}</td>
-                </tr>
-                @if($discount != 0 && $discount != '')
-                <tr data-iterate="tax">
-                    <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6': '5' }}">@lang("modules.invoices.discount"):</td>
-                    <td>-{{ currency_format($discount, $order->currency_id, false) }}</td>
-                </tr>
+            <section id="terms">
+                @if (!is_null($order->note))
+                    <div class="word-break item-summary">{!! nl2br($order->note) !!}</div>
                 @endif
-                @foreach($taxes as $key=>$tax)
-                <tr data-iterate="tax">
-                    <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6': '5' }}">{{ $key }}:</td>
-                    <td>{{ currency_format($tax, $order->currency_id, false) }}</td>
-                </tr>
-                @endforeach
-                <tr class="amount-total">
-                    <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6': '5' }}">
-                        @lang("modules.invoices.total"):
-                    </td>
-                    <td>
-                        {{ currency_format($order->total, $order->currency_id, false) }}
-                    </td>
-                </tr>
-            </table>
+                @if (isset($invoiceSetting->other_info))
+                    <div class="word-break item-summary description">
+                        {!! nl2br($invoiceSetting->other_info) !!}
+                    </div>
+                @endif
+                @include('partials.company-document-terms-pdf')
+            </section>
 
-        </section>
-
-        <section id="terms">
-            @if(!is_null($order->note))
-                <div class="word-break item-summary">{!! nl2br($order->note) !!}</div>
-            @endif
-            @if (isset($invoiceSetting->other_info))
-                <div class="word-break item-summary description">
-                    {!! nl2br($invoiceSetting->other_info) !!}
-                </div>
-            @endif
-        </section>
-
-{{--Custom fields data--}}
-            @if(isset($fields) && count($fields) > 0)
+            {{-- Custom fields data --}}
+            @if (isset($fields) && count($fields) > 0)
                 <div class="page_break"></div>
                 <h3 class="box-title m-t-20 text-center h3-border"> @lang('modules.projects.otherInfo')</h3>
-                <table  style="background: none" border="0" cellspacing="0" cellpadding="0" width="100%">
-                    @foreach($fields as $field)
+                <table style="background: none" border="0" cellspacing="0" cellpadding="0" width="100%">
+                    @foreach ($fields as $field)
                         <tr>
-                            <td style="text-align: left;background: none;" >
+                            <td style="text-align: left;background: none;">
                                 <div style="font-size: 13px; margin-top: 5px;">{{ $field->label }}</div>
                                 <p id="notes">
-                                    @if( $field->type == 'text' || $field->type == 'password' || $field->type == 'number' || $field->type == 'textarea')
-                                        {{$order->custom_fields_data['field_'.$field->id] ?? '-'}}
+                                    @if ($field->type == 'text' || $field->type == 'password' || $field->type == 'number' || $field->type == 'textarea')
+                                        {{ $order->custom_fields_data['field_' . $field->id] ?? '-' }}
                                     @elseif($field->type == 'radio')
-                                        {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? $order->custom_fields_data['field_'.$field->id] : '-' }}
+                                        {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? $order->custom_fields_data['field_' . $field->id] : '-' }}
                                     @elseif($field->type == 'select')
-                                        {{ (!is_null($order->custom_fields_data['field_'.$field->id]) && $order->custom_fields_data['field_'.$field->id] != '') ? $field->values[$order->custom_fields_data['field_'.$field->id]] : '-' }}
+                                        {{ !is_null($order->custom_fields_data['field_' . $field->id]) && $order->custom_fields_data['field_' . $field->id] != '' ? $field->values[$order->custom_fields_data['field_' . $field->id]] : '-' }}
                                     @elseif($field->type == 'checkbox')
-                                        {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? $order->custom_fields_data['field_'.$field->id] : '-' }}
+                                        {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? $order->custom_fields_data['field_' . $field->id] : '-' }}
                                     @elseif($field->type == 'date')
-                                        {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? \Carbon\Carbon::parse($order->custom_fields_data['field_'.$field->id])->translatedFormat($order->company->date_format) : '--'}}
+                                        {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? \Carbon\Carbon::parse($order->custom_fields_data['field_' . $field->id])->translatedFormat($order->company->date_format) : '--' }}
                                     @endif
                                 </p>
                             </td>
@@ -581,9 +712,10 @@
                 </table>
             @endif
 
+        </div>
+
     </div>
 
-</div>
-
 </body>
+
 </html>

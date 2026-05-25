@@ -13,10 +13,10 @@ class WarehouseImport implements ToArray
         return [
             ['id' => 'warehouse_code', 'name' => __('warehouse::app.code'), 'required' => 'No'],
             ['id' => 'warehouse_name', 'name' => __('warehouse::app.name'), 'required' => 'Yes'],
-            ['id' => 'status', 'name' => __('app.status') . ' (active/inactive)', 'required' => 'No'],
+            ['id' => 'status', 'name' => __('warehouse::app.statusLabel').' (active/inactive)', 'required' => 'No'],
             ['id' => 'address', 'name' => __('warehouse::app.address'), 'required' => 'No'],
             ['id' => 'description', 'name' => __('warehouse::app.description'), 'required' => 'No'],
-            ['id' => 'is_default', 'name' => __('warehouse::app.isDefault') . ' (1/0, yes/no)', 'required' => 'No'],
+            ['id' => 'is_default', 'name' => __('warehouse::app.isDefault').' (1/0, yes/no)', 'required' => 'No'],
         ];
     }
 

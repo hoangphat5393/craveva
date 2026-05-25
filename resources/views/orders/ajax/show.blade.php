@@ -357,18 +357,23 @@
                         {{ currency_format($order->total, $order->currency_id, false) }}</td>
                 </tr>
             </table>
+            @php
+                $orderTermsText = trim((string) ($invoiceSetting->order_terms ?? '')) !== '' ? (string) $invoiceSetting->order_terms : (string) ($invoiceSetting->invoice_terms ?? '');
+            @endphp
             <table class="inv-note">
                 <tr>
                     <td height="30" colspan="2"></td>
                 </tr>
                 <tr>
-                    <td>
-                        <table>
-                            <tr>@lang('app.clientNote')</tr>
-                            <tr>
-                                <p class="text-dark-grey">{!! !empty($order->note) ? nl2br($order->note) : '--' !!}</p>
-                            </tr>
-                        </table>
+                    <td>@lang('app.clientNote')</td>
+                    <td style="text-align: right;">@lang('modules.invoiceSettings.orderTerms')</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: text-top">
+                        <p class="text-dark-grey">{!! !empty($order->note) ? nl2br($order->note) : '--' !!}</p>
+                    </td>
+                    <td style="text-align: right;">
+                        <p class="text-dark-grey">{!! nl2br($orderTermsText) !!}</p>
                     </td>
                 </tr>
                 @if ($invoiceSetting->other_info)

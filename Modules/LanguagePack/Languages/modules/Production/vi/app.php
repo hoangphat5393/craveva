@@ -210,6 +210,7 @@ return [
     'fgVarianceApproval' => 'Phê duyệt chênh lệch',
     'fgVarianceApproved' => 'Đã phê duyệt',
     'fgVariancePendingApproval' => 'Chờ phê duyệt',
+    'fgVarianceNotRequired' => 'Không yêu cầu',
     'approveVariance' => 'Phê duyệt chênh lệch',
     'fgVarianceApprovalRequired' => 'Cần phê duyệt chênh lệch trước khi nhập thành phẩm.',
     'fgVarianceAlreadyPosted' => 'Dòng thành phẩm này đã được hạch toán.',

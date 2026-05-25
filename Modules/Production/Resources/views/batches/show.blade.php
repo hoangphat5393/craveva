@@ -242,16 +242,21 @@
                             </td>
                             <td class="text-break">{{ $out->variance_reason ? \Illuminate\Support\Str::limit($out->variance_reason, 120) : '—' }}</td>
                             <td>
-                                @if ($out->approved_at)
+                                @php
+                                    $varianceApprovalUiState = $outputVarianceApprovalUiStates[$out->id] ?? 'not_required';
+                                @endphp
+                                @if ($varianceApprovalUiState === 'approved')
                                     <span class="badge badge-success">@lang('production::app.fgVarianceApproved')</span>
                                     <div class="text-muted f-12 mt-1">{{ $out->approved_at }}</div>
-                                @else
+                                @elseif ($varianceApprovalUiState === 'pending')
                                     <span class="badge badge-warning">@lang('production::app.fgVariancePendingApproval')</span>
+                                @else
+                                    <span class="text-muted">@lang('production::app.fgVarianceNotRequired')</span>
                                 @endif
                             </td>
                             <td>{{ $out->posted_at ?? '—' }}</td>
                             <td class="text-right">
-                                @if ($out->posted_at === null && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true))
+                                @if ($out->posted_at === null && ($outputVarianceApprovalUiStates[$out->id] ?? '') === 'pending' && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true))
                                     <form method="post" action="{{ route('production.outputs.approve-variance', $out) }}" class="d-inline mr-1" onsubmit="return confirm(@json(__('app.areYouSure')));">
                                         @csrf
                                         <button type="submit" class="btn btn-outline-primary rounded f-14 btn-sm">

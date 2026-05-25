@@ -28,7 +28,7 @@
                         </div>
 
                         <div class="col-lg-6 col-md-6">
-                            <x-forms.label class="mt-3" fieldId="stock_action" :fieldLabel="__('warehouse::app.action')" fieldRequired="true"></x-forms.label>
+                            <x-forms.label class="mt-3" fieldId="stock_action" :fieldLabel="__('warehouse::app.adjustmentType')" fieldRequired="true"></x-forms.label>
                             <div class="form-group mb-0 d-flex align-items-center">
                                 <x-forms.radio class="mr-4" fieldId="action_add" :fieldLabel="__('warehouse::app.addStock')" fieldValue="add" fieldName="action" :checked="true"></x-forms.radio>
                                 <x-forms.radio class="" fieldId="action_remove" :fieldLabel="__('warehouse::app.removeStock')" fieldValue="remove" fieldName="action"></x-forms.radio>
@@ -56,7 +56,7 @@
 </div>
 
 <script>
-    const getReadableApiError = (error, fallbackMessage = 'Unable to save stock adjustment.') => {
+    const getReadableApiError = (error, fallbackMessage = @json(__('warehouse::app.unableSaveStockAdjustment'))) => {
         const err = error?.responseJSON || error?.response?.data || {};
         const errors = err?.errors || {};
         const lines = [];
@@ -95,7 +95,7 @@
                 const readableMessage = getReadableApiError(err);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Validation failed',
+                    title: @json(__('warehouse::app.validationFailedTitle')),
                     text: readableMessage,
                     timer: 7000,
                     timerProgressBar: true,

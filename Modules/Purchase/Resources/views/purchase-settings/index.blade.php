@@ -14,7 +14,7 @@
                         <div class="nav" id="nav-tab" role="tablist">
                             <a class="nav-item nav-link f-15 active general" href="{{ route('purchase-settings.index') }}" role="tab" aria-controls="nav-ticketAgents" aria-selected="true">@lang('purchase::app.menu.purchaseSettings')
                             </a>
-                            <a class="nav-item nav-link f-15 purchase-notification-setting" href="{{ route('purchase-settings.index') }}?tab=purchase-notification-setting" role="tab" aria-controls="nav-ticketTypes" aria-selected="true" ajax="false">@lang('purchase::app.menu.purchaseNotificationSettings')
+                            <a class="nav-item nav-link f-15 purchase-notification-setting" href="{{ route('purchase-settings.index') }}?tab=purchase-notification-setting" role="tab" aria-controls="nav-ticketTypes" aria-selected="false">@lang('purchase::app.menu.purchaseNotificationSettings')
                             </a>
                         </div>
                     </nav>
@@ -29,6 +29,8 @@
     </div>
     <!-- SETTINGS END -->
 @endsection
+
+@include('partials.settings-save-success-toast-script')
 
 @push('scripts')
     <script>

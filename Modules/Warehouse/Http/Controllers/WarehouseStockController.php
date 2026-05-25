@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
+use Modules\Warehouse\DataTables\WarehouseStockDataTable;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Entities\WarehouseProductStock;
@@ -36,17 +37,10 @@ class WarehouseStockController extends AccountBaseController
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, WarehouseStockDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_warehouse_stock');
         abort_if($viewPermission === 'none', 403, __('warehouse::app.err_permission_denied'));
-
-        $warehouseId = $request->get('warehouse_id');
-        $search = $request->get('search');
-        $perPage = (int) $request->get('per_page', 25);
-        if (! in_array($perPage, [10, 25, 50, 100], true)) {
-            $perPage = 25;
-        }
 
         $warehouseTable = (new Warehouse)->getTable();
         $warehouses = Warehouse::where('status', 'active')
@@ -57,22 +51,6 @@ class WarehouseStockController extends AccountBaseController
             })
             ->get();
 
-        $stocks = WarehouseProductStock::with(['product', 'warehouse'])
-            ->whereHas('product')
-            ->whereHas('warehouse')
-            ->when($warehouseId, function ($query) use ($warehouseId) {
-                return $query->where('warehouse_id', $warehouseId);
-            })
-            ->when($search, function ($query) use ($search) {
-                return $query->whereHas('product', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('sku', 'like', '%' . $search . '%');
-                });
-            })
-            ->paginate($perPage);
-
-        $this->appendSellableMetrics($stocks);
-
         $companyId = $this->warehouseCompanyId();
         $this->inventoryReconciliationWidget = null;
         if ($companyId && Schema::hasTable('warehouse_product_batches') && Schema::hasTable('warehouse_product_stock')) {
@@ -82,12 +60,13 @@ class WarehouseStockController extends AccountBaseController
 
         $this->pageTitle = 'warehouse::app.adjustStock';
         $this->pageIcon = 'ti-layout';
-        $this->stocks = $stocks;
         $this->warehouses = $warehouses;
-        $this->warehouseId = $warehouseId;
-        $this->warehousePerPage = $perPage;
+        $this->showEmptyStockOnboarding = ! WarehouseProductStock::query()
+            ->whereHas('product')
+            ->whereHas('warehouse')
+            ->exists();
 
-        return view('warehouse::stock.index', $this->data);
+        return $dataTable->render('warehouse::stock.index', $this->data);
     }
 
     /**
@@ -147,21 +126,21 @@ class WarehouseStockController extends AccountBaseController
             'action' => 'nullable|in:add,remove',
             'reason' => 'nullable|string|max:255',
         ], [
-            'warehouse_id.required' => __('The warehouse field is required.'),
-            'warehouse_id.exists' => __('The selected warehouse is invalid for this company.'),
-            'product_id.required' => __('The product field is required.'),
-            'product_id.exists' => __('The selected product is invalid for this company.'),
-            'type.required' => __('The stock movement type field is required.'),
-            'type.in' => __('The selected stock movement type is invalid.'),
-            'quantity.required' => __('The quantity field is required.'),
-            'quantity.numeric' => __('The quantity must be a number.'),
-            'quantity.min' => __('The quantity must be greater than 0.'),
-            'action.in' => __('The selected stock action is invalid.'),
-            'reason.max' => __('The reason may not be greater than :max characters.'),
+            'warehouse_id.required' => __('warehouse::app.validation_warehouse_required'),
+            'warehouse_id.exists' => __('warehouse::app.validation_warehouse_invalid_company'),
+            'product_id.required' => __('warehouse::app.validation_product_required'),
+            'product_id.exists' => __('warehouse::app.validation_product_invalid_company'),
+            'type.required' => __('warehouse::app.validation_adjustment_type_required'),
+            'type.in' => __('warehouse::app.validation_adjustment_type_invalid'),
+            'quantity.required' => __('warehouse::app.validation_quantity_required'),
+            'quantity.numeric' => __('warehouse::app.validation_quantity_numeric'),
+            'quantity.min' => __('warehouse::app.validation_quantity_positive'),
+            'action.in' => __('warehouse::app.validation_stock_action_invalid'),
+            'reason.max' => __('warehouse::app.validation_reason_max'),
         ], [
             'warehouse_id' => __('warehouse'),
             'product_id' => __('product'),
-            'type' => __('stock movement type'),
+            'type' => __('warehouse::app.adjustmentType'),
             'quantity' => __('quantity'),
             'action' => __('stock action'),
             'reason' => __('reason'),
@@ -198,12 +177,12 @@ class WarehouseStockController extends AccountBaseController
             }
 
             if ($request->ajax()) {
-                session()->flash('success', __('messages.recordSaved'));
+                session()->flash('success', __('warehouse::app.success_stock_adjustment_saved'));
 
                 return response()->json(Reply::redirect(route('warehouse.stock.index')));
             }
 
-            return redirect()->route('warehouse.stock.index')->with('success', __('messages.recordSaved'));
+            return redirect()->route('warehouse.stock.index')->with('success', __('warehouse::app.success_stock_adjustment_saved'));
         } catch (\Throwable $e) {
             return $this->handleWarehouseThrowable($request, 'Warehouse stock store', $e, $request->except(['_token']));
         }
@@ -229,10 +208,10 @@ class WarehouseStockController extends AccountBaseController
             ->whereIn('product_id', $productIds)
             ->groupBy('warehouse_id', 'product_id')
             ->get()
-            ->keyBy(fn($row) => $row->warehouse_id . ':' . $row->product_id);
+            ->keyBy(fn ($row) => $row->warehouse_id.':'.$row->product_id);
 
         $stocks->getCollection()->transform(function ($stock) use ($batchAgg) {
-            $key = $stock->warehouse_id . ':' . $stock->product_id;
+            $key = $stock->warehouse_id.':'.$stock->product_id;
             $reserved = (float) ($batchAgg->get($key)->reserved ?? 0);
             $onHand = (float) $stock->quantity;
             $available = max(0.0, $onHand - $reserved);

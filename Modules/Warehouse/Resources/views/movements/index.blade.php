@@ -15,196 +15,110 @@
             text-overflow: ellipsis;
             vertical-align: middle;
         }
-
-        .content-wrapper .pagination .page-link svg {
-            width: 14px !important;
-            height: 14px !important;
-            max-width: 14px;
-            max-height: 14px;
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        .content-wrapper .pagination .page-link {
-            line-height: 1.2;
-        }
     </style>
 @endpush
 
-@php
-    $warehousePerPage = in_array((int) ($warehousePerPage ?? request('per_page', 25)), [10, 25, 50, 100], true) ? (int) ($warehousePerPage ?? request('per_page', 25)) : 25;
-    $formatQuantity = static fn($value): string => rtrim(rtrim(number_format((float) $value, 4, '.', ''), '0'), '.');
-@endphp
-
 @section('filter-section')
-    <form method="GET" action="{{ route('warehouse.movements.index') }}" id="warehouse-movements-filter">
-        <x-filters.filter-box>
-            <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
-                <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('warehouse::app.warehouse')</p>
-                <div class="select-status">
-                    <select class="form-control select-picker" name="warehouse_id" id="warehouse-movements-warehouse" data-container="body" data-size="8">
-                        <option value="">@lang('warehouse::app.allWarehouses')</option>
-                        @foreach ($warehouses as $w)
-                            <option value="{{ $w->id }}" @selected((string) ($warehouseId ?? '') === (string) $w->id)>
-                                {{ $w->name }}{{ $w->code ? ' (' . $w->code . ')' : '' }}{{ $w->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
-                            </option>
-                        @endforeach
-                    </select>
+    <x-filters.filter-box>
+        <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('warehouse::app.warehouse')</p>
+            <div class="select-status">
+                <select class="form-control select-picker" id="warehouse-movements-warehouse" data-container="body" data-size="8">
+                    <option value="">@lang('warehouse::app.allWarehouses')</option>
+                    @foreach ($warehouses as $w)
+                        <option value="{{ $w->id }}">
+                            {{ $w->name }}{{ $w->code ? ' (' . $w->code . ')' : '' }}{{ $w->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('warehouse::app.movementType')</p>
+            <div class="select-status">
+                <select class="form-control select-picker" id="warehouse-movements-type" data-container="body" data-size="8">
+                    <option value="">@lang('warehouse::app.allMovementTypes')</option>
+                    <option value="inbound">@lang('warehouse::app.inbound')</option>
+                    <option value="outbound">@lang('warehouse::app.outbound')</option>
+                </select>
+            </div>
+        </div>
+        <div class="task-search d-flex py-1 px-lg-3 px-0 border-right-grey align-items-center">
+            <div class="input-group bg-grey rounded w-100">
+                <div class="input-group-prepend">
+                    <span class="input-group-text border-0 bg-additional-grey">
+                        <i class="fa fa-search f-13 text-dark-grey"></i>
+                    </span>
                 </div>
+                <input type="text" class="form-control f-14 p-1 border-additional-grey" id="warehouse-movements-search" placeholder="@lang('warehouse::app.searchProduct')">
             </div>
-            <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
-                <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('warehouse::app.movementType')</p>
-                <div class="select-status">
-                    <select class="form-control select-picker" name="movement_type" id="warehouse-movements-type" data-container="body" data-size="8">
-                        <option value="">@lang('warehouse::app.allMovementTypes')</option>
-                        <option value="inbound" @selected(request('movement_type') === 'inbound')>@lang('warehouse::app.inbound')</option>
-                        <option value="outbound" @selected(request('movement_type') === 'outbound')>@lang('warehouse::app.outbound')</option>
-                    </select>
-                </div>
-            </div>
-            <div class="task-search d-flex py-1 px-lg-3 px-0 border-right-grey align-items-center">
-                <div class="input-group bg-grey rounded w-100">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text border-0 bg-additional-grey">
-                            <i class="fa fa-search f-13 text-dark-grey"></i>
-                        </span>
-                    </div>
-                    <input type="text" name="search" class="form-control f-14 p-1 border-additional-grey" id="warehouse-movements-search" placeholder="@lang('warehouse::app.searchProduct')" value="{{ request('search') }}">
-                </div>
-            </div>
-            <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
-                <button type="submit" class="btn btn-secondary rounded f-14 p-2">
-                    <i class="fa fa-search mr-1"></i> @lang('app.apply')
-                </button>
-            </div>
-            <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
-                <x-forms.button-secondary type="button" class="btn-xs {{ request()->filled('search') || request()->filled('warehouse_id') || request()->filled('movement_type') ? '' : 'd-none' }}" id="warehouse-movements-reset-filters" icon="times-circle">
-                    @lang('app.clearFilters')
-                </x-forms.button-secondary>
-            </div>
-        </x-filters.filter-box>
-    </form>
+        </div>
+        <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
+            <x-forms.button-secondary type="button" class="btn-xs d-none" id="warehouse-movements-reset-filters" icon="times-circle">
+                @lang('app.clearFilters')
+            </x-forms.button-secondary>
+        </div>
+    </x-filters.filter-box>
 @endsection
 
 @section('content')
     <div class="content-wrapper">
-        <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
-            <table class="table table-hover border-0 w-100 mb-0">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>@lang('warehouse::app.dateTime')</th>
-                        <th>@lang('warehouse::app.movementType')</th>
-                        <th>@lang('warehouse::app.product')</th>
-                        <th>@lang('warehouse::app.fromWarehouse')</th>
-                        <th>@lang('warehouse::app.toWarehouse')</th>
-                        <th class="text-right">@lang('warehouse::app.quantity')</th>
-                        <th>@lang('warehouse::app.batch')</th>
-                        <th>@lang('warehouse::app.reference')</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($movements as $movement)
-                        @php
-                            $ref = $movement->reference_type;
-                            $refRaw = $ref ? (str_contains($ref, '\\') ? class_basename($ref) : $ref) : '';
-                            $refLabel = $refRaw ? \Illuminate\Support\Str::headline(str_replace('_', ' ', $refRaw)) : '—';
-                        @endphp
-                        <tr>
-                            <td>{{ $loop->iteration + ($movements->currentPage() - 1) * $movements->perPage() }}</td>
-                            <td class="text-nowrap">{{ $movement->created_at->timezone(company()->timezone)->format(company()->date_format . ' H:i') }}</td>
-                            <td>
-                                @if ($movement->movement_type === 'inbound')
-                                    <span class="badge badge-success">@lang('warehouse::app.inbound')</span>
-                                @elseif ($movement->movement_type === 'outbound')
-                                    <span class="badge badge-warning">@lang('warehouse::app.outbound')</span>
-                                @else
-                                    <span class="badge badge-secondary">{{ $movement->movement_type }}</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if ($movement->product)
-                                    <span class="font-weight-semibold">{{ $movement->product->name }}</span>
-                                    <br><small class="text-lightest">{{ $movement->product->sku }}</small>
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td>
-                                @if ($movement->warehouseFrom)
-                                    {{ $movement->warehouseFrom->name }}{{ $movement->warehouseFrom->code ? ' (' . $movement->warehouseFrom->code . ')' : '' }}
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td>
-                                @if ($movement->warehouseTo)
-                                    {{ $movement->warehouseTo->name }}{{ $movement->warehouseTo->code ? ' (' . $movement->warehouseTo->code . ')' : '' }}
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td class="text-right font-weight-semibold">{{ $formatQuantity($movement->quantity) }}</td>
-                            <td><span class="text-dark-grey">{{ $movement->batch_number ?: '—' }}</span></td>
-                            <td class="movement-ref-cell">
-                                <small class="text-dark-grey movement-ref-line" title="{{ $refLabel }}">{{ $refLabel }}</small>
-                                @if ($movement->reference_id)
-                                    <br><small class="text-lightest">@lang('app.id') #{{ $movement->reference_id }}</small>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" class="p-5">
-                                <x-cards.no-record icon="exchange-alt" :message="__('warehouse::app.noMovementsFound')" />
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="d-flex justify-content-between action-bar">
+            <div id="table-actions" class="flex-grow-1 align-items-center"></div>
         </div>
 
-        @if ($movements->hasPages())
-            <div class="warehouse-footer d-flex justify-content-between align-items-center flex-wrap mt-3 px-3 py-2 bg-white border">
-                <div class="d-flex align-items-center mb-2 mb-md-0">
-                    <span class="mr-2 text-dark-grey">@lang('app.show')</span>
-                    <div class="select-status mr-2" style="min-width: 90px;">
-                        <select class="form-control select-picker" id="warehouse-movements-per-page" data-size="4">
-                            @foreach ([10, 25, 50, 100] as $size)
-                                <option value="{{ $size }}" @selected($warehousePerPage === $size)>{{ $size }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <span class="text-dark-grey">@lang('app.entries')</span>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <span class="text-dark-grey mr-3">
-                        @lang('app.showing') {{ $movements->firstItem() ?? 0 }} @lang('app.to') {{ $movements->lastItem() ?? 0 }} @lang('app.of') {{ $movements->total() }} @lang('app.entries')
-                    </span>
-                    {{ $movements->appends(request()->query())->links('pagination::bootstrap-4') }}
-                </div>
-            </div>
-        @endif
+        <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
+            {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
+        </div>
     </div>
 @endsection
 
 @push('scripts')
+    @include('sections.datatable_js')
+
     <script>
-        $('#warehouse-movements-warehouse, #warehouse-movements-type').on('changed.bs.select', function() {
-            $('#warehouse-movements-filter').submit();
+        $('#warehouse-movements-table').on('preXhr.dt', function(e, settings, data) {
+            data.warehouse_id = $('#warehouse-movements-warehouse').val();
+            data.movement_type = $('#warehouse-movements-type').val();
+            data.searchText = $('#warehouse-movements-search').val();
+        });
+
+        const showWarehouseMovementsTable = () => {
+            window.LaravelDataTables["warehouse-movements-table"].draw(true);
+        };
+
+        const toggleWarehouseMovementsReset = () => {
+            if (
+                $('#warehouse-movements-warehouse').val() !== '' ||
+                $('#warehouse-movements-type').val() !== '' ||
+                $('#warehouse-movements-search').val() !== ''
+            ) {
+                $('#warehouse-movements-reset-filters').removeClass('d-none');
+
+                return;
+            }
+
+            $('#warehouse-movements-reset-filters').addClass('d-none');
+        };
+
+        $('#warehouse-movements-warehouse, #warehouse-movements-type').on('change changed.bs.select', function() {
+            toggleWarehouseMovementsReset();
+            showWarehouseMovementsTable();
+        });
+
+        $('#warehouse-movements-search').on('keyup', function() {
+            toggleWarehouseMovementsReset();
+            showWarehouseMovementsTable();
         });
 
         $('#warehouse-movements-reset-filters').click(function() {
-            window.location.href = '{{ route('warehouse.movements.index') }}';
-        });
+            $('#warehouse-movements-warehouse').val('');
+            $('#warehouse-movements-type').val('');
+            $('#warehouse-movements-search').val('');
+            $('.select-picker').selectpicker('refresh');
+            $(this).addClass('d-none');
 
-        $('#warehouse-movements-per-page').on('changed.bs.select', function() {
-            const value = $(this).val() || '25';
-            const url = new URL(window.location.href);
-            url.searchParams.set('per_page', value);
-            url.searchParams.delete('page');
-            window.location.href = url.toString();
+            showWarehouseMovementsTable();
         });
     </script>
 @endpush

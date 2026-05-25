@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Modules\Warehouse\DataTables\WarehouseDataTable;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Http\Controllers\Concerns\HandlesWarehouseErrors;
 use Modules\Warehouse\Imports\WarehouseImport;
@@ -42,41 +43,10 @@ class WarehouseController extends AccountBaseController
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(WarehouseDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_warehouses');
         abort_if(! in_array($viewPermission, ['all', 'added', 'owned', 'both'], true), 403, __('warehouse::app.err_permission_denied'));
-
-        $allowedSortColumns = ['id', 'name', 'code', 'warehouse_type', 'address', 'status', 'is_default'];
-        $sortBy = $request->get('sort_by');
-        $sortDir = strtolower((string) $request->get('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
-        $hasColumnSort = in_array($sortBy, $allowedSortColumns, true);
-
-        $perPage = (int) $request->get('per_page', 25);
-        if (! in_array($perPage, [10, 25, 50, 100], true)) {
-            $perPage = 25;
-        }
-
-        $query = Warehouse::query();
-
-        if ($hasColumnSort) {
-            $query->orderBy($sortBy, $sortDir)->orderBy('id');
-        } else {
-            $query->orderByDesc('id');
-        }
-
-        if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('search')) {
-            $term = '%' . $request->search . '%';
-            $query->where(function ($q) use ($term) {
-                $q->where('name', 'like', $term)
-                    ->orWhere('code', 'like', $term)
-                    ->orWhere('address', 'like', $term);
-            });
-        }
 
         $this->pageTitle = 'warehouse::app.warehouses';
         $this->pageIcon = 'ti-layout';
@@ -88,12 +58,8 @@ class WarehouseController extends AccountBaseController
             && $flowConfig->inboundFromDeliveryOrderReceived($companyId);
         $this->outboundMode = $flowConfig->salesOutboundMode($companyId);
         $this->hasOutboundModeConflict = ! in_array($this->outboundMode, ['shipment', 'invoice'], true);
-        $this->warehouseSortBy = $hasColumnSort ? $sortBy : null;
-        $this->warehouseSortDir = $sortDir;
-        $this->warehousePerPage = $perPage;
-        $this->warehouses = $query->paginate($perPage)->withQueryString();
 
-        return view('warehouse::index', $this->data);
+        return $dataTable->render('warehouse::index', $this->data);
     }
 
     /**
@@ -141,7 +107,7 @@ class WarehouseController extends AccountBaseController
                 }
             });
 
-            return response()->json(Reply::success(__('messages.updateSuccess')));
+            return response()->json(Reply::success(__('warehouse::app.success_warehouse_order_updated')));
         } catch (\Throwable $e) {
             return $this->handleWarehouseThrowable($request, 'Warehouse updateOrder', $e, [
                 'order' => $request->input('order'),
@@ -181,7 +147,7 @@ class WarehouseController extends AccountBaseController
         $addPermission = user()->permission('add_warehouses');
         abort_if(! in_array($addPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
 
-        $this->pageTitle = __('app.importExcel') . ' ' . __('warehouse::app.warehouse');
+        $this->pageTitle = __('warehouse::app.importWarehouses');
         $this->view = 'warehouse::ajax.import';
 
         if (request()->ajax()) {
@@ -229,7 +195,7 @@ class WarehouseController extends AccountBaseController
         $batch = $this->importJobProcessChunked($request, WarehouseImport::class, ImportWarehouseChunkJob::class, $chunkSize);
         $batchId = data_get($batch, 'id');
         if ($batchId) {
-            Cache::put('import_metrics_' . $batchId, [
+            Cache::put('import_metrics_'.$batchId, [
                 'created' => 0,
                 'updated' => 0,
                 'skipped' => 0,
@@ -256,14 +222,14 @@ class WarehouseController extends AccountBaseController
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
         ], [
-            'name.required' => __('The warehouse name field is required.'),
-            'name.max' => __('The warehouse name may not be greater than :max characters.'),
-            'code.max' => __('The warehouse code may not be greater than :max characters.'),
-            'code.unique' => __('The warehouse code has already been taken.'),
-            'warehouse_type.in' => __('The selected warehouse type is invalid.'),
-            'address.max' => __('The address may not be greater than :max characters.'),
-            'status.required' => __('The status field is required.'),
-            'status.in' => __('The selected status is invalid.'),
+            'name.required' => __('warehouse::app.validation_warehouse_name_required'),
+            'name.max' => __('warehouse::app.validation_warehouse_name_max'),
+            'code.max' => __('warehouse::app.validation_warehouse_code_max'),
+            'code.unique' => __('warehouse::app.validation_warehouse_code_unique'),
+            'warehouse_type.in' => __('warehouse::app.validation_warehouse_type_invalid'),
+            'address.max' => __('warehouse::app.validation_address_max'),
+            'status.required' => __('warehouse::app.validation_status_required'),
+            'status.in' => __('warehouse::app.validation_status_invalid'),
         ], [
             'name' => __('warehouse name'),
             'code' => __('warehouse code'),
@@ -307,12 +273,12 @@ class WarehouseController extends AccountBaseController
             DB::commit();
 
             if ($request->ajax()) {
-                session()->flash('success', __('messages.recordSaved'));
+                session()->flash('success', __('warehouse::app.success_warehouse_created'));
 
                 return response()->json(Reply::redirect(route('warehouse.index')));
             }
 
-            return redirect()->route('warehouse.index')->with('success', __('messages.recordSaved'));
+            return redirect()->route('warehouse.index')->with('success', __('warehouse::app.success_warehouse_created'));
         } catch (\Throwable $e) {
             DB::rollBack();
 
@@ -370,19 +336,19 @@ class WarehouseController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50|unique:warehouses,code,' . $id,
+            'code' => 'nullable|string|max:50|unique:warehouses,code,'.$id,
             'warehouse_type' => 'nullable|in:normal,locked,scrap,transit',
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
         ], [
-            'name.required' => __('The warehouse name field is required.'),
-            'name.max' => __('The warehouse name may not be greater than :max characters.'),
-            'code.max' => __('The warehouse code may not be greater than :max characters.'),
-            'code.unique' => __('The warehouse code has already been taken.'),
-            'warehouse_type.in' => __('The selected warehouse type is invalid.'),
-            'address.max' => __('The address may not be greater than :max characters.'),
-            'status.required' => __('The status field is required.'),
-            'status.in' => __('The selected status is invalid.'),
+            'name.required' => __('warehouse::app.validation_warehouse_name_required'),
+            'name.max' => __('warehouse::app.validation_warehouse_name_max'),
+            'code.max' => __('warehouse::app.validation_warehouse_code_max'),
+            'code.unique' => __('warehouse::app.validation_warehouse_code_unique'),
+            'warehouse_type.in' => __('warehouse::app.validation_warehouse_type_invalid'),
+            'address.max' => __('warehouse::app.validation_address_max'),
+            'status.required' => __('warehouse::app.validation_status_required'),
+            'status.in' => __('warehouse::app.validation_status_invalid'),
         ], [
             'name' => __('warehouse name'),
             'code' => __('warehouse code'),
@@ -447,7 +413,7 @@ class WarehouseController extends AccountBaseController
             $warehouse->status = $validated['status'];
             $warehouse->save();
 
-            return response()->json(Reply::success(__('messages.updateSuccess')));
+            return response()->json(Reply::success(__('warehouse::app.success_warehouse_status_updated')));
         } catch (\Throwable $e) {
             $response = $this->handleWarehouseThrowable($request, 'Warehouse changeStatus', $e, $validated);
 
@@ -483,7 +449,7 @@ class WarehouseController extends AccountBaseController
 
             Warehouse::whereIn('id', $rowIds)->update(['status' => $status]);
 
-            return response()->json(Reply::success(__('messages.updateSuccess')));
+            return response()->json(Reply::success(__('warehouse::app.success_warehouse_status_updated')));
         }
 
         $deletePermission = user()->permission('delete_warehouses');
@@ -497,13 +463,13 @@ class WarehouseController extends AccountBaseController
         foreach ($warehouses as $warehouse) {
             $blockMessage = $this->deleteBlockedMessage($warehouse);
             if ($blockMessage !== null) {
-                return response()->json(Reply::error($warehouse->name . ': ' . $blockMessage), 422);
+                return response()->json(Reply::error($warehouse->name.': '.$blockMessage), 422);
             }
         }
 
         Warehouse::whereIn('id', $rowIds)->delete();
 
-        return response()->json(Reply::success(__('messages.deleteSuccess')));
+        return response()->json(Reply::success(__('warehouse::app.success_warehouse_deleted')));
     }
 
     private function deleteBlockedMessage(Warehouse $warehouse): ?string
@@ -541,20 +507,29 @@ class WarehouseController extends AccountBaseController
     {
         $deletePermission = user()->permission('delete_warehouses');
         abort_if(! in_array($deletePermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+        $currentRequest = app(Request::class);
 
         try {
             $warehouse = Warehouse::findOrFail($id);
 
             $blockMessage = $this->deleteBlockedMessage($warehouse);
             if ($blockMessage !== null) {
+                if ($currentRequest->ajax()) {
+                    return Reply::error($blockMessage);
+                }
+
                 return back()->with('error', $blockMessage);
             }
 
             $warehouse->delete();
 
+            if ($currentRequest->ajax()) {
+                return Reply::successWithData(__('warehouse::app.success_warehouse_deleted'), ['redirectUrl' => route('warehouse.index')]);
+            }
+
             return redirect()->route('warehouse.index')->with('success', __('warehouse::app.success_warehouse_deleted'));
         } catch (\Throwable $e) {
-            return $this->handleWarehouseThrowable(request(), 'Warehouse destroy', $e, ['warehouse_id' => $id]);
+            return $this->handleWarehouseThrowable($currentRequest, 'Warehouse destroy', $e, ['warehouse_id' => $id]);
         }
     }
 }

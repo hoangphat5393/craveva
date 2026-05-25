@@ -11,7 +11,7 @@
 
 **Why this exists (historical):** Several Biomixing technical docs pre-date major **SO / PO / Sales DO / Invoice / Warehouse** work. Read **platform baseline** in `FUNC_LOGIC` first, then Biomixing-specific gaps below.
 
-**Last updated:** 2026-05-14 (flat `FUNC_IMPROVE/` layout; Biomixing implementation files not in a subfolder)
+**Last updated:** 2026-05-24 (doc sync manifest + full process audit)
 
 **Vietnamese — all testing / UAT entry points in one place:** `FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`
 
@@ -32,23 +32,27 @@
 
 Paths below are relative to repo root.
 
-| Document                                                 | Use                                                                                                                             |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **`FUNC_IMPROVE/P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md`** | **QA/BA one-pass** — master table: P0-01,02,03,05,06,08 + P0-07 WUP-01…07; fill Pass/Fail + evidence then update execution log. |
-| **`FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`**    | **Vietnamese hub** — where to run UAT / which runbooks + `php artisan test` bundles (Biomixing pilot).                          |
-| **`FUNC_IMPROVE/BIOMIXING_LOCAL_DEV_SETUP_VI.md`**       | **Local dev** — migrate, Mix build, module notes; do server deploy only after local UAT.                                        |
-| **`FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`**         | **Ordered P0 queue** (next QA/BA/PM steps after P0-01 Done).                                                                    |
-| **`FUNC_IMPROVE/BIOMIXING_BASELINE_PREP_2026_VI.md`**    | **Start here** — baseline: what is already built vs what Production must add.                                                   |
-| **`FUNC_IMPROVE/BIOMIXING_DOC_AUDIT_2026_VI.md`**        | Which older files are outdated and what to read instead.                                                                        |
-| **`FUNC_IMPROVE/BIOMIXING_DEV_PLAN.md`**                 | Full roadmap (Phases 0–4), architecture, estimates.                                                                             |
-| **`FUNC_IMPROVE/BIOMIXING_FLOW_CONCEPTS_VI.md`**         | **Concepts & stock flow** — RM/FG, consume vs receive FG, shared PO & DO, reserve/ship.                                         |
-| **`FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`**         | **Pre-coding playbook** — Phase 0–1 MVP: ERD migration order, state machine, warehouse integration spikes, milestones, tests.   |
-| **`FUNC_IMPROVE/BIOMIXING_PROTOTYPE_PLAN_VI.md`**        | Prototype scope & duration.                                                                                                     |
-| **`FUNC_IMPROVE/BIOMIXING_DOMAIN_INTEGRATION.md`**       | Domain integration view.                                                                                                        |
-| **`FUNC_IMPROVE/BIOMIXING_FLOW_CRACEVA_GAP.md`**         | Shop flow vs ERP — process mapping; read with baseline §3.                                                                      |
-| **`FUNC_IMPROVE/BIOMIXING_GAP_ANALYSIS.md`**             | Gap analysis; read with **`BIOMIXING_BASELINE_PREP_2026_VI.md`** for platform truth.                                            |
-| **`FUNC_IMPROVE/BIOMIXING_PROPOSAL_TECH_MAP_VI.md`**     | Maps proposal themes to technical scope.                                                                                        |
-| **`FUNC_IMPROVE/BIOMIXING_MIGRATION_AUDIT_2026_VI.md`**  | What lives in which folder (audit).                                                                                             |
+| Document                                                        | Use                                                                                                                             |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **`FUNC_IMPROVE/P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md`**        | **QA/BA one-pass** — master table: P0-01,02,03,05,06,08 + P0-07 WUP-01…07; fill Pass/Fail + evidence then update execution log. |
+| **`FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`**           | **LIVE SSOT** — standard business flows; update on every business-logic change.                                                |
+| **`FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`**   | **Doc sync manifest** — living doc map, feature matrix, maintainer rules (2026-05-24).                                          |
+| **`FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`**   | **Audit theo phase** (2026-05-24) — Phase 1/2, P0, gap, test pass, go-live verdict.                                             |
+| **`FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`**           | **Vietnamese hub** — where to run UAT / which runbooks + `php artisan test` bundles (Biomixing pilot).                          |
+| **`FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`** | **P1c** — post FG → Purchase Inventory ledger + backfill command.                                                               |
+| **`FUNC_IMPROVE/BIOMIXING_LOCAL_DEV_SETUP_VI.md`**              | **Local dev** — migrate, Mix build, module notes; do server deploy only after local UAT.                                        |
+| **`FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`**                | **Ordered P0 queue** (next QA/BA/PM steps after P0-01 Done).                                                                    |
+| **`FUNC_IMPROVE/BIOMIXING_BASELINE_PREP_2026_VI.md`**           | **Start here** — baseline: what is already built vs what Production must add.                                                   |
+| **`FUNC_IMPROVE/BIOMIXING_DOC_AUDIT_2026_VI.md`**               | Which older files are outdated and what to read instead.                                                                        |
+| **`FUNC_IMPROVE/BIOMIXING_DEV_PLAN.md`**                        | Full roadmap (Phases 0–4), architecture, estimates.                                                                             |
+| **`FUNC_IMPROVE/BIOMIXING_FLOW_CONCEPTS_VI.md`**                | **Concepts & stock flow** — RM/FG, consume vs receive FG, shared PO & DO, reserve/ship.                                         |
+| **`FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`**                | **Pre-coding playbook** — Phase 0–1 MVP: ERD migration order, state machine, warehouse integration spikes, milestones, tests.   |
+| **`FUNC_IMPROVE/BIOMIXING_PROTOTYPE_PLAN_VI.md`**               | Prototype scope & duration.                                                                                                     |
+| **`FUNC_IMPROVE/BIOMIXING_DOMAIN_INTEGRATION.md`**              | Domain integration view.                                                                                                        |
+| **`FUNC_IMPROVE/BIOMIXING_FLOW_CRACEVA_GAP.md`**                | Shop flow vs ERP — process mapping; read with baseline §3.                                                                      |
+| **`FUNC_IMPROVE/BIOMIXING_GAP_ANALYSIS.md`**                    | Gap analysis; read with **`BIOMIXING_BASELINE_PREP_2026_VI.md`** for platform truth.                                            |
+| **`FUNC_IMPROVE/BIOMIXING_PROPOSAL_TECH_MAP_VI.md`**            | Maps proposal themes to technical scope.                                                                                        |
+| **`FUNC_IMPROVE/BIOMIXING_MIGRATION_AUDIT_2026_VI.md`**         | What lives in which folder (audit).                                                                                             |
 
 ---
 

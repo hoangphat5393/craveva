@@ -142,6 +142,24 @@ class ProductionFgQuantityPolicyService
         ];
     }
 
+    /**
+     * UI state for the variance approval column on batch detail (not persisted).
+     *
+     * @return 'approved'|'pending'|'not_required'
+     */
+    public function outputVarianceApprovalUiState(ProductionOrder $order, ProductionBatchOutput $output): string
+    {
+        if ($output->approved_at !== null) {
+            return 'approved';
+        }
+
+        if ($this->outputRequiresVarianceApproval($order, $output)) {
+            return 'pending';
+        }
+
+        return 'not_required';
+    }
+
     public function outputRequiresVarianceApproval(ProductionOrder $order, ProductionBatchOutput $output): bool
     {
         if (! (bool) Config::get('production.phase2.enforce_variance_approval', false)) {

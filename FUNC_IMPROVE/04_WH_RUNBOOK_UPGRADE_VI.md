@@ -189,15 +189,15 @@ Dùng bảng này khi đánh dấu `Done`/`Partial` theo quy tắc `FUNC_IMPROVE
 
 Mỗi dòng WUP-01…07: khi pilot chạy xong mục runbook tương ứng, điền **ngày**, **tester**, **Pass/Fail**, **link** (file ảnh, Google Doc, ticket).
 
-| Mã WUP | Ngày UAT | Tester | Kết quả | Link biên bản / ghi chú |
-| ------ | -------- | ------ | ------- | ----------------------- |
-| WUP-01 | —        | —      | —       | —                       |
-| WUP-02 | —        | —      | —       | —                       |
-| WUP-03 | —        | —      | —       | —                       |
-| WUP-04 | —        | —      | —       | —                       |
-| WUP-05 | —        | —      | —       | —                       |
-| WUP-06 | —        | —      | —       | —                       |
-| WUP-07 | —        | —      | —       | —                       |
+| Mã WUP | Ngày UAT   | Tester | Kết quả      | Link biên bản / ghi chú                                              |
+| ------ | ---------- | ------ | ------------ | -------------------------------------------------------------------- |
+| WUP-01 | 2026-05-25 | Dev/QA | Pass         | LOCK-UAT (41) + SCRAP-UAT (42); outbound blocked UI + service        |
+| WUP-02 | 2026-05-25 | Dev/QA | Pass         | SUGAR @ DFWH sellable YES (272); `WarehouseAvailabilityApiTest`      |
+| WUP-03 | 2026-05-25 | Dev/QA | Pass         | Luồng B SS-000001; `SalesDoServiceLifecycleTest`                     |
+| WUP-04 | 2026-05-25 | Dev/QA | Pass         | `.env` PO-inbound=true, DO-inbound=false; mutual-exclusion test pass |
+| WUP-05 | 2026-05-25 | Dev/QA | Pass (smoke) | Availability YES/NO + `ai_order_webhook_check_stock`                 |
+| WUP-06 | 2026-05-25 | Dev/QA | Pass         | Luồng D UOM; `WarehouseUnitConversionFlowTest`                       |
+| WUP-07 | 2026-05-25 | Dev/QA | Pass         | `warehouse:reconciliation-report` 3 mov / 0 dup; Adjust Stock UI     |
 
 Sau khi điền, **copy một dòng tóm tắt** vào cột **UAT / Runbook** của bảng §2.1 (ví dụ: `UAT 2026-05-20 Pass — see DOC-123`) hoặc giữ bảng chi tiết tại wiki nội bộ và chỉ ghi link ngắn.
 

@@ -34,11 +34,12 @@
 ## 0. Tài liệu phải đọc trước (thứ tự)
 
 1. `BIOMIXING_BASELINE_PREP_2026_VI.md` — nền Hub SO/PO/DO/Warehouse + điểm tích hợp §5–6.
-2. **`BIOMIXING_FLOW_CONCEPTS_VI.md`** — khái niệm RM/FG, BOM version, trừ–cộng tồn, PO vs Receive FG, reserve DO (onboarding PM/BA/dev).
-3. `BIOMIXING_DEV_PLAN.md` — kiến trúc §3, roadmap Phase 0–1 §4, ước lượng §6.
-4. `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md` — batch tồn, DO, outbound.
-5. `FUNC_LOGIC/WAREHOUSE_INDEX.md`, `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`.
-6. Khi spike tích hợp kho: `Modules/Warehouse/Services/StockMovementService.php` và test tham chiếu dưới §9.
+2. **`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`** — luồng bước chuẩn (LIVE SSOT; cập nhật khi đổi gate/tồn kho).
+3. **`BIOMIXING_FLOW_CONCEPTS_VI.md`** — khái niệm RM/FG, BOM version, trừ–cộng tồn, PO vs Receive FG, reserve DO (onboarding PM/BA/dev).
+4. `BIOMIXING_DEV_PLAN.md` — kiến trúc §3, roadmap Phase 0–1 §4, ước lượng §6.
+5. `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md` — batch tồn, DO, outbound.
+6. `FUNC_LOGIC/WAREHOUSE_INDEX.md`, `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`.
+7. Khi spike tích hợp kho: `Modules/Warehouse/Services/StockMovementService.php` và test tham chiếu dưới §9.
 
 ---
 

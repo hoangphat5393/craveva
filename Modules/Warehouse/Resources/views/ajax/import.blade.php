@@ -3,7 +3,7 @@
         <x-form id="import-warehouse-data-form">
             <div class="add-product bg-white rounded">
                 <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">
-                    @lang('app.importExcel') @lang('warehouse::app.warehouse')
+                    @lang('warehouse::app.importWarehouses')
                 </h4>
                 <div class="col-sm-12 pt-2">
                     <div class="alert alert-warning" role="alert">

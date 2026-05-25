@@ -121,6 +121,14 @@
 
         .s-b-n-content {
 
+            .d-flex.flex-wrap>.w-100,
+            .d-flex.flex-wrap>.settings-tab-panel-root,
+            .d-flex.flex-wrap>form.w-100 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                width: 100%;
+            }
+
             // .ntfcn-tab-content-left {
             //     .form-group {
             //         width: 48.1%;

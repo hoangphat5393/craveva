@@ -291,8 +291,13 @@
                 <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('app.clientNote')</label>
                 <textarea class="form-control" name="note" id="note" rows="4"></textarea>
             </div>
-
-
+            @php
+                $orderTermsText = trim((string) ($invoiceSetting->order_terms ?? '')) !== '' ? (string) $invoiceSetting->order_terms : (string) ($invoiceSetting->invoice_terms ?? '');
+            @endphp
+            @include('partials.company-document-terms-readonly', [
+                'termsText' => $orderTermsText,
+                'label' => __('modules.invoiceSettings.orderTerms'),
+            ])
         </div>
         <x-forms.custom-field :fields="$fields" class="col-md-12"></x-forms.custom-field>
         <!-- NOTE AND TERMS AND CONDITIONS END -->

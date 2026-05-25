@@ -110,7 +110,8 @@
             border-left: 1px solid #e7e9eb;
         }
 
-        table .desc, table .item-summary  {
+        table .desc,
+        table .item-summary {
             text-align: left;
         }
 
@@ -251,7 +252,7 @@
         }
 
         .word-break {
-            word-wrap:break-word;
+            word-wrap: break-word;
             word-break: break-all;
         }
 
@@ -274,8 +275,6 @@
         .border-bottom-0 {
             border-bottom: 0 !important;
         }
-
-
     </style>
 </head>
 
@@ -284,22 +283,25 @@
 
         <table cellpadding="0" cellspacing="0" class="billing">
             <tr>
-                <td colspan="2"><h1>@lang('app.order')</h1></td>
+                <td colspan="2">
+                    <h1>@lang('app.order')</h1>
+                </td>
             </tr>
             <tr>
                 <td id="invoiced_to">
                     <div>
-                        @if($order->client && $order->clientDetails)
-                            @if(($order->client->name || $order->client->email || $order->client->mobile || $order->clientDetails->company_name || $order->clientDetails->address )
-                            && ($invoiceSetting->show_client_name == 'yes' || $invoiceSetting->show_client_email == 'yes' || $invoiceSetting->show_client_phone == 'yes' || $invoiceSetting->show_client_company_name == 'yes' || $invoiceSetting->show_client_company_address == 'yes'))
+                        @if ($order->client && $order->clientDetails)
+                            @if (
+                                ($order->client->name || $order->client->email || $order->client->mobile || $order->clientDetails->company_name || $order->clientDetails->address) &&
+                                    ($invoiceSetting->show_client_name == 'yes' || $invoiceSetting->show_client_email == 'yes' || $invoiceSetting->show_client_phone == 'yes' || $invoiceSetting->show_client_company_name == 'yes' || $invoiceSetting->show_client_company_address == 'yes'))
                                 @if ($order->project)
-                                <small>@lang('modules.invoices.project'):</small>
-                                <div>
-                                    {{$order->project->project_name}}
-                                </div>
+                                    <small>@lang('modules.invoices.project'):</small>
+                                    <div>
+                                        {{ $order->project->project_name }}
+                                    </div>
                                 @endif
 
-                                <small>@lang("modules.invoices.billedTo"):</small>
+                                <small>@lang('modules.invoices.billedTo'):</small>
                                 @if ($order->client->name && $invoiceSetting->show_client_name == 'yes')
                                     <div>{{ $order->client->name_salutation }}</div>
                                 @endif
@@ -343,7 +345,7 @@
                         <div id="logo">
                             <img src="{{ invoice_setting()->logo_url }}" alt="home" class="dark-logo" />
                         </div>
-                            <small>@lang("modules.invoices.generatedBy"):</small>
+                        <small>@lang('modules.invoices.generatedBy'):</small>
                         <div>{{ company()->company_name }}</div>
                         @if (!is_null($settings) && $order->address)
                             <div>{!! nl2br($order->address->address) !!}</div>
@@ -367,7 +369,7 @@
                 <div class="date">@lang('modules.orders.orderDate'):
                     {{ \Carbon\Carbon::parse($order->order_date)->translatedFormat(company()->date_format) }}</div>
 
-                <div class="">@lang('app.status'): @lang('modules.invoices.'.$order->status)</div>
+                <div class="">@lang('app.status'): @lang('modules.invoices.' . $order->status)</div>
             </div>
 
         </div>
@@ -375,20 +377,20 @@
             <thead>
                 <tr>
                     <th class="no">#</th>
-                    <th class="desc">@lang("modules.invoices.item")</th>
+                    <th class="desc">@lang('modules.invoices.item')</th>
                     @if ($invoiceSetting->hsn_sac_code_show)
-                        <td class="qty">@lang("app.hsnSac")</td>
+                        <td class="qty">@lang('app.hsnSac')</td>
                     @endif
                     @if ($order->unit != null)
-                    <th class="qty">@lang('modules.invoices.qty')</th>
+                        <th class="qty">@lang('modules.invoices.qty')</th>
                     @else
-                    <th class="qty"> </th>
+                        <th class="qty"> </th>
                     @endif
                     {{-- <th class="qty">{{ $order->unit->unit_type ?? $product->unit->unit_type }}</th> --}}
-                    <th class="description">@lang("app.sku")</th>
-                    <th class="qty">@lang("modules.invoices.unitPrice")</th>
-                    <th class="qty">@lang("modules.invoices.tax")</th>
-                    <th class="unit">@lang("modules.invoices.price") ({!! htmlentities($order->currency->currency_code) !!})</th>
+                    <th class="description">@lang('app.sku')</th>
+                    <th class="qty">@lang('modules.invoices.unitPrice')</th>
+                    <th class="qty">@lang('modules.invoices.tax')</th>
+                    <th class="unit">@lang('modules.invoices.price') ({!! htmlentities($order->currency->currency_code) !!})</th>
                 </tr>
             </thead>
             <tbody>
@@ -400,11 +402,11 @@
                             <td class="desc">
                                 <h3 class="word-break">{{ $item->item_name }}</h3>
                                 @if (!is_null($item->item_summary))
-                                <table>
-                                    <tr>
-                                        <td class="item-summary word-break border-top-0 border-right-0 border-left-0 border-bottom-0">{!! nl2br(pdfStripTags($item->item_summary)) !!}</td>
-                                    </tr>
-                                </table>
+                                    <table>
+                                        <tr>
+                                            <td class="item-summary word-break border-top-0 border-right-0 border-left-0 border-bottom-0">{!! nl2br(pdfStripTags($item->item_summary)) !!}</td>
+                                        </tr>
+                                    </table>
                                 @endif
                                 @if ($item->orderItemImage)
                                     <p class="mt-2">
@@ -418,7 +420,10 @@
                                 </td>
                             @endif
                             <td class="qty">
-                                <h3>{{ $item->quantity }}@if($item->unit)<br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>@endif</span></h3>
+                                <h3>{{ $item->quantity }}@if ($item->unit)
+                                        <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
+                                    @endif
+                                    </span></h3>
                             </td>
                             <td>{{ $item->sku }}</td>
                             <td class="qty">
@@ -438,7 +443,7 @@
                     @if ($invoiceSetting->hsn_sac_code_show)
                         <td class="qty">&nbsp;</td>
                     @endif
-                    <td class="desc">@lang("modules.invoices.subTotal")</td>
+                    <td class="desc">@lang('modules.invoices.subTotal')</td>
                     <td class="unit">{{ currency_format($order->sub_total, $order->currency_id, false) }}</td>
                 </tr>
                 @if ($discount != 0 && $discount != '')
@@ -450,7 +455,7 @@
                             <td class="qty">&nbsp;</td>
                         @endif
                         <td class="qty">&nbsp;</td>
-                        <td class="desc">@lang("modules.invoices.discount")</td>
+                        <td class="desc">@lang('modules.invoices.discount')</td>
                         <td class="unit">{{ currency_format($discount, $order->currency_id, false) }}</td>
                     </tr>
                 @endif
@@ -471,7 +476,7 @@
             <tfoot>
                 <tr dontbreak="true">
                     <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '7' : '6' }}">
-                        @lang("modules.invoices.total")</td>
+                        @lang('modules.invoices.total')</td>
                     <td style="text-align: center">{{ currency_format($order->total, $order->currency_id, false) }}</td>
                 </tr>
             </tfoot>
@@ -486,27 +491,28 @@
             @endif
         </p>
 
+        @include('partials.company-document-terms-pdf')
 
-{{--Custom fields data--}}
-        @if(isset($fields) && count($fields) > 0)
+        {{-- Custom fields data --}}
+        @if (isset($fields) && count($fields) > 0)
             <div class="page_break"></div>
             <h3 class="box-title m-t-20 text-center h3-border"> @lang('modules.projects.otherInfo')</h3>
-            <table  style="background: none" border="0" cellspacing="0" cellpadding="0" width="100%">
-                @foreach($fields as $field)
+            <table style="background: none" border="0" cellspacing="0" cellpadding="0" width="100%">
+                @foreach ($fields as $field)
                     <tr>
-                        <td style="text-align: left;background: none;" >
+                        <td style="text-align: left;background: none;">
                             <div class="desc">{{ $field->label }} </div>
                             <p id="notes">
-                                @if( $field->type == 'text' || $field->type == 'password' || $field->type == 'number' || $field->type == 'textarea')
-                                    {{$order->custom_fields_data['field_'.$field->id] ?? '-'}}
+                                @if ($field->type == 'text' || $field->type == 'password' || $field->type == 'number' || $field->type == 'textarea')
+                                    {{ $order->custom_fields_data['field_' . $field->id] ?? '-' }}
                                 @elseif($field->type == 'radio')
-                                    {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? $order->custom_fields_data['field_'.$field->id] : '-' }}
+                                    {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? $order->custom_fields_data['field_' . $field->id] : '-' }}
                                 @elseif($field->type == 'select')
-                                    {{ (!is_null($order->custom_fields_data['field_'.$field->id]) && $order->custom_fields_data['field_'.$field->id] != '') ? $field->values[$order->custom_fields_data['field_'.$field->id]] : '-' }}
+                                    {{ !is_null($order->custom_fields_data['field_' . $field->id]) && $order->custom_fields_data['field_' . $field->id] != '' ? $field->values[$order->custom_fields_data['field_' . $field->id]] : '-' }}
                                 @elseif($field->type == 'checkbox')
-                                    {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? $order->custom_fields_data['field_'.$field->id] : '-' }}
+                                    {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? $order->custom_fields_data['field_' . $field->id] : '-' }}
                                 @elseif($field->type == 'date')
-                                    {{ !is_null($order->custom_fields_data['field_'.$field->id]) ? \Carbon\Carbon::parse($order->custom_fields_data['field_'.$field->id])->translatedFormat($order->company->date_format) : '--'}}
+                                    {{ !is_null($order->custom_fields_data['field_' . $field->id]) ? \Carbon\Carbon::parse($order->custom_fields_data['field_' . $field->id])->translatedFormat($order->company->date_format) : '--' }}
                                 @endif
                             </p>
                         </td>

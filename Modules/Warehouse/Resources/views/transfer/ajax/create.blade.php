@@ -57,7 +57,7 @@
 </div>
 
 <script>
-    const getReadableApiError = (error, fallbackMessage = 'Unable to save warehouse transfer.') => {
+    const getReadableApiError = (error, fallbackMessage = @json(__('warehouse::app.unableSaveWarehouseTransfer'))) => {
         const err = error?.responseJSON || error?.response?.data || {};
         const errors = err?.errors || {};
         const lines = [];
@@ -96,7 +96,7 @@
                 const readableMessage = getReadableApiError(err);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Validation failed',
+                    title: @json(__('warehouse::app.validationFailedTitle')),
                     text: readableMessage,
                     timer: 7000,
                     timerProgressBar: true,

@@ -2,12 +2,15 @@
 
 namespace Modules\Production\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Modules\Production\DataTables\ProductionBomsDataTable;
 use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionBomItem;
 use Modules\Production\Http\Requests\StoreProductionBomRequest;
@@ -29,34 +32,12 @@ class ProductionBomController extends AccountBaseController
         });
     }
 
-    public function index(Request $request): View
+    public function index(ProductionBomsDataTable $dataTable)
     {
         $this->assertViewProductionBoms();
 
         $this->pageTitle = __('production::app.menuBillOfMaterials');
         $companyId = (int) company()->id;
-
-        $query = ProductionBom::query()
-            ->with(['outputProduct'])
-            ->where('company_id', $companyId)
-            ->withCount(['items', 'productionOrders'])
-            ->orderByDesc('id');
-
-        if ($request->filled('output_product_id')) {
-            $query->where('output_product_id', (int) $request->input('output_product_id'));
-        }
-
-        $this->boms = $query->paginate(25)->withQueryString();
-
-        $pageOutputProducts = $this->boms->getCollection()
-            ->map(static fn (ProductionBom $bom): ?Product => $bom->outputProduct)
-            ->filter()
-            ->unique('id')
-            ->values();
-
-        $this->bomListFgUnitByProductId = $pageOutputProducts->isEmpty()
-            ? collect()
-            : ProductionProductUnitLabelMap::forProducts($pageOutputProducts, $companyId);
 
         $this->finishedGoodsFilter = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
@@ -64,7 +45,7 @@ class ProductionBomController extends AccountBaseController
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        return view('production::boms.index', $this->data);
+        return $dataTable->render('production::boms.index', $this->data);
     }
 
     public function create(): View
@@ -128,7 +109,7 @@ class ProductionBomController extends AccountBaseController
 
         $bom->load(['items.componentProduct.unit', 'items.unit', 'outputProduct.unit']);
 
-        $this->pageTitle = __('production::app.bomDetail').' '.$bom->version;
+        $this->pageTitle = __('production::app.bomDetail') . ' ' . $bom->version;
         $this->bom = $bom;
         $this->bomCostSummary = app(ProductionBomLineCostCalculator::class)
             ->summarizeSavedLines($bom, (int) company()->id);
@@ -196,7 +177,7 @@ class ProductionBomController extends AccountBaseController
             ->with('success', __('messages.updateSuccess'));
     }
 
-    public function destroy(ProductionBom $bom): RedirectResponse
+    public function destroy(Request $request, ProductionBom $bom): RedirectResponse|JsonResponse
     {
         $this->assertEditProductionBoms();
         $this->assertBomInCompany($bom);
@@ -204,6 +185,10 @@ class ProductionBomController extends AccountBaseController
 
         $bom->items()->delete();
         $bom->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(Reply::success(__('messages.deleteSuccess')));
+        }
 
         return redirect()
             ->route('production.boms.index')

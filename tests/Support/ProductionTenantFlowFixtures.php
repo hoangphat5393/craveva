@@ -172,10 +172,10 @@ function productionTenantFlowFixtures(): ?array
     }
 
     foreach ($permissionNames as $permissionName) {
-        Cache::forget('permission-'.$permissionName.'-'.$user->id);
+        Cache::forget('permission-' . $permissionName . '-' . $user->id);
     }
 
-    Cache::forget('user_modules_'.$user->id);
+    Cache::forget('user_modules_' . $user->id);
 
     return [
         'company' => $company,
@@ -186,4 +186,31 @@ function productionTenantFlowFixtures(): ?array
         'rmWarehouse' => $rmWarehouse,
         'fgWarehouse' => $fgWarehouse,
     ];
+}
+
+/**
+ * @param  array<int, array{data: string, name?: string, searchable?: bool, orderable?: bool}>  $columns
+ * @param  array<string, mixed>  $extra
+ * @return array<string, mixed>
+ */
+function productionDatatableRequest(array $columns, array $extra = [], int $orderColumn = 0, string $orderDir = 'desc'): array
+{
+    return array_merge([
+        'draw' => 1,
+        'start' => 0,
+        'length' => 10,
+        'columns' => array_map(static function (array $column): array {
+            return [
+                'data' => $column['data'],
+                'name' => $column['name'] ?? '',
+                'searchable' => ($column['searchable'] ?? true) ? 'true' : 'false',
+                'orderable' => ($column['orderable'] ?? true) ? 'true' : 'false',
+                'search' => ['value' => '', 'regex' => 'false'],
+            ];
+        }, $columns),
+        'order' => [
+            ['column' => $orderColumn, 'dir' => $orderDir],
+        ],
+        'search' => ['value' => '', 'regex' => 'false'],
+    ], $extra);
 }

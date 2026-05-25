@@ -31,10 +31,26 @@ it('shows delete control on BOM index for BOMs not linked to production orders',
             'multi_company_selected' => 1,
             'user_company_count' => 1,
         ])
-        ->get(route('production.boms.index'));
+        ->withHeaders([
+            'X-Requested-With' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ])
+        ->get(route('production.boms.index', productionDatatableRequest([
+            ['data' => 'id', 'name' => 'production_boms.id'],
+            ['data' => 'output_product_name', 'name' => 'output_products.name'],
+            ['data' => 'fg_unit_type', 'name' => 'output_unit_types.unit_type'],
+            ['data' => 'version', 'name' => 'production_boms.version'],
+            ['data' => 'code', 'name' => 'production_boms.code'],
+            ['data' => 'items_count', 'name' => 'items_count', 'searchable' => false],
+            ['data' => 'is_default', 'name' => 'production_boms.is_default', 'searchable' => false],
+            ['data' => 'action', 'searchable' => false, 'orderable' => false],
+        ], [
+            'output_product_id' => '',
+            'searchText' => (string) ($bom->code ?: $bom->version ?: $bom->id),
+        ])));
 
     $response->assertSuccessful();
-    $response->assertSee(route('production.boms.destroy', $bom), false);
-    $response->assertSee(__('app.delete'), false);
-    $response->assertSee('fa-trash', false);
+    expect(json_encode($response->json('data')))->toContain(route('production.boms.destroy', $bom));
+    expect(json_encode($response->json('data')))->toContain(__('app.delete'));
+    expect(json_encode($response->json('data')))->toContain('fa fa-trash');
 });

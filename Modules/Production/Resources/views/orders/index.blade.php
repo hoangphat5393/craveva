@@ -1,56 +1,42 @@
 @extends('layouts.app')
 
 @push('datatable-styles')
-    <style>
-        .content-wrapper .pagination .page-link svg {
-            width: 14px !important;
-            height: 14px !important;
-            max-width: 14px;
-            max-height: 14px;
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        .content-wrapper .pagination .page-link {
-            line-height: 1.2;
-        }
-
-        .production-list-footer {
-            padding: 12px 16px;
-            border-top: 1px solid #e8eef3;
-            background: #fff;
-        }
-    </style>
+    @include('sections.datatable_css')
 @endpush
 
 @section('filter-section')
-    <form method="GET" action="{{ route('production.orders.index') }}" id="production-orders-filter-form">
-        <x-filters.filter-box>
-            <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
-                <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('production::app.status')</p>
-                <div class="select-status">
-                    <select class="form-control select-picker" name="status" id="production-orders-status-filter" data-container="body" data-size="8">
-                        <option value="" @selected(!request()->filled('status'))>@lang('app.all')</option>
-                        @foreach (['draft', 'released', 'in_progress', 'completed', 'cancelled'] as $st)
-                            <option value="{{ $st }}" @selected(request('status') === $st)>{{ __('production::app.statusLabels.' . $st) }}</option>
-                        @endforeach
-                    </select>
+    <x-filters.filter-box>
+        <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('production::app.status')</p>
+            <div class="select-status">
+                <select class="form-control select-picker" name="status" id="production-orders-status-filter" data-container="body" data-size="8">
+                    <option value="all" @selected(!request()->filled('status'))>@lang('app.all')</option>
+                    @foreach (['draft', 'released', 'in_progress', 'completed', 'cancelled'] as $st)
+                        <option value="{{ $st }}" @selected(request('status') === $st)>{{ __('production::app.statusLabels.' . $st) }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="task-search d-flex py-1 px-lg-3 px-0 border-right-grey align-items-center">
+            <div class="w-100 mr-1 mr-lg-0 mr-md-1 ml-md-1 ml-0 ml-lg-0">
+                <div class="input-group bg-grey rounded">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text border-0 bg-additional-grey">
+                            <i class="fa fa-search f-13 text-dark-grey"></i>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="production-orders-search-field" placeholder="@lang('app.startTyping')" value="{{ request('searchText') }}">
                 </div>
             </div>
+        </div>
 
-            <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
-                <button type="submit" class="btn btn-secondary rounded f-14 p-2">
-                    <i class="fa fa-search mr-1"></i> @lang('app.apply')
-                </button>
-            </div>
-
-            <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
-                <x-forms.button-secondary type="button" class="btn-xs {{ request()->filled('status') ? '' : 'd-none' }}" id="production-orders-reset-filters" icon="times-circle">
-                    @lang('app.clearFilters')
-                </x-forms.button-secondary>
-            </div>
-        </x-filters.filter-box>
-    </form>
+        <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
+            <x-forms.button-secondary class="btn-xs {{ request()->filled('status') || request()->filled('searchText') ? '' : 'd-none' }}" id="production-orders-reset-filters" icon="times-circle">
+                @lang('app.clearFilters')
+            </x-forms.button-secondary>
+        </div>
+    </x-filters.filter-box>
 @endsection
 
 @section('content')
@@ -73,66 +59,53 @@
         @endif
 
         <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
-            <table class="table table-hover border-0 w-100 mb-0">
-                <thead>
-                    <tr>
-                        <th class="f-14 text-dark-grey">ID</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.manufacturedProduct')</th>
-                        <th class="f-14 text-dark-grey">@lang('modules.invoices.unitType')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.bom')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.plannedQty')</th>
-                        <th class="f-14 text-dark-grey">@lang('production::app.status')</th>
-                        <th class="f-14 text-dark-grey text-right">@lang('app.action')</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($orders as $order)
-                        <tr>
-                            <td>{{ $order->id }}</td>
-                            <td>{{ $order->outputProduct?->name ?? '—' }}</td>
-                            <td class="text-dark-grey">{{ $orderListFgUnitByProductId->get((string) $order->output_product_id) ?? ($orderListFgUnitByProductId->get($order->output_product_id) ?? '—') }}</td>
-                            <td class="f-14">
-                                @if ($order->bom)
-                                    <a href="{{ route('production.boms.show', $order->bom) }}" class="text-dark-grey">{{ $order->bom->listLabelForOrderIndex() }}</a>
-                                    @if ($order->bom_snapshot_at)
-                                        <span class="badge badge-secondary f-10 ml-1" title="@lang('production::app.bomSnapshotTitle')">@lang('production::app.bomSnapshotFrozenBadge')</span>
-                                    @endif
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td>{{ $order->planned_quantity }}</td>
-                            <td>@include('production::partials.order-status-badge', ['status' => $order->status])</td>
-                            <td class="text-right">
-                                <a href="{{ route('production.orders.show', $order) }}" class="btn btn-secondary rounded f-14 btn-sm">
-                                    <i class="fa fa-eye mr-1"></i>@lang('app.view')
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="p-5">
-                                <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+            {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
         </div>
-
-        @if ($orders instanceof \Illuminate\Pagination\LengthAwarePaginator)
-            <div class="production-list-footer d-flex justify-content-end align-items-center flex-wrap rounded-bottom">
-                {{ $orders->appends(request()->query())->links('pagination::bootstrap-4') }}
-            </div>
-        @endif
     </div>
 @endsection
 
 @push('scripts')
+    @include('sections.datatable_js')
+
     <script>
+        $('#production-orders-table').on('preXhr.dt', function(e, settings, data) {
+            data.status = $('#production-orders-status-filter').val();
+            data.searchText = $('#production-orders-search-field').val();
+        });
+
+        const showProductionOrdersTable = () => {
+            window.LaravelDataTables["production-orders-table"].draw(true);
+        };
+
+        $('#production-orders-status-filter').on('change changed.bs.select', function() {
+            if ($(this).val() !== 'all' || $('#production-orders-search-field').val() !== '') {
+                $('#production-orders-reset-filters').removeClass('d-none');
+            } else {
+                $('#production-orders-reset-filters').addClass('d-none');
+            }
+
+            showProductionOrdersTable();
+        });
+
+        $('#production-orders-search-field').on('keyup', function() {
+            if ($(this).val() !== '' || $('#production-orders-status-filter').val() !== 'all') {
+                $('#production-orders-reset-filters').removeClass('d-none');
+            } else {
+                $('#production-orders-reset-filters').addClass('d-none');
+            }
+
+            showProductionOrdersTable();
+        });
+
         $('body').on('click', '#production-orders-reset-filters', function(e) {
             e.preventDefault();
-            window.location.href = "{{ route('production.orders.index') }}";
+
+            $('#production-orders-status-filter').val('all');
+            $('#production-orders-search-field').val('');
+            $('.select-picker').selectpicker('refresh');
+            $('#production-orders-reset-filters').addClass('d-none');
+
+            showProductionOrdersTable();
         });
     </script>
 @endpush

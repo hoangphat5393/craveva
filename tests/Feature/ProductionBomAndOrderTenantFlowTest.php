@@ -14,7 +14,7 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         return;
     }
 
-    $version = 't-http-'.uniqid('', true);
+    $version = 't-http-' . uniqid('', true);
 
     $this->actingAs($fix['userAuth'], 'web')
         ->withSession([
@@ -88,7 +88,34 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         ->get(route('production.orders.index'))
         ->assertSuccessful()
         ->assertSee(__('modules.invoices.unitType'), false)
-        ->assertSee('http-test · '.$version, false);
+        ->assertSee('production-orders-table', false);
+
+    $datatableResponse = $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->withHeaders([
+            'X-Requested-With' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ])
+        ->get(route('production.orders.index', productionDatatableRequest([
+            ['data' => 'id', 'name' => 'production_orders.id'],
+            ['data' => 'output_product_name', 'name' => 'output_products.name'],
+            ['data' => 'fg_unit_type', 'name' => 'output_unit_types.unit_type'],
+            ['data' => 'bom_label', 'name' => 'boms.code', 'searchable' => false, 'orderable' => false],
+            ['data' => 'planned_quantity', 'name' => 'production_orders.planned_quantity'],
+            ['data' => 'status', 'name' => 'production_orders.status'],
+            ['data' => 'action', 'searchable' => false, 'orderable' => false],
+        ], [
+            'status' => 'all',
+            'searchText' => 'http-test',
+        ])));
+
+    $datatableResponse->assertSuccessful();
+    $matchingRow = collect($datatableResponse->json('data'))
+        ->first(fn(array $row): bool => str_contains((string) ($row['bom_label'] ?? ''), 'http-test'));
+
+    expect($matchingRow)->not->toBeNull();
+    expect((string) ($matchingRow['bom_label'] ?? ''))->toContain('http-test');
+    expect((string) ($matchingRow['bom_label'] ?? ''))->toContain($version);
 
     $this->actingAs($fix['userAuth'], 'web')
         ->withSession($session)
@@ -111,5 +138,6 @@ it('lists BOM index with unit type column for finished good', function (): void 
         ])
         ->get(route('production.boms.index'))
         ->assertSuccessful()
-        ->assertSee(__('modules.invoices.unitType'), false);
+        ->assertSee(__('modules.invoices.unitType'), false)
+        ->assertSee('production-boms-table', false);
 });

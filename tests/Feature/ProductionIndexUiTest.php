@@ -122,7 +122,7 @@ it('returns datatable json for production order and bom ajax requests', function
     ]);
 });
 
-it('shows sufficient and shortfall badges in the separate production order stock status column', function (): void {
+it('shows sufficient and shortage badges in the separate production order stock status column', function (): void {
     $fix = productionTenantFlowFixtures();
     if ($fix === null) {
         return;
@@ -145,7 +145,7 @@ it('shows sufficient and shortfall badges in the separate production order stock
         $shortfallWarehouse = Warehouse::query()->create([
             'company_id' => (int) $fix['company']->id,
             'name' => 'RM shortfall test warehouse',
-            'code' => 'RM-SHORT-'.uniqid(),
+            'code' => 'RM-SHORT-' . uniqid(),
             'warehouse_type' => 'normal',
             'status' => 'active',
         ]);
@@ -154,7 +154,7 @@ it('shows sufficient and shortfall badges in the separate production order stock
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'rm-flag-'.uniqid(),
+        'version' => 'rm-flag-' . uniqid(),
         'code' => 'rm-flag-code',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -225,13 +225,13 @@ it('shows sufficient and shortfall badges in the separate production order stock
     $shortfallMaterialAvailabilityHtml = (string) data_get($rows->get($shortfallOrder->id), 'material_availability', '');
 
     expect($enoughStatusHtml)->not->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
-    expect($shortfallStatusHtml)->not->toContain(__('production::app.materialAvailabilityLabels.shortfall'));
+    expect($shortfallStatusHtml)->not->toContain(__('production::app.materialAvailabilityLabels.shortage'));
     expect($enoughMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
     expect($enoughMaterialAvailabilityHtml)->toContain('badge-success');
     expect($enoughMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
-    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.shortfall'));
+    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.shortage'));
     expect($shortfallMaterialAvailabilityHtml)->toContain('badge-danger');
-    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.shortfall'));
+    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.shortage'));
 });
 
 it('returns ajax modal payloads for production order and bom create and edit screens', function (): void {
@@ -254,7 +254,7 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'modal-test-'.uniqid(),
+        'version' => 'modal-test-' . uniqid(),
         'code' => 'modal-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -264,7 +264,7 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $editableBom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'editable-modal-test-'.uniqid(),
+        'version' => 'editable-modal-test-' . uniqid(),
         'code' => 'editable-modal-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,

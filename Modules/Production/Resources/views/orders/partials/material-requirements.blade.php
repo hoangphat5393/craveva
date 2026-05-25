@@ -36,7 +36,7 @@
                         <th>@lang('production::app.materialTotalRequired')</th>
                         @if (!empty($materialRequirementsShowStock))
                             <th>@lang('production::app.materialAvailableInRawMaterialWarehouse')</th>
-                            <th>@lang('production::app.materialShortfall')</th>
+                            <th>@lang('production::app.materialShortage')</th>
                         @endif
                     </tr>
                 </thead>

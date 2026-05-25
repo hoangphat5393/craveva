@@ -32,6 +32,21 @@ class ProductionOrderMaterialRequirementsSummary
         protected WarehouseUnitConversionService $unitConversionService
     ) {}
 
+    public function shortfallStateForOrder(ProductionOrder $order): ?bool
+    {
+        if ($order->rm_warehouse_id === null || ! class_exists(WarehouseProductStock::class)) {
+            return null;
+        }
+
+        $rows = $this->forOrder($order);
+
+        if ($rows === []) {
+            return null;
+        }
+
+        return $this->hasShortfall($rows);
+    }
+
     /**
      * @return list<RequirementRow>
      */

@@ -229,6 +229,10 @@ return [
     'reason' => 'Reason',
     'materialRequirementsTitle' => 'Total raw materials for this order',
     'materialRequirementsShortfallWarning' => 'One or more materials are below required quantity in the linked raw material warehouse.',
+    'materialAvailabilityLabels' => [
+        'sufficient' => 'Materials ready',
+        'shortfall' => 'Material shortfall',
+    ],
     'materialQtyPerFgUnit' => 'Qty per FG unit',
     'materialQtyPerManufacturedProductUnit' => 'Qty per manufactured product unit',
     'materialTotalRequired' => 'Total required',

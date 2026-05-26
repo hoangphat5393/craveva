@@ -122,7 +122,7 @@ it('returns datatable json for production order and bom ajax requests', function
     ]);
 });
 
-it('shows sufficient and shortage badges in the separate production order stock status column', function (): void {
+it('shows sufficient and insufficient material badges in the separate production order stock status column', function (): void {
     $fix = productionTenantFlowFixtures();
     if ($fix === null) {
         return;
@@ -225,13 +225,13 @@ it('shows sufficient and shortage badges in the separate production order stock 
     $shortfallMaterialAvailabilityHtml = (string) data_get($rows->get($shortfallOrder->id), 'material_availability', '');
 
     expect($enoughStatusHtml)->not->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
-    expect($shortfallStatusHtml)->not->toContain(__('production::app.materialAvailabilityLabels.shortage'));
+    expect($shortfallStatusHtml)->not->toContain(__('production::app.materialAvailabilityLabels.insufficient'));
     expect($enoughMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
     expect($enoughMaterialAvailabilityHtml)->toContain('badge-success');
     expect($enoughMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.sufficient'));
-    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.shortage'));
+    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.insufficient'));
     expect($shortfallMaterialAvailabilityHtml)->toContain('badge-danger');
-    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.shortage'));
+    expect($shortfallMaterialAvailabilityHtml)->toContain(__('production::app.materialAvailabilityLabels.insufficient'));
 });
 
 it('returns ajax modal payloads for production order and bom create and edit screens', function (): void {

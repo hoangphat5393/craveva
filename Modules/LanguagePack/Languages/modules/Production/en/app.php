@@ -232,8 +232,9 @@ return [
     'materialAvailabilityShortColumn' => 'Stock Status',
     'materialAvailabilityLabels' => [
         'sufficient' => 'Materials ready',
-        'shortage' => 'Material shortage',
-        'shortfall' => 'Material shortage',
+        'insufficient' => 'Insufficient materials',
+        'shortage' => 'Insufficient materials',
+        'shortfall' => 'Insufficient materials',
     ],
     'materialQtyPerFgUnit' => 'Qty per manufactured product unit',
     'materialQtyPerManufacturedProductUnit' => 'Qty per manufactured product unit',

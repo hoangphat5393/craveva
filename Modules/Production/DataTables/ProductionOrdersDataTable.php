@@ -282,7 +282,7 @@ class ProductionOrdersDataTable extends BaseDataTable
         $variant = $hasShortfall ? 'danger' : 'success';
         $fullLabel = __(
             $hasShortfall
-                ? 'production::app.materialAvailabilityLabels.shortage'
+                ? 'production::app.materialAvailabilityLabels.insufficient'
                 : 'production::app.materialAvailabilityLabels.sufficient'
         );
 

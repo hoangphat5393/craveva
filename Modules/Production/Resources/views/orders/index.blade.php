@@ -44,9 +44,14 @@
         <div class="d-flex justify-content-between action-bar flex-wrap">
             <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
                 @if (in_array(user()->permission('add_production_orders'), ['all', 'added', 'owned', 'both'], true))
-                    <x-forms.link-primary :link="route('production.orders.create', ['redirect_url' => route('production.orders.index')])" class="mr-3 float-left openRightModal" icon="plus">
+                    <x-forms.link-primary :link="route('production.orders.create', ['redirect_url' => route('production.orders.index')])" class="mr-3 mb-2 float-left openRightModal" icon="plus">
                         {{ __('production::app.newOrder') }}
                     </x-forms.link-primary>
+                @endif
+                @if (in_array(user()->permission('view_production_orders'), ['all', 'added', 'owned', 'both'], true))
+                    <x-forms.link-secondary :link="route('production.material-shortages.index')" class="mr-3 mb-2 float-left" icon="exclamation-triangle">
+                        {{ __('production::app.materialShortageSummary') }}
+                    </x-forms.link-secondary>
                 @endif
             </div>
         </div>

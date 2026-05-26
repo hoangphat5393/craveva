@@ -123,6 +123,7 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         ->withSession($session)
         ->get(route('production.orders.show', $order))
         ->assertSuccessful()
+        ->assertSee(__('production::app.materialShortage'), false)
         ->assertSee(__('modules.invoices.unitType'), false);
 });
 

@@ -33,11 +33,14 @@ it('renders production order and bom indexes with the shared datatable mechanism
     expect($ordersContent)->toContain("$('#production-orders-table').on('preXhr.dt'");
     expect($ordersContent)->toContain('id="production-orders-table"');
     expect($ordersContent)->toContain(__('production::app.newOrder'));
+    expect($ordersContent)->toContain(__('production::app.materialShortageSummary'));
+    expect($ordersContent)->toContain(route('production.material-shortages.index'));
     expect($ordersContent)->toContain(__('production::app.status'));
     expect($ordersContent)->toContain(__('production::app.materialAvailabilityShortColumn'));
     expect($ordersContent)->toContain('openRightModal');
     expect($ordersContent)->toContain('redirect_url=');
     expect($ordersContent)->not->toContain('production-list-footer');
+    expect(strpos($ordersContent, __('production::app.newOrder')))->toBeLessThan(strpos($ordersContent, __('production::app.materialShortageSummary')));
 
     $bomsContent = $this->actingAs($fix['userAuth'], 'web')
         ->withSession($session)

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Production\Http\Controllers\ProductionBatchController;
 use Modules\Production\Http\Controllers\ProductionBomController;
 use Modules\Production\Http\Controllers\ProductionFgQuantityPolicySettingController;
+use Modules\Production\Http\Controllers\ProductionMaterialSummaryController;
 use Modules\Production\Http\Controllers\ProductionOrderController;
 
 /*
@@ -36,6 +37,8 @@ Route::group([
     Route::resource('boms', ProductionBomController::class);
 
     Route::resource('orders', ProductionOrderController::class)->except(['destroy']);
+    Route::get('material-shortages', [ProductionMaterialSummaryController::class, 'index'])->name('material-shortages.index');
+    Route::get('material-shortages/orders', [ProductionMaterialSummaryController::class, 'orders'])->name('material-shortages.orders');
 
     Route::post('orders/{order}/release', [ProductionOrderController::class, 'release'])->name('orders.release');
     Route::post('orders/{order}/cancel', [ProductionOrderController::class, 'cancel'])->name('orders.cancel');

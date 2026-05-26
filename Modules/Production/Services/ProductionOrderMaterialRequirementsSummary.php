@@ -52,6 +52,41 @@ class ProductionOrderMaterialRequirementsSummary
      */
     public function forOrder(ProductionOrder $order): array
     {
+        $rows = $this->demandRowsForOrder($order);
+        if ($rows === []) {
+            return [];
+        }
+
+        $availableByProduct = $this->availableQuantityByProductInWarehouse(
+            (int) $order->company_id,
+            $order->rm_warehouse_id !== null ? (int) $order->rm_warehouse_id : null,
+            array_values(array_unique(array_map(
+                static fn (array $row): int => (int) $row['component_product_id'],
+                $rows,
+            ))),
+        );
+
+        foreach ($rows as $index => $row) {
+            $productId = (int) $row['component_product_id'];
+            $available = $availableByProduct[$productId] ?? null;
+            $shortfall = null;
+
+            if ($available !== null && (float) $row['total_required'] > $available + 0.0000001) {
+                $shortfall = round((float) $row['total_required'] - $available, 6);
+            }
+
+            $rows[$index]['available_in_rm_warehouse'] = $available;
+            $rows[$index]['shortfall'] = $shortfall;
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @return list<RequirementRow>
+     */
+    public function demandRowsForOrder(ProductionOrder $order): array
+    {
         $plannedFg = (float) $order->planned_quantity;
         if ($plannedFg <= 0.0000001) {
             return [];
@@ -63,13 +98,6 @@ class ProductionOrderMaterialRequirementsSummary
         }
 
         $companyId = (int) $order->company_id;
-
-        $availableByProduct = $this->availableQuantityByProductInWarehouse(
-            $companyId,
-            $order->rm_warehouse_id !== null ? (int) $order->rm_warehouse_id : null,
-            $components->pluck('component_product_id')->map(static fn ($id): int => (int) $id)->all(),
-        );
-
         $rows = [];
 
         foreach ($components as $component) {
@@ -83,24 +111,17 @@ class ProductionOrderMaterialRequirementsSummary
                 $lineUnitId,
             );
             $wastePercent = max(0.0, (float) ($component['waste_percent'] ?? 0));
-            $totalRequired = round($perFgBase * $plannedFg * (1 + ($wastePercent / 100)), 6);
-            $available = $availableByProduct[$productId] ?? null;
-            $shortfall = null;
-
-            if ($available !== null && $totalRequired > $available + 0.0000001) {
-                $shortfall = round($totalRequired - $available, 6);
-            }
 
             $rows[] = [
                 'component_product_id' => $productId,
                 'component_name' => (string) $component['component_name'],
                 'quantity_per_fg_unit' => $perFg,
                 'waste_percent' => $wastePercent,
-                'total_required' => $totalRequired,
+                'total_required' => round($perFgBase * $plannedFg * (1 + ($wastePercent / 100)), 6),
                 'unit_label' => $component['unit_label'],
                 'unit_label_base' => $component['unit_label_base'] ?? $component['unit_label'],
-                'available_in_rm_warehouse' => $available,
-                'shortfall' => $shortfall,
+                'available_in_rm_warehouse' => null,
+                'shortfall' => null,
             ];
         }
 
@@ -116,6 +137,19 @@ class ProductionOrderMaterialRequirementsSummary
         }
 
         return false;
+    }
+
+    /**
+     * @param  list<int>  $productIds
+     * @return array<int, float>
+     */
+    public function availableQuantityMapForWarehouse(?int $warehouseId, array $productIds, ?int $companyId = null): array
+    {
+        return $this->availableQuantityByProductInWarehouse(
+            $companyId !== null ? (int) $companyId : (int) company()->id,
+            $warehouseId,
+            $productIds,
+        );
     }
 
     /**

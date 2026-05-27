@@ -1,5 +1,5 @@
 @php
-    $defaultRedirectUrl = request()->input('redirect_url', url()->previous() ?: route('production.boms.show', $bom));
+    $defaultRedirectUrl = request()->input('redirect_url') ?? (request()->input('redirectUrl') ?? url()->previous()) ?: route('production.boms.show', $bom);
 @endphp
 
 @unless (request()->ajax())

@@ -6,7 +6,7 @@
     $defaultOutputProductId = old('output_product_id', $soPrefill['output_product_id'] ?? null);
     $defaultBomId = old('production_bom_id', $soPrefill['production_bom_id'] ?? null);
     $defaultPlannedQty = old('planned_quantity', $soPrefill['planned_quantity'] ?? 1);
-    $defaultRedirectUrl = request()->input('redirect_url', url()->previous() ?: route('production.orders.index'));
+    $defaultRedirectUrl = request()->input('redirect_url') ?? (request()->input('redirectUrl') ?? url()->previous()) ?: route('production.orders.index');
 @endphp
 
 @unless (request()->ajax())
@@ -39,7 +39,7 @@
 @endif
 
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-lg-9">
         <form method="post" action="{{ route('production.orders.store') }}" id="save-production-order-form" class="bg-white rounded p-4" data-bom-first="{{ $bomFirstWorkflow ? '1' : '0' }}" data-bom-disable-fg="{{ ProductionBomFirstPolicy::bomFirstDisableFgSelect() ? '1' : '0' }}">
             @csrf
             @include('sections.password-autocomplete-hide')
@@ -54,17 +54,9 @@
                 'defaultBomId' => $defaultBomId,
             ])
 
-            <x-forms.select fieldId="rm_warehouse_id" :fieldLabel="__('production::app.rawMaterialWarehouse')" fieldName="rm_warehouse_id" fieldRequired="true">
-                @foreach ($warehouses as $w)
-                    <option value="{{ $w->id }}" @selected(old('rm_warehouse_id') == $w->id)>{{ $w->name }}</option>
-                @endforeach
-            </x-forms.select>
-
-            <x-forms.select fieldId="fg_warehouse_id" :fieldLabel="__('production::app.manufacturedProductWarehouse')" fieldName="fg_warehouse_id" fieldRequired="true">
-                @foreach ($warehouses as $w)
-                    <option value="{{ $w->id }}" @selected(old('fg_warehouse_id') == $w->id)>{{ $w->name }}</option>
-                @endforeach
-            </x-forms.select>
+            @include('production::orders.partials.order-warehouse-row', [
+                'warehouses' => $warehouses,
+            ])
 
             <div class="form-group my-3">
                 <x-forms.label fieldId="planned_quantity" :fieldLabel="__('production::app.plannedQty')" fieldRequired="true" />

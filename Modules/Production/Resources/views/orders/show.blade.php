@@ -8,7 +8,7 @@
                     @lang('app.back')
                 </x-forms.link-secondary>
                 @if ($order->status === \Modules\Production\Entities\ProductionOrder::STATUS_DRAFT && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true))
-                    <x-forms.link-primary :link="route('production.orders.edit', [$order, 'redirect_url' => route('production.orders.show', $order)])" class="float-left openRightModal" icon="pencil-alt">
+                    <x-forms.link-primary :link="route('production.orders.edit', $order)" data-redirect-url="{{ route('production.orders.show', $order) }}" class="float-left openRightModal" icon="pencil-alt">
                         @lang('app.edit')
                     </x-forms.link-primary>
                 @endif

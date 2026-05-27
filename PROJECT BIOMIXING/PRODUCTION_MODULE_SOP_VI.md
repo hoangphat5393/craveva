@@ -1,77 +1,72 @@
-# Module Sản xuất — Quy trình vận hành (SOP phi kỹ thuật)
+# Quy trình module Sản xuất (SOP phi kỹ thuật)
 
 **Đối tượng:** Tổ trưởng xưởng, planner sản xuất, kho, hỗ trợ bán hàng  
 **Hệ thống:** Craveva ERP — module Production  
-**Phiên bản:** 2026-05-27  
-**Mục đích:** Hướng dẫn từ lập kế hoạch → giữ chỗ NVL → chạy lô → cập nhật tồn → bán / giao hàng.
+**Phiên bản:** 2026-05-28  
+**Mục đích:** Hướng dẫn lập kế hoạch theo **định mức (BOM) trước** → giữ chỗ NVL khi Release → chạy lô 4 bước → cập nhật tồn → bán / giao hàng.
 
 ---
 
 ## Tổng quan trạng thái lệnh SX
 
-| Trạng thái                      | Ý nghĩa                                                          |
-| ------------------------------- | ---------------------------------------------------------------- |
-| **Nháp (Draft)**                | Chỉ lập kế hoạch; có thể sửa lệnh. **Chưa** giữ chỗ nguyên liệu. |
-| **Đã phát hành (Released)**     | Đã cam kết sản xuất. Hệ thống **reserve** NVL tại kho NL.        |
-| **Đang sản xuất (In progress)** | Đã **trừ** NVL thật (ít nhất một lô đã post).                    |
-| **Hoàn thành (Completed)**      | Đã **nhập** thành phẩm vào kho TP (mọi lô đã post FG).           |
-| **Đã hủy (Cancelled)**          | Dừng lệnh (xem mục 11).                                          |
+| Trạng thái                      | Ý nghĩa                                                                                        |
+| ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Nháp (Draft)**                | Chỉ lập kế hoạch; có thể sửa lệnh. **Chưa** giữ chỗ nguyên liệu.                               |
+| **Đã phát hành (Released)**     | Đã cam kết SX; **chốt định mức** trên lệnh; **reserve** NVL; thường **tự tạo lô SX đầu tiên**. |
+| **Đang sản xuất (In progress)** | Đã **trừ** NVL thật (ít nhất một lô đã post).                                                  |
+| **Hoàn thành (Completed)**      | Đã **nhập** thành phẩm vào kho TP (mọi lô đã post).                                            |
+| **Đã hủy (Cancelled)**          | Dừng lệnh (xem mục 11).                                                                        |
 
 ---
 
-## 1. Tạo sản phẩm thành phẩm
-
-**Vào:** `Operations → Products` (mua hàng / sản phẩm)
-
-**Các bước:**
-
-- Thêm **thành phẩm** (sản phẩm sản xuất ra).
-- Chọn **đơn vị** (Cái, Thùng, Kg, …) và **SKU** nếu cần.
-- Chọn đúng **loại sản phẩm** (finished goods) để dùng làm đầu ra trên BOM.
-- Lưu.
-
-**Ví dụ:** Cà phê Oldtown · thanh chocolate hoàn chỉnh.
-
----
-
-## 2. Tạo nguyên liệu / bao bì
+## 1. Tạo sản phẩm thành phẩm (master)
 
 **Vào:** `Operations → Products`
 
 **Các bước:**
 
-- Thêm từng NVL, bao bì (bột cà phê, đường, hộp, chocolate, …).
+- Thêm **thành phẩm** (sản phẩm sản xuất ra).
+- Chọn **đơn vị**, **SKU** nếu cần.
+- Chọn đúng **loại sản phẩm** (finished goods) để dùng làm đầu ra trên định mức.
+- Lưu.
+
+---
+
+## 2. Tạo nguyên liệu / bao bì (master)
+
+**Vào:** `Operations → Products`
+
+**Các bước:**
+
+- Thêm từng NVL, bao bì.
 - Bật **theo dõi tồn kho / mua hàng** nếu áp dụng.
-- Thống nhất đơn vị với cách mua và tiêu hao (g, kg, cái).
+- Thống nhất đơn vị (g, kg, cái).
 - Lưu.
 
 ---
 
 ## 3. Nhập tồn kho
 
-**Vào:** `Operations → Inventory` và/hoặc `Warehouse` (kho)
+**Vào:** `Operations → Inventory` và/hoặc `Warehouse`
 
 **Cách nhập tồn:**
 
-- **Thủ công / tồn đầu kỳ:** `Operations → Inventory → Add Inventory` — chọn kho, sản phẩm, số lượng.
-- **Mua hàng:** Đơn mua (PO) → GRN / nhận hàng → tồn tăng tại kho đã chọn.
+- **Thủ công / tồn đầu kỳ:** `Add Inventory` — chọn kho, sản phẩm, số lượng.
+- **Mua hàng:** PO → GRN / nhận hàng.
 
-**Mục đích:** Hệ thống phải biết **tồn thực** tại **kho nguyên liệu** gắn trên lệnh sản xuất.
-
-**Lưu ý:** Chỉ nhập “opening stock” trên form sản phẩm **chưa chắc** đã vào kho vật lý — cần **Add Inventory** đúng **kho**.
+**Lưu ý:** “Opening stock” trên form SP **chưa chắc** vào kho vật lý — cần **Add Inventory** đúng **kho**.
 
 ---
 
-## 4. Tạo định mức BOM
+## 4. Tạo định mức (BOM)
 
-**Vào:** `Production → Bill of Materials` (Định mức / BOM)
+**Vào:** `Production → Bill of Materials`
 
 **Các bước:**
 
 - Chọn **thành phẩm** (đầu ra).
 - Thêm từng dòng **nguyên liệu** và định mức / 1 đơn vị TP.
-- Nhập **% hao hụt** nếu cần (tính vào tổng NVL).
-- Lưu BOM.
+- Lưu BOM (**ít nhất một dòng**).
 
 **Ví dụ — 1 hộp cà phê:**
 
@@ -81,26 +76,27 @@
 | Đường       | 5 g      |
 | Hộp bao bì  | 1 cái    |
 
-**Quy tắc:** Không có BOM thì lệnh SX không tính và không trừ NVL đúng.
+**Quy tắc:** Lệnh SX **bắt buộc** có BOM có dòng trước khi **Release** (cấu hình Biomixing hiện tại).
 
 ---
 
-## 5. Tạo lệnh sản xuất
+## 5. Tạo lệnh sản xuất (chọn BOM trước)
 
-**Vào:** `Production → Production Orders` → **New production order** (Lệnh sản xuất mới)
+**Vào:** `Production → Production Orders` → **New production order**
 
 **Các bước:**
 
-- Chọn **thành phẩm** và **BOM**.
-- Nhập **số lượng kế hoạch**.
-- Chọn **kho nguyên liệu** (kho trừ NL).
-- Chọn **kho thành phẩm** (kho nhập TP).
-- (Tuỳ chọn) Gắn **đơn bán hàng (SO)**.
-- Lưu ở trạng thái **Nháp** trước.
+1. Chọn **BOM** (dropdown có placeholder — hệ thống **không** tự chọn BOM đầu tiên).
+2. **Thành phẩm** tự điền theo BOM đã chọn (không chọn TP trước trong luồng mặc định).
+3. Nhập **số lượng kế hoạch**.
+4. Chọn **kho nguyên liệu** và **kho thành phẩm**.
+5. (Tuỳ chọn) Gắn **đơn bán hàng (SO)**.
+6. Xem **bảng xem trước NVL** trên form (đổi khi đổi BOM / SL / kho NL). Preview = BOM **master**; xưởng dùng bản **chốt trên lệnh** sau Release.
+7. Lưu **Nháp**.
 
-**Mục đích:** Đây là “work order” sản xuất. Nháp = còn sửa kế hoạch.
+**Không Release được** nếu chưa chọn BOM hoặc BOM không có dòng.
 
-**Tuỳ chọn:** Từ màn **Sales Order** → nút **Tạo lệnh sản xuất** (điền sẵn SO, SL, BOM).
+**Tuỳ chọn:** Từ **Sales Order** → **Tạo lệnh sản xuất**.
 
 ---
 
@@ -108,120 +104,111 @@
 
 ### A) Trên chi tiết lệnh SX
 
-- Mở lệnh → xem bảng **tổng nguyên liệu**.
-- So **tổng cần** vs **tồn khả dụng** tại kho NL.
-- Thiếu → có cảnh báo.
+- Bảng **tổng nguyên liệu** (từ BOM / snapshot sau Release).
+- So **cần** vs **khả dụng** tại kho NL.
 
-### B) Nhiều lệnh cùng lúc (mua hàng / planner)
+### B) Nhiều lệnh (mua hàng / planner)
 
-**Vào:** `Production → Production Orders` → **Material shortage summary** (Tổng hợp thiếu nguyên liệu)
+**Vào:** `Production → Production Orders` → **Material shortage summary**
 
-| Bộ lọc trạng thái                           | Khi nào dùng                              |
-| ------------------------------------------- | ----------------------------------------- |
-| **Đã phát hành + Đang sản xuất** (mặc định) | Lệnh đã cam kết — tồn đã trừ phần reserve |
-| **Nháp**                                    | Lập kế hoạch mua trước khi Release        |
-| **Tất cả (Nháp + Đã PH + Đang SX)**         | Xem toàn bộ nhu cầu đang mở               |
+| Bộ lọc                                      | Khi nào dùng                   |
+| ------------------------------------------- | ------------------------------ |
+| **Đã phát hành + Đang sản xuất** (mặc định) | Lệnh đã cam kết — đã reserve   |
+| **Nháp**                                    | Lập kế hoạch mua trước Release |
+| **Tất cả (Nháp + Đã PH + Đang SX)**         | Toàn bộ nhu cầu đang mở        |
 
-**Nếu thiếu:**
-
-- Nhập thêm hàng (PO / GRN / Add Inventory), **hoặc**
-- Giảm SL kế hoạch, **hoặc**
-- Chưa Release cho đến khi đủ tồn.
+**Nếu thiếu:** Nhập thêm hàng · giảm SL kế hoạch · chưa Release.
 
 ---
 
 ## 7. Phát hành lệnh (Release)
 
-**Vào:** Chi tiết lệnh SX → **Release** (Nháp → **Đã phát hành**)
+**Vào:** Chi tiết lệnh → **Release**
 
-**Hệ thống làm gì:**
+**Hệ thống:**
 
-- Chụp **snapshot BOM** theo SL kế hoạch lúc release.
-- Kiểm tra **tồn khả dụng** = tồn thực − **đã reserve** (giao hàng, lệnh SX khác).
-- Không đủ → **chặn Release**, báo thiếu NVL.
-- Đủ → **reserve** NVL tại kho NL (giữ chỗ — **chưa** trừ tồn).
-
-**Ý nghĩa:** Xưởng cam kết chạy lệnh này.
-
-**Khuyến nghị:** Chỉ quản lý / planner có quyền Release.
+- **Snapshot BOM** trên lệnh (chốt cho lô này).
+- Kiểm tra tồn khả dụng; không đủ → **chặn**.
+- Đủ → **reserve** NVL (chưa trừ tồn).
+- Tạo **lô SX đầu tiên** nếu chưa có.
+- **Tự sinh** dòng NVL kế hoạch trên lô từ snapshot (không cần bấm nút “sinh planned” mặc định).
 
 **Lưu ý:** Lệnh **Nháp** **không** reserve NVL Production.
 
 ---
 
-## 8. Chạy lô sản xuất (xưởng) — bắt buộc đúng thứ tự
+## 8. Chạy lô sản xuất — 4 bước trên màn hình
 
-**Vào:** Lệnh SX → **Batches** (Lô) → tạo / mở lô
+**Vào:** Lệnh SX → **Batches** → mở lô (thường đã có sau Release)
 
-| Bước | Thao tác trên màn hình                  | Tồn kho                |
-| ---- | --------------------------------------- | ---------------------- |
-| 1    | Tạo **lô sản xuất**                     | —                      |
-| 2    | **Sinh planned RM** từ snapshot BOM     | Chỉ kế hoạch           |
-| 3    | **Gán lô kho** cho từng dòng NL         | Không reserve thêm     |
-| 4    | **Deduct raw materials** (Trừ NL)       | **Giảm** tồn NL        |
-| 5    | Nhập **dòng thành phẩm** (SL, mã lô TP) | —                      |
-| 6    | **Phê duyệt hao hụt** (nếu công ty bật) | QL duyệt trước post TP |
-| 7    | **Post finished goods** (Nhập TP)       | **Tăng** tồn TP        |
+Checklist hiển thị **4 bước** (đánh số 1–4). **Không** còn bước riêng “sinh dòng NVL kế hoạch”.
 
-**Sau khi post:**
+| Bước | Thao tác                             | Tồn kho                              |
+| ---- | ------------------------------------ | ------------------------------------ |
+| 1    | **Gán lô kho** từng dòng NVL         | Chưa trừ; reserve đã tạo lúc Release |
+| 2    | **Deduct raw materials** (Trừ NL)    | **Giảm** tồn NL                      |
+| 3    | **Thêm dòng thành phẩm** (SL, mã lô) | Chưa nhập kho đến bước 4             |
+| 4    | **Post finished goods** (Nhập TP)    | **Tăng** tồn TP                      |
 
-- **Đang sản xuất** — khi đã trừ NL (theo lô).
+**Sau post:**
+
+- **Đang sản xuất** — khi đã trừ NL (theo quy tắc lô).
 - **Hoàn thành** — khi đã nhập TP hết các lô.
 
-**Quan trọng:** Bấm **Hoàn thành** một mình **không** trừ/nhập kho. Tồn đổi tại bước **Trừ NL** và **Nhập TP**.
+**Quan trọng:**
+
+- Bấm **Hoàn thành** trên lệnh **không** tự trừ/nhập kho.
+- Mặc định **không** thêm tay dòng NVL trên lô — chỉ từ snapshot.
+- Mở lô cũ chưa có dòng → hệ thống vẫn có thể **tự sinh** nếu lệnh đã snapshot.
+
+**Tuỳ chọn:** Duyệt hao hụt trước nhập TP · **In nhãn lô** trên màn lô.
 
 ---
 
 ## 9. Truy xuất (tuỳ chọn)
 
-**Vào:** Màn lô → **Trace**
-
-- Liên kết lô SX ↔ lô kho (NL → sản xuất → TP).
-- Dùng khi audit, thu hồi, hoặc khách hỏi nguồn gốc.
+**Vào:** Lô → **Trace** — liên kết lô SX ↔ lô kho (NL → SX → TP).
 
 ---
 
 ## 10. Thành phẩm → bán hàng & giao hàng
 
-Sau **Nhập TP**, hàng nằm ở **kho TP**, dùng cho:
+Sau **Nhập TP**, hàng ở **kho TP** — dùng cho SO, phiếu giao (DO), hóa đơn.
 
-- Đơn bán hàng (SO)
-- Phiếu giao hàng (DO) — confirm / ship (có thể reserve hoặc trừ TP theo cấu hình)
-- Hóa đơn (thường không đổi tồn lần nữa)
-
-**Tuỳ chọn:** Có thể chặn giao hàng nếu lệnh SX chưa **Hoàn thành** (quality lock — nếu bật).
+**Tuỳ chọn (thường bật):** Chặn giao hàng nếu lệnh SX liên quan chưa **Hoàn thành** (quality lock).
 
 ---
 
 ## 11. Hủy lệnh
 
-| Trạng thái hiện tại                           | Hủy được?                         |
-| --------------------------------------------- | --------------------------------- |
-| **Nháp**                                      | Có                                |
-| **Đã phát hành** (chưa trừ NL / chưa nhập TP) | Có — hệ thống **trả** reserve NVL |
-| **Đang sản xuất** hoặc **Hoàn thành**         | **Không** — đã ghi sổ kho         |
+| Trạng thái hiện tại                           | Hủy được?            |
+| --------------------------------------------- | -------------------- |
+| **Nháp**                                      | Có                   |
+| **Đã phát hành** (chưa trừ NL / chưa nhập TP) | Có — **trả** reserve |
+| **Đang sản xuất** / **Hoàn thành**            | **Không**            |
 
 ---
 
 ## 12. Phân vai đề xuất
 
-| Việc                    | Vai trò thường gặp |
-| ----------------------- | ------------------ |
-| Tạo BOM / lệnh Nháp     | Planner            |
-| Release                 | Quản lý xưởng      |
-| Lô — trừ NL / nhập TP   | Sản xuất / kho     |
-| Duyệt hao hụt           | Quản lý            |
-| Tổng hợp thiếu NVL / PO | Planner / mua hàng |
+| Việc                         | Vai trò            |
+| ---------------------------- | ------------------ |
+| Tạo BOM / lệnh Nháp          | Planner            |
+| Release                      | Quản lý xưởng      |
+| Lô — gán lô, trừ NL, nhập TP | Sản xuất / kho     |
+| Duyệt hao hụt                | Quản lý            |
+| Tổng hợp thiếu NVL / PO      | Planner / mua hàng |
 
 ---
 
 ## 13. Lỗi thường gặp
 
-1. Release khi chưa đủ tồn → hệ thống chặn.
-2. Bỏ bước lô → tồn không đổi.
-3. Chọn sai kho NL / kho TP trên lệnh.
-4. ĐVT BOM khác đVT gốc SP — cần khai báo quy đổi đơn vị.
-5. Tưởng **Nháp** đã giữ chỗ tồn — chỉ **Released** mới reserve.
+1. Release khi thiếu tồn → chặn.
+2. Release khi chưa chọn BOM / BOM trống → chặn.
+3. Chọn TP trước thay vì BOM → luồng mặc định chọn **BOM trước**.
+4. Bỏ bước 1–4 trên lô → tồn không đổi.
+5. Nhầm **preview trên form** (BOM master) với **dòng trên lô** (snapshot lúc Release).
+6. Tưởng **Nháp** đã giữ chỗ tồn — chỉ **Released** mới reserve.
 
 ---
 
@@ -238,7 +225,9 @@ Sau **Nhập TP**, hàng nằm ở **kho TP**, dùng cho:
 
 ---
 
-## Tài liệu kỹ thuật liên quan (nội bộ)
+## Tài liệu kỹ thuật (nội bộ)
 
 - [`FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)
+- [`FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md`](../FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md)
+- [`FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md`](../FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md)
 - [`PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd`](./PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd)

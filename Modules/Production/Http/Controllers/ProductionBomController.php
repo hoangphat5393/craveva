@@ -106,7 +106,7 @@ class ProductionBomController extends AccountBaseController
 
         if ($request->ajax()) {
             return response()->json(Reply::successWithData(__('messages.recordSaved'), [
-                'redirectUrl' => $request->input('redirect_url', route('production.boms.index')),
+                'redirectUrl' => $request->input('redirect_url') ?? $request->input('redirectUrl') ?? route('production.boms.index'),
                 'bomId' => $bom->id,
             ]));
         }
@@ -123,7 +123,7 @@ class ProductionBomController extends AccountBaseController
 
         $bom->load(['items.componentProduct.unit', 'items.unit', 'outputProduct.unit']);
 
-        $this->pageTitle = __('production::app.bomDetail').' '.$bom->version;
+        $this->pageTitle = __('production::app.bomDetail') . ' ' . $bom->version;
         $this->bom = $bom;
         $this->bomCostSummary = app(ProductionBomLineCostCalculator::class)
             ->summarizeSavedLines($bom, (int) company()->id);
@@ -196,7 +196,7 @@ class ProductionBomController extends AccountBaseController
 
         if ($request->ajax()) {
             return response()->json(Reply::successWithData(__('messages.updateSuccess'), [
-                'redirectUrl' => $request->input('redirect_url', route('production.boms.index')),
+                'redirectUrl' => $request->input('redirect_url') ?? $request->input('redirectUrl') ?? route('production.boms.index'),
                 'bomId' => $bom->id,
             ]));
         }

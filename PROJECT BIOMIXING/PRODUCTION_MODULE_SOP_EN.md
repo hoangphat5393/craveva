@@ -1,40 +1,40 @@
-# Production Module — Standard Operating Procedure (Non-Technical)
+# Production Module Workflow (Non-Technical SOP)
 
 **Audience:** Factory supervisor, production planner, warehouse staff, sales support  
 **System:** Craveva ERP — Production module  
-**Version:** 2026-05-27  
-**Purpose:** End-to-end guide to plan manufacturing, reserve materials, run batches, update stock, then sell or ship.
+**Version:** 2026-05-28  
+**Purpose:** End-to-end guide to plan manufacturing (bill of materials first), reserve materials at release, run batches, update stock, then sell or ship.
 
 ---
 
 ## Status overview
 
-| Status          | Meaning                                                                                             |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| **Draft**       | Planning only. The order can be edited. Raw materials are **not** reserved yet.                     |
-| **Released**    | Production is committed. The system **reserves** raw materials in the raw material warehouse.       |
-| **In progress** | Raw materials have been **deducted** from warehouse (at least one production batch posted).         |
-| **Completed**   | Finished goods have been **received** into the manufactured product warehouse (all batches posted). |
-| **Cancelled**   | Order stopped (rules in section 12).                                                                |
+| Status          | Meaning                                                                                                                                                         |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Draft**       | Planning only. The order can be edited. Raw materials are **not** reserved yet.                                                                                 |
+| **Released**    | Production is committed. Bill of materials is **frozen** on the order; raw materials are **reserved**. First production batch is usually created automatically. |
+| **In progress** | Raw materials have been **deducted** from warehouse (at least one batch posted).                                                                                |
+| **Completed**   | Finished goods have been **received** into the manufactured product warehouse (all batches posted).                                                             |
+| **Cancelled**   | Order stopped (rules in section 11).                                                                                                                            |
 
 ---
 
-## 1. Create finished product
+## 1. Create manufactured product (master data)
 
 **Go to:** `Operations → Products`
 
 **Steps:**
 
-- Add the **finished good** (what you manufacture).
+- Add the **manufactured product** (what you manufacture).
 - Set **unit** (Pcs, Box, Kg, etc.) and **SKU** if needed.
-- Use the correct **product type** so the item can be selected as bill of materials output (finished goods).
+- Use the correct **product type** so the item can be used as bill of materials output.
 - Save.
 
 **Examples:** Oldtown White Coffee · finished chocolate bar.
 
 ---
 
-## 2. Create raw materials
+## 2. Create raw materials (master data)
 
 **Go to:** `Operations → Products`
 
@@ -68,10 +68,9 @@
 
 **Steps:**
 
-- Select the **finished product** (output).
+- Select the **manufactured product** (output).
 - Add each **raw material** line with quantity per unit of output.
-- Add **waste %** on lines if needed (included in total material calculation).
-- Save the bill of materials.
+- Save the bill of materials (must have at least one line).
 
 **Example — 1 box of coffee:**
 
@@ -81,26 +80,29 @@
 | Sugar         | 5 g      |
 | Packaging box | 1 pc     |
 
-**Rule:** Without a bill of materials, the production order cannot calculate or consume materials correctly.
+**Rule:** Production orders **require** a bill of materials with lines before **Release** (current Biomixing setup).
 
 ---
 
-## 5. Create production order
+## 5. Create production order (bill of materials first)
 
 **Go to:** `Production → Production Orders` → **New production order**
 
 **Steps:**
 
-- Select **finished product** and **bill of materials**.
-- Enter **planned quantity**.
-- Select **raw material warehouse** (where ingredients are taken from).
-- Select **manufactured product warehouse** (where completed product is received).
-- Optionally link a **Sales Order**.
-- Save as **Draft** first.
+1. Select **bill of materials** from the dropdown (placeholder — the system does **not** auto-pick the first bill of materials).
+2. The **manufactured product** is filled in automatically from the bill of materials you chose.
+3. Enter **planned quantity**.
+4. Select **raw material warehouse** and **manufactured product warehouse**.
+5. Optionally link a **Sales Order**.
+6. Review the **material requirements preview** on the form (updates when you change bill of materials, quantity, or raw material warehouse). This preview uses the **master** bill of materials; the shop floor uses the **frozen** copy after release.
+7. Save as **Draft**.
 
-**Purpose:** This is the manufacturing work order. Draft = planning; quantity, bill of materials, and warehouses can still be changed.
+**Purpose:** Draft = planning; you can still change bill of materials, quantity, and warehouses.
 
 **Optional:** From a **Sales Order**, use **Create production order** to prefill sales link and quantities.
+
+**You cannot release** if no bill of materials is selected or the bill of materials has no lines.
 
 ---
 
@@ -108,9 +110,8 @@
 
 ### A) On the production order (detail page)
 
-- Open the order and review the **total raw materials** table.
+- Open the order and review **total raw materials** (from the order bill of materials / snapshot after release).
 - Compare **required** vs **available** in the raw material warehouse.
-- If insufficient, a shortage warning is shown.
 
 ### B) Across many orders (planning / purchasing)
 
@@ -136,10 +137,12 @@
 
 **What the system does:**
 
-- Saves a **bill of materials snapshot** for this order.
+- Saves a **bill of materials snapshot** on the order (frozen for this job).
 - Checks **available** = on-hand minus already **reserved** (delivery orders, other production orders).
 - If not enough → **Release is blocked**.
 - If enough → **reserves** raw materials in the raw material warehouse (hold only — not deducted yet).
+- Creates the **first production batch** if none exists.
+- **Automatically** creates **planned raw material lines** on that batch from the order snapshot (no separate “generate planned lines” button in the default setup).
 
 **Business meaning:** “We commit to run this job.”
 
@@ -149,29 +152,33 @@
 
 ---
 
-## 8. Production batch — shop floor workflow
+## 8. Production batch — shop floor workflow (4 steps)
 
-**Go to:** Production order → **Batches** → create or open a batch
+**Go to:** Production order → **Batches** → open the batch (often already created at release)
 
-Complete steps **in order**:
+The on-screen checklist shows **four steps** (numbered 1–4). There is **no** separate checklist step to “create planned raw material lines” — the system already inserted them.
 
-| Step | User action                                                                                    | Stock effect                                                                  |
-| ---- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| 1    | Open **production batch** (created at release; planned RM lines auto-filled from BOM snapshot) | Inserts `production_batch_consumptions` only — no stock move                  |
-| 2    | **Assign warehouse batch/lot** per raw material line                                           | No extra reserve (reserve was at Release)                                     |
-| 3    | **Deduct raw materials**                                                                       | **Raw material quantity decreases**                                           |
-| 4    | Enter **finished goods output** (qty, manufactured product batch number)                       | —                                                                             |
-| 5    | **Variance approval** (if company policy requires)                                             | Manager approves before manufactured product posting                          |
-| 6    | **Post finished goods receipt**                                                                | **Manufactured product quantity increases** in manufactured product warehouse |
+| Step | What you do on screen                                        | Stock effect                                                                  |
+| ---- | ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| 1    | **Assign warehouse batch/lot** on each raw material line     | No stock move; reserve was created at Release                                 |
+| 2    | **Deduct raw materials**                                     | **Raw material quantity decreases**                                           |
+| 3    | **Add manufactured product output** (quantity, batch number) | Planning only until step 4                                                    |
+| 4    | **Post finished goods receipt**                              | **Manufactured product quantity increases** in manufactured product warehouse |
 
-_Restore manual “Generate planned raw materials” button / checklist step: `FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md`._
+**After posting:**
 
-**Order status after posting:**
+- Order **In progress** — when raw materials are deducted (per batch rules).
+- Order **Completed** — when all batches have posted finished goods.
 
-- **In progress** — after raw materials are deducted on all required batches.
-- **Completed** — after all finished goods are posted.
+**Important:**
 
-**Important:** Clicking **Completed** alone does **not** move stock. Stock moves at **Deduct raw materials** and **Post finished goods**.
+- Clicking **Completed** on the order alone does **not** move stock.
+- You **cannot** manually add extra raw material lines on the batch in the default setup (lines come from the snapshot only).
+- Opening an older batch with no lines yet triggers the same **automatic** planned lines if the order already has a snapshot.
+
+**Optional (admin):** Variance approval may be required before posting finished goods if quantity is outside policy (`Settings → Production`).
+
+**Optional:** **Print label slip** on the batch screen for shop-floor labels.
 
 ---
 
@@ -179,20 +186,20 @@ _Restore manual “Generate planned raw materials” button / checklist step: `F
 
 **Go to:** Batch screen → **Trace**
 
-- Links between production batch and warehouse batches (raw materials → production → manufactured product).
+- Links production batch ↔ warehouse batches (raw materials → production → manufactured product).
 - Use for audits, recalls, or customer questions.
 
 ---
 
-## 10. Finished goods → sales & delivery
+## 10. Manufactured product → sales & delivery
 
 After **Post finished goods**, stock is in the **manufactured product warehouse**. It can be used for:
 
 - Sales orders
-- Delivery orders (confirm / ship — may reserve or deduct manufactured product stock per company settings)
+- Delivery orders (confirm / ship — may reserve or deduct stock per company settings)
 - Invoices (financial; usually does not change stock again)
 
-**Optional:** Shipping may be blocked until the linked production order is **Completed** (quality lock — if enabled).
+**Optional (often enabled):** Delivery shipping may be blocked until linked production orders are **Completed** (quality lock).
 
 ---
 
@@ -208,23 +215,25 @@ After **Post finished goods**, stock is in the **manufactured product warehouse*
 
 ## 12. Recommended roles
 
-| Action                                                   | Typical role           |
-| -------------------------------------------------------- | ---------------------- |
-| Create bill of materials / draft order                   | Planner                |
-| Release order                                            | Supervisor             |
-| Batch — deduct raw materials / post manufactured product | Production / warehouse |
-| Variance approval                                        | Manager                |
-| Material shortage / purchase order                       | Planner / buyer        |
+| Action                                                               | Typical role           |
+| -------------------------------------------------------------------- | ---------------------- |
+| Create bill of materials / draft order                               | Planner                |
+| Release order                                                        | Supervisor             |
+| Batch — assign lots, deduct raw materials, post manufactured product | Production / warehouse |
+| Variance approval                                                    | Manager                |
+| Material shortage / purchase order                                   | Planner / buyer        |
 
 ---
 
 ## 13. Common mistakes
 
 1. Releasing without enough stock — Release fails; fix stock first.
-2. Skipping batch steps — No stock movement.
-3. Wrong raw material or manufactured product warehouse on the order.
-4. Bill of materials line unit not mapped to product base unit — Set up unit conversions.
-5. Expecting **Draft** to reserve stock — Only **Released** reserves.
+2. Releasing without selecting a bill of materials (or empty bill of materials) — Release fails.
+3. Expecting to pick manufactured product first — choose **bill of materials** first; product follows.
+4. Skipping batch steps 1–4 — No stock movement.
+5. Wrong raw material or manufactured product warehouse on the order.
+6. Confusing **form preview** (master bill of materials) with **batch lines** (snapshot at release).
+7. Expecting **Draft** to reserve stock — only **Released** reserves.
 
 ---
 
@@ -244,4 +253,6 @@ After **Post finished goods**, stock is in the **manufactured product warehouse*
 ## Related technical docs (internal)
 
 - [`FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_EN.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_EN.md)
+- [`FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md`](../FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md)
+- [`FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md`](../FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md) — restore manual “planned lines” step / button
 - [`PRODUCTION_RELEASE_RESERVE_TEST_FLOW_EN.mmd`](./PRODUCTION_RELEASE_RESERVE_TEST_FLOW_EN.mmd)

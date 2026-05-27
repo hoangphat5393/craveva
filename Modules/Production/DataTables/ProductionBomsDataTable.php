@@ -32,19 +32,19 @@ class ProductionBomsDataTable extends BaseDataTable
     {
         $datatables = datatables()->eloquent($query);
 
-        $datatables->editColumn('output_product_name', fn (ProductionBom $row): string => e((string) ($row->output_product_name ?: '—')));
-        $datatables->editColumn('fg_unit_type', fn (ProductionBom $row): string => e((string) ($row->fg_unit_type ?: '—')));
-        $datatables->editColumn('version', fn (ProductionBom $row): string => e((string) ($row->version ?: '—')));
-        $datatables->editColumn('code', fn (ProductionBom $row): string => e((string) ($row->code ?: '—')));
-        $datatables->editColumn('items_count', fn (ProductionBom $row): string => (string) ((int) ($row->items_count ?? 0)));
+        $datatables->editColumn('output_product_name', fn(ProductionBom $row): string => e((string) ($row->output_product_name ?: '—')));
+        $datatables->editColumn('fg_unit_type', fn(ProductionBom $row): string => e((string) ($row->fg_unit_type ?: '—')));
+        $datatables->editColumn('version', fn(ProductionBom $row): string => e((string) ($row->version ?: '—')));
+        $datatables->editColumn('code', fn(ProductionBom $row): string => e((string) ($row->code ?: '—')));
+        $datatables->editColumn('items_count', fn(ProductionBom $row): string => (string) ((int) ($row->items_count ?? 0)));
         $datatables->editColumn('is_default', function (ProductionBom $row): string {
             if ($row->is_default) {
-                return '<i class="fa fa-check-circle text-dark-green" data-toggle="tooltip" title="'.e(__('app.yes')).'"></i>';
+                return '<i class="fa fa-check-circle text-dark-green" data-toggle="tooltip" title="' . e(__('app.yes')) . '"></i>';
             }
 
-            return '<i class="fa fa-times text-red" data-toggle="tooltip" title="'.e(__('app.no')).'"></i>';
+            return '<i class="fa fa-times text-red" data-toggle="tooltip" title="' . e(__('app.no')) . '"></i>';
         });
-        $datatables->addColumn('is_default_export', fn (ProductionBom $row): string => $row->is_default ? __('app.yes') : __('app.no'));
+        $datatables->addColumn('is_default_export', fn(ProductionBom $row): string => $row->is_default ? __('app.yes') : __('app.no'));
 
         $datatables->addColumn('action', function (ProductionBom $row): string {
             $canView = in_array($this->viewProductionBomPermission, ['all', 'added', 'owned', 'both'], true);
@@ -58,18 +58,18 @@ class ProductionBomsDataTable extends BaseDataTable
             $action = '<div class="task_view">
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="production-bom-actions-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="production-bom-actions-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="production-bom-actions-'.$row->id.'" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="production-bom-actions-' . $row->id . '" tabindex="0">';
 
             if ($canView) {
-                $action .= '<a class="dropdown-item" href="'.route('production.boms.show', [$row->id]).'"><i class="fa fa-eye mr-2 text-dark-grey"></i>'.e(__('app.view')).'</a>';
+                $action .= '<a class="dropdown-item" href="' . route('production.boms.show', [$row->id]) . '"><i class="fa fa-eye mr-2 text-dark-grey"></i>' . e(__('app.view')) . '</a>';
             }
 
             if ($canEdit) {
-                $action .= '<a class="dropdown-item openRightModal" href="'.route('production.boms.edit', [$row->id]).'?redirect_url='.urlencode(route('production.boms.index')).'"><i class="fa fa-edit mr-2 text-dark-grey"></i>'.e(__('app.edit')).'</a>';
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-bom-id="'.$row->id.'"><i class="fa fa-trash mr-2 text-dark-grey"></i>'.e(__('app.delete')).'</a>';
+                $action .= '<a class="dropdown-item openRightModal" href="' . route('production.boms.edit', [$row->id]) . '" data-redirect-url="' . e(route('production.boms.index')) . '"><i class="fa fa-edit mr-2 text-dark-grey"></i>' . e(__('app.edit')) . '</a>';
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-bom-id="' . $row->id . '"><i class="fa fa-trash mr-2 text-dark-grey"></i>' . e(__('app.delete')) . '</a>';
             }
 
             $action .= '</div>
@@ -80,7 +80,7 @@ class ProductionBomsDataTable extends BaseDataTable
         });
 
         $datatables->smart(false);
-        $datatables->setRowId(fn (ProductionBom $row): string => 'row-'.$row->id);
+        $datatables->setRowId(fn(ProductionBom $row): string => 'row-' . $row->id);
         $datatables->rawColumns(['action', 'is_default']);
 
         return $datatables;
@@ -113,7 +113,7 @@ class ProductionBomsDataTable extends BaseDataTable
         }
 
         if (($request->searchText ?? '') !== '') {
-            $term = '%'.$request->searchText.'%';
+            $term = '%' . $request->searchText . '%';
 
             $query->where(function (Builder $builder) use ($term): void {
                 $builder->where('production_boms.id', 'like', $term)
@@ -158,7 +158,7 @@ class ProductionBomsDataTable extends BaseDataTable
         $buttons = [
             Button::make([
                 'extend' => 'colvis',
-                'text' => '<i class="fa fa-columns"></i> '.trans('app.columns'),
+                'text' => '<i class="fa fa-columns"></i> ' . trans('app.columns'),
                 'columns' => ':not(:last)',
             ]),
         ];
@@ -166,7 +166,7 @@ class ProductionBomsDataTable extends BaseDataTable
         if (canDataTableExport()) {
             array_unshift($buttons, Button::make([
                 'extend' => 'excel',
-                'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel'),
+                'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel'),
             ]));
         }
 

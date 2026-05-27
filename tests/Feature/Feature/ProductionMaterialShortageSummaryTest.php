@@ -10,6 +10,7 @@ use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionBomItem;
 use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
+use Modules\Production\Services\ProductionMaterialSummaryService;
 use Modules\Production\Services\ProductionOrderMaterialRequirementsSummary;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
@@ -41,6 +42,23 @@ it('renders the material shortage summary screen', function (): void {
     expect($content)->toContain(__('production::app.materialShortageSummaryStatusNote', [
         'statuses' => __('production::app.materialShortageStatusScopes.active'),
     ]));
+    expect($content)->not->toContain('id="production-material-shortages-warehouse-filter"');
+    expect($content)->not->toContain('value="completed"');
+    expect($content)->not->toContain('value="cancelled"');
+});
+
+it('excludes completed and cancelled orders from all status scope in material shortage summary', function (): void {
+    $service = app(ProductionMaterialSummaryService::class);
+
+    expect($service->statusesForScope('all'))->toEqual([
+        ProductionOrder::STATUS_DRAFT,
+        ProductionOrder::STATUS_RELEASED,
+        ProductionOrder::STATUS_IN_PROGRESS,
+    ]);
+    expect($service->statusesForScope('all'))->not->toContain(ProductionOrder::STATUS_COMPLETED);
+    expect($service->statusesForScope('all'))->not->toContain(ProductionOrder::STATUS_CANCELLED);
+    expect($service->normalizeStatusScope('completed'))->toBe('active');
+    expect($service->normalizeStatusScope('cancelled'))->toBe('active');
 });
 
 it('aggregates shortages across released production orders and shows affected orders', function (): void {
@@ -122,8 +140,8 @@ it('aggregates shortages across released production orders and shows affected or
             ['data' => 'total_required', 'name' => 'total_required'],
             ['data' => 'available_stock', 'name' => 'available_stock'],
             ['data' => 'shortage_to_procure', 'name' => 'shortage_to_procure'],
-            ['data' => 'affected_orders_count', 'name' => 'affected_orders_count'],
             ['data' => 'unit_label_base', 'name' => 'unit_label_base'],
+            ['data' => 'affected_orders_count', 'name' => 'affected_orders_count'],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
         ], [
             'status_scope' => 'active',

@@ -236,7 +236,7 @@ return [
     'materialShortageOrdersPageTitle' => 'Các lệnh sản xuất liên quan',
     'materialShortageStatusScopes' => [
         'active' => 'Đã phát hành + Đang sản xuất',
-        'all' => 'Tất cả trạng thái',
+        'all' => 'Nháp + Đã phát hành + Đang sản xuất',
         'draft' => 'Nháp',
         'released' => 'Đã phát hành',
         'in_progress' => 'Đang sản xuất',

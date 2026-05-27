@@ -11,14 +11,20 @@
             <div class="select-status">
                 <select class="form-control select-picker" name="status_scope" id="production-material-shortages-status-filter" data-container="body" data-size="8">
                     <option value="active" @selected($statusScope === 'active')>@lang('production::app.materialShortageStatusScopes.active')</option>
-                    <option value="all" @selected($statusScope === 'all')>@lang('app.all')</option>
-                    @foreach (['draft', 'released', 'in_progress', 'completed', 'cancelled'] as $statusKey)
+                    <option value="all" @selected($statusScope === 'all')>@lang('production::app.materialShortageStatusScopes.all')</option>
+                    @foreach (['draft', 'released', 'in_progress'] as $statusKey)
                         <option value="{{ $statusKey }}" @selected($statusScope === $statusKey)>{{ __('production::app.statusLabels.' . $statusKey) }}</option>
                     @endforeach
+                    {{-- completed / cancelled: excluded from summary scope; restore options + ProductionMaterialSummaryService when re-enabled --}}
+                    {{-- @foreach (['completed', 'cancelled'] as $statusKey) --}}
+                    {{--     <option value="{{ $statusKey }}" @selected($statusScope === $statusKey)>{{ __('production::app.statusLabels.' . $statusKey) }}</option> --}}
+                    {{-- @endforeach --}}
                 </select>
             </div>
         </div>
 
+        {{-- Raw material warehouse filter hidden for Phase 1; restore block + controller warehouseOptions when re-enabled --}}
+        {{--
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('production::app.rawMaterialWarehouse')</p>
             <div class="select-status">
@@ -30,6 +36,7 @@
                 </select>
             </div>
         </div>
+        --}}
 
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('production::app.rawMaterialProduct')</p>
@@ -53,7 +60,7 @@
         </div>
 
         <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
-            <x-forms.button-secondary class="btn-xs {{ request()->filled('warehouse_id') || request()->filled('material_id') || $statusScope !== 'active' || !$onlyShortage ? '' : 'd-none' }}" id="production-material-shortages-reset-filters" icon="times-circle">
+            <x-forms.button-secondary class="btn-xs {{ request()->filled('material_id') || $statusScope !== 'active' || !$onlyShortage ? '' : 'd-none' }}" id="production-material-shortages-reset-filters" icon="times-circle">
                 @lang('app.clearFilters')
             </x-forms.button-secondary>
         </div>
@@ -89,7 +96,7 @@
     <script>
         $('#production-material-shortages-table').on('preXhr.dt', function(e, settings, data) {
             data.status_scope = $('#production-material-shortages-status-filter').val();
-            data.warehouse_id = $('#production-material-shortages-warehouse-filter').val();
+            // data.warehouse_id = $('#production-material-shortages-warehouse-filter').val();
             data.material_id = $('#production-material-shortages-material-filter').val();
             data.only_shortage = $('#production-material-shortages-only-shortage').is(':checked') ? 1 : 0;
         });
@@ -100,14 +107,13 @@
 
         const toggleProductionMaterialShortagesResetButton = () => {
             const hasFilters = $('#production-material-shortages-status-filter').val() !== 'active' ||
-                $('#production-material-shortages-warehouse-filter').val() !== '' ||
                 $('#production-material-shortages-material-filter').val() !== '' ||
                 !$('#production-material-shortages-only-shortage').is(':checked');
 
             $('#production-material-shortages-reset-filters').toggleClass('d-none', !hasFilters);
         };
 
-        $('#production-material-shortages-status-filter, #production-material-shortages-warehouse-filter, #production-material-shortages-material-filter').on('change changed.bs.select', function() {
+        $('#production-material-shortages-status-filter, #production-material-shortages-material-filter').on('change changed.bs.select', function() {
             toggleProductionMaterialShortagesResetButton();
             showProductionMaterialShortagesTable();
         });
@@ -121,7 +127,7 @@
             e.preventDefault();
 
             $('#production-material-shortages-status-filter').val('active');
-            $('#production-material-shortages-warehouse-filter').val('');
+            // $('#production-material-shortages-warehouse-filter').val('');
             $('#production-material-shortages-material-filter').val('');
             $('#production-material-shortages-only-shortage').prop('checked', true);
             $('.select-picker').selectpicker('refresh');

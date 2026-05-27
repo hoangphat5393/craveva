@@ -127,15 +127,15 @@ class ProductionMaterialShortagesDataTable extends BaseDataTable
                 'name' => 'shortage_to_procure',
                 'title' => __('production::app.materialShortageToProcure'),
             ],
-            __('production::app.affectedOrders') => [
-                'data' => 'affected_orders_count',
-                'name' => 'affected_orders_count',
-                'title' => __('production::app.affectedOrders'),
-            ],
             __('production::app.baseUnit') => [
                 'data' => 'unit_label_base',
                 'name' => 'unit_label_base',
                 'title' => __('production::app.baseUnit'),
+            ],
+            __('production::app.affectedOrders') => [
+                'data' => 'affected_orders_count',
+                'name' => 'affected_orders_count',
+                'title' => __('production::app.affectedOrders'),
             ],
             Column::computed('action', __('app.action'))
                 ->exportable(false)

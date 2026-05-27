@@ -35,11 +35,13 @@ class ProductionMaterialSummaryController extends AccountBaseController
         $this->pageTitle = __('production::app.materialShortageSummary');
         $this->statusScope = $this->materialSummaryService->normalizeStatusScope((string) $request->input('status_scope'));
         $this->onlyShortage = $request->has('only_shortage') ? $request->boolean('only_shortage') : true;
-        $this->warehouseOptions = Warehouse::query()
-            ->where('company_id', $companyId)
-            ->where('status', 'active')
-            ->orderBy('name')
-            ->get(['id', 'name']);
+        // Warehouse filter hidden on UI (see material-shortages/index.blade.php). Re-enable when needed:
+        // $this->warehouseOptions = Warehouse::query()
+        //     ->where('company_id', $companyId)
+        //     ->where('status', 'active')
+        //     ->orderBy('name')
+        //     ->get(['id', 'name']);
+        $this->warehouseOptions = collect();
         $this->materialOptions = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->forBomComponents()

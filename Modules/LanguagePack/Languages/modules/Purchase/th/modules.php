@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => 'หลักหมายเลขเครดิตของผู้ขาย',
         'vendorCreditExample' => 'ตัวอย่างหมายเลขเครดิตของผู้ขาย',
         'termsAndCondition' => 'ข้อกำหนดและเงื่อนไข',
-        'billOrderDigits' => 'หมายเลขการสั่งซื้อบิล',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'หมายเลขการสั่งซื้อบิล',
         'billOrderExample' => 'ตัวอย่างการสั่งซื้อบิล',
     ],
     'vendorCredit' => [

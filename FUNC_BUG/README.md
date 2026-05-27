@@ -1,34 +1,33 @@
-# FUNC_BUG — Index & trạng thái tài liệu (legacy vs canonical)
+# FUNC_BUG — Lỗi đã gặp & cách xử
 
-Mục tiêu:
+Thư mục này lưu **triệu chứng → nguyên nhân → fix** (và archive incident staging). Không thay runbook vận hành trong `docs/`.
 
-- Dùng `FUNC_BUG/` làm nơi ghi nhận **lỗi + nguyên nhân + cách fix** và **archive incident** không còn cần tách từng file.
-- Runbook vận hành staging/hub: **`docs/SERVER_RUNBOOK_VI.md`**, **`docs/STAGING_OPERATIONS.md`**. Tiến độ deploy PHP 8.3 / L11 + recovery tóm tắt: **`docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md`** (có phụ lục recovery).
+## Đọc gì trước?
 
-## 1) Canonical (ưu tiên dùng)
+| Nhu cầu                   | File                                                                                                                             |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Tra cứu nhanh mọi bug** | **[`REGISTRY.md`](REGISTRY.md)** ← bắt đầu ở đây                                                                                 |
+| Import client / product   | [`CLIENT_IMPORT_MASTER.md`](CLIENT_IMPORT_MASTER.md) · [`PRODUCT_IMPORT_MASTER.md`](PRODUCT_IMPORT_MASTER.md)                    |
+| Staging SSH / deploy      | [`STAGING_SSH_GCLOUD_METADATA_AND_DEPLOY_SCRIPT_VI.md`](STAGING_SSH_GCLOUD_METADATA_AND_DEPLOY_SCRIPT_VI.md)                     |
+| Incident staging cũ (dài) | [`STAGING_INCIDENTS_ARCHIVE_VI.md`](STAGING_INCIDENTS_ARCHIVE_VI.md) — nếu lệch `docs/`, ưu tiên **`docs/SERVER_RUNBOOK_VI.md`** |
 
-- `docs/SERVER_RUNBOOK_VI.md` — Runbook staging/hub deploy & pitfalls
-- `docs/STAGING_OPERATIONS.md` — Staging rehearsal & quy trình thao tác an toàn
+## Cấu trúc file
 
-## 2) Bug notes (hub + chi tiết)
+- **`REGISTRY.md`** — bảng tổng hợp + mẫu thêm bug.
+- **`*_MASTER.md`** — tóm tắt nhóm lỗi (import).
+- **`*_DETAILS_VI.md`** — phân tích dài (chỉ khi cần đào sâu).
+- **File đơn lẻ** — một ticket; giữ ngắn (mẫu: `PRODUCTION_RM_OUTBOUND_UOM_VI.md`).
 
-- `FUNC_BUG/CLIENT_IMPORT_MASTER.md` — tóm tắt lỗi import client → **`FUNC_BUG/CLIENT_IMPORT_DETAILS_VI.md`** (đầy đủ)
-- `FUNC_BUG/PRODUCT_IMPORT_MASTER.md` — tóm tắt product import → **`FUNC_BUG/PRODUCT_IMPORT_DETAILS_VI.md`** (đầy đủ)
-- `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md` — `DecryptException: The MAC is invalid.` trên Social Auth Settings (encrypted casts)
-- Sau import DB staging: đồng bộ `APP_KEY` — `scripts/download_staging_env.ps1 -SyncAppKey` (xem `backup/README.md`)
-- `FUNC_BUG/DEVTOOLS_NO_COMPANY_SETTINGS.md` — package có module nhưng không hiện Settings
-- `FUNC_BUG/AFFILIATE_HIDDEN_IN_COMPANIES.md` — module Affiliate active nhưng không thấy ở Companies
+## Thêm / cập nhật bug
 
-## 3) Staging archive (FUNC_BUG)
+1. Thêm dòng vào [`REGISTRY.md`](REGISTRY.md).
+2. Nếu > ~15 dòng: tạo hoặc cập nhật file riêng (tiếng Việt, có **Triệu chứng / Nguyên nhân / Fix**).
+3. Không nhân bản runbook — trỏ `docs/` cho checklist server.
 
-- **`FUNC_BUG/STAGING_SSH_GCLOUD_METADATA_AND_DEPLOY_SCRIPT_VI.md`** — SSH/metadata GCP + `upload_staging.ps1` (2026-05-13).
-- **`FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md`** — nội dung các file `STAGING_*.md` đã gộp (2026-05-12). Dùng khi cần ngữ cảnh incident cụ thể; không thay runbook `docs/`.
+## Lịch sử gộp file (2026-05-12)
 
-## 4) Gợi ý dọn dẹp (không tự động)
+- 8× `STAGING_*.md` → `STAGING_INCIDENTS_ARCHIVE_VI.md`
+- Product import chi tiết → `PRODUCT_IMPORT_DETAILS_VI.md`
+- Client import chi tiết → `CLIENT_IMPORT_DETAILS_VI.md`
 
-- Nếu muốn **xóa file lỗi thời**, ghi đúng câu: **"DELETE THIS FILE"** và path.
-- Nếu **gộp nội dung**, tạo file canonical mới rồi cập nhật link (như đợt 2026-05-12).
-
-## 5) Audit
-
-- **`FUNC_BUG/AUDIT_BUG_2026_VI.md`**
+`INDEX.md` và `AUDIT_BUG_2026_VI.md` đã gộp vào README + REGISTRY (2026-05-27).

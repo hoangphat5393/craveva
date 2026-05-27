@@ -2,6 +2,18 @@
 
 _Mục tiêu: tài liệu vận hành sống cho module Production, dùng để trả lời nghiệp vụ mà không cần rà code._
 
+## 0) Loại sản phẩm (master trước BOM)
+
+| Vai trò Production       | `products.type`                              | Nhãn form (gợi ý)                        |
+| ------------------------ | -------------------------------------------- | ---------------------------------------- |
+| Đầu ra BOM / TP lệnh SX  | `goods`                                      | Manufactured product                     |
+| Component BOM (tiêu hao) | `raw_material`, `semi_finished`, `packaging` | Raw Material / Semi Finished / Packaging |
+| Không dùng               | `service`                                    | Service                                  |
+
+- Dropdown BOM **output** = scope `forBomOutput()` → chỉ `goods`.
+- Dropdown BOM **component** = scope `forBomComponents()` → ba loại trên.
+- SOP khách hàng: [`PROJECT BIOMIXING/PRODUCTION_MODULE_SOP_VI.md`](../PROJECT%20BIOMIXING/PRODUCTION_MODULE_SOP_VI.md) mục 0–2 · chi tiết [`PRODUCTION_PRODUCT_TYPES_VI.md`](./PRODUCTION_PRODUCT_TYPES_VI.md).
+
 ## 1) Lifecycle trạng thái lệnh sản xuất
 
 - `Draft` -> `Released` -> `In progress` -> `Completed`

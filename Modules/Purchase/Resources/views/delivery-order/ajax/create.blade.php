@@ -69,12 +69,12 @@
                 </div>
 
                 @php
-                    $deliveryOrderTermsText = trim((string) ($purchaseSetting->delivery_order_terms ?? '')) !== '' ? (string) $purchaseSetting->delivery_order_terms : (string) ($purchaseSetting->purchase_terms ?? '');
+                    $grnTermsText = \App\Support\CompanyDocumentTerms::resolveGrnTerms($purchaseSetting);
                 @endphp
                 <div class="row p-20 border-top-grey">
                     @include('partials.company-document-terms-readonly', [
-                        'termsText' => $deliveryOrderTermsText,
-                        'label' => __('purchase::modules.purchaseSettings.deliveryOrderTerms'),
+                        'termsText' => $grnTermsText,
+                        'label' => __('purchase::modules.purchaseSettings.grnTerms'),
                         'wrapperClass' => 'col-md-12 col-sm-12 p-0 c-inv-note-terms',
                     ])
                 </div>

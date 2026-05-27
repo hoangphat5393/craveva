@@ -2,6 +2,18 @@
 
 _Purpose: a live operations document for the Production module, so business questions can be answered without re-reading code._
 
+## 0) Product types (master data before BOM)
+
+| Production role              | `products.type`                              | Typical form label                       |
+| ---------------------------- | -------------------------------------------- | ---------------------------------------- |
+| BOM output / order FG        | `goods`                                      | Manufactured product                     |
+| BOM components (consumption) | `raw_material`, `semi_finished`, `packaging` | Raw Material / Semi Finished / Packaging |
+| Not used                     | `service`                                    | Service                                  |
+
+- BOM **output** dropdown = `forBomOutput()` → `goods` only.
+- BOM **component** dropdown = `forBomComponents()` → the three component types.
+- Customer SOP: [`PROJECT BIOMIXING/PRODUCTION_MODULE_SOP_EN.md`](../PROJECT%20BIOMIXING/PRODUCTION_MODULE_SOP_EN.md) sections 0–2 · detail [`PRODUCTION_PRODUCT_TYPES_EN.md`](./PRODUCTION_PRODUCT_TYPES_EN.md).
+
 ## 1) Production order lifecycle
 
 - `Draft` -> `Released` -> `In progress` -> `Completed`

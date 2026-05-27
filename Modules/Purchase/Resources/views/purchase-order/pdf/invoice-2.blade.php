@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>@lang('app.invoice')</title>
 
@@ -463,14 +464,14 @@
             font-size: 11px;
         }
 
-        @if($invoiceSetting->locale == 'th')
+        @if ($invoiceSetting->locale == 'th')
 
             table td {
-            font-weight: bold !important;
-            font-size: 20px !important;
+                font-weight: bold !important;
+                font-size: 20px !important;
             }
-            .description
-            {
+
+            .description {
                 font-weight: bold !important;
                 font-size: 16px !important;
             }
@@ -478,7 +479,7 @@
         @endif
 
         #signatory img {
-            height:95px;
+            height: 95px;
             margin-bottom: -50px;
             margin-top: 5px;
             margin-right: 20;
@@ -487,6 +488,7 @@
         .client-logo {
             height: 80px;
         }
+
         .client-logo-div {
             position: absolute;
             margin-left: -80px;
@@ -495,10 +497,11 @@
         }
     </style>
 </head>
+
 <body>
     <div id="container">
         <div class="invoice-top">
-            <section id="memo"  class="description">
+            <section id="memo" class="description">
                 <div class="logo">
                     <img src="{{ $invoiceSetting->logo_url }}" />
                 </div>
@@ -510,10 +513,10 @@
 
                     <span class="spacer"></span>
                     @if ($company->company_email)
-                    <div>{{ $company->company_email }}</div>
+                        <div>{{ $company->company_email }}</div>
                     @endif
                     @if ($company->company_phone)
-                    <div>{{ $company->company_phone }}</div>
+                        <div>{{ $company->company_phone }}</div>
                     @endif
                     @if ($order->address)
                         <div>{!! nl2br($order->address->address) !!}</div>
@@ -534,7 +537,7 @@
 
             </section>
 
-            <section id="invoice-info"  class="description">
+            <section id="invoice-info" class="description">
                 <table>
                     <tr>
                         <td>@lang('modules.orders.orderDate'):</td>
@@ -550,7 +553,7 @@
                     <span id="number">{{ $order->purchase_order_number }}</span>
                 </section>
             </section>
-            <section id="client-info"  class="description">
+            <section id="client-info" class="description">
                 <span>@lang('modules.invoices.billedTo')</span>
 
                 {{ mb_ucwords(company()->company_name) }}<br>
@@ -568,20 +571,20 @@
         </div>
 
         <div class="invoice-body">
-            <section id="items"  class="description">
+            <section id="items" class="description">
 
                 <table cellpadding="0" cellspacing="0">
 
                     <tr>
                         <th>#</th> <!-- Dummy cell for the row number and row commands -->
-                        <th  class="description">@lang('modules.invoices.item')</th>
+                        <th class="description">@lang('modules.invoices.item')</th>
                         @if ($invoiceSetting->hsn_sac_code_show)
-                            <th  class="description">@lang('app.hsnSac')</th>
+                            <th class="description">@lang('app.hsnSac')</th>
                         @endif
-                        <th  class="description">@lang('modules.invoices.qty')</th>
-                        <th  class="description">@lang('modules.invoices.unitPrice')</th>
-                        <th  class="description">@lang('modules.invoices.tax')</th>
-                        <th  class="description">@lang('modules.invoices.price') ({!! htmlentities($order->currency->currency_code) !!})</th>
+                        <th class="description">@lang('modules.invoices.qty')</th>
+                        <th class="description">@lang('modules.invoices.unitPrice')</th>
+                        <th class="description">@lang('modules.invoices.tax')</th>
+                        <th class="description">@lang('modules.invoices.price') ({!! htmlentities($order->currency->currency_code) !!})</th>
                     </tr>
 
                     <?php $count = 0; ?>
@@ -591,14 +594,13 @@
                                 <td>{{ ++$count }}</td>
                                 <!-- Don't remove this column as it's needed for the row commands -->
                                 <td>
-                                    {{ ($item->item_name) }}
+                                    {{ $item->item_name }}
                                     @if (!is_null($item->item_summary))
                                         <p class="item-summary">{!! nl2br(strip_tags($item->item_summary, ['p', 'b', 'strong', 'a'])) !!}</p>
                                     @endif
                                     @if ($item->purchaseItemImage)
                                         <p class="mt-2">
-                                            <img src="{{ $item->purchaseItemImage->file_url }}" width="60" height="60"
-                                                class="img-thumbnail">
+                                            <img src="{{ $item->purchaseItemImage->file_url }}" width="60" height="60" class="img-thumbnail">
                                         </p>
                                     @endif
                                 </td>
@@ -650,7 +652,7 @@
                 @if (!is_null($order->note))
                     <div class="word-break item-summary description"><b>@lang('app.note')</b><br>{!! nl2br($order->note) !!}</div>
                 @endif
-                <div class="word-break item-summary description"><b>@lang('modules.invoiceSettings.invoiceTerms')</b><br>{!! nl2br($invoiceSetting->invoice_terms) !!}</div>
+                <div class="word-break item-summary description">@include('partials.company-document-terms-purchase-pdf')</div>
             </section>
 
             @if (isset($taxes) && $invoiceSetting->tax_calculation_msg == 1)

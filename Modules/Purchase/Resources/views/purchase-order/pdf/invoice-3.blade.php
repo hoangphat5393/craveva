@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>@lang('app.invoice')</title>
 
@@ -12,7 +12,7 @@
     <meta name="description" content="Invoice">
     @includeIf('invoices.pdf.invoice_pdf_css')
 
-<style>
+    <style>
         /*! Invoice Templates @author: Invoicebus @email: info@invoicebus.com @web: https://invoicebus.com @version: 1.0.0 @updated: 2015-02-27 16:02:34 @license: Invoicebus */
         /* Reset styles */
         /*@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700&subset=cyrillic,cyrillic-ext,latin,greek-ext,greek,latin-ext,vietnamese");*/
@@ -538,7 +538,7 @@
         }
 
         #signatory img {
-            height:95px;
+            height: 95px;
             margin-bottom: -50px;
             margin-top: 5px;
             margin-right: 20;
@@ -550,14 +550,13 @@
             margin-left: 40px;
         }
 
-        @if($invoiceSetting->locale == 'th')
+        @if ($invoiceSetting->locale == 'th')
             table td {
-            font-weight: bold !important;
-            font-size: 20px !important;
+                font-weight: bold !important;
+                font-size: 20px !important;
             }
 
-            .description
-            {
+            .description {
                 font-weight: bold !important;
                 font-size: 16px !important;
             }
@@ -568,7 +567,7 @@
             height: 80px
         }
 
-        .client-logo-div{
+        .client-logo-div {
             position: absolute;
             right: 0;
             margin-top: -150px;
@@ -578,9 +577,7 @@
         .f-11 {
             font-size: 11px;
         }
-
-
-</style>
+    </style>
 </head>
 
 <body>
@@ -598,13 +595,13 @@
                 <br />
 
                 @if ($company->company_email)
-                <span>{{ $company->company_email }}</span>
-                <br />
+                    <span>{{ $company->company_email }}</span>
+                    <br />
                 @endif
 
                 @if ($company->company_phone)
-                <span>{{ $company->company_phone }}</span>
-                <br />
+                    <span>{{ $company->company_phone }}</span>
+                    <br />
                 @endif
 
                 @if ($order->address)
@@ -628,19 +625,19 @@
         </section>
 
         <div class="clearfix"></div>
-            <section id="client-info"  class="description">
-                <span>@lang('modules.invoices.billedTo')</span>
+        <section id="client-info" class="description">
+            <span>@lang('modules.invoices.billedTo')</span>
 
-                {{ mb_ucwords(company()->company_name) }}<br>
-                @if ($order->address)
-                    {!! nl2br($order->address->address) !!}<br>
-                @endif
-                {{ company()->company_phone }}
-                @if ($invoiceSetting->show_gst == 'yes' && $order->address)
-                    <br>{{ strtoupper($order->address->tax_name) }}: {{ $order->address->tax_number }}
-                @endif
+            {{ mb_ucwords(company()->company_name) }}<br>
+            @if ($order->address)
+                {!! nl2br($order->address->address) !!}<br>
+            @endif
+            {{ company()->company_phone }}
+            @if ($invoiceSetting->show_gst == 'yes' && $order->address)
+                <br>{{ strtoupper($order->address->tax_name) }}: {{ $order->address->tax_number }}
+            @endif
 
-            </section>
+        </section>
 
         <div class="clearfix"></div>
 
@@ -668,14 +665,13 @@
                             <td>{{ ++$count }}</td>
                             <!-- Don't remove this column as it's needed for the row commands -->
                             <td>
-                                {{ ($item->item_name) }}
+                                {{ $item->item_name }}
                                 @if (!is_null($item->item_summary))
                                     <p class="item-summary  mb-3">{!! nl2br(strip_tags($item->item_summary, ['p', 'b', 'strong', 'a'])) !!}</p>
                                 @endif
                                 @if ($item->purchaseItemImage)
                                     <p class="mt-2">
-                                        <img src="{{ $item->purchaseItemImage->file_url }}" width="60" height="60"
-                                            class="img-thumbnail">
+                                        <img src="{{ $item->purchaseItemImage->file_url }}" width="60" height="60" class="img-thumbnail">
                                     </p>
                                 @endif
                             </td>
@@ -743,7 +739,7 @@
                     <b>@lang('app.note')</b><br>{!! nl2br($order->note) !!}
                 @endif
                 @if ($order->status == 'unpaid')
-                    <br><br><b>@lang('modules.invoiceSettings.invoiceTerms')</b><br>{!! nl2br($invoiceSetting->invoice_terms) !!}
+                    <br><br>@include('partials.company-document-terms-purchase-pdf')
                 @endif
             </div>
 

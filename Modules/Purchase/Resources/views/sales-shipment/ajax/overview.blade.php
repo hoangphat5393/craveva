@@ -73,18 +73,23 @@
                 </tr>
             </table>
 
-            @if ($shipment->notes)
-                <table class="inv-note mt-3">
-                    <tr>
-                        <td><strong>@lang('app.note')</strong></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p class="text-dark-grey mb-0">{!! nl2br(e($shipment->notes)) !!}</p>
-                        </td>
-                    </tr>
-                </table>
-            @endif
+            @php
+                $salesDoTermsText = \App\Support\CompanyDocumentTerms::resolveSaleOrderTerms(invoice_setting());
+            @endphp
+            <table class="inv-note mt-3">
+                <tr>
+                    <td><strong>@lang('app.note')</strong></td>
+                    <td style="text-align: right;"><strong>@lang('modules.invoiceSettings.orderAndSalesDoTerms')</strong></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: text-top">
+                        <p class="text-dark-grey mb-0">{!! filled($shipment->notes) ? nl2br(e($shipment->notes)) : '--' !!}</p>
+                    </td>
+                    <td style="text-align: right;">
+                        <p class="text-dark-grey mb-0">{!! filled($salesDoTermsText) ? nl2br(e($salesDoTermsText)) : '--' !!}</p>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 
@@ -95,6 +100,11 @@
                     @lang('app.action') <span><i class="fa fa-chevron-up f-15"></i></span>
                 </button>
                 <ul class="dropdown-menu" tabindex="0">
+                    <li>
+                        <a class="dropdown-item f-14 text-dark" href="{{ route($salesDoRoutePrefix . '.download', $shipment->id) }}" target="_blank">
+                            <i class="fa fa-download f-w-500 mr-2 f-11"></i> @lang('app.downloadPdf')
+                        </a>
+                    </li>
                     @if ($canUpdate && !in_array($shipment->status, ['shipped', 'delivered', 'cancelled'], true))
                         <li>
                             <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route($salesDoRoutePrefix . '.edit', $shipment->id) }}">

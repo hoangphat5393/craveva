@@ -45,7 +45,18 @@
                     </div>
 
                     <div class="col-md-12">
-                        <x-forms.textarea fieldName="notes" fieldId="notes" :fieldLabel="__('app.note')" />
+                        <div class="d-flex flex-wrap">
+                            <div class="col-md-6 col-sm-12 p-0 mb-lg-0 mb-md-0 mb-3 pr-md-2">
+                                <x-forms.textarea fieldName="notes" fieldId="notes" :fieldLabel="__('app.note')" />
+                            </div>
+                            @php
+                                $salesDoTermsText = \App\Support\CompanyDocumentTerms::resolveSaleOrderTerms(invoice_setting());
+                            @endphp
+                            @include('partials.company-document-terms-readonly', [
+                                'termsText' => $salesDoTermsText,
+                                'label' => __('modules.invoiceSettings.orderAndSalesDoTerms'),
+                            ])
+                        </div>
                     </div>
                 </div>
 

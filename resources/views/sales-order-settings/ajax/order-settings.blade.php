@@ -19,8 +19,13 @@
                     <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderLookLike')" fieldName="order_look_like" fieldId="order_look_like" fieldValue="" fieldReadOnly="true" />
                 </div>
 
-                <div class="col-lg-12 mt-3">
-                    <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderTerms')" fieldId="order_terms" fieldName="order_terms" :fieldValue="$invoiceSetting->order_terms ?? ''" />
+                <div class="col-lg-12 mt-4">
+                    <h5 class="f-15 font-weight-bold text-capitalize mb-1">@lang('modules.invoiceSettings.documentTermsSection')</h5>
+                    <p class="f-13 text-dark-grey mb-3">@lang('modules.invoiceSettings.documentTermsSectionHelp')</p>
+                </div>
+                <div class="col-lg-12">
+                    <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderAndSalesDoTerms')" fieldId="order_terms" fieldName="order_terms" :fieldValue="$invoiceSetting->order_terms ?? ''" />
+                    <p class="f-12 text-dark-grey mb-0">@lang('modules.invoiceSettings.orderAndSalesDoTermsHelp')</p>
                 </div>
             </div>
         </div>

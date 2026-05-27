@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => 'გამყიდველის საკრედიტო ნომრის ნომრები',
         'vendorCreditExample' => 'გამყიდველის საკრედიტო ნომრის მაგალითი',
         'termsAndCondition' => 'Პირობები და ვადები',
-        'billOrderDigits' => 'ბილ ორდერის ციფრები',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'ბილ ორდერის ციფრები',
         'billOrderExample' => 'კანონპროექტის შეკვეთის მაგალითი',
     ],
     'vendorCredit' => [

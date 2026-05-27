@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => 'Dígitos del número de crédito del proveedor',
         'vendorCreditExample' => 'Ejemplo de número de crédito de proveedor',
         'termsAndCondition' => 'Términos y Condiciones',
-        'billOrderDigits' => 'Dígitos del pedido de factura',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'Dígitos del pedido de factura',
         'billOrderExample' => 'Ejemplo de orden de factura',
     ],
     'vendorCredit' => [

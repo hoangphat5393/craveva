@@ -46,5 +46,7 @@ Pilot **một bước** (RM → FG, không BTP): có thể **không dùng** `sem
 
 ## Đọc thêm
 
+- [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) — loại SP trong module Production / BOM (SOP khách hàng)
+- [`PROJECT BIOMIXING/PRODUCTION_MODULE_SOP_VI.md`](../PROJECT%20BIOMIXING/PRODUCTION_MODULE_SOP_VI.md) — quy trình đầy đủ mục 0–4
 - `FUNC_IMPROVE/BIOMIXING_FLOW_CONCEPTS_VI.md` — RM/FG, PO, DO, Production
 - `FUNC_IMPROVE/01_PROD_BOM_FG_POLICY_VI.md` — BOM & lệnh SX

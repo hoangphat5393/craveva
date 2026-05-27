@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => 'ベンダークレジット番号の桁数',
         'vendorCreditExample' => 'ベンダークレジット番号の例',
         'termsAndCondition' => '利用規約',
-        'billOrderDigits' => '請求書の注文番号',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => '請求書の注文番号',
         'billOrderExample' => '請求書の注文例',
     ],
     'vendorCredit' => [

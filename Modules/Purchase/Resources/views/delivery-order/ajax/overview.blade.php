@@ -264,7 +264,7 @@
             </table>
 
             @php
-                $deliveryOrderTermsText = trim((string) ($purchaseSetting->delivery_order_terms ?? '')) !== '' ? (string) $purchaseSetting->delivery_order_terms : (string) ($purchaseSetting->purchase_terms ?? '');
+                $grnTermsText = \App\Support\CompanyDocumentTerms::resolveGrnTerms($purchaseSetting);
             @endphp
             <table width="100%" class="mt-4 inv-note">
                 <tr>
@@ -272,7 +272,7 @@
                 </tr>
                 <tr>
                     <td>@lang('app.note')</td>
-                    <td style="text-align: right;">@lang('purchase::modules.purchaseSettings.deliveryOrderTerms')</td>
+                    <td style="text-align: right;">@lang('purchase::modules.purchaseSettings.grnTerms')</td>
                 </tr>
                 <tr>
                     <td style="vertical-align: text-top">
@@ -285,7 +285,7 @@
                         </p>
                     </td>
                     <td style="text-align: right;">
-                        <p class="text-dark-grey">{!! nl2br($deliveryOrderTermsText) !!}</p>
+                        <p class="text-dark-grey">{!! nl2br($grnTermsText) !!}</p>
                     </td>
                 </tr>
             </table>

@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => 'Цифри на кредитния номер на доставчика',
         'vendorCreditExample' => 'Пример за кредитен номер на доставчик',
         'termsAndCondition' => 'Правила и условия',
-        'billOrderDigits' => 'Цифри за поръчка на сметка',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'Цифри за поръчка на сметка',
         'billOrderExample' => 'Пример за поръчка на сметка',
     ],
     'vendorCredit' => [

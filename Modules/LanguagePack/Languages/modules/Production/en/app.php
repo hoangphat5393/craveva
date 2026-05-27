@@ -144,7 +144,7 @@ return [
     'fgOutputWarehouseRequired' => 'Select the finished goods warehouse.',
     'fgOutputWarehouseInvalid' => 'The selected warehouse is not valid for this company.',
     'fgOutputDateInvalid' => 'Enter a valid date or leave the field empty.',
-    'fgOutputSavedButReceiptFailed' => 'The output line was saved, but posting finished goods to stock failed. Fix the issue below and use Post FG receipt on the line if needed.',
+    'fgOutputSavedButReceiptFailed' => 'The output line was saved, but adding finished goods to stock failed. Fix the issue below and use Add finished goods to stock on the line if needed.',
     'fgPlannedQtyInvalid' => 'Planned quantity on the production order is invalid.',
     'fgStrictExceedsPlanned' => 'Strict finished goods policy: total registered finished goods (:total) cannot exceed planned quantity (:planned).',
     'fgControlledBeyondToleranceBlocked' => 'Controlled finished goods policy: total registered finished goods (:total) exceeds the allowed ceiling (:allowed) for planned quantity (:planned).',

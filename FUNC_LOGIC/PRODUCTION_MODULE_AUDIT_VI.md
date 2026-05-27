@@ -61,7 +61,20 @@ _Cập nhật sau BOM-first + auto planned RM trên batch. Dùng khi review PM/Q
 
 ---
 
-## 5) Test nên chạy sau thay đổi Production
+## 5) Tài liệu khách hàng — loại sản phẩm (2026-05-27)
+
+| File                                                                                                          | Nội dung                                                                |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [`PRODUCTION_PRODUCT_TYPES_VI.md`](./PRODUCTION_PRODUCT_TYPES_VI.md)                                          | SSOT: `goods` vs `raw_material` / `packaging` / `semi_finished` cho BOM |
+| [`PRODUCTION_PRODUCT_TYPES_EN.md`](./PRODUCTION_PRODUCT_TYPES_EN.md)                                          | Bản EN                                                                  |
+| [`PROJECT BIOMIXING/PRODUCTION_MODULE_SOP_VI.md`](../PROJECT%20BIOMIXING/PRODUCTION_MODULE_SOP_VI.md)         | SOP mục **0–2** mở rộng                                                 |
+| [`FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md`](../FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md) | Mua hàng vs tồn (bổ sung)                                               |
+
+Khi đổi `ProductType` / scope BOM → cập nhật các file trên + `StoreProductionBomRequest` validation.
+
+---
+
+## 6) Test nên chạy sau thay đổi Production
 
 ```bash
 php artisan test --compact tests/Feature/ProductionOrderBomFirstWorkflowTest.php
@@ -71,8 +84,9 @@ php artisan test --compact --filter=ProductionOrder
 
 ---
 
-## 6) Changelog audit
+## 7) Changelog audit
 
-| Ngày    | Ghi chú                                                         |
-| ------- | --------------------------------------------------------------- |
-| 2026-05 | Đánh số checklist 1–4; help/lang; doc Biomixing; file audit này |
+| Ngày       | Ghi chú                                                         |
+| ---------- | --------------------------------------------------------------- |
+| 2026-05-27 | Bổ sung doc loại SP / SOP mục 0–2                               |
+| 2026-05    | Đánh số checklist 1–4; help/lang; doc Biomixing; file audit này |

@@ -4,7 +4,7 @@
 <head>
     <!-- Required meta tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>@lang('purchase::app.menu.purchaseOrder') - {{ $order->purchase_order_number }}</title>
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="{{ $company->favicon_url }}">
@@ -264,74 +264,71 @@
         .border-bottom-0 {
             border-bottom: 0 !important;
         }
+
         .h3-border {
             border-bottom: 1px solid #AAAAAA;
         }
-</style>
-    @if($invoiceSetting->locale == 'th')
-    <style>
-
-            table td {
-            font-weight: bold !important;
-            font-size: 20px !important;
-        }
-
-        .description {
-            font-weight: bold !important;
-            font-size: 16px !important;
-        }
-
-
     </style>
-@endif
+    @if ($invoiceSetting->locale == 'th')
+        <style>
+            table td {
+                font-weight: bold !important;
+                font-size: 20px !important;
+            }
+
+            .description {
+                font-weight: bold !important;
+                font-size: 16px !important;
+            }
+        </style>
+    @endif
 </head>
 
 <body class="content-wrapper">
     <table class="bg-white" border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
         <tbody>
-        <!-- Table Row Start -->
-        <tr>
-            <td><img src="{{ $invoiceSetting->logo_url }}" alt="{{ mb_ucwords($order->company->company_name) }}"
-                    id="logo"/></td>
-            <td align="right" class="f-21 text-black font-weight-700 text-uppercase">@lang('purchase::app.menu.purchaseOrder')<br>
-                <table class="text-black mt-1 f-11 b-collapse rightaligned">
-                    <tr>
-                        <td class="heading-table-left">@lang('app.orderNumber')</td>
-                        <td class="heading-table-right">{{ $order->purchase_order_number }}</td>
-                    </tr>
-                    <tr>
-                        <td class="heading-table-left">@lang('modules.orders.orderDate')</td>
-                        <td class="heading-table-right">
-                            {{ $order->purchase_date->translatedFormat($order->company->date_format) }}
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <!-- Table Row End -->
-        <!-- Table Row Start -->
-        <tr>
-            <td class="f-12 text-black">
-                <p class="line-height mb-0 ">
-                    <span class="text-grey ">@lang('modules.invoices.billedFrom')</span><br>
-                    @if ($order->vendor && $order->vendor->primary_name)
-                        {{$order->vendor->primary_name}}<br>
-                    @endif
-                    @if ($order->vendor && $order->vendor->email)
-                        {{$order->vendor->email}}<br>
-                    @endif
-                    @if ($order->vendor && $order->vendor->billing_address)
-                        {{$order->vendor->billing_address}}<br>
-                    @endif
-                    @if ($order->vendor && $order->vendor->phone)
-                        {{$order->vendor->phone}}<br>
-                    @endif
-                </p>
-            </td>
-            <td class="f-12 text-black" align="right">
-                <p class="line-height mb-0">
-                            <span class="text-grey ">
-                                @lang('modules.invoices.billedTo')</span><br>
+            <!-- Table Row Start -->
+            <tr>
+                <td><img src="{{ $invoiceSetting->logo_url }}" alt="{{ mb_ucwords($order->company->company_name) }}" id="logo" /></td>
+                <td align="right" class="f-21 text-black font-weight-700 text-uppercase">@lang('purchase::app.menu.purchaseOrder')<br>
+                    <table class="text-black mt-1 f-11 b-collapse rightaligned">
+                        <tr>
+                            <td class="heading-table-left">@lang('app.orderNumber')</td>
+                            <td class="heading-table-right">{{ $order->purchase_order_number }}</td>
+                        </tr>
+                        <tr>
+                            <td class="heading-table-left">@lang('modules.orders.orderDate')</td>
+                            <td class="heading-table-right">
+                                {{ $order->purchase_date->translatedFormat($order->company->date_format) }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <!-- Table Row End -->
+            <!-- Table Row Start -->
+            <tr>
+                <td class="f-12 text-black">
+                    <p class="line-height mb-0 ">
+                        <span class="text-grey ">@lang('modules.invoices.billedFrom')</span><br>
+                        @if ($order->vendor && $order->vendor->primary_name)
+                            {{ $order->vendor->primary_name }}<br>
+                        @endif
+                        @if ($order->vendor && $order->vendor->email)
+                            {{ $order->vendor->email }}<br>
+                        @endif
+                        @if ($order->vendor && $order->vendor->billing_address)
+                            {{ $order->vendor->billing_address }}<br>
+                        @endif
+                        @if ($order->vendor && $order->vendor->phone)
+                            {{ $order->vendor->phone }}<br>
+                        @endif
+                    </p>
+                </td>
+                <td class="f-12 text-black" align="right">
+                    <p class="line-height mb-0">
+                        <span class="text-grey ">
+                            @lang('modules.invoices.billedTo')</span><br>
                         {{ mb_ucwords($order->company->company_name) }}<br>
                         @if ($order->address)
                             {!! nl2br($order->address->address) !!}<br>
@@ -340,16 +337,16 @@
                         @if ($invoiceSetting->show_gst == 'yes' && $order->address)
                             <br>{{ strtoupper($order->address->tax_name) }}: {{ $order->address->tax_number }}
                         @endif
-                </p>
-            </td>
-        </tr>
-        <!-- Table Row End -->
-        <!-- Table Row Start -->
-        <tr>
-            <td height="10"></td>
-        </tr>
-        <!-- Table Row End -->
-        <!-- Table Row Start -->
+                    </p>
+                </td>
+            </tr>
+            <!-- Table Row End -->
+            <!-- Table Row Start -->
+            <tr>
+                <td height="10"></td>
+            </tr>
+            <!-- Table Row End -->
+            <!-- Table Row Start -->
         </tbody>
     </table>
 
@@ -366,29 +363,26 @@
             <td align="right">@lang('modules.invoices.qty')</td>
             <td align="right">@lang('modules.invoices.unitPrice')</td>
             <td align="right">@lang('modules.invoices.tax')</td>
-            <td align="right"
-                width="{{ $invoiceSetting->hsn_sac_code_show ? '20%' : '23%' }}">@lang('modules.invoices.amount')
+            <td align="right" width="{{ $invoiceSetting->hsn_sac_code_show ? '20%' : '23%' }}">@lang('modules.invoices.amount')
                 ({{ $order->currency->currency_code }})
             </td>
         </tr>
         <!-- Table Row End -->
         @foreach ($order->items as $item)
             @if ($item->type == 'item')
-            <!-- Table Row Start -->
+                <!-- Table Row Start -->
                 <tr class="f-12 main-table-items text-black">
                     <td width="40%" class="border-bottom-0">
-                        {{ ($item->item_name) }}
+                        {{ $item->item_name }}
                     </td>
                     @if ($invoiceSetting->hsn_sac_code_show)
                         <td align="right" width="10%" class="border-bottom-0">
-                            {{ $item->hsn_sac_code ?  : '--' }}</td>
+                            {{ $item->hsn_sac_code ?: '--' }}</td>
                     @endif
                     <td align="right" width="10%" class="border-bottom-0">{{ $item->quantity }} <br><span class="f-11 text-grey">{{ $item->unit->unit_type }}</td>
-                    <td align="right"
-                        class="border-bottom-0">{{ currency_format($item->unit_price, $order->currency_id, false) }}</td>
+                    <td align="right" class="border-bottom-0">{{ currency_format($item->unit_price, $order->currency_id, false) }}</td>
                     <td align="right" class="border-bottom-0">{{ strtoupper($item->tax_list) }}</td>
-                    <td align="right" class="border-bottom-0"
-                        width="{{ $invoiceSetting->hsn_sac_code_show ? '20%' : '23%' }}">
+                    <td align="right" class="border-bottom-0" width="{{ $invoiceSetting->hsn_sac_code_show ? '20%' : '23%' }}">
                         {{ currency_format($item->amount, $order->currency_id, false) }}</td>
                 </tr>
                 <!-- Table Row End -->
@@ -419,18 +413,18 @@
                     <!-- Table Row End -->
                     @if ($discount != 0 && $discount != '')
                         <!-- Table Row Start -->
-                            <tr align="right" class="text-grey">
-                                <td width="50%" class="subtotal">@lang('modules.invoices.discount')
-                                </td>
-                            </tr>
-                            <!-- Table Row End -->
+                        <tr align="right" class="text-grey">
+                            <td width="50%" class="subtotal">@lang('modules.invoices.discount')
+                            </td>
+                        </tr>
+                        <!-- Table Row End -->
                     @endif
                     @foreach ($taxes as $key => $tax)
                         <!-- Table Row Start -->
-                            <tr align="right" class="text-grey">
-                                <td width="50%" class="subtotal">{{ mb_strtoupper($key) }}</td>
-                            </tr>
-                            <!-- Table Row End -->
+                        <tr align="right" class="text-grey">
+                            <td width="50%" class="subtotal">{{ mb_strtoupper($key) }}</td>
+                        </tr>
+                        <!-- Table Row End -->
                     @endforeach
                     <!-- Table Row Start -->
                     <tr align="right" class="text-grey">
@@ -439,8 +433,7 @@
                     <!-- Table Row End -->
                 </table>
             </td>
-            <td class="total-box" align="right"
-                width="{{ $invoiceSetting->hsn_sac_code_show ? '20%' : '23%' }}">
+            <td class="total-box" align="right" width="{{ $invoiceSetting->hsn_sac_code_show ? '20%' : '23%' }}">
                 <table width="100%" class="b-collapse">
                     <!-- Table Row Start -->
                     <tr align="right" class="text-grey">
@@ -448,23 +441,23 @@
                             {{ currency_format($order->sub_total, $order->currency_id, false) }}</td>
                     </tr>
                     <!-- Table Row End -->
-                @if ($discount != 0 && $discount != '')
-                    <!-- Table Row Start -->
+                    @if ($discount != 0 && $discount != '')
+                        <!-- Table Row Start -->
                         <tr align="right" class="text-grey">
                             <td class="subtotal-amt">
                                 {{ currency_format($discount, $order->currency_id, false) }}</td>
                         </tr>
                         <!-- Table Row End -->
-                @endif
-                @foreach ($taxes as $key => $tax)
-                    <!-- Table Row Start -->
+                    @endif
+                    @foreach ($taxes as $key => $tax)
+                        <!-- Table Row Start -->
                         <tr align="right" class="text-grey">
                             <td class="subtotal-amt">{{ currency_format($tax, $order->currency_id, false) }}
                             </td>
                         </tr>
                         <!-- Table Row End -->
-                @endforeach
-                <!-- Table Row Start -->
+                    @endforeach
+                    <!-- Table Row Start -->
                     <tr align="right" class="text-grey">
                         <td class="total-amt f-15">
                             {{ currency_format($order->total, $order->currency_id, false) }}</td>
@@ -477,52 +470,52 @@
 
     <table class="bg-white" border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
         <tbody>
-        <!-- Table Row Start -->
-        @if ($order->note != '')
+            <!-- Table Row Start -->
+            @if ($order->note != '')
+                <tr>
+                    <td height="10"></td>
+                </tr>
+                <tr>
+                    <td class="f-11">@lang('app.note')</td>
+                </tr>
+                <!-- Table Row End -->
+                <!-- Table Row Start -->
+                <tr class="text-grey">
+                    <td class="f-11 line-height word-break">{!! $order->note ? nl2br($order->note) : '--' !!}</td>
+                </tr>
+            @endif
             <tr>
                 <td height="10"></td>
             </tr>
-            <tr>
-                <td class="f-11">@lang('app.note')</td>
-            </tr>
-            <!-- Table Row End -->
-            <!-- Table Row Start -->
-            <tr class="text-grey">
-                <td class="f-11 line-height word-break">{!! $order->note ? nl2br($order->note) : '--' !!}</td>
-            </tr>
-        @endif
-        <tr>
-            <td height="10"></td>
-        </tr>
-        {{-- <tr>
+            {{-- <tr>
             <td class="f-11">
                 @lang('modules.invoiceSettings.invoiceTerms')</td>
         </tr> --}}
-        <!-- Table Row End -->
-
-        @if (isset($taxes) && $invoiceSetting->tax_calculation_msg == 1)
-            <!-- Table Row Start -->
-            <tr class="text-grey">
-                <td width="100%" class="f-11 line-height">
-                    <p class="text-dark-grey">
-                        @if ($order->calculate_tax == 'after_discount')
-                            @lang('messages.calculateTaxAfterDiscount')
-                        @else
-                            @lang('messages.calculateTaxBeforeDiscount')
-                        @endif
-                    </p>
-                </td>
-            </tr>
             <!-- Table Row End -->
-        @endif
-        <!-- Table Row End -->
+
+            @if (isset($taxes) && $invoiceSetting->tax_calculation_msg == 1)
+                <!-- Table Row Start -->
+                <tr class="text-grey">
+                    <td width="100%" class="f-11 line-height">
+                        <p class="text-dark-grey">
+                            @if ($order->calculate_tax == 'after_discount')
+                                @lang('messages.calculateTaxAfterDiscount')
+                            @else
+                                @lang('messages.calculateTaxBeforeDiscount')
+                            @endif
+                        </p>
+                    </td>
+                </tr>
+                <!-- Table Row End -->
+            @endif
+            <!-- Table Row End -->
         </tbody>
     </table>
 
     <p>
-        <div style="margin-top: 10px;" class="f-11 line-height text-grey">
-            <b>@lang('modules.invoiceSettings.invoiceTerms')</b><br>{!! nl2br($orderSetting->purchase_terms) !!}
-        </div>
+    <div style="margin-top: 10px;" class="f-11 line-height text-grey">
+        @include('partials.company-document-terms-purchase-pdf')
+    </div>
     </p>
 
 </body>

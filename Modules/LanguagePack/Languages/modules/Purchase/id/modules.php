@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => 'Digit Nomor Kredit Vendor',
         'vendorCreditExample' => 'Contoh Nomor Kredit Vendor',
         'termsAndCondition' => 'Syarat dan Ketentuan',
-        'billOrderDigits' => 'Digit Pesanan Tagihan',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'Digit Pesanan Tagihan',
         'billOrderExample' => 'Contoh Pesanan Tagihan',
     ],
     'vendorCredit' => [

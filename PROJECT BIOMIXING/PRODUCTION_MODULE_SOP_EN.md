@@ -2,7 +2,7 @@
 
 **Audience:** Factory supervisor, production planner, warehouse staff, sales support  
 **System:** Craveva ERP — Production module  
-**Version:** 2026-05-28  
+**Version:** 2026-05-27  
 **Purpose:** End-to-end guide to plan manufacturing (bill of materials first), reserve materials at release, run batches, update stock, then sell or ship.
 
 ---
@@ -19,31 +19,64 @@
 
 ---
 
-## 1. Create manufactured product (master data)
+## 0. Product types — read before creating a BOM (required)
 
-**Go to:** `Operations → Products`
+New users often add a “product” without choosing the right **Product type**. In Craveva, `products.type` controls where the item appears in Production.
 
-**Steps:**
+| Products form label      | System value    | Used for                                                                            |
+| ------------------------ | --------------- | ----------------------------------------------------------------------------------- |
+| **Manufactured product** | `goods`         | **BOM output** · finished goods on the production order · sales / delivery          |
+| **Raw Material**         | `raw_material`  | **BOM component** · purchase orders · stock deduction when you deduct raw materials |
+| **Packaging**            | `packaging`     | **BOM component** (cartons, pouches, …)                                             |
+| **Semi Finished**        | `semi_finished` | **BOM component** when you have a WIP step                                          |
+| **Service**              | `service`       | **Not** on BOM / no stock                                                           |
 
-- Add the **manufactured product** (what you manufacture).
-- Set **unit** (Pcs, Box, Kg, etc.) and **SKU** if needed.
-- Use the correct **product type** so the item can be used as bill of materials output.
-- Save.
+**Quick rules:**
 
-**Examples:** Oldtown White Coffee · finished chocolate bar.
+- To build a BOM you need at least one **`goods`** (manufactured product) and at least one **`raw_material`** (ingredient).
+- Do **not** create ingredients as **Manufactured product** and expect them in the BOM component list — they will **not** appear.
+- Single-step pilot (raw materials → finished goods only): you may skip `semi_finished`; still use `packaging` if you track packaging stock.
+
+**Detail + diagram:** [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_EN.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_EN.md) · [`FUNC_LOGIC/PRODUCTION_TERMINOLOGY_CODE_VS_UI_VI.md`](../FUNC_LOGIC/PRODUCTION_TERMINOLOGY_CODE_VS_UI_VI.md) (code `fg_`/`rm_` vs labels — **do not use FG/RM in customer text**)
 
 ---
 
-## 2. Create raw materials (master data)
+## 1. Create finished goods — Manufactured product (master data)
 
-**Go to:** `Operations → Products`
+**Go to:** `Operations → Products` → **Add Product**
 
-**Steps:**
+| Field            | Recommended value                                                                                      |
+| ---------------- | ------------------------------------------------------------------------------------------------------ |
+| **Product type** | **Manufactured product** (`goods`) — not Raw Material / Service                                        |
+| **Name / SKU**   | Sellable name and internal code                                                                        |
+| **Unit**         | How you manufacture and sell (box, bottle, kg, …)                                                      |
+| **Purchasable**  | Usually **off** (you manufacture finished goods; you do not buy them from a vendor like raw materials) |
 
-- Add each ingredient and packaging item (coffee powder, sugar, box, chocolate, etc.).
-- Mark as **inventory / purchasable** where applicable.
-- Set units consistently with how you buy and consume (g, kg, pcs).
-- Save.
+**After save:** the item appears in the BOM **output** dropdown at `Production → Bill of Materials`.
+
+**Examples:** 3-in-1 coffee box · 6-pack cake box.
+
+---
+
+## 2. Create raw materials & packaging (master data)
+
+**Go to:** `Operations → Products` → **Add Product** (one record per SKU)
+
+| Formula item                                 | Product type to select |
+| -------------------------------------------- | ---------------------- |
+| Powders, sugar, milk, flavours, water, …     | **Raw Material**       |
+| Cartons, pouches, labels, caps, …            | **Packaging**          |
+| Pre-mixed bulk used in a later step (if any) | **Semi Finished**      |
+
+| Field             | Notes                                                                      |
+| ----------------- | -------------------------------------------------------------------------- |
+| **Unit**          | Match how you buy and how you enter BOM quantities (g, kg, pcs)            |
+| **Purchasable**   | Enable if you buy via **Purchase Order**                                   |
+| **Opening stock** | Hint only — you must **Add Inventory** to a real **warehouse** (section 3) |
+
+**After save:** items appear in the BOM **component** dropdown (grouped by Raw Material / Semi Finished / Packaging).
+
+**Examples — raw materials:** Arabica coffee powder · white sugar. **Examples — packaging:** 20-sachet carton.
 
 ---
 
@@ -66,11 +99,14 @@
 
 **Go to:** `Production → Bill of Materials`
 
+**Prerequisites:** Master data sections **0–2** (correct product types) and stock in section **3** if you plan to release soon.
+
 **Steps:**
 
-- Select the **manufactured product** (output).
-- Add each **raw material** line with quantity per unit of output.
-- Save the bill of materials (must have at least one line).
+1. **Manufactured product (output):** only `goods` items from section 1 appear here.
+2. **Components:** add lines — dropdown lists only `raw_material`, `semi_finished`, `packaging` from section 2.
+3. Enter **quantity consumed per 1 unit of finished goods** (not the production order planned quantity).
+4. Save the bill of materials (at least one component line).
 
 **Example — 1 box of coffee:**
 
@@ -227,13 +263,15 @@ After **Post finished goods**, stock is in the **manufactured product warehouse*
 
 ## 13. Common mistakes
 
-1. Releasing without enough stock — Release fails; fix stock first.
-2. Releasing without selecting a bill of materials (or empty bill of materials) — Release fails.
-3. Expecting to pick manufactured product first — choose **bill of materials** first; product follows.
-4. Skipping batch steps 1–4 — No stock movement.
-5. Wrong raw material or manufactured product warehouse on the order.
-6. Confusing **form preview** (master bill of materials) with **batch lines** (snapshot at release).
-7. Expecting **Draft** to reserve stock — only **Released** reserves.
+1. Wrong **product type** — ingredient created as Manufactured product → missing from BOM component list (see section 0).
+2. Releasing without enough stock — Release fails; fix stock first.
+3. Releasing without selecting a bill of materials (or empty bill of materials) — Release fails.
+4. Expecting to pick manufactured product first — choose **bill of materials** first; product follows.
+5. Skipping batch steps 1–4 — No stock movement.
+6. Wrong raw material or manufactured product warehouse on the order.
+7. Confusing **form preview** (master bill of materials) with **batch lines** (snapshot at release).
+8. Expecting **Draft** to reserve stock — only **Released** reserves.
+9. Confusing **BOM line quantity** (per one finished unit) with **order planned quantity** (how many finished units to make).
 
 ---
 
@@ -252,6 +290,8 @@ After **Post finished goods**, stock is in the **manufactured product warehouse*
 
 ## Related technical docs (internal)
 
+- [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_EN.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_EN.md) — product types & BOM
+- [`FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md`](../FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md) — buying vs inventory
 - [`FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_EN.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_EN.md)
 - [`FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md`](../FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md)
 - [`FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md`](../FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md) — restore manual “planned lines” step / button

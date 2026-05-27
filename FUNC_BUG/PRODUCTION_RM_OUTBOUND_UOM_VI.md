@@ -1,5 +1,7 @@
 # Known issue — Production Post RM không quy đổi UOM khi trừ kho
 
+**Registry:** [`REGISTRY.md`](REGISTRY.md) (mã `PROD-UOM-001`)
+
 | Thuộc tính     | Giá trị                |
 | -------------- | ---------------------- |
 | **Mã**         | `PROD-UOM-001`         |

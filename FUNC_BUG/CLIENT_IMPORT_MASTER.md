@@ -1,5 +1,7 @@
 # Client Import — Master (gộp các lỗi thường gặp + hướng xử lý)
 
+**Registry:** [`REGISTRY.md`](REGISTRY.md) (mã `IMPORT-CLIENT`)
+
 ## 1) Mục tiêu
 
 - Gom các lỗi import client thường gặp (staging + data) vào 1 chỗ.

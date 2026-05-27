@@ -1,7 +1,7 @@
 <html lang="en">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>@lang('app.invoice')</title>
     @includeIf('invoices.pdf.invoice_pdf_css')
     <style>
@@ -279,51 +279,49 @@
             border-bottom: 1px solid #AAAAAA;
         }
 
-        .background-green{
+        .background-green {
             background-color: #57B223;
             color: #FFFFFF;
         }
 
-        .text-green{
+        .text-green {
             background-color: #e7e9eb;
             color: #57B223;
         }
 
-        .text-dark-grey{
+        .text-dark-grey {
             background-color: #ced0d2;
         }
 
         #signatory img {
-            height:95px;
+            height: 95px;
             margin-bottom: -50px;
             margin-top: 5px;
             margin-right: 20;
         }
 
-        @if($invoiceSetting->locale == 'th')
+        @if ($invoiceSetting->locale == 'th')
 
             table td {
-            font-weight: bold !important;
-            font-size: 20px !important;
+                font-weight: bold !important;
+                font-size: 20px !important;
             }
 
-            .description
-            {
+            .description {
                 font-weight: bold !important;
                 font-size: 16px !important;
             }
         @endif
 
         .client-logo {
-            height:50px;
-            margin-bottom:20px;
+            height: 50px;
+            margin-bottom: 20px;
         }
-
     </style>
 </head>
 
 <body>
-    <header class="clearfix"  class="description">
+    <header class="clearfix" class="description">
 
         <table cellpadding="0" cellspacing="0" class="billing">
             <tr>
@@ -333,36 +331,36 @@
             </tr>
             <tr>
                 <td id="ordered_to">
-                    <div  class="description">
-                            <small>@lang('modules.invoices.billedTo'):</small><br>
+                    <div class="description">
+                        <small>@lang('modules.invoices.billedTo'):</small><br>
 
-                            {{ mb_ucwords(company()->company_name) }}<br>
-                            @if ($order->address)
-                                {!! nl2br($order->address->address) !!}<br>
-                            @endif
-                            {{ company()->company_phone }}
-                            @if ($invoiceSetting->show_gst == 'yes' && $order->address)
-                                <br>{{ strtoupper($order->address->tax_name) }}: {{ $order->address->tax_number }}
-                            @endif
+                        {{ mb_ucwords(company()->company_name) }}<br>
+                        @if ($order->address)
+                            {!! nl2br($order->address->address) !!}<br>
+                        @endif
+                        {{ company()->company_phone }}
+                        @if ($invoiceSetting->show_gst == 'yes' && $order->address)
+                            <br>{{ strtoupper($order->address->tax_name) }}: {{ $order->address->tax_number }}
+                        @endif
                     </div>
                 </td>
                 <td>
-                    <div id="company"  class="description">
+                    <div id="company" class="description">
                         <div id="logo">
                             <img src="{{ $invoiceSetting->logo_url }}" alt="home" class="dark-logo" />
                         </div>
                         <small>@lang('modules.invoices.billedFrom'):</small>
                         @if ($order->vendor && $order->vendor->primary_name)
-                            {{$order->vendor->primary_name}}<br>
+                            {{ $order->vendor->primary_name }}<br>
                         @endif
                         @if ($order->vendor && $order->vendor->email)
-                            {{$order->vendor->email}}<br>
+                            {{ $order->vendor->email }}<br>
                         @endif
                         @if ($order->vendor && $order->vendor->billing_address)
-                            {{$order->vendor->billing_address}}<br>
+                            {{ $order->vendor->billing_address }}<br>
                         @endif
                         @if ($order->vendor && $order->vendor->phone)
-                            {{$order->vendor->phone}}<br>
+                            {{ $order->vendor->phone }}<br>
                         @endif
                     </div>
                 </td>
@@ -371,7 +369,7 @@
     </header>
     <main>
         <div id="details">
-            <div id="order"  class="description">
+            <div id="order" class="description">
                 <h1>{{ $order->purchase_order_number }}</h1>
 
                 <div class="date">@lang('modules.orders.orderDate'):
@@ -401,21 +399,19 @@
                         <tr style="page-break-inside: avoid;">
                             <td class="no background-green">{{ ++$count }}</td>
                             <td class="desc text-green">
-                                <h3  class="description">{{ ($item->item_name) }}</h3>
+                                <h3 class="description">{{ $item->item_name }}</h3>
                                 @if (!is_null($item->item_summary))
                                     <table>
                                         <tr>
-                                            <td
-                                                class="item-summary  description word-break border-top-0 border-right-0 border-left-0 border-bottom-0" style="color:#555555;">
+                                            <td class="item-summary  description word-break border-top-0 border-right-0 border-left-0 border-bottom-0" style="color:#555555;">
                                                 {!! nl2br(strip_tags($item->item_summary, ['p', 'b', 'strong', 'a'])) !!}</td>
                                         </tr>
                                     </table>
                                 @endif
                                 @if ($item->purchaseItemImage)
-                                <p class="mt-2">
-                                            <img src="{{ $item->purchaseItemImage->file_url }}" width="60" height="60"
-                                                class="img-thumbnail">
-                                        </p>
+                                    <p class="mt-2">
+                                        <img src="{{ $item->purchaseItemImage->file_url }}" width="60" height="60" class="img-thumbnail">
+                                    </p>
                                 @endif
                             </td>
                             @if ($invoiceSetting->hsn_sac_code_show)
@@ -482,14 +478,12 @@
         </table>
 
         <p id="notes" class="word-break description">
-            <div>
-                @if (!is_null($order->note))
-                    <b>@lang('app.note')</b><br>{!! nl2br($order->note) !!}<br>
-                @endif
-            </div>
-            <div style="margin-top: 10px;">
-                <b>@lang('modules.invoiceSettings.invoiceTerms')</b><br>{!! nl2br($invoiceSetting->invoice_terms) !!}
-            </div>
+        <div>
+            @if (!is_null($order->note))
+                <b>@lang('app.note')</b><br>{!! nl2br($order->note) !!}<br>
+            @endif
+        </div>
+        @include('partials.company-document-terms-purchase-pdf')
         </p>
 
         @if (isset($taxes) && $invoiceSetting->tax_calculation_msg == 1)

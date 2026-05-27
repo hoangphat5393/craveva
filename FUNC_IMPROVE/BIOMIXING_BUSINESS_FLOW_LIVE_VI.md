@@ -81,16 +81,16 @@ flowchart LR
 
 ### 2.1 Luồng chuẩn (trước khi vào xưởng)
 
-| #    | Bước                          | Điều kiện              | Hành động hệ thống                                                       | Ghi chú                                                               |
-| ---- | ----------------------------- | ---------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| 2.1  | Tạo SP FG + RM trong Purchase | SKU tồn tại            | `products` + type đúng                                                   | FG ≠ RM trên BOM                                                      |
-| 2.2  | Tạo BOM master                | FG đã có               | `/account/production/boms`                                               | Dropdown tách FG vs component                                         |
-| 2.3  | Tạo lệnh SX                   | BOM (tuỳ)              | `/account/production/orders/create`                                      | Chọn `rm_warehouse_id`, `fg_warehouse_id`, `planned_quantity`         |
-| 2.3b | (Tuỳ) Từ SO                   | SO đã chốt             | Nút từ SO → prefill `sales_order_id`, SL, BOM                            | P1-1 / P1-4                                                           |
-| 2.4  | Xem tổng NL                   | Lệnh có BOM / snapshot | Bảng `ProductionOrderMaterialRequirementsSummary`                        | SL kế hoạch × BOM (+ % hao hụt)                                       |
-| 2.5  | Shortfall                     | Thiếu tồn RM           | Link tạo PO (nếu có quyền Purchase)                                      | P1-2                                                                  |
-| 2.6  | **Release**                   | Draft, có BOM + dòng   | Snapshot → `production_order_bom_snapshot_items` + **reserve RM** (FEFO) | Chặn nếu thiếu `available`; xem `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 |
-| 2.6b | Cancel Released               | Chưa post RM/FG        | **Release** reservation Production                                       | Draft cancel: không có reserve để trả                                 |
+| #    | Bước                      | Điều kiện              | Hành động hệ thống                                                                       | Ghi chú                                                                                                       |
+| ---- | ------------------------- | ---------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| 2.1  | Tạo SP FG + RM (Products) | SKU tồn tại            | FG = `goods` (Manufactured product); NL = `raw_material` / `packaging` / `semi_finished` | Xem [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) · SOP mục 0–2 |
+| 2.2  | Tạo BOM master            | FG đã có               | `/account/production/boms`                                                               | Dropdown tách FG vs component                                                                                 |
+| 2.3  | Tạo lệnh SX               | BOM (tuỳ)              | `/account/production/orders/create`                                                      | Chọn `rm_warehouse_id`, `fg_warehouse_id`, `planned_quantity`                                                 |
+| 2.3b | (Tuỳ) Từ SO               | SO đã chốt             | Nút từ SO → prefill `sales_order_id`, SL, BOM                                            | P1-1 / P1-4                                                                                                   |
+| 2.4  | Xem tổng NL               | Lệnh có BOM / snapshot | Bảng `ProductionOrderMaterialRequirementsSummary`                                        | SL kế hoạch × BOM (+ % hao hụt)                                                                               |
+| 2.5  | Shortfall                 | Thiếu tồn RM           | Link tạo PO (nếu có quyền Purchase)                                                      | P1-2                                                                                                          |
+| 2.6  | **Release**               | Draft, có BOM + dòng   | Snapshot → `production_order_bom_snapshot_items` + **reserve RM** (FEFO)                 | Chặn nếu thiếu `available`; xem `PRODUCTION_OPERATIONS_LIVE_VI.md` §2                                         |
+| 2.6b | Cancel Released           | Chưa post RM/FG        | **Release** reservation Production                                                       | Draft cancel: không có reserve để trả                                                                         |
 
 **Trạng thái lệnh:** `draft` → `released` → `in_progress` → `completed`.
 

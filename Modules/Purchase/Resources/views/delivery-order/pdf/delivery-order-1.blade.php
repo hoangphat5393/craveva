@@ -303,15 +303,7 @@
             @if ($delivery->purchaseOrder && !is_null($delivery->purchaseOrder->note))
                 <b>@lang('app.note')</b><br>{!! nl2br($delivery->purchaseOrder->note) !!}<br>
             @endif
-            @php
-                $deliveryOrderTerms = '';
-                if ($purchaseSetting ?? null) {
-                    $deliveryOrderTerms = trim((string) ($purchaseSetting->delivery_order_terms ?? '')) !== '' ? (string) $purchaseSetting->delivery_order_terms : (string) ($purchaseSetting->purchase_terms ?? '');
-                }
-            @endphp
-            @if (trim((string) $deliveryOrderTerms) !== '')
-                <b>@lang('purchase::modules.purchaseSettings.deliveryOrderTerms')</b><br>{!! nl2br($deliveryOrderTerms) !!}<br>
-            @endif
+            @include('partials.company-document-terms-grn-pdf', ['purchaseSetting' => $purchaseSetting ?? null])
         </div>
         </p>
 

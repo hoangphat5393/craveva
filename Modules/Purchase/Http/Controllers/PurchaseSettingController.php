@@ -140,6 +140,7 @@ class PurchaseSettingController extends AccountBaseController
         $purchaseSetting->vendor_credit_number_seprator = $request->vendor_credit_number_seprator;
         $purchaseSetting->vendor_credit_number_digit = $request->vendor_credit_digit;
         $purchaseSetting->purchase_terms = $request->purchase_terms;
+        $purchaseSetting->grn_terms = $request->grn_terms;
 
         $purchaseSetting->save();
 

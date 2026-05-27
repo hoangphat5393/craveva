@@ -30,7 +30,7 @@
 ## 5) Liên quan
 
 - Incident staging chi tiết (archive): `FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md`
-- Audit nhóm bug: `FUNC_BUG/AUDIT_BUG_2026_VI.md`
+- Tra cứu bug: `FUNC_BUG/REGISTRY.md`
 - Snapshot đếm dòng backend: `LOG_REPORT/INDEX.md` + `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`
 - Đặc tả / snapshot infra app: `SPECIFICATION/INDEX.md` + `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`
 

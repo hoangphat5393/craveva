@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>@lang('app.invoice')</title>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -13,100 +13,100 @@
     @includeIf('invoices.pdf.invoice_pdf_css')
 
     <style>
-    @if($invoiceSetting->locale !== 'th')
-        html,
-        body,
-        div,
-        span,
-        applet,
-        object,
-        iframe,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        p,
-        blockquote,
-        pre,
-        a,
-        abbr,
-        acronym,
-        address,
-        big,
-        cite,
-        code,
-        del,
-        dfn,
-        em,
-        img,
-        ins,
-        kbd,
-        q,
-        s,
-        samp,
-        small,
-        strike,
-        strong,
-        sub,
-        sup,
-        tt,
-        var,
-        b,
-        u,
-        i,
-        center,
-        dl,
-        dt,
-        dd,
-        ol,
-        ul,
-        li,
-        fieldset,
-        form,
-        label,
-        legend,
-        table,
-        caption,
-        tbody,
-        tfoot,
-        thead,
-        tr,
-        th,
-        td,
-        article,
-        aside,
-        canvas,
-        details,
-        embed,
-        figure,
-        figcaption,
-        footer,
-        header,
-        hgroup,
-        menu,
-        nav,
-        output,
-        ruby,
-        section,
-        summary,
-        time,
-        mark,
-        audio,
-        video {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            font: inherit;
-            font-size: 12px;
-            vertical-align: baseline;
-            /* font-family: Verdana, Arial, Helvetica, sans-serif; */
-        }
+        @if ($invoiceSetting->locale !== 'th')
+            html,
+            body,
+            div,
+            span,
+            applet,
+            object,
+            iframe,
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6,
+            p,
+            blockquote,
+            pre,
+            a,
+            abbr,
+            acronym,
+            address,
+            big,
+            cite,
+            code,
+            del,
+            dfn,
+            em,
+            img,
+            ins,
+            kbd,
+            q,
+            s,
+            samp,
+            small,
+            strike,
+            strong,
+            sub,
+            sup,
+            tt,
+            var,
+            b,
+            u,
+            i,
+            center,
+            dl,
+            dt,
+            dd,
+            ol,
+            ul,
+            li,
+            fieldset,
+            form,
+            label,
+            legend,
+            table,
+            caption,
+            tbody,
+            tfoot,
+            thead,
+            tr,
+            th,
+            td,
+            article,
+            aside,
+            canvas,
+            details,
+            embed,
+            figure,
+            figcaption,
+            footer,
+            header,
+            hgroup,
+            menu,
+            nav,
+            output,
+            ruby,
+            section,
+            summary,
+            time,
+            mark,
+            audio,
+            video {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font: inherit;
+                font-size: 12px;
+                vertical-align: baseline;
+                /* font-family: Verdana, Arial, Helvetica, sans-serif; */
+            }
 
-        html {
-            line-height: 1;
-        }
+            html {
+                line-height: 1;
+            }
 
         @endif
 
@@ -544,8 +544,9 @@
             left: 0;
             bottom: 0;
             width: 100px;
-            background: url("{{ asset("img/stripe-bg.jpg") }}") repeat;
+            background: url("{{ asset('img/stripe-bg.jpg') }}") repeat;
         }
+
         .left-stripes .circle {
             -moz-border-radius: 50%;
             -webkit-border-radius: 50%;
@@ -556,9 +557,11 @@
             position: absolute;
             left: 33%;
         }
+
         .left-stripes .circle.c-upper {
             top: 440px;
         }
+
         .left-stripes .circle.c-lower {
             top: 690px;
         }
@@ -571,7 +574,7 @@
         }
 
         #signatory img {
-            height:95px;
+            height: 95px;
             margin-bottom: -50px;
             margin-top: 5px;
             margin-right: 10;
@@ -583,15 +586,15 @@
             margin-top: 10px;
             margin-left: 40px;
         }
-        @if($invoiceSetting->locale == 'th')
+
+        @if ($invoiceSetting->locale == 'th')
 
             table td {
-            font-weight: bold !important;
-            font-size: 20px !important;
+                font-weight: bold !important;
+                font-size: 20px !important;
             }
 
-            .description
-            {
+            .description {
                 font-weight: bold !important;
                 font-size: 16px !important;
             }
@@ -599,11 +602,11 @@
         @endif
 
         #memo .client-logo {
-        float:left;
-        display: flex !important;
-        flex-direction: column !important;
-        position: absolute;
-        /* margin-bottom: 15px; */
+            float: left;
+            display: flex !important;
+            flex-direction: column !important;
+            position: absolute;
+            /* margin-bottom: 15px; */
         }
 
         #memo .client-logo img {
@@ -614,8 +617,6 @@
         .f-11 {
             font-size: 11px;
         }
-
-
     </style>
 
 </head>
@@ -629,16 +630,16 @@
                         <img style="height:50px;" src="{{ $invoiceSetting->logo_url }}" />
                     </div>
                     <div class="company-info description">
-                            <br>
+                        <br>
                         <div class="description">
                             {{ mb_ucwords($company->company_name) }}
                         </div>
                         @if ($company->company_email)
-                        <span class="description">{{ $company->company_email }}</span>
+                            <span class="description">{{ $company->company_email }}</span>
                             <br>
                         @endif
                         @if ($company->company_phone)
-                        <span>{{ $company->company_phone }}</span>
+                            <span>{{ $company->company_phone }}</span>
                             <br>
                         @endif
                         @if ($order->address)
@@ -647,9 +648,9 @@
                     </div>
                 </div>
 
-                <div class="logo" id="client-info" >
+                <div class="logo" id="client-info">
 
-                    <section id="client-info"  class="description">
+                    <section id="client-info" class="description">
                         <span>@lang('modules.invoices.billedTo')</span>
 
                         {{ mb_ucwords(company()->company_name) }}<br>
@@ -695,7 +696,7 @@
 
             <section id="items">
 
-                <table cellpadding="0" cellspacing="0" >
+                <table cellpadding="0" cellspacing="0">
 
                     <tr>
                         <th>#</th> <!-- Dummy cell for the row number and row commands -->
@@ -716,14 +717,13 @@
                                 <td>{{ ++$count }}</td>
                                 <!-- Don't remove this column as it's needed for the row commands -->
                                 <td>
-                                    {{ ($item->item_name) }}
+                                    {{ $item->item_name }}
                                     @if (!is_null($item->item_summary))
                                         <p class="item-summary mb-3">{!! nl2br(strip_tags($item->item_summary, ['p', 'b', 'strong', 'a'])) !!}</p>
                                     @endif
                                     @if ($item->purchaseItemImage)
                                         <p>
-                                            <img src="{{ $item->purchaseItemImage->file_url }}" width="80" height="80"
-                                                class="img-thumbnail">
+                                            <img src="{{ $item->purchaseItemImage->file_url }}" width="80" height="80" class="img-thumbnail">
                                         </p>
                                     @endif
                                 </td>
@@ -780,14 +780,14 @@
                         <b>@lang('app.note')</b> <br>{!! nl2br($order->note) !!}<br>
                     @endif
                     @if ($order->status == 'unpaid')
-                        <br><br><b>@lang('modules.invoiceSettings.invoiceTerms')</b><br>{!! nl2br($invoiceSetting->invoice_terms) !!}
+                        <br><br>@include('partials.company-document-terms-purchase-pdf')
                     @endif
                 </div>
 
             </section>
             @if (isset($taxes) && $invoiceSetting->tax_calculation_msg == 1)
                 <div class="clearfix"></div>
-                <section class="calculate_tax" >
+                <section class="calculate_tax">
                     <div class="description">
                         @if ($order->calculate_tax == 'after_discount')
                             @lang('messages.calculateTaxAfterDiscount')

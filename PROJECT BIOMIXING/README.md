@@ -17,10 +17,12 @@ Toàn bộ **Markdown triển khai** nằm tại:
 
 ## SOP gửi khách / PM (phi kỹ thuật — Production)
 
-| Ngôn ngữ       | File                                                           |
-| -------------- | -------------------------------------------------------------- |
-| **English**    | [`PRODUCTION_MODULE_SOP_EN.md`](./PRODUCTION_MODULE_SOP_EN.md) |
-| **Tiếng Việt** | [`PRODUCTION_MODULE_SOP_VI.md`](./PRODUCTION_MODULE_SOP_VI.md) |
+| Ngôn ngữ       | File                                                                                                                                      |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **English**    | [`PRODUCTION_MODULE_SOP_EN.md`](./PRODUCTION_MODULE_SOP_EN.md) · Word: [`PRODUCTION_MODULE_SOP_EN.docx`](./PRODUCTION_MODULE_SOP_EN.docx) |
+| **Tiếng Việt** | [`PRODUCTION_MODULE_SOP_VI.md`](./PRODUCTION_MODULE_SOP_VI.md)                                                                            |
+
+Regenerate EN Word from markdown: `pandoc PRODUCTION_MODULE_SOP_EN.md -o PRODUCTION_MODULE_SOP_EN.docx` (run inside this folder).
 
 ## Living documentation (trạng thái code — đọc trước demo/UAT)
 

@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => 'Ψηφία Πιστωτικού Αριθμού Προμηθευτή',
         'vendorCreditExample' => 'Παράδειγμα πιστωτικού αριθμού πωλητή',
         'termsAndCondition' => 'Οροι και Προϋποθέσεις',
-        'billOrderDigits' => 'Ψηφία εντολής λογαριασμού',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'Ψηφία εντολής λογαριασμού',
         'billOrderExample' => 'Παράδειγμα εντολής λογαριασμού',
     ],
     'vendorCredit' => [

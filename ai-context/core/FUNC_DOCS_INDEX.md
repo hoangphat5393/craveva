@@ -33,8 +33,8 @@
 
 ## 3) FUNC_BUG (bug notes)
 
-- `FUNC_BUG/README.md`, `FUNC_BUG/INDEX.md` — mục lục
-- `FUNC_BUG/AUDIT_BUG_2026_VI.md` — audit gộp file (2026-05-12)
+- **`FUNC_BUG/REGISTRY.md`** — bảng tra cứu nhanh (ưu tiên)
+- `FUNC_BUG/README.md` — hướng dẫn thư mục; `FUNC_BUG/INDEX.md` → redirect README/REGISTRY
 - `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md` — lỗi decrypt secrets trên settings
 - `FUNC_BUG/CLIENT_IMPORT_MASTER.md` + **`FUNC_BUG/CLIENT_IMPORT_DETAILS_VI.md`** (chi tiết đã gộp)
 - `FUNC_BUG/PRODUCT_IMPORT_MASTER.md` + **`FUNC_BUG/PRODUCT_IMPORT_DETAILS_VI.md`** (chi tiết đã gộp)

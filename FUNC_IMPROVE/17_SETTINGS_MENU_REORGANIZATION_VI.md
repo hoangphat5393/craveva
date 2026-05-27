@@ -75,11 +75,11 @@ File: `resources/views/components/setting-sidebar.blade.php`
 
 ### 3.1 Company document terms (SO / PO / DO) — vị trí hiện tại
 
-| Chứng từ | Trang settings                                | DB / cột                                                             |
-| -------- | --------------------------------------------- | -------------------------------------------------------------------- |
-| PO       | Purchase Settings → tab Purchase Settings     | `purchase_settings.purchase_terms`                                   |
-| SO       | Sale Order Settings → tab Sale Order Settings | `invoice_settings.order_terms` (fallback `invoice_terms`)            |
-| DO       | **Delivery Order Settings** (menu riêng)      | `purchase_settings.delivery_order_terms` (fallback `purchase_terms`) |
+| Chứng từ      | Trang settings                                                     | DB / cột                                                  |
+| ------------- | ------------------------------------------------------------------ | --------------------------------------------------------- |
+| PO            | Purchase Settings → tab Purchase Settings (section Document terms) | `purchase_settings.purchase_terms`                        |
+| GRN           | Purchase Settings → tab Purchase Settings (section Document terms) | `purchase_settings.grn_terms` (fallback `purchase_terms`) |
+| SO & Sales DO | Sale Order Settings → tab Order Settings                           | `invoice_settings.order_terms` (fallback `invoice_terms`) |
 
 Chi tiết pattern UI: `FUNC_LOGIC/DESIGN_BACKEND_UI_UX_VI.md` §13.
 
@@ -89,19 +89,19 @@ Chi tiết pattern UI: `FUNC_LOGIC/DESIGN_BACKEND_UI_UX_VI.md` §13.
 
 Include: `@foreach (craveva_plugins() as $item) @includeIf(strtolower($item).'::sections.setting-sidebar')`
 
-| Module      | File                                                               | Menu item(s)                                       |
-| ----------- | ------------------------------------------------------------------ | -------------------------------------------------- |
-| Asset       | `Modules/Asset/Resources/views/sections/setting-sidebar.blade.php` | Asset Settings                                     |
-| EInvoice    | `Modules/EInvoice/...`                                             | E-Invoice Settings                                 |
-| Onboarding  | `Modules/Onboarding/...`                                           | Onboarding / Offboarding (1–2)                     |
-| Payroll     | `Modules/Payroll/...`                                              | Payroll Settings, Overtime Settings                |
-| Performance | `Modules/Performance/...`                                          | Performance Settings                               |
-| Production  | `Modules/Production/...`                                           | Production Settings                                |
-| Purchase    | `Modules/Purchase/...`                                             | **Purchase Settings**, **Delivery Order Settings** |
-| Recruit     | `Modules/Recruit/...`                                              | Recruit Settings                                   |
-| Sms         | `Modules/Sms/...`                                                  | SMS Settings                                       |
-| Warehouse   | `Modules/Warehouse/...`                                            | Warehouse Flow Settings                            |
-| Zoom        | `Modules/Zoom/...`                                                 | Zoom Settings                                      |
+| Module      | File                                                               | Menu item(s)                           |
+| ----------- | ------------------------------------------------------------------ | -------------------------------------- |
+| Asset       | `Modules/Asset/Resources/views/sections/setting-sidebar.blade.php` | Asset Settings                         |
+| EInvoice    | `Modules/EInvoice/...`                                             | E-Invoice Settings                     |
+| Onboarding  | `Modules/Onboarding/...`                                           | Onboarding / Offboarding (1–2)         |
+| Payroll     | `Modules/Payroll/...`                                              | Payroll Settings, Overtime Settings    |
+| Performance | `Modules/Performance/...`                                          | Performance Settings                   |
+| Production  | `Modules/Production/...`                                           | Production Settings                    |
+| Purchase    | `Modules/Purchase/...`                                             | **Purchase Settings** (PO + GRN terms) |
+| Recruit     | `Modules/Recruit/...`                                              | Recruit Settings                       |
+| Sms         | `Modules/Sms/...`                                                  | SMS Settings                           |
+| Warehouse   | `Modules/Warehouse/...`                                            | Warehouse Flow Settings                |
+| Zoom        | `Modules/Zoom/...`                                                 | Zoom Settings                          |
 
 **Helper:** `craveva_plugins()` — `app/Helper/start.php` (cache keys từ `Module::allEnabled()`).
 
@@ -215,7 +215,7 @@ Ví dụ:
 | 5    | Regression: search menu, active state, permission ẩn mục | Manual + Pest nếu có test settings                        |
 | 6    | (Tùy chọn) Hub tab — phase 2                             | Controllers tương ứng                                     |
 
-**Không đổi trong phase 1:** logic lưu `order_terms`, `purchase_terms`, `delivery_order_terms`; layout tab nội dung từng trang (đã chỉnh riêng 2026-05).
+**Đã gộp (2026-05-27):** GRN terms (`grn_terms`) trong Purchase Settings; SO + Sales DO dùng `order_terms` trong Sale Order Settings; menu **Delivery Order Settings** đã bỏ (route cũ redirect về Purchase Settings).
 
 ---
 

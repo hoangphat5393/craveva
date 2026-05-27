@@ -15,13 +15,13 @@
 
 ## 0. Quy trình gợi ý khi làm module mới
 
-| Bước | Việc làm                                                                                                                                  |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | Chọn **màn tham chiếu** gần nhất trong Hub (Orders = list + status inline; Products = filter + cột nhị phân; …).                          |
+| Bước | Việc làm                                                                                                                                                         |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Chọn **màn tham chiếu** gần nhất trong Hub (Orders = list + status inline; Products = filter + cột nhị phân; …).                                                 |
 | 2    | Copy cấu trúc Blade: `@extends`, `@section('filter-section')`, action bar, `x-datatable.actions`, `@push('scripts')` + `datatable_js`. Select dài → **mục 3.5**. |
-| 3    | Cột **Action** (mục **4**); trạng thái: nếu có — pattern **mục 5** (nhị phân) hoặc **mục 6** (đa trạng thái + inline) và **bám map màu**. |
-| 4    | Form create/edit: xử lý lỗi validation & redirect AJAX theo **mục 12** (tránh toast sai icon / thiếu field).                              |
-| 5    | Sau khi code: chạy checklist **mục 10**.                                                                                                  |
+| 3    | Cột **Action** (mục **4**); trạng thái: nếu có — pattern **mục 5** (nhị phân) hoặc **mục 6** (đa trạng thái + inline) và **bám map màu**.                        |
+| 4    | Form create/edit: xử lý lỗi validation & redirect AJAX theo **mục 12** (tránh toast sai icon / thiếu field).                                                     |
+| 5    | Sau khi code: chạy checklist **mục 10**.                                                                                                                         |
 
 ---
 
@@ -54,11 +54,11 @@
 
 ### 3.5.1 Form Hub — component `x-forms.select`
 
-| Thuộc tính | Giá trị |
-| ---------- | -------- |
-| Component | `<x-forms.select :search="true" …>` → tự gắn `class="form-control select-picker"` + `data-live-search="true"` |
-| File component | `resources/views/components/forms/select.blade.php` |
-| Chiều cao menu | `data-size="10"` (mặc định component); filter bar có thể `data-size="8"` |
+| Thuộc tính     | Giá trị                                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------- |
+| Component      | `<x-forms.select :search="true" …>` → tự gắn `class="form-control select-picker"` + `data-live-search="true"` |
+| File component | `resources/views/components/forms/select.blade.php`                                                           |
+| Chiều cao menu | `data-size="10"` (mặc định component); filter bar có thể `data-size="8"`                                      |
 
 **Mẫu copy (form create/edit):**
 
@@ -106,12 +106,12 @@
 
 ### 3.5.3 Tham chiếu nhanh trong codebase
 
-| Use case | File |
-| -------- | ---- |
-| BOM — Manufactured product + Add raw material | `Modules/Production/Resources/views/boms/partials/form.blade.php` |
-| Production order — FG, BOM | `Modules/Production/Resources/views/orders/ajax/create.blade.php` |
-| Filter list (status, material, …) | `Modules/Production/Resources/views/orders/index.blade.php`, `material-shortages/index.blade.php` |
-| Invoice / Order add line product | `resources/views/orders/ajax/create.blade.php` (`data-content` + SKU) |
+| Use case                                      | File                                                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| BOM — Manufactured product + Add raw material | `Modules/Production/Resources/views/boms/partials/form.blade.php`                                 |
+| Production order — FG, BOM                    | `Modules/Production/Resources/views/orders/ajax/create.blade.php`                                 |
+| Filter list (status, material, …)             | `Modules/Production/Resources/views/orders/index.blade.php`, `material-shortages/index.blade.php` |
+| Invoice / Order add line product              | `resources/views/orders/ajax/create.blade.php` (`data-content` + SKU)                             |
 
 ### 3.5.4 Checklist select (gắn vào review PR)
 
@@ -361,12 +361,12 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 
 ### 11.3 Production — màn dùng select-picker (tóm tắt)
 
-| Màn / field | `:search` / `data-live-search` | Nhãn |
-| ----------- | ------------------------------ | ---- |
-| BOM create/edit — **Manufactured product** | Có (`x-forms.select`) | `ProductionProductSelectLabel` + `data-tokens` (SKU) |
-| BOM — **Add raw material** | Có (select thuần trong `input-group`) | `$bomProductLabelWithUnit` |
-| Production order — FG, BOM | Có | FG: `ProductionProductSelectLabel`; BOM: `labelForSelect()` |
-| List filters (orders, BOMs, material shortage) | Có khi list dài | Theo ngữ cảnh |
+| Màn / field                                    | `:search` / `data-live-search`        | Nhãn                                                        |
+| ---------------------------------------------- | ------------------------------------- | ----------------------------------------------------------- |
+| BOM create/edit — **Manufactured product**     | Có (`x-forms.select`)                 | `ProductionProductSelectLabel` + `data-tokens` (SKU)        |
+| BOM — **Add raw material**                     | Có (select thuần trong `input-group`) | `$bomProductLabelWithUnit`                                  |
+| Production order — FG, BOM                     | Có                                    | FG: `ProductionProductSelectLabel`; BOM: `labelForSelect()` |
+| List filters (orders, BOMs, material shortage) | Có khi list dài                       | Theo ngữ cảnh                                               |
 
 Chi tiết kỹ thuật: **mục 3.5**. **File:** `ProductionProductSelectLabel.php`, `boms/partials/form.blade.php`, `orders/ajax/create.blade.php`, `tests/Unit/ProductionProductSelectLabelTest.php`.
 
@@ -509,11 +509,11 @@ window.apiHttp
 
 **Mô hình:** một bộ text **theo công ty**, không lưu snapshot trên từng PO/SO/DO. Sửa trong Settings → mọi chứng từ (cũ/mới) đọc lại giá trị hiện tại khi mở form hoặc tải PDF.
 
-| Loại chứng từ        | Cấu hình                                                                     | Cột DB                                   | Fallback khi trống |
-| -------------------- | ---------------------------------------------------------------------------- | ---------------------------------------- | ------------------ |
-| Purchase order       | **Settings → Purchase → Purchase Settings**                                  | `purchase_settings.purchase_terms`       | —                  |
-| Sale order           | **Settings → Invoice Settings → Prefix** (khi bật module Orders)             | `invoice_settings.order_terms`           | `invoice_terms`    |
-| Delivery order (GRN) | **Settings → Delivery Order Settings** (menu riêng, như Sale Order Settings) | `purchase_settings.delivery_order_terms` | `purchase_terms`   |
+| Loại chứng từ         | Cấu hình                                                                         | Cột DB                             | Fallback khi trống |
+| --------------------- | -------------------------------------------------------------------------------- | ---------------------------------- | ------------------ |
+| Purchase order        | **Settings → Purchase → Purchase Settings**                                      | `purchase_settings.purchase_terms` | —                  |
+| Sale order & Sales DO | **Settings → Sale Order Settings** (tab Order Settings)                          | `invoice_settings.order_terms`     | `invoice_terms`    |
+| GRN (phiếu nhận mua)  | **Settings → Purchase Settings** (tab Purchase Settings, section Document terms) | `purchase_settings.grn_terms`      | `purchase_terms`   |
 
 **UI form create/edit:** cột **Note** (textarea, theo từng chứng từ nếu có) + cột **Terms** read-only (`<p>{!! nl2br(...) !!}</p>`). Tham chiếu: `Modules/Purchase/Resources/views/purchase-order/ajax/create.blade.php`, partial `resources/views/partials/company-document-terms-readonly.blade.php`.
 

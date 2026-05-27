@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => 'Цифре кредитног броја добављача',
         'vendorCreditExample' => 'Пример кредитног броја добављача',
         'termsAndCondition' => 'Услови и одредбе',
-        'billOrderDigits' => 'Цифре налога рачуна',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'Цифре налога рачуна',
         'billOrderExample' => 'Пример налога налога',
     ],
     'vendorCredit' => [

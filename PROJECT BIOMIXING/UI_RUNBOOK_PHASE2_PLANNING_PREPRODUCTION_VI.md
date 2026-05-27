@@ -45,9 +45,18 @@
 
 ### 3.3 Kiểm tồn & BOM (thủ công / bán tự động)
 
-1. **Products**: xác định SKU / FG liên quan đơn.
-2. **Inventory** / **Warehouses** / **Stock batches**: xem số lượng khả dụng theo kho, theo lô (nếu dùng batch).
-3. Nếu thiếu: ghi nhận trong task project hoặc tạo **Purchase Order** cho nguyên liệu.
+**Loại sản phẩm (bắt buộc trước khi tạo BOM):** xem [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) và SOP [`PRODUCTION_MODULE_SOP_VI.md`](./PRODUCTION_MODULE_SOP_VI.md) mục 0–2.
+
+| Cần tạo / kiểm             | Product type                       | Menu                  |
+| -------------------------- | ---------------------------------- | --------------------- |
+| Thành phẩm bán / đầu ra SX | **Manufactured product** (`goods`) | Operations → Products |
+| Nguyên liệu công thức      | **Raw Material**                   | Operations → Products |
+| Bao bì (nếu trừ tồn)       | **Packaging**                      | Operations → Products |
+
+1. **Products**: tạo đủ FG (`goods`) + NVL (`raw_material`, …) — **không** dùng chung một loại cho cả hai.
+2. **Production → Bill of Materials**: output = FG; components = NVL/bao bì.
+3. **Inventory** / **Warehouses** / **Stock batches**: tồn khả dụng theo kho NL trên lệnh SX.
+4. Nếu thiếu: task project hoặc **Purchase Order** (mua NVL, không mua FG như mua NL).
 
 ### 3.4 Mua và nhận hàng (khi tồn không đủ)
 

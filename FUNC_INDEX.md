@@ -14,7 +14,7 @@ This file is the root navigation layer only. Detailed business flow and module l
 
 | Group          | Purpose                                                                 | Primary entry file      |
 | -------------- | ----------------------------------------------------------------------- | ----------------------- |
-| `FUNC_BUG`     | Bugs, incidents, diagnostics, environment-specific fixes                | `FUNC_BUG/INDEX.md`     |
+| `FUNC_BUG`     | Bugs, incidents, diagnostics, environment-specific fixes                | `FUNC_BUG/REGISTRY.md`  |
 | `FUNC_IMPORT`  | Import design, implementation prompts, trackers                         | `FUNC_IMPORT/INDEX.md`  |
 | `FUNC_IMPROVE` | Improvement proposals, refactor plans, optimization tasks               | `FUNC_IMPROVE/INDEX.md` |
 | `FUNC_LOGIC`   | Master business logic, functional flow, audits, cross-module references | `FUNC_LOGIC/INDEX.md`   |
@@ -34,7 +34,7 @@ When a module needs deep details (product/client/production integrations), keep 
 
 ## 3) Group Index Files (Level 2 navigation)
 
-- `FUNC_BUG/INDEX.md` — **audit nhóm bug/incident:** `FUNC_BUG/AUDIT_BUG_2026_VI.md`
+- `FUNC_BUG/REGISTRY.md` — bảng tra cứu bug; `FUNC_BUG/README.md` — hướng dẫn thư mục
 - `FUNC_IMPORT/INDEX.md` — **audit nhóm import:** `FUNC_IMPORT/AUDIT_IMPORT_2026_VI.md`
 - `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **audit:** `FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`; **retired:** `FUNC_IMPROVE/LEGACY_ARCHIVE.md`
 - `FUNC_LOGIC/INDEX.md` — **audit tài liệu nhóm:** `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md`

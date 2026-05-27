@@ -1,5 +1,7 @@
 # Product Import — Master (gộp vấn đề mapping + custom field + hiệu năng)
 
+**Registry:** [`REGISTRY.md`](REGISTRY.md) (mã `IMPORT-PRODUCT`)
+
 ## 1) Mục tiêu
 
 - Gộp các phân tích về Product import: cột unmatched/custom field và import chậm.

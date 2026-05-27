@@ -2,7 +2,7 @@
 
 **Đối tượng:** Tổ trưởng xưởng, planner sản xuất, kho, hỗ trợ bán hàng  
 **Hệ thống:** Craveva ERP — module Production  
-**Phiên bản:** 2026-05-28  
+**Phiên bản:** 2026-05-27  
 **Mục đích:** Hướng dẫn lập kế hoạch theo **định mức (BOM) trước** → giữ chỗ NVL khi Release → chạy lô 4 bước → cập nhật tồn → bán / giao hàng.
 
 ---
@@ -19,29 +19,64 @@
 
 ---
 
-## 1. Tạo sản phẩm thành phẩm (master)
+## 0. Loại sản phẩm — đọc trước khi tạo BOM (bắt buộc)
 
-**Vào:** `Operations → Products`
+Khách hàng mới thường nhầm **“thêm sản phẩm”** chung chung. Trong Craveva, **loại sản phẩm (`Product type`)** quyết định sản phẩm xuất hiện ở đâu trên Production.
 
-**Các bước:**
+| Loại trên form Products               | Giá trị hệ thống | Dùng cho                                                          |
+| ------------------------------------- | ---------------- | ----------------------------------------------------------------- |
+| **Manufactured product** (thành phẩm) | `goods`          | **Đầu ra BOM** · thành phẩm lệnh SX · bán SO / giao hàng          |
+| **Raw Material** (nguyên liệu)        | `raw_material`   | **Dòng component BOM** · mua PO · trừ kho khi **trừ nguyên liệu** |
+| **Packaging** (bao bì)                | `packaging`      | **Dòng component BOM** (hộp, túi, …)                              |
+| **Semi Finished** (bán thành phẩm)    | `semi_finished`  | **Dòng component BOM** khi có bước trung gian                     |
+| **Service** (dịch vụ)                 | `service`        | **Không** dùng BOM / không tồn kho                                |
 
-- Thêm **thành phẩm** (sản phẩm sản xuất ra).
-- Chọn **đơn vị**, **SKU** nếu cần.
-- Chọn đúng **loại sản phẩm** (finished goods) để dùng làm đầu ra trên định mức.
-- Lưu.
+**Quy tắc nhanh:**
+
+- Muốn làm BOM → tạo **ít nhất 1** `goods` (TP) + **ít nhất 1** `raw_material` (NVL).
+- **Không** tạo NVL kiểu “Manufactured product” rồi kéo vào dòng nguyên liệu BOM — dropdown **sẽ không có** sản phẩm đó.
+- Pilot một bước (chỉ nguyên liệu → thành phẩm): có thể bỏ qua `semi_finished`; vẫn nên dùng `packaging` nếu trừ tồn bao bì.
+
+**Chi tiết + sơ đồ:** [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) · [`FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md`](../FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md)
 
 ---
 
-## 2. Tạo nguyên liệu / bao bì (master)
+## 1. Tạo thành phẩm — Manufactured product (master)
 
-**Vào:** `Operations → Products`
+**Vào:** `Operations → Products` → **Add Product**
 
-**Các bước:**
+| Trường           | Giá trị khuyến nghị                                                      |
+| ---------------- | ------------------------------------------------------------------------ |
+| **Product type** | **Manufactured product** (`goods`) — _không_ chọn Raw Material / Service |
+| **Name / SKU**   | Tên bán cho khách, mã nội bộ                                             |
+| **Unit**         | Đơn vị sản xuất & bán (hộp, chai, kg, …)                                 |
+| **Purchasable**  | Thường **tắt** (TP do xưởng sản xuất, không mua NCC như NVL)             |
 
-- Thêm từng NVL, bao bì.
-- Bật **theo dõi tồn kho / mua hàng** nếu áp dụng.
-- Thống nhất đơn vị (g, kg, cái).
-- Lưu.
+**Sau khi lưu:** SP này mới xuất hiện trong dropdown **đầu ra** tại `Production → Bill of Materials`.
+
+**Ví dụ:** Cà phê 3in1 hộp 20 gói · Bánh kem hộp 6 cái.
+
+---
+
+## 2. Tạo nguyên liệu & bao bì (master)
+
+**Vào:** `Operations → Products` → **Add Product** (mỗi SKU NVL/bao bì một lần)
+
+| Thành phần công thức                           | Product type chọn |
+| ---------------------------------------------- | ----------------- |
+| Bột, đường, sữa, hương liệu, nước, …           | **Raw Material**  |
+| Hộp, túi, nhãn, nắp, …                         | **Packaging**     |
+| Hỗn hợp đã trộn, dùng tiếp ở bước sau (nếu có) | **Semi Finished** |
+
+| Trường            | Ghi chú                                                                       |
+| ----------------- | ----------------------------------------------------------------------------- |
+| **Unit**          | Trùng cách mua & cách ghi định mức BOM (g, kg, cái)                           |
+| **Purchasable**   | Bật nếu mua qua **Purchase Order**                                            |
+| **Opening stock** | Chỉ là gợi ý — **bắt buộc** nhập tồn qua `Add Inventory` đúng **kho** (mục 3) |
+
+**Sau khi lưu:** SP xuất hiện trong dropdown **component** khi tạo BOM (nhóm Raw Material / Semi Finished / Packaging).
+
+**Ví dụ NVL:** Bột cà phê Arabica · Đường trắng · Sữa bột. **Ví dụ bao bì:** Hộp carton 20 gói.
 
 ---
 
@@ -62,11 +97,14 @@
 
 **Vào:** `Production → Bill of Materials`
 
+**Điều kiện tiên quyết:** Đã có master mục **0–2** (đúng `Product type`) và tồn kho mục **3** nếu sắp Release.
+
 **Các bước:**
 
-- Chọn **thành phẩm** (đầu ra).
-- Thêm từng dòng **nguyên liệu** và định mức / 1 đơn vị TP.
-- Lưu BOM (**ít nhất một dòng**).
+1. **Manufactured product (output):** chỉ chọn SP loại `goods` (mục 1).
+2. **Components:** thêm từng dòng — dropdown chỉ liệt kê `raw_material`, `semi_finished`, `packaging` (mục 2).
+3. Nhập **số lượng tiêu hao cho 1 đơn vị** thành phẩm (không nhầm với số lượng kế hoạch trên lệnh SX).
+4. Lưu BOM (**ít nhất một dòng** component).
 
 **Ví dụ — 1 hộp cà phê:**
 
@@ -203,12 +241,14 @@ Sau **Nhập TP**, hàng ở **kho TP** — dùng cho SO, phiếu giao (DO), hó
 
 ## 13. Lỗi thường gặp
 
-1. Release khi thiếu tồn → chặn.
-2. Release khi chưa chọn BOM / BOM trống → chặn.
-3. Chọn TP trước thay vì BOM → luồng mặc định chọn **BOM trước**.
-4. Bỏ bước 1–4 trên lô → tồn không đổi.
-5. Nhầm **preview trên form** (BOM master) với **dòng trên lô** (snapshot lúc Release).
-6. Tưởng **Nháp** đã giữ chỗ tồn — chỉ **Released** mới reserve.
+1. **Sai loại sản phẩm** — tạo NVL kiểu Manufactured product → không thấy trong dropdown component BOM (mục 0).
+2. Release khi thiếu tồn → chặn.
+3. Release khi chưa chọn BOM / BOM trống → chặn.
+4. Chọn TP trước thay vì BOM → luồng mặc định chọn **BOM trước**.
+5. Bỏ bước 1–4 trên lô → tồn không đổi.
+6. Nhầm **preview trên form** (BOM master) với **dòng trên lô** (snapshot lúc Release).
+7. Tưởng **Nháp** đã giữ chỗ tồn — chỉ **Released** mới reserve.
+8. Nhầm **định mức BOM** (mỗi 1 TP) với **số lượng kế hoạch lệnh** (bao nhiêu TP).
 
 ---
 
@@ -227,6 +267,8 @@ Sau **Nhập TP**, hàng ở **kho TP** — dùng cho SO, phiếu giao (DO), hó
 
 ## Tài liệu kỹ thuật (nội bộ)
 
+- [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) — loại SP & BOM
+- [`FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md`](../FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md) — mua hàng vs tồn
 - [`FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)
 - [`FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md`](../FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md)
 - [`FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md`](../FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md)

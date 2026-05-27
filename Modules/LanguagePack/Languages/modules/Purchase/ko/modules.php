@@ -166,7 +166,12 @@ return [
         'vendorCreditDigits' => '공급업체 신용번호 자리',
         'vendorCreditExample' => '공급업체 신용번호 예',
         'termsAndCondition' => '이용 약관',
-        'billOrderDigits' => '청구서 주문 숫자',
+
+        'documentTermsSection' => 'Document terms (PO & GRN)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
+        'grnTerms' => 'GRN — Terms and Conditions',
+        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => '청구서 주문 숫자',
         'billOrderExample' => '청구서 주문 예',
     ],
     'vendorCredit' => [

@@ -26,6 +26,7 @@ class ProductionPostingService
         protected ProductionFgQuantityPolicyService $fgQuantityPolicy,
         protected WarehouseUnitConversionService $unitConversionService,
         protected ProductionFgInventoryLedgerSync $fgInventoryLedgerSync,
+        protected ProductionOrderMaterialReservationService $materialReservationService,
     ) {}
 
     public function releaseOrder(ProductionOrder $order): void
@@ -36,6 +37,12 @@ class ProductionPostingService
 
         DB::transaction(function () use ($order): void {
             $this->syncBomSnapshotForReleasedOrder($order);
+            $order->refresh();
+            $order->load(['bomSnapshotItems.componentProduct.unit', 'bomSnapshotItems.unit']);
+
+            $this->materialReservationService->assertCanReserve($order);
+            $this->materialReservationService->syncForOrder($order);
+
             $order->status = ProductionOrder::STATUS_RELEASED;
             $order->released_at = now();
             $order->save();
@@ -100,6 +107,7 @@ class ProductionPostingService
 
         $order->bom_snapshot_at = now();
         $order->bom_snapshot_planned_quantity = $plannedQty;
+        $order->save();
     }
 
     protected function normalizeYieldFactor(mixed $value): float
@@ -130,7 +138,9 @@ class ProductionPostingService
             throw new InvalidArgumentException(__('production::app.cannotCancelInProgress'));
         }
 
-        if ($order->status === ProductionOrder::STATUS_RELEASED) {
+        $wasReleased = $order->status === ProductionOrder::STATUS_RELEASED;
+
+        if ($wasReleased) {
             $batchIds = $order->batches()->pluck('id');
             $hasPostedConsumptions = $order->batches()->whereNotNull('posted_consumptions_at')->exists();
             if ($hasPostedConsumptions) {
@@ -148,8 +158,14 @@ class ProductionPostingService
             }
         }
 
-        $order->status = ProductionOrder::STATUS_CANCELLED;
-        $order->save();
+        DB::transaction(function () use ($order, $wasReleased): void {
+            if ($wasReleased) {
+                $this->materialReservationService->releaseForOrder($order);
+            }
+
+            $order->status = ProductionOrder::STATUS_CANCELLED;
+            $order->save();
+        });
     }
 
     /**
@@ -181,6 +197,11 @@ class ProductionPostingService
 
             $batch->posted_consumptions_at = now();
             $batch->save();
+
+            $order->refresh();
+            if (! $this->materialReservationService->orderHasPendingConsumptionBatches($order)) {
+                $this->materialReservationService->consumeForOrder($order);
+            }
 
             if ($order->status === ProductionOrder::STATUS_RELEASED) {
                 $order->status = ProductionOrder::STATUS_IN_PROGRESS;

@@ -12,6 +12,7 @@ use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
 use Modules\Production\Services\ProductionPlannedConsumptionFromSnapshotService;
 use Modules\Production\Services\ProductionPostingService;
+use Modules\Warehouse\Entities\StockReservation;
 
 beforeEach(function (): void {
     Config::set('database.default', 'sqlite');
@@ -33,6 +34,12 @@ beforeEach(function (): void {
         $table->string('name')->nullable();
         $table->string('type')->default('goods');
         $table->unsignedBigInteger('unit_id')->nullable();
+        $table->timestamps();
+    });
+
+    Schema::create('unit_types', function ($table): void {
+        $table->id();
+        $table->string('unit_type')->nullable();
         $table->timestamps();
     });
 
@@ -73,6 +80,20 @@ beforeEach(function (): void {
         $table->unsignedBigInteger('warehouse_id');
         $table->unsignedBigInteger('product_id');
         $table->decimal('quantity', 20, 4)->default(0);
+        $table->timestamps();
+    });
+
+    Schema::create('stock_reservations', function ($table): void {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->unsignedBigInteger('warehouse_id');
+        $table->unsignedBigInteger('product_id');
+        $table->string('batch_number')->nullable();
+        $table->date('expiration_date')->nullable();
+        $table->decimal('reserved_quantity', 20, 4)->default(0);
+        $table->string('reference_type')->nullable();
+        $table->unsignedBigInteger('reference_id')->nullable();
+        $table->string('status', 20)->default('active');
         $table->timestamps();
     });
 
@@ -149,8 +170,13 @@ beforeEach(function (): void {
     ]);
 
     DB::table('products')->insert([
-        ['id' => 1, 'company_id' => 1, 'name' => 'RM', 'type' => 'raw_material', 'created_at' => now(), 'updated_at' => now()],
-        ['id' => 2, 'company_id' => 1, 'name' => 'FG', 'type' => 'goods', 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 1, 'company_id' => 1, 'name' => 'RM', 'type' => 'raw_material', 'unit_id' => 99, 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 2, 'company_id' => 1, 'name' => 'FG', 'type' => 'goods', 'unit_id' => null, 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
+    DB::table('unit_types')->insert([
+        ['id' => 10, 'unit_type' => 'kg', 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 99, 'unit_type' => 'g', 'created_at' => now(), 'updated_at' => now()],
     ]);
 
     DB::table('warehouses')->insert([
@@ -175,6 +201,14 @@ beforeEach(function (): void {
         'created_at' => now(),
         'updated_at' => now(),
     ]);
+
+    DB::table('warehouse_product_stock')->insert([
+        'warehouse_id' => 1,
+        'product_id' => 1,
+        'quantity' => 1000,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
 });
 
 afterEach(function (): void {
@@ -190,7 +224,9 @@ afterEach(function (): void {
     Schema::dropIfExists('purchase_stock_adjustments');
     Schema::dropIfExists('purchase_inventory_adjustment');
     Schema::dropIfExists('stock_movements');
+    Schema::dropIfExists('stock_reservations');
     Schema::dropIfExists('product_unit_conversions');
+    Schema::dropIfExists('unit_types');
     Schema::dropIfExists('warehouse_product_stock');
     Schema::dropIfExists('warehouse_product_batches');
     Schema::dropIfExists('warehouses');
@@ -248,11 +284,27 @@ it('posts RM consumption then FG receipt via warehouse stock movements', functio
         ->and($order->fresh()->released_at)->not->toBeNull()
         ->and(ProductionOrderBomSnapshotItem::query()->where('production_order_id', $order->id)->count())->toBe(1)
         ->and((float) ProductionOrderBomSnapshotItem::query()->where('production_order_id', $order->id)->value('quantity_per_fg_unit'))->toBe(0.5)
-        ->and($order->fresh()->bom_snapshot_planned_quantity)->toBe(100.0);
+        ->and($order->fresh()->bom_snapshot_planned_quantity)->toBe(100.0)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('reserved_quantity'))->toBe(50.0)
+        ->and(
+            StockReservation::query()
+                ->where('reference_type', ProductionOrder::class)
+                ->where('reference_id', $order->id)
+                ->where('status', 'active')
+                ->count()
+        )->toBe(1);
 
     $service->postConsumptionsForBatch($batch->fresh());
 
     expect((float) DB::table('warehouse_product_batches')->where('id', 1)->value('quantity'))->toBe(950.0)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('reserved_quantity'))->toBe(0.0)
+        ->and(
+            StockReservation::query()
+                ->where('reference_type', ProductionOrder::class)
+                ->where('reference_id', $order->id)
+                ->where('status', 'consumed')
+                ->count()
+        )->toBe(1)
         ->and($batch->fresh()->posted_consumptions_at)->not->toBeNull()
         ->and($order->fresh()->status)->toBe(ProductionOrder::STATUS_IN_PROGRESS);
 
@@ -1033,4 +1085,119 @@ it('posts FG receipt after variance is approved', function (): void {
 
     expect($output->fresh()->posted_at)->not->toBeNull()
         ->and($order->fresh()->status)->toBe(ProductionOrder::STATUS_COMPLETED);
+});
+
+it('does not reserve raw materials while production order is draft', function (): void {
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v-res-draft',
+        'code' => 'BOM-RES-DRAFT',
+        'is_default' => true,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 1,
+        'sort_order' => 0,
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    expect(StockReservation::query()->where('reference_id', $order->id)->count())->toBe(0);
+});
+
+it('blocks release when insufficient available raw material to reserve', function (): void {
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v-res-block',
+        'code' => 'BOM-RES-BLOCK',
+        'is_default' => true,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 1,
+        'sort_order' => 0,
+    ]);
+
+    DB::table('warehouse_product_batches')->where('id', 1)->update(['quantity' => 5]);
+    DB::table('warehouse_product_stock')->where('product_id', 1)->update(['quantity' => 5]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    expect(fn() => app(ProductionPostingService::class)->releaseOrder($order))
+        ->toThrow(InvalidArgumentException::class);
+
+    expect($order->fresh()->status)->toBe(ProductionOrder::STATUS_DRAFT);
+});
+
+it('releases raw material reservations when a released production order is cancelled', function (): void {
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v-res-cancel',
+        'code' => 'BOM-RES-CANCEL',
+        'is_default' => true,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 1,
+        'sort_order' => 0,
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 10,
+    ]);
+
+    $posting = app(ProductionPostingService::class);
+    $posting->releaseOrder($order);
+
+    ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-CANCEL-RES',
+    ]);
+
+    $posting->cancelOrder($order->fresh());
+
+    expect($order->fresh()->status)->toBe(ProductionOrder::STATUS_CANCELLED)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('reserved_quantity'))->toBe(0.0)
+        ->and(
+            StockReservation::query()
+                ->where('reference_type', ProductionOrder::class)
+                ->where('reference_id', $order->id)
+                ->where('status', 'active')
+                ->count()
+        )->toBe(0);
 });

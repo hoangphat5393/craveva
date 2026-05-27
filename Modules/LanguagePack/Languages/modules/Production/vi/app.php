@@ -232,7 +232,7 @@ return [
     'materialRequirementsShortfallWarning' => 'Có nguyên liệu chưa đủ tồn tại kho NL đã chọn.',
     'materialShortageSummary' => 'Tổng hợp thiếu nguyên liệu',
     'materialShortageSummaryHelp' => 'Màn này tổng hợp phần thiếu theo nguyên liệu + kho nguyên liệu, dựa trên tồn khả dụng hiện tại và nhóm lệnh sản xuất đang chọn.',
-    'materialShortageSummaryStatusNote' => 'Các số liệu thiếu bên dưới hiện đang được tổng hợp từ các lệnh sản xuất có trạng thái: :statuses. Có thể đổi phạm vi bằng bộ lọc Trạng thái ở phía trên.',
+    'materialShortageSummaryStatusNote' => 'Các số liệu thiếu bên dưới được tổng hợp từ các lệnh sản xuất có trạng thái: :statuses.',
     'materialShortageOrdersPageTitle' => 'Các lệnh sản xuất liên quan',
     'materialShortageStatusScopes' => [
         'active' => 'Đã phát hành + Đang sản xuất',

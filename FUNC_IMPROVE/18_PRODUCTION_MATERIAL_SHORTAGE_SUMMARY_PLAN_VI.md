@@ -428,3 +428,10 @@ Mục đích:
 
 - tránh hiểu nhầm rằng màn này luôn cộng tất cả order trong hệ thống
 - giúp buyer / planner biết ngay số liệu đang dựa trên scope nào trước khi ra quyết định mua hàng
+
+### 13.4 Reserve nguyên liệu tại Release (kế hoạch riêng)
+
+PM chốt **không** reserve khi Draft (còn sửa / cancel kế hoạch); **reserve RM khi Release** qua `StockReservationService` (cùng `reserved_quantity` với Sales DO).
+
+- Kế hoạch chi tiết: [`19_PRODUCTION_RM_RESERVE_AT_RELEASE_PLAN_VI.md`](./19_PRODUCTION_RM_RESERVE_AT_RELEASE_PLAN_VI.md)
+- Sau khi làm xong: available trên màn summary / order NVL sẽ trừ cả reserve Production; scope **Released + In progress** khớp “đã cam kết tồn”

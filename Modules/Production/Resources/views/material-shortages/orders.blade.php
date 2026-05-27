@@ -4,11 +4,15 @@
     <div class="content-wrapper">
         <div class="d-flex justify-content-between action-bar flex-wrap">
             <div class="flex-grow-1 align-items-center mt-3">
-                <x-forms.link-secondary :link="route('production.material-shortages.index', ['status_scope' => $statusScope, 'warehouse_id' => $warehouse->id, 'material_id' => $material->id, 'only_shortage' => 1])" class="mr-3 mb-2 float-left" icon="arrow-left">
+                <x-forms.link-secondary :link="route('production.material-shortages.index', ['warehouse_id' => $warehouse->id, 'material_id' => $material->id, 'only_shortage' => 1])" class="mr-3 mb-2 float-left" icon="arrow-left">
                     @lang('production::app.materialShortageSummary')
                 </x-forms.link-secondary>
             </div>
         </div>
+
+        @php
+            $summaryBaseUnit = $summary && !empty($summary['unit_label_base']) ? (string) $summary['unit_label_base'] : null;
+        @endphp
 
         <div class="bg-white rounded p-4 mt-3">
             <div class="row">
@@ -22,23 +26,35 @@
                 </div>
                 <div class="col-md-2 mb-3">
                     <h5 class="mb-1">@lang('production::app.materialTotalRequired')</h5>
-                    <p class="mb-0 text-dark-grey">{{ $summary ? number_format((float) $summary['total_required'], 4, '.', ',') : '0.0000' }}</p>
+                    <p class="mb-0 text-dark-grey">
+                        {{ $summary ? number_format((float) $summary['total_required'], 4, '.', ',') : '0.0000' }}
+                        @if ($summaryBaseUnit)
+                            <span class="text-muted">{{ $summaryBaseUnit }}</span>
+                        @endif
+                    </p>
                 </div>
                 <div class="col-md-2 mb-3">
                     <h5 class="mb-1">@lang('production::app.materialAvailableStock')</h5>
-                    <p class="mb-0 text-dark-grey">{{ $summary ? number_format((float) $summary['available_stock'], 4, '.', ',') : '0.0000' }}</p>
+                    <p class="mb-0 text-dark-grey">
+                        {{ $summary ? number_format((float) $summary['available_stock'], 4, '.', ',') : '0.0000' }}
+                        @if ($summaryBaseUnit)
+                            <span class="text-muted">{{ $summaryBaseUnit }}</span>
+                        @endif
+                    </p>
                 </div>
                 <div class="col-md-2 mb-3">
                     <h5 class="mb-1">@lang('production::app.materialShortageToProcure')</h5>
-                    <p class="mb-0 text-danger">{{ $summary ? number_format((float) $summary['shortage_to_procure'], 4, '.', ',') : '0.0000' }}</p>
+                    <p class="mb-0 text-danger">
+                        {{ $summary ? number_format((float) $summary['shortage_to_procure'], 4, '.', ',') : '0.0000' }}
+                        @if ($summaryBaseUnit)
+                            <span class="text-muted">{{ $summaryBaseUnit }}</span>
+                        @endif
+                    </p>
                 </div>
             </div>
 
             <div class="mt-2">
-                <span class="badge badge-light mr-2">@lang('production::app.status'): {{ __('production::app.materialShortageStatusScopes.' . $statusScope) }}</span>
-                @if ($summary && !empty($summary['unit_label_base']))
-                    <span class="badge badge-light">@lang('production::app.baseUnit'): {{ $summary['unit_label_base'] }}</span>
-                @endif
+                <span class="badge badge-light">@lang('production::app.status'): {{ __('production::app.statusLabels.draft') }}</span>
             </div>
         </div>
 
@@ -61,13 +77,13 @@
                         <tr>
                             <td>{{ $row['order_id'] }}</td>
                             <td>{{ $row['manufactured_product_name'] }}</td>
-                            <td>{{ $row['order_status_label'] }}</td>
+                            <td>@include('production::partials.order-status-badge', ['status' => $row['order_status']])</td>
                             <td>{{ rtrim(rtrim(number_format((float) $row['planned_quantity'], 4, '.', ''), '0'), '.') ?: '0' }}</td>
                             <td>{{ rtrim(rtrim(number_format((float) $row['required_quantity'], 4, '.', ''), '0'), '.') ?: '0' }}</td>
                             <td>{{ $row['unit_label_base'] ?? '—' }}</td>
                             <td>{{ $row['source_label'] }}</td>
                             <td class="text-right">
-                                <a href="{{ $row['order_url'] }}" class="text-dark-grey">@lang('production::app.openOrder')</a>
+                                {!! \Modules\Production\Support\ProductionViewButton::html($row['order_url']) !!}
                             </td>
                         </tr>
                     @empty

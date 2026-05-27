@@ -80,9 +80,9 @@ it('returns datatable json for production order and bom ajax requests', function
         ->get(route('production.orders.index', productionDatatableRequest([
             ['data' => 'id', 'name' => 'production_orders.id'],
             ['data' => 'output_product_name', 'name' => 'output_products.name'],
+            ['data' => 'planned_quantity', 'name' => 'production_orders.planned_quantity'],
             ['data' => 'fg_unit_type', 'name' => 'output_unit_types.unit_type'],
             ['data' => 'bom_label', 'name' => 'boms.code', 'searchable' => false, 'orderable' => false],
-            ['data' => 'planned_quantity', 'name' => 'production_orders.planned_quantity'],
             ['data' => 'material_availability', 'searchable' => false, 'orderable' => false],
             ['data' => 'status', 'name' => 'production_orders.status'],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
@@ -148,7 +148,7 @@ it('shows sufficient and insufficient material badges in the separate production
         $shortfallWarehouse = Warehouse::query()->create([
             'company_id' => (int) $fix['company']->id,
             'name' => 'RM shortfall test warehouse',
-            'code' => 'RM-SHORT-' . uniqid(),
+            'code' => 'RM-SHORT-'.uniqid(),
             'warehouse_type' => 'normal',
             'status' => 'active',
         ]);
@@ -157,7 +157,7 @@ it('shows sufficient and insufficient material badges in the separate production
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'rm-flag-' . uniqid(),
+        'version' => 'rm-flag-'.uniqid(),
         'code' => 'rm-flag-code',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -208,9 +208,9 @@ it('shows sufficient and insufficient material badges in the separate production
         ->get(route('production.orders.index', productionDatatableRequest([
             ['data' => 'id', 'name' => 'production_orders.id'],
             ['data' => 'output_product_name', 'name' => 'output_products.name'],
+            ['data' => 'planned_quantity', 'name' => 'production_orders.planned_quantity'],
             ['data' => 'fg_unit_type', 'name' => 'output_unit_types.unit_type'],
             ['data' => 'bom_label', 'name' => 'boms.code', 'searchable' => false, 'orderable' => false],
-            ['data' => 'planned_quantity', 'name' => 'production_orders.planned_quantity'],
             ['data' => 'material_availability', 'searchable' => false, 'orderable' => false],
             ['data' => 'status', 'name' => 'production_orders.status'],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
@@ -257,7 +257,7 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'modal-test-' . uniqid(),
+        'version' => 'modal-test-'.uniqid(),
         'code' => 'modal-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -267,7 +267,7 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $editableBom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'editable-modal-test-' . uniqid(),
+        'version' => 'editable-modal-test-'.uniqid(),
         'code' => 'editable-modal-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,

@@ -6,7 +6,9 @@ namespace Modules\Production\DataTables;
 
 use App\DataTables\BaseDataTable;
 use Illuminate\Support\Collection;
+use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Services\ProductionMaterialSummaryService;
+use Modules\Production\Support\ProductionViewButton;
 use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
@@ -34,10 +36,10 @@ class ProductionMaterialShortagesDataTable extends BaseDataTable
             $url = route('production.material-shortages.orders', [
                 'material_id' => (int) $row['component_product_id'],
                 'warehouse_id' => (int) $row['rm_warehouse_id'],
-                'status_scope' => $this->request()->input('status_scope', 'active'),
+                'status_scope' => $this->request()->input('status_scope', ProductionOrder::STATUS_DRAFT),
             ]);
 
-            return '<a href="'.$url.'" class="text-dark-grey">'.e(__('production::app.viewOrders')).'</a>';
+            return ProductionViewButton::html($url, (string) __('production::app.viewOrders'));
         });
 
         $datatables->smart(false);

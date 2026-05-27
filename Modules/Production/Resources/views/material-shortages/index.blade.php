@@ -6,22 +6,19 @@
 
 @section('filter-section')
     <x-filters.filter-box>
+        <input type="hidden" name="status_scope" id="production-material-shortages-status-scope" value="{{ \Modules\Production\Entities\ProductionOrder::STATUS_DRAFT }}">
+
+        {{-- Status filter: draft-only scope; restore select + ProductionMaterialSummaryService scopes when re-enabled --}}
+        {{--
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('production::app.status')</p>
             <div class="select-status">
                 <select class="form-control select-picker" name="status_scope" id="production-material-shortages-status-filter" data-container="body" data-size="8">
-                    <option value="active" @selected($statusScope === 'active')>@lang('production::app.materialShortageStatusScopes.active')</option>
-                    <option value="all" @selected($statusScope === 'all')>@lang('production::app.materialShortageStatusScopes.all')</option>
-                    @foreach (['draft', 'released', 'in_progress'] as $statusKey)
-                        <option value="{{ $statusKey }}" @selected($statusScope === $statusKey)>{{ __('production::app.statusLabels.' . $statusKey) }}</option>
-                    @endforeach
-                    {{-- completed / cancelled: excluded from summary scope; restore options + ProductionMaterialSummaryService when re-enabled --}}
-                    {{-- @foreach (['completed', 'cancelled'] as $statusKey) --}}
-                    {{--     <option value="{{ $statusKey }}" @selected($statusScope === $statusKey)>{{ __('production::app.statusLabels.' . $statusKey) }}</option> --}}
-                    {{-- @endforeach --}}
+                    <option value="draft" selected>@lang('production::app.statusLabels.draft')</option>
                 </select>
             </div>
         </div>
+        --}}
 
         {{-- Raw material warehouse filter hidden for Phase 1; restore block + controller warehouseOptions when re-enabled --}}
         {{--
@@ -60,7 +57,7 @@
         </div>
 
         <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
-            <x-forms.button-secondary class="btn-xs {{ request()->filled('material_id') || $statusScope !== 'active' || !$onlyShortage ? '' : 'd-none' }}" id="production-material-shortages-reset-filters" icon="times-circle">
+            <x-forms.button-secondary class="btn-xs {{ request()->filled('material_id') || !$onlyShortage ? '' : 'd-none' }}" id="production-material-shortages-reset-filters" icon="times-circle">
                 @lang('app.clearFilters')
             </x-forms.button-secondary>
         </div>
@@ -81,7 +78,7 @@
             @lang('production::app.materialShortageSummaryHelp')
         </div>
         <div class="alert alert-light border mt-2 mb-0">
-            {{ __('production::app.materialShortageSummaryStatusNote', ['statuses' => __('production::app.materialShortageStatusScopes.' . $statusScope)]) }}
+            {{ __('production::app.materialShortageSummaryStatusNote', ['statuses' => __('production::app.statusLabels.draft')]) }}
         </div>
 
         <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
@@ -95,8 +92,7 @@
 
     <script>
         $('#production-material-shortages-table').on('preXhr.dt', function(e, settings, data) {
-            data.status_scope = $('#production-material-shortages-status-filter').val();
-            // data.warehouse_id = $('#production-material-shortages-warehouse-filter').val();
+            data.status_scope = $('#production-material-shortages-status-scope').val();
             data.material_id = $('#production-material-shortages-material-filter').val();
             data.only_shortage = $('#production-material-shortages-only-shortage').is(':checked') ? 1 : 0;
         });
@@ -106,14 +102,13 @@
         };
 
         const toggleProductionMaterialShortagesResetButton = () => {
-            const hasFilters = $('#production-material-shortages-status-filter').val() !== 'active' ||
-                $('#production-material-shortages-material-filter').val() !== '' ||
+            const hasFilters = $('#production-material-shortages-material-filter').val() !== '' ||
                 !$('#production-material-shortages-only-shortage').is(':checked');
 
             $('#production-material-shortages-reset-filters').toggleClass('d-none', !hasFilters);
         };
 
-        $('#production-material-shortages-status-filter, #production-material-shortages-material-filter').on('change changed.bs.select', function() {
+        $('#production-material-shortages-material-filter').on('change changed.bs.select', function() {
             toggleProductionMaterialShortagesResetButton();
             showProductionMaterialShortagesTable();
         });
@@ -126,8 +121,6 @@
         $('body').on('click', '#production-material-shortages-reset-filters', function(e) {
             e.preventDefault();
 
-            $('#production-material-shortages-status-filter').val('active');
-            // $('#production-material-shortages-warehouse-filter').val('');
             $('#production-material-shortages-material-filter').val('');
             $('#production-material-shortages-only-shortage').prop('checked', true);
             $('.select-picker').selectpicker('refresh');

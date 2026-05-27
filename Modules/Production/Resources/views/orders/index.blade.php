@@ -49,9 +49,9 @@
                     </x-forms.link-primary>
                 @endif
                 @if (in_array(user()->permission('view_production_orders'), ['all', 'added', 'owned', 'both'], true))
-                    <x-forms.link-secondary :link="route('production.material-shortages.index')" class="mr-3 mb-2 float-left" icon="exclamation-triangle">
-                        {{ __('production::app.materialShortageSummary') }}
-                    </x-forms.link-secondary>
+                    <a href="{{ route('production.material-shortages.index') }}" class="btn btn-warning rounded f-14 p-2 text-white border-0 mr-3 mb-2 float-left">
+                        <i class="fa fa-exclamation-triangle mr-1"></i>{{ __('production::app.materialShortageSummary') }}
+                    </a>
                 @endif
             </div>
         </div>

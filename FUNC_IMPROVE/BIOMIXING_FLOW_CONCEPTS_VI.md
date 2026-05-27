@@ -10,13 +10,13 @@
 
 ## Từ vựng nhanh
 
-| Thuật ngữ | Ý nghĩa |
-| --------- | ------- |
-| **RM (Raw Materials)** | Nguyên liệu (SKU trong `products`, dùng cho đầu vào SX). |
-| **FG (Finished Goods)** | Thành phẩm (SKU trong `products`, đầu ra SX và thường là hàng giao DO). |
-| **BOM** | Bill of Materials — định mức RM cho 1 SKU FG theo một **phiên bản**. |
-| **BOM version** | Phiên bản công thức của cùng 1 SKU FG — lệnh SX nên **chốt** dùng version nào để không bị sai khi đổi công thức sau đó. |
-| **Production Order / Batch** | Lệnh sản xuất và lô sản xuất (số batch SX, thời gian, operator… theo MVP). |
+| Thuật ngữ                    | Ý nghĩa                                                                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **RM (Raw Materials)**       | Nguyên liệu (SKU trong `products`, dùng cho đầu vào SX).                                                                |
+| **FG (Finished Goods)**      | Thành phẩm (SKU trong `products`, đầu ra SX và thường là hàng giao DO).                                                 |
+| **BOM**                      | Bill of Materials — định mức RM cho 1 SKU FG theo một **phiên bản**.                                                    |
+| **BOM version**              | Phiên bản công thức của cùng 1 SKU FG — lệnh SX nên **chốt** dùng version nào để không bị sai khi đổi công thức sau đó. |
+| **Production Order / Batch** | Lệnh sản xuất và lô sản xuất (số batch SX, thời gian, operator… theo MVP).                                              |
 
 ---
 
@@ -59,15 +59,16 @@ Vật lý: RM “biến thành” FG — trong sổ kho là **xuất RM + nhập
 
 `SO → Production Order → Consume RM → Receive FG → DO → Invoice`
 
-| Bước | Tồn kho (tóm tắt) | Ghi chú |
-| ---- | ----------------- | ------- |
-| **SO** | Chưa đổi tồn (thường) | Cam kết bán. |
-| **Production Order** | Chưa đổi tồn (MVP) | Lệnh SX; optional sau này có “allocate/reserve RM” nếu thiết kế thêm. |
-| **Consume RM** | **Trừ tồn RM** | Xuất nguyên liệu theo lô/batch đã chọn. |
-| **Receive FG** | **Cộng tồn FG** | Nhập thành phẩm + batch FG. |
-| **DO confirm** | **Reserved FG** (theo baseline Sales DO) | Giữ hàng để giao. |
-| **DO ship** | **Trừ tồn FG** | Xuất giao khách. |
-| **Invoice** | Không đổi tồn (thường) | Tài chính theo cấu hình sale/shipment. |
+| Bước                           | Tồn kho (tóm tắt)                        | Ghi chú                                                                                                                                                                                                                  |
+| ------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **SO**                         | Chưa đổi tồn (thường)                    | Cam kết bán.                                                                                                                                                                                                             |
+| **Production Order (Draft)**   | Chưa reserve / chưa trừ                  | Lập kế hoạch; sửa BOM / planned qty / kho RM.                                                                                                                                                                            |
+| **Production Order (Release)** | **Reserve RM** (kế hoạch)                | PM chốt: giữ tồn tại Release qua `StockReservationService` — xem [`19_PRODUCTION_RM_RESERVE_AT_RELEASE_PLAN_VI.md`](./19_PRODUCTION_RM_RESERVE_AT_RELEASE_PLAN_VI.md). Chưa code = hàng MVP cũ (chỉ cảnh báo thiếu NVL). |
+| **Consume RM**                 | **Trừ tồn RM**                           | Xuất nguyên liệu theo lô/batch đã chọn.                                                                                                                                                                                  |
+| **Receive FG**                 | **Cộng tồn FG**                          | Nhập thành phẩm + batch FG.                                                                                                                                                                                              |
+| **DO confirm**                 | **Reserved FG** (theo baseline Sales DO) | Giữ hàng để giao.                                                                                                                                                                                                        |
+| **DO ship**                    | **Trừ tồn FG**                           | Xuất giao khách.                                                                                                                                                                                                         |
+| **Invoice**                    | Không đổi tồn (thường)                   | Tài chính theo cấu hình sale/shipment.                                                                                                                                                                                   |
 
 ---
 
@@ -77,15 +78,15 @@ Vật lý: RM “biến thành” FG — trong sổ kho là **xuất RM + nhập
 
 `PO → GRN / Receive RM → Vendor Invoice → Payment`
 
-| Bước | Tồn kho |
-| ---- | ------- |
-| **PO** | Không tăng/giảm tồn (cam kết mua). |
-| **GRN / Receive RM** | **Tăng tồn RM** (nhập kho). |
+| Bước                         | Tồn kho                               |
+| ---------------------------- | ------------------------------------- |
+| **PO**                       | Không tăng/giảm tồn (cam kết mua).    |
+| **GRN / Receive RM**         | **Tăng tồn RM** (nhập kho).           |
 | **Vendor Invoice / Payment** | Không đổi tồn (công nợ / thanh toán). |
 
 **Không cần tách module PO riêng cho Production** — cùng luồng mua; Production chỉ **tiêu** RM đã có trong kho khi **Consume RM**.
 
-**Reserved:** kiểu “reserve” rõ nhất trên Hub hiện tại gắn **Sales DO confirm**; PO/GRN thường **không** reserve outbound như DO bán hàng.
+**Reserved:** **Sales DO confirm** (đã code) + **Production Release** (kế hoạch, chưa code). PO/GRN thường **không** reserve outbound như DO bán hàng.
 
 ---
 

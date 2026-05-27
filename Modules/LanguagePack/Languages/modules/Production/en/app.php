@@ -231,7 +231,7 @@ return [
     'materialRequirementsShortfallWarning' => 'One or more materials are below required quantity in the linked raw material warehouse.',
     'materialShortageSummary' => 'Material shortage summary',
     'materialShortageSummaryHelp' => 'This screen summarizes shortages by raw material + raw material warehouse, based on current available stock and the selected production orders.',
-    'materialShortageSummaryStatusNote' => 'The shortage totals below are currently aggregated from production orders with status: :statuses. Use the Status filter above to change the scope.',
+    'materialShortageSummaryStatusNote' => 'The shortage totals below are aggregated from production orders with status: :statuses.',
     'materialShortageOrdersPageTitle' => 'Affected production orders',
     'materialShortageStatusScopes' => [
         'active' => 'Released + In progress',

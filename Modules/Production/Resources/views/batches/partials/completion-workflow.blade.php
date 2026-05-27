@@ -1,10 +1,17 @@
 @php
-    /** @var list<array{key: string, label: string, done: bool, current: bool}> $batchWorkflowSteps */
+    /** @var list<array{key: string, label: string, display_label?: string, done: bool, current: bool}> $batchWorkflowSteps */
+    use Modules\Production\Support\ProductionBatchPlannedLinesPolicy;
 @endphp
 
 <div class="bg-white rounded p-4 mt-3 mb-4 border">
     <h5 class="f-14 text-dark-grey font-weight-bold mb-2">@lang('production::app.batchCompletionWorkflowTitle')</h5>
-    <p class="f-13 text-muted mb-3">@lang('production::app.batchCompletionWorkflowHelp')</p>
+    <p class="f-13 text-muted mb-3">
+        @if (ProductionBatchPlannedLinesPolicy::showBatchWorkflowStepPlannedLines())
+            @lang('production::app.batchCompletionWorkflowHelpManual')
+        @else
+            @lang('production::app.batchCompletionWorkflowHelp')
+        @endif
+    </p>
     <ol class="list-unstyled mb-0 pl-0">
         @foreach ($batchWorkflowSteps as $step)
             <li class="d-flex align-items-start mb-3 @if ($step['current']) font-weight-bold @endif">
@@ -17,7 +24,7 @@
                         <i class="fa fa-circle text-light-grey f-16"></i>
                     @endif
                 </span>
-                <span class="f-14 @if ($step['done']) text-muted @endif">{{ $step['label'] }}</span>
+                <span class="f-14 @if ($step['done']) text-muted @endif">{{ $step['display_label'] ?? $step['label'] }}</span>
             </li>
         @endforeach
     </ol>

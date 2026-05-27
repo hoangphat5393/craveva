@@ -2,74 +2,63 @@
 
 Navigation index for improvement plans, refactor proposals, and optimization tasks.
 
-## Biomixing — triển khai (implementation MD)
+**File đã retire:** xem [`LEGACY_ARCHIVE.md`](LEGACY_ARCHIVE.md).
 
-Các file **`BIOMIXING_*`** và audit tách **`BIOMIXING_MIGRATION_AUDIT_2026_VI.md`** (cùng nhóm ~12 file triển khai) nằm **cùng cấp** với backlog `01_`–`11_` trong **`FUNC_IMPROVE/`** (không còn thư mục con `BIOMIXING/`).  
-**Sơ đồ (mmd/html), PDF proposal, demo, PM/business MD** vẫn ở **`PROJECT BIOMIXING/`**.
+## Biomixing — đọc trước (living)
 
-- **Chỉ mục (EN):** [`BIOMIXING_PREP_INDEX_EN.md`](BIOMIXING_PREP_INDEX_EN.md)
-- **Luồng nghiệp vụ LIVE (SSOT):** [`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`](BIOMIXING_BUSINESS_FLOW_LIVE_VI.md)
-- **Doc sync Biomixing (2026-05-24):** [`BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md)
-- **Audit tách nội dung:** [`BIOMIXING_MIGRATION_AUDIT_2026_VI.md`](BIOMIXING_MIGRATION_AUDIT_2026_VI.md)
-- **Diagram / proposal / demo:** [`../PROJECT BIOMIXING/README.md`](../PROJECT%20BIOMIXING/README.md)
+| Mục đích                 | File                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------ |
+| Trạng thái code vs PM    | [`BIOMIXING_GAP_STATUS_VI.md`](BIOMIXING_GAP_STATUS_VI.md)                                 |
+| Luồng nghiệp vụ vận hành | [`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`](BIOMIXING_BUSINESS_FLOW_LIVE_VI.md)                 |
+| Chỉ mục EN + diagram     | [`BIOMIXING_PREP_INDEX_EN.md`](BIOMIXING_PREP_INDEX_EN.md)                                 |
+| Doc sync 3 thư mục       | [`BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md) |
+| UAT / test               | [`BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`](BIOMIXING_UAT_AND_TEST_GUIDE_VI.md)                 |
+| PM / diagram / demo      | [`../PROJECT BIOMIXING/README.md`](../PROJECT%20BIOMIXING/README.md)                       |
 
-## P0 Biomixing (pilot — vận hành / sign-off)
+## Production vận hành
 
-- `FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md` — **audit toàn quy trình theo phase** (code vs doc vs UAT; 2026-05-24)
-- `FUNC_IMPROVE/BIOMIXING_FULL_DEMO_RUNBOOK_VI.md` — **demo kỹ thuật đầy đủ** trên Hub + lệnh kiểm tra regression
-- `FUNC_IMPROVE/P0_NEXT_ACTION_BIOMIXING_VI.md` — lịch hành động
-- `FUNC_IMPROVE/P0_EXECUTION_LOG.md` — nhật ký thực thi
-- `FUNC_IMPROVE/P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md` — ma trận vai trò variance
-- `FUNC_IMPROVE/P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md` — governance shadow / Yield / UOM
-- `FUNC_IMPROVE/P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` — checklist UAT nhỏ
+- [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) — SSOT lifecycle + reserve
+- [`19_PRODUCTION_RM_RESERVE_AT_RELEASE_TEST_CASES_VI.md`](19_PRODUCTION_RM_RESERVE_AT_RELEASE_TEST_CASES_VI.md)
+- [`PRODUCTION_MODULE_PROGRESS_REPORT_EN.md`](PRODUCTION_MODULE_PROGRESS_REPORT_EN.md)
 
-## Improvement Backlog (Ordered)
+## P0 Biomixing (pilot)
 
-- `FUNC_IMPROVE/01_PROD_BOM_FG_POLICY_VI.md`
-- `FUNC_IMPROVE/02_B2B_PROD_BATCH_VI.md`
-- `FUNC_IMPROVE/03_PRODUCTION_PREUPLOAD_AUDIT_2026_05_05_VI.md`
-- `FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE_VI.md`
-- `FUNC_IMPROVE/05_SO_DO_PO_GRN_REFACTOR_VI.md`
-- `FUNC_IMPROVE/06_INVENTORY_BUSINESS_IMPROVE.md`
-- `FUNC_IMPROVE/07_PRICING_MODULE_DEV_TASKS.md`
-- `FUNC_IMPROVE/08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md`
-- `FUNC_IMPROVE/09_ORDER_HISTORY_IMPROVE_PLAN.md`
-- `FUNC_IMPROVE/10_UX_UI_IMPROVEMENT_BACKLOG.md`
-- `FUNC_IMPROVE/11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` — phân tích shadow/Yield/UOM; **chỉ bật sau khi được xác nhận** (xem mục governance trong file).
-- `FUNC_IMPROVE/12_AI_THIRDPARTY_SO_OPTIONS_VI.md` — AI / third-party tạo SO: webhook vs API, phương án thay thế, trạng thái code hiện tại
-- `FUNC_IMPROVE/13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md` — Opening stock vs tồn warehouse; P0 UX; P1 opening sync; **P1c FG→Inventory** (xem `16_*`)
-- `FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md` — **Living doc:** lỗ hổng post FG không lên Inventory list; kho RM/FG; batch; P1c code + backfill
-- `FUNC_IMPROVE/17_SETTINGS_MENU_REORGANIZATION_VI.md` — **Đề xuất:** rà soát menu Settings (40+ mục), nhóm SO/PO/DO/Invoice; phương án A/B/C; chưa code
-- `FUNC_IMPROVE/14_CLIENT_LISTING_TABLE_UX_PLAN_VI.md` — Kế hoạch UX bảng Clients (PM): Pricing Tier vs Custom Field; phase 1 không đổi logic/DB; DB consolidation phase 7
-- `FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md` — **Living doc:** lỗ hổng quy đổi UOM khi Post RM (doc-to-code); plan vá: `15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md`
-- `FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md` — **gộp (2026-05-12)** từ `13_` + `14_` + `15_`: kiểm tra repo & prompt rollout; kế hoạch triển khai + checklist; prompt tab **API** + ringfence (mục **Part 1–3** trong file)
-- `FUNC_LOGIC/SURVEY_SYSTEM_WIDE_API_AND_REST_VI.md` — khảo sát API `/api` toàn repo & REST (tham chiếu chéo)
+- [`P0_BIOMIXING_NEXT_STEPS_VI.md`](P0_BIOMIXING_NEXT_STEPS_VI.md) — hàng đợi tiếp theo
+- [`P0_EXECUTION_LOG.md`](P0_EXECUTION_LOG.md)
+- [`BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`](BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md)
+- [`BIOMIXING_FULL_DEMO_RUNBOOK_VI.md`](BIOMIXING_FULL_DEMO_RUNBOOK_VI.md)
+- [`P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`](P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md)
+- [`P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md`](P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md)
+- [`P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md`](P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md)
 
-## Maintenance Notes
+## Phase PM
 
-- **Documentation audit (định kỳ):** [`AUDIT_IMPROVE_2026_VI.md`](AUDIT_IMPROVE_2026_VI.md)
-- **Audit 3 thư mục (2026-05-21):** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md) — sync `PROJECT BIOMIXING` · `FUNC_LOGIC` · `FUNC_IMPROVE`
-- **2026-05-23:** Settings menu reorganization proposal — `17_SETTINGS_MENU_REORGANIZATION_VI.md` (PM feedback; chưa implement)
-- **2026-05-24:** Documentation sync manifest — `BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`; cross-links UAT/demo/audit
-- **2026-05-23:** Production FG → Inventory ledger (P1c) — `16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`; cập nhật `13_*`
-- **2026-05-20:** Production outbound UOM gap — `15_*` + `FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md`
-- **2026-05-12:** ba file AI → SO webhook (`13_`…`15_`) đã gộp thành [`SO_AI_WEBHOOK_PROMPTS_VI.md`](SO_AI_WEBHOOK_PROMPTS_VI.md) (Part 1–3); không dùng lại prefix `13_`–`15_` cho tài liệu mới.
-- Keep numbering stable for planning sequence.
-- New improvement documents should follow next numeric prefix.
-- Link approved improvements back into related module master guides.
+- Phase 1 báo giá: [`PHASE1_PM_STATUS_LIVE_VI.md`](PHASE1_PM_STATUS_LIVE_VI.md), [`PHASE1_QUOTATION_PM_HUMAN_VI.md`](PHASE1_QUOTATION_PM_HUMAN_VI.md)
+- Phase 2 SX: `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` + `PROJECT BIOMIXING/UI_RUNBOOK_PHASE2_*`
 
-## Auto-added by md_master_sync.ps1
+## Improvement backlog (numbered)
 
-- `FUNC_IMPROVE/AUDIT_IMPROVE_2026_VI.md`
-- `FUNC_IMPROVE/BIOMIXING_BASELINE_PREP_2026_VI.md`
-- `FUNC_IMPROVE/BIOMIXING_DEV_PLAN.md`
-- `FUNC_IMPROVE/BIOMIXING_DOC_AUDIT_2026_VI.md`
-- `FUNC_IMPROVE/BIOMIXING_DOMAIN_INTEGRATION.md`
-- `FUNC_IMPROVE/BIOMIXING_FLOW_CONCEPTS_VI.md`
-- `FUNC_IMPROVE/BIOMIXING_FLOW_CRACEVA_GAP.md`
-- `FUNC_IMPROVE/BIOMIXING_GAP_ANALYSIS.md`
-- `FUNC_IMPROVE/BIOMIXING_MIGRATION_AUDIT_2026_VI.md`
-- `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`
-- `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`
-- `FUNC_IMPROVE/BIOMIXING_PROPOSAL_TECH_MAP_VI.md`
-- `FUNC_IMPROVE/BIOMIXING_PROTOTYPE_PLAN_VI.md`
+- `01_PROD_BOM_FG_POLICY_VI.md`
+- `02_B2B_PROD_BATCH_VI.md`
+- `04_WH_RUNBOOK_UPGRADE_VI.md`
+- `05_SO_DO_PO_GRN_REFACTOR_VI.md`
+- `06_INVENTORY_BUSINESS_IMPROVE.md`
+- `07_PRICING_MODULE_DEV_TASKS.md`
+- `08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md`
+- `09_ORDER_HISTORY_IMPROVE_PLAN.md`
+- `10_UX_UI_IMPROVEMENT_BACKLOG.md`
+- `11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md`
+- `12_AI_THIRDPARTY_SO_OPTIONS_VI.md`
+- `13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`
+- `14_CLIENT_LISTING_TABLE_UX_PLAN_VI.md`
+- `15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md` — **Fixed** 2026-05-20
+- `16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`
+- `17_SETTINGS_MENU_REORGANIZATION_VI.md`
+- `P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`
+- `SO_AI_WEBHOOK_PROMPTS_VI.md`
+
+## Maintenance
+
+- **Audit tài liệu:** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)
+- **Cleanup log:** [`../FUNC_REPORT/DOCUMENTATION_CLEANUP_AUDIT_2026_05_27.md`](../FUNC_REPORT/DOCUMENTATION_CLEANUP_AUDIT_2026_05_27.md)
+- Giữ numbering ổn định; tài liệu mới dùng prefix số tiếp theo khi cần.

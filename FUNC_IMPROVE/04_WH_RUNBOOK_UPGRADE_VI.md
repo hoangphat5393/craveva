@@ -139,7 +139,7 @@ Kết quả:
 
 # 2) Kế hoạch nâng cấp Warehouse (WUP) & trạng thái
 
-**Nguồn đầu vào:** `FUINC_REPORT/PM report 1.md`, `FUINC_REPORT/PM report 2.md`
+**Nguồn đầu vào (đã retire):** PM warehouse specs — thay bằng `FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`, `PROJECT MAOLIN/MAOLIN_MASTER_GUIDE.md` (xem `FUNC_IMPROVE/LEGACY_ARCHIVE.md`).
 **Đã loại bỏ:** các nhận định lỗi thời (ví dụ “không có transfer”, “không có batch/HSD”, …)
 **Mục tiêu:** chỉ giữ các hạng mục cần nâng cấp thực sự.
 
@@ -170,7 +170,7 @@ Kết quả:
 
 ### 2.1 Bảng Evidence WUP (P0-07 — ba lớp: code / test / UAT)
 
-Dùng bảng này khi đánh dấu `Done`/`Partial` theo quy tắc `FUNC_IMPROVE/P0_NEXT_ACTION_BIOMIXING_VI.md`. Cột **UAT** điền tham chiếu biên bản hoặc mục checklist §1 runbook / báo cáo mini-UAT.
+Dùng bảng này khi đánh dấu `Done`/`Partial` theo quy tắc `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`. Cột **UAT** điền tham chiếu biên bản hoặc mục checklist §1 runbook / báo cáo mini-UAT.
 
 | Mã     | Trạng thái tổng quát (Apr 2026) | Evidence (code — thư mục / service chính)                                                                | Evidence (test — file gợi ý)                                                      | UAT / Runbook                                  |
 | ------ | ------------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- |

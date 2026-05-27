@@ -18,12 +18,10 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success mt-3 mb-0">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger mt-3 mb-0">{{ session('error') }}</div>
-        @endif
+        @php
+            $productionFeedbackJumpAnchor = $errors->hasAny(['quantity', 'variance_reason', 'batch_number', 'warehouse_id']) || session('error') ? 'production-create-output-form' : null;
+        @endphp
+        @include('production::partials.flash-and-validation-alerts')
 
         @include('production::batches.partials.completion-workflow')
 
@@ -54,6 +52,9 @@
         </div>
 
         <h5 class="f-14 text-dark-grey font-weight-bold mb-2">@lang('production::app.rawMaterialsUsed')</h5>
+        @if (\Modules\Production\Support\ProductionBatchPlannedLinesPolicy::autoApplyBomSnapshotOnBatch() && !\Modules\Production\Support\ProductionBatchPlannedLinesPolicy::showApplyPlannedFromSnapshotButton())
+            <p class="f-12 text-muted mb-2">@lang('production::app.batchRmAutoAppliedNote')</p>
+        @endif
         <p class="f-13 text-muted mb-3">
             @lang('production::app.batchRmConsumptionIntro')
             @if (($batchCountOnOrder ?? 1) > 1)
@@ -164,7 +165,11 @@
             </table>
         </div>
 
-        @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at === null && in_array($batch->order->status, [\Modules\Production\Entities\ProductionOrder::STATUS_RELEASED, \Modules\Production\Entities\ProductionOrder::STATUS_IN_PROGRESS], true))
+        @php
+            $canEditBatchConsumptions = in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at === null && in_array($batch->order->status, [\Modules\Production\Entities\ProductionOrder::STATUS_RELEASED, \Modules\Production\Entities\ProductionOrder::STATUS_IN_PROGRESS], true);
+        @endphp
+
+        @if (\Modules\Production\Support\ProductionBomFirstPolicy::allowManualBatchConsumptionLines() && $canEditBatchConsumptions)
             <div class="bg-white rounded p-4 mb-4">
                 <h6 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.addRawMaterialUsedLine')</h6>
                 <form method="post" action="{{ route('production.batches.consumptions.store', $batch) }}" class="form-row align-items-end">
@@ -202,7 +207,9 @@
                     </div>
                 </form>
             </div>
+        @endif
 
+        @if ($canEditBatchConsumptions)
             <form method="post" action="{{ route('production.batches.post-consumptions', $batch) }}" class="mb-4" onsubmit="return confirm(@json(__('app.areYouSure')));">
                 @csrf
                 <button type="submit" class="btn btn-warning rounded f-14 p-2 text-white border-0" @disabled($batch->consumptions->isEmpty())>
@@ -280,17 +287,26 @@
         </div>
 
         @if (in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true) && $batch->posted_consumptions_at !== null && $batch->posted_receipt_at === null)
-            <div class="bg-white rounded p-4">
+            <div id="production-create-output-form" class="bg-white rounded p-4">
                 <h6 class="f-14 text-dark-grey font-weight-bold mb-3">@lang('production::app.createOutput')</h6>
+                @include('production::partials.inline-form-validation-alert', [
+                    'fields' => ['quantity', 'variance_reason', 'batch_number', 'warehouse_id', 'expiration_date', 'manufacturing_date', 'batch', 'order'],
+                ])
                 <form method="post" action="{{ route('production.batches.outputs.store', $batch) }}" class="form-row">
                     @csrf
                     <div class="form-group col-md-3">
                         <x-forms.label fieldId="batch_number" :fieldLabel="__('production::app.fgBatchNumber')" fieldRequired="true" />
-                        <input type="text" name="batch_number" id="batch_number" class="form-control height-35 f-14" required maxlength="191">
+                        <input type="text" name="batch_number" id="batch_number" class="form-control height-35 f-14" value="{{ old('batch_number') }}" required maxlength="191">
                     </div>
                     <div class="form-group col-md-2">
                         <x-forms.label fieldId="output_quantity" :fieldLabel="__('production::app.fgQty')" fieldRequired="true" />
-                        <input type="number" step="0.0001" min="0.0001" name="quantity" id="output_quantity" class="form-control height-35 f-14" required>
+                        <input type="number" step="0.0001" min="0.0001" name="quantity" id="output_quantity" class="form-control height-35 f-14 @error('quantity') is-invalid @enderror" value="{{ old('quantity') }}" required>
+                        @error('quantity')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                        @if ($batch->order)
+                            <small class="text-muted f-12 d-block mt-1">@lang('production::app.fgOutputOrderPlannedHint', ['planned' => $batch->order->planned_quantity])</small>
+                        @endif
                     </div>
                     <div class="form-group col-md-3">
                         <x-forms.label fieldId="warehouse_id" :fieldLabel="__('warehouse::app.warehouse')" fieldRequired="true" />
@@ -310,7 +326,10 @@
                     </div>
                     <div class="form-group col-12">
                         <x-forms.label fieldId="variance_reason" :fieldLabel="__('production::app.fgVarianceReason')" fieldRequired="false" />
-                        <textarea name="variance_reason" id="variance_reason" class="form-control f-14" rows="2" maxlength="5000" placeholder="@lang('production::app.fgVarianceReasonHelp')"></textarea>
+                        <textarea name="variance_reason" id="variance_reason" class="form-control f-14 pt-2 @error('variance_reason') is-invalid @enderror" rows="4" maxlength="5000" placeholder="@lang('production::app.fgVarianceReasonHelp')">{{ old('variance_reason') }}</textarea>
+                        @error('variance_reason')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="form-group col-12">
                         <button type="submit" class="btn btn-primary rounded f-14 p-2">

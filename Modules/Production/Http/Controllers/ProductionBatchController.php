@@ -19,9 +19,11 @@ use Modules\Production\Http\Requests\DecideProductionReworkOrderRequest;
 use Modules\Production\Http\Requests\StoreProductionBatchConsumptionRequest;
 use Modules\Production\Http\Requests\StoreProductionBatchOutputRequest;
 use Modules\Production\Http\Requests\StoreProductionReworkOrderRequest;
+use Modules\Production\Services\ProductionBatchPlannedLinesApplicator;
 use Modules\Production\Services\ProductionFgQuantityPolicyService;
 use Modules\Production\Services\ProductionPlannedConsumptionFromSnapshotService;
 use Modules\Production\Services\ProductionPostingService;
+use Modules\Production\Support\ProductionBatchPlannedLinesPolicy;
 use Modules\Production\Support\ProductionBatchWorkflowSteps;
 use Modules\Production\Support\ProductionTenantAccess;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
@@ -47,6 +49,9 @@ class ProductionBatchController extends AccountBaseController
         $this->assertViewProductionOrders();
         $this->assertBatchInCompany($batch);
 
+        app(ProductionBatchPlannedLinesApplicator::class)->autoApplyIfConfigured($batch);
+        $batch->refresh();
+
         $batch->load([
             'order.outputProduct',
             'order.bomSnapshotItems.componentProduct',
@@ -57,7 +62,7 @@ class ProductionBatchController extends AccountBaseController
             'reworkOrders',
         ]);
 
-        $this->pageTitle = __('production::app.batchDetail').' '.$batch->batch_code;
+        $this->pageTitle = __('production::app.batchDetail') . ' ' . $batch->batch_code;
         $this->batch = $batch;
         $companyId = (int) company()->id;
 
@@ -76,7 +81,8 @@ class ProductionBatchController extends AccountBaseController
             ->limit(300)
             ->get();
 
-        $this->canApplyBomSnapshotPlanned = $order->bom_snapshot_at !== null
+        $this->canApplyBomSnapshotPlanned = ProductionBatchPlannedLinesPolicy::showApplyPlannedFromSnapshotButton()
+            && $order->bom_snapshot_at !== null
             && $batch->posted_consumptions_at === null
             && $batch->consumptions->isEmpty()
             && in_array($order->status, [ProductionOrder::STATUS_RELEASED, ProductionOrder::STATUS_IN_PROGRESS], true);
@@ -242,7 +248,9 @@ class ProductionBatchController extends AccountBaseController
             try {
                 $this->posting->postFinishedGoodsReceipt($output->fresh());
             } catch (\Throwable $e) {
-                return $this->handleProductionThrowable($request, 'production_auto_post_fg_receipt_after_output_save', $e);
+                $response = $this->handleProductionThrowable($request, 'production_auto_post_fg_receipt_after_output_save', $e);
+
+                return $response->with('warning', __('production::app.fgOutputSavedButReceiptFailed'));
             }
 
             return back()->with('success', __('messages.updateSuccess'));

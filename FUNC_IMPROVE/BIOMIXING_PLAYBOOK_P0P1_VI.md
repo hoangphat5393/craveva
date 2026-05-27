@@ -3,8 +3,8 @@
 | Thuộc tính           | Giá trị                                                                                                                                                                                                                                                                                                         |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Đối tượng**        | BA, Tech Lead, dev backend trước khi mở sprint code                                                                                                                                                                                                                                                             |
-| **Phạm vi**          | **Phase 0 + Phase 1** theo `BIOMIXING_DEV_PLAN.md` §4 — không thay roadmap; đây là **chi tiết hóa** migration, luồng, điểm chạm code, test và milestone                                                                                                                                                         |
-| **Out of scope MVP** | CCP cứng, **receiving QC GRN** đầy đủ, sampling/COA, Quality Lock đầy đủ theo Phase 3–4 (xem `BIOMIXING_DEV_PLAN.md`). **Ghi chú:** rework batch **cơ bản** đã có trong code (Phase 2 mỏng) — không thuộc “out of scope” tuyệt đối; vẫn cần UAT pilot.                                                          |
+| **Phạm vi**          | **Phase 0 + Phase 1** theo `BIOMIXING_GAP_STATUS_VI.md` — đây là **chi tiết hóa** migration, luồng, điểm chạm code, test và milestone                                                                                                                                                                           |
+| **Out of scope MVP** | CCP cứng, **receiving QC GRN** đầy đủ, sampling/COA, Quality Lock đầy đủ theo phase sau (xem `BIOMIXING_GAP_STATUS_VI.md`). **Ghi chú:** rework batch **cơ bản** đã có trong code (Phase 2 mỏng) — không thuộc “out of scope” tuyệt đối; vẫn cần UAT pilot.                                                     |
 | **Repo**             | `Modules/Production/` — MVP: orders/batches, BOM CRUD, **snapshot BOM khi release**, sinh RM planned từ snapshot (**chia đều** SL TP đông băng cho từng batch trên lệnh), gán SO/Project trên form, post RM/FG, trace, FG policy. Phase 2+ (CCP, QC…) — §1.3.                                                   |
 | **Cập nhật**         | 2026-05-07 — Phase 1–2 playbook nghiệp vụ: chốt vận hành trên **`planned_quantity`** + BOM snapshot; shadow Yield/UOM tách sang `FUNC_IMPROVE/11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` (mặc định tắt trong config). 2026-05-06 — đồng bộ checklist §1.3, §3.1, §5, §7, §10; đối chiếu `FUNC_IMPROVE/01_*` §0 |
 
@@ -33,10 +33,10 @@
 
 ## 0. Tài liệu phải đọc trước (thứ tự)
 
-1. `BIOMIXING_BASELINE_PREP_2026_VI.md` — nền Hub SO/PO/DO/Warehouse + điểm tích hợp §5–6.
+1. `BIOMIXING_PREP_INDEX_EN.md` + `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md` — nền Hub SO/PO/DO/Warehouse.
 2. **`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`** — luồng bước chuẩn (LIVE SSOT; cập nhật khi đổi gate/tồn kho).
 3. **`BIOMIXING_FLOW_CONCEPTS_VI.md`** — khái niệm RM/FG, BOM version, trừ–cộng tồn, PO vs Receive FG, reserve DO (onboarding PM/BA/dev).
-4. `BIOMIXING_DEV_PLAN.md` — kiến trúc §3, roadmap Phase 0–1 §4, ước lượng §6.
+4. `BIOMIXING_GAP_STATUS_VI.md` — trạng thái Phase 0–2 vs code.
 5. `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md` — batch tồn, DO, outbound.
 6. `FUNC_LOGIC/WAREHOUSE_INDEX.md`, `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`.
 7. Khi spike tích hợp kho: `Modules/Warehouse/Services/StockMovementService.php` và test tham chiếu dưới §9.
@@ -260,7 +260,7 @@ Tham chiếu pattern test có sẵn: tests đề cập Warehouse/Sales DO upgrad
 | **M5** | Post FG inbound + Completed                                                                       | PR 4 — FG batch trong kho, sẵn sàng gắn Sales DO | **Đã có** (+ kiểm tra FG policy khi post)                                            |
 | **M6** | Báo cáo truy xuất + test suite + checklist UAT                                                    | PR 5 — bàn giao MVP pilot                        | **Một phần** — trace + Pest có; UAT checklist E2E với Sales DO là bước người dùng/QA |
 
-Điều chỉnh số tuần theo team (1 vs 2 dev) — không trùng lặp số tuần §6 trong `BIOMIXING_DEV_PLAN.md`; milestone này là **chia nhỏ nội bộ trong Phase 1**.
+Điều chỉnh số tuần theo team (1 vs 2 dev); milestone này là **chia nhỏ nội bộ trong Phase 1**.
 
 ---
 

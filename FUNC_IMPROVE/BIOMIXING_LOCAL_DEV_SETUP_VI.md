@@ -2,7 +2,7 @@
 
 **Mục đích:** Chuẩn hóa các bước tối thiểu để chạy pilot **trên máy dev** (không nhắm server production). URL kiểu `https://*.test` là **local** (Herd/Valet) trừ khi team tự map DNS.
 
-**Liên quan:** `BIOMIXING_UAT_AND_TEST_GUIDE_VI.md` (lệnh test), `P0_NEXT_ACTION_BIOMIXING_VI.md` (thứ tự P0).
+**Liên quan:** `BIOMIXING_UAT_AND_TEST_GUIDE_VI.md` (lệnh test), `P0_BIOMIXING_NEXT_STEPS_VI.md` (thứ tự P0).
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Mục đích:** Tập hợp **đường dẫn tài liệu** và **lệnh kiểm thử tự động** để QA/BA/Dev chạy pilot Biomixing mà không phải mò từng thư mục.
 
-**Phạm vi thật trong repo (2026-05):** Đã có **Production MVP** (BOM, lệnh, batch, RM/FG, policy, rework), **Warehouse** (batch, đối soát), **Sales/Estimate Phase 1** (duyệt nội bộ, convert SO) theo các playbook dưới đây. Các mục **Phase 3** (CCP/HACCP đầy đủ, QC lab…) vẫn theo `BIOMIXING_DEV_PLAN.md` — **chưa** coi là đã triển khai hết trong code.
+**Phạm vi thật trong repo (2026-05):** Đã có **Production MVP** (BOM, lệnh, batch, RM/FG, policy, rework), **Warehouse** (batch, đối soát), **Sales/Estimate Phase 1** (duyệt nội bộ, convert SO) theo các playbook dưới đây. Các mục **Phase 3** (CCP/HACCP đầy đủ, QC lab…) vẫn theo `BIOMIXING_GAP_STATUS_VI.md` — **chưa** coi là đã triển khai hết trong code.
 
 **Chỉ mục tài liệu tổng (tiếng Anh):** `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`
 
@@ -51,7 +51,7 @@ Báo cáo tiến độ module Production (tiếng Anh, có bảng P0): `FUNC_IMP
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Bảng test case QA/BA (một lượt)**                      | `FUNC_IMPROVE/P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md` — gom TC P0-01,02,03,05,06,08 + WUP-01…07                                                          |
 | Theo dõi task P0, trạng thái, DoD                        | `FUNC_IMPROVE/P0_EXECUTION_LOG.md`                                                                                                                      |
-| Thứ tự ưu tiên tuần                                      | `FUNC_IMPROVE/P0_NEXT_ACTION_BIOMIXING_VI.md`                                                                                                           |
+| Thứ tự ưu tiên tuần                                      | `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`                                                                                                            |
 | **3 luồng gốc + Production:** A–D (+ **E** FG→Inventory) | `FUNC_IMPROVE/P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` (**P0-08**)                                                                                        |
 | **Audit toàn phase + còn thiếu gì**                      | `FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`                                                                                               |
 | Trace **Warehouse ↔ Production** (hai chiều)             | **VI:** `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_VI.md` — **EN:** `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_EN.md` (**P0-05**) |
@@ -111,11 +111,11 @@ Báo cáo tiến độ module Production (tiếng Anh, có bảng P0): `FUNC_IMP
 
 ## 8) Kế hoạch phát triển còn lại (để biết “chưa làm gì”)
 
-| File                                              | Dùng khi                               |
-| ------------------------------------------------- | -------------------------------------- |
-| `FUNC_IMPROVE/BIOMIXING_DEV_PLAN.md`              | Roadmap phase, ước lượng, phạm vi      |
-| `FUNC_IMPROVE/BIOMIXING_GAP_ANALYSIS.md`          | So sánh gap (đọc kèm baseline)         |
-| `FUNC_IMPROVE/BIOMIXING_BASELINE_PREP_2026_VI.md` | Baseline nền tảng đã có vs cần bổ sung |
+| File                                          | Dùng khi                                 |
+| --------------------------------------------- | ---------------------------------------- |
+| `FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`     | Trạng thái phase vs code                 |
+| `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` | Production vận hành (reserve, lifecycle) |
+| `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`     | Chỉ mục tài liệu triển khai              |
 
 ---
 

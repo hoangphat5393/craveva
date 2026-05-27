@@ -122,4 +122,4 @@ URL local: `https://craveva-staging.test` (Herd) — DB theo `.env` máy bạn, 
 
 ---
 
-_Tài liệu liên quan: `BIOMIXING_GAP_STATUS_VI.md`, `PHASE2_PM_PLAN_VI.md`, `FUNC_LOGIC/ENV_LOCAL_VS_SERVER_HOSTNAMES_VI.md`._
+_Tài liệu liên quan: `BIOMIXING_GAP_STATUS_VI.md`, `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`, `FUNC_LOGIC/ENV_LOCAL_VS_SERVER_HOSTNAMES_VI.md`._

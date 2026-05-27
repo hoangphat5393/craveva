@@ -27,7 +27,7 @@ Bản rà soát theo yêu cầu: **lỗi thời**, **trùng lặp**, **logic ngh
 5. **Xóa** `API_DATA_TYPE_LIST_EN.md`; cập nhật `API_DATA_TYPE_LIST_VI.md` + `INDEX.md`.
 6. **`WAREHOUSE_INDEX.md`:** thêm dòng batch / WUP-07 + cập nhật ngày; link runbook `04_`.
 7. **`README.md`:** link audit này + dòng **Biomixing/Production** → `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`.
-8. **`FUNC_IMPROVE/AUDIT_IMPROVE_2026_VI.md`:** cập nhật ý runbook (đã đồng bộ tiền tố); **2026-05-09** layout phẳng Biomixing (không thư mục con `BIOMIXING/`).
+8. **FUNC_IMPROVE layout phẳng Biomixing (2026-05-09):** không thư mục con `BIOMIXING/`; retired plans → `FUNC_IMPROVE/LEGACY_ARCHIVE.md` (2026-05-27).
 9. **Audit pass (2026-05-09, follow-up):** Quét lại `FUNC_LOGIC/*.md` — link tới `FUNC_IMPROVE/` khớp file phẳng (`04_`…`09_`, `BIOMIXING_*`, không còn `FUNC_IMPROVE/BIOMIXING/`). `API_DATA_TYPE_LIST_VI.md`: mở đầu không nhấn tên file EN đã xóa. `README.md`: thêm dòng mục lục tới `SALES_FULFILLMENT_DOCS_INDEX.md` (đồng bộ `INDEX.md`).
 
 ### Audit pass — 2026-05-09 (kiểm tra lại)

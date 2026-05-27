@@ -81,17 +81,20 @@ flowchart LR
 
 ### 2.1 Luồng chuẩn (trước khi vào xưởng)
 
-| #    | Bước                          | Điều kiện              | Hành động hệ thống                                | Ghi chú                                                       |
-| ---- | ----------------------------- | ---------------------- | ------------------------------------------------- | ------------------------------------------------------------- |
-| 2.1  | Tạo SP FG + RM trong Purchase | SKU tồn tại            | `products` + type đúng                            | FG ≠ RM trên BOM                                              |
-| 2.2  | Tạo BOM master                | FG đã có               | `/account/production/boms`                        | Dropdown tách FG vs component                                 |
-| 2.3  | Tạo lệnh SX                   | BOM (tuỳ)              | `/account/production/orders/create`               | Chọn `rm_warehouse_id`, `fg_warehouse_id`, `planned_quantity` |
-| 2.3b | (Tuỳ) Từ SO                   | SO đã chốt             | Nút từ SO → prefill `sales_order_id`, SL, BOM     | P1-1 / P1-4                                                   |
-| 2.4  | Xem tổng NL                   | Lệnh có BOM / snapshot | Bảng `ProductionOrderMaterialRequirementsSummary` | SL kế hoạch × BOM (+ % hao hụt)                               |
-| 2.5  | Shortfall                     | Thiếu tồn RM           | Link tạo PO (nếu có quyền Purchase)               | P1-2                                                          |
-| 2.6  | **Release**                   | Draft, có BOM + dòng   | Snapshot → `production_order_bom_snapshot_items`  | Sau release **không** sửa BOM gốc trên lệnh                   |
+| #    | Bước                          | Điều kiện              | Hành động hệ thống                                                       | Ghi chú                                                               |
+| ---- | ----------------------------- | ---------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| 2.1  | Tạo SP FG + RM trong Purchase | SKU tồn tại            | `products` + type đúng                                                   | FG ≠ RM trên BOM                                                      |
+| 2.2  | Tạo BOM master                | FG đã có               | `/account/production/boms`                                               | Dropdown tách FG vs component                                         |
+| 2.3  | Tạo lệnh SX                   | BOM (tuỳ)              | `/account/production/orders/create`                                      | Chọn `rm_warehouse_id`, `fg_warehouse_id`, `planned_quantity`         |
+| 2.3b | (Tuỳ) Từ SO                   | SO đã chốt             | Nút từ SO → prefill `sales_order_id`, SL, BOM                            | P1-1 / P1-4                                                           |
+| 2.4  | Xem tổng NL                   | Lệnh có BOM / snapshot | Bảng `ProductionOrderMaterialRequirementsSummary`                        | SL kế hoạch × BOM (+ % hao hụt)                                       |
+| 2.5  | Shortfall                     | Thiếu tồn RM           | Link tạo PO (nếu có quyền Purchase)                                      | P1-2                                                                  |
+| 2.6  | **Release**                   | Draft, có BOM + dòng   | Snapshot → `production_order_bom_snapshot_items` + **reserve RM** (FEFO) | Chặn nếu thiếu `available`; xem `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 |
+| 2.6b | Cancel Released               | Chưa post RM/FG        | **Release** reservation Production                                       | Draft cancel: không có reserve để trả                                 |
 
 **Trạng thái lệnh:** `draft` → `released` → `in_progress` → `completed`.
+
+**Reserve vs post:** Release = giữ chỗ tồn (`reserved_quantity`); nút vàng **Deduct raw materials** = trừ tồn thật + **consume** reserve khi mọi batch đã post RM.
 
 **UAT:** — (nằm trong demo batch).
 
@@ -104,8 +107,7 @@ flowchart LR
 ```mermaid
 stateDiagram-v2
   [*] --> BatchCreated: Tạo batch (mã lô SX)
-  BatchCreated --> PlannedRM: Sinh planned RM từ snapshot
-  PlannedRM --> AssignedRM: Gán warehouse_product_batch từng dòng
+  BatchCreated --> AssignedRM: Planned RM tự sinh + gán warehouse_product_batch
   AssignedRM --> PostedRM: Post consumptions
   PostedRM --> OutputLine: Tạo dòng FG output (batch_number TP)
   OutputLine --> VarianceOK: Policy + approve (nếu cần)
@@ -117,16 +119,16 @@ stateDiagram-v2
 
 ### 3.1 Bảng bước chi tiết
 
-| #    | Bước UI (checklist 5 bước P0-4)     | Route / action                | Tiên quyết                               | Tồn kho (SSOT)                                 | Inventory list                        |
-| ---- | ----------------------------------- | ----------------------------- | ---------------------------------------- | ---------------------------------------------- | ------------------------------------- |
-| 3.1  | Tạo batch trên lệnh                 | Order → batches               | Released                                 | —                                              | —                                     |
-| 3.2  | **Sinh planned RM** từ BOM snapshot | `applyPlannedFromBomSnapshot` | Snapshot có; batch chưa có dòng RM       | —                                              | —                                     |
-| 3.3  | **Gán lô RM**                       | Assign batch per consumption  | Lô RM > 0 tại **đúng `rm_warehouse_id`** | —                                              | —                                     |
-| 3.4  | **Post RM**                         | `post-consumptions`           | Đã gán lô                                | **Trừ** `warehouse_product_batches` + movement | Không bắt buộc                        |
-| 3.5  | Thêm **FG output**                  | `outputs.store`               | Đã post RM                               | —                                              | —                                     |
-| 3.5a | **Variance**                        | Cột approval                  | Xem § 3.2                                | —                                              | —                                     |
-| 3.6  | **Post FG**                         | `post-fg-receipt`             | Policy OK; approve nếu bắt buộc          | **Cộng** warehouse batch FG                    | **P1c:** `purchase_stock_adjustments` |
-| 3.7  | Trace                               | `batches/{id}/trace`          | Đã post                                  | Link P↔W                                       | —                                     |
+| #    | Bước UI (checklist 4 bước trên batch) | Route / action                  | Tiên quyết                      | Tồn kho (SSOT)                                                                             | Inventory list                        |
+| ---- | ------------------------------------- | ------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------- |
+| 3.1  | Tạo / mở batch                        | Release → batch; `batches.show` | Released; snapshot trên lệnh    | **Tự** insert `production_batch_consumptions` (xem `PRODUCTION_BATCH_STEP1_RESTORE_VI.md`) | —                                     |
+| 3.2  | **Gán lô RM**                         | Assign batch per consumption    | Đã có dòng planned RM           | **Không** tăng reserve (reserve đã ở Release)                                              | —                                     |
+| 3.3  | **Post RM**                           | `post-consumptions`             | Đã gán lô                       | **Trừ** `warehouse_product_batches` + movement                                             | Không bắt buộc                        |
+| 3.4  | Thêm **FG output**                    | `outputs.store`                 | Đã post RM                      | —                                                                                          | —                                     |
+| 3.4a | **Variance**                          | Cột approval                    | Xem § 3.2 FG policy             | —                                                                                          | —                                     |
+| 3.5  | **Post FG**                           | `post-fg-receipt`               | Policy OK; approve nếu bắt buộc | **Cộng** warehouse batch FG                                                                | **P1c:** `purchase_stock_adjustments` |
+| —    | _(Legacy)_ Sinh planned RM thủ công   | `applyPlannedFromBomSnapshot`   | Chỉ khi bật lại config Step 1   | —                                                                                          | —                                     |
+| 3.7  | Trace                                 | `batches/{id}/trace`            | Đã post                         | Link P↔W                                                                                   | —                                     |
 
 **`batch_number` trên FG:** mã **lô thành phẩm** (vd. `PB-20260524-01`), **không** phải SKU. Tìm trên Inventory theo **tên SP / SKU**.
 
@@ -248,7 +250,7 @@ Thêm SP với **Opening stock** trên form Purchase ≠ tự có trên kho cho 
 
 | Hạng mục                                      | Phase   | Ghi chú                      |
 | --------------------------------------------- | ------- | ---------------------------- |
-| CCP / HACCP automation                        | 3+      | Roadmap `BIOMIXING_DEV_PLAN` |
+| CCP / HACCP automation                        | 3+      | `BIOMIXING_GAP_STATUS_VI.md` |
 | Receiving QC GRN đầy đủ                       | 3+      | —                            |
 | Multi-batch chia RM khác equal-split          | 2+      | Backlog                      |
 | Reverse movement sau post                     | —       | MVP chỉ idempotent skip      |
@@ -258,14 +260,15 @@ Thêm SP với **Opening stock** trên form Purchase ≠ tự có trên kho cho 
 
 ## 9. Changelog (LIVE — cập nhật mỗi đợt)
 
-| Ngày       | Thay đổi luồng                                                                                         | File / PR liên quan                             |
-| ---------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
-| 2026-05-25 | Pilot warehouse: `.env` inbound PO-only; kho UAT **LOCK-UAT** / **SCRAP-UAT**; WUP-01/04 Pass mini-UAT | `P0_MINI_UAT_CHECKLIST`, `04_WH_RUNBOOK` §2.1.1 |
-| 2026-05-24 | **Tạo LIVE DOC** — E2E, Phase 1, batch 5 bước, P1c, variance UI states                                 | File này                                        |
-| 2026-05-24 | UX-008: cột approval hiển thị «Không yêu cầu» thay vì «Chờ» khi không cần approve                      | `ProductionFgQuantityPolicyService`, batch show |
-| 2026-05-23 | P1c: Post FG → Purchase Inventory ledger + backfill                                                    | `16_*`                                          |
-| 2026-05-20 | Post RM UOM `convertToBase`                                                                            | `15_*`                                          |
-| 2026-05-20 | P0-3…P1-4 Production UX (tổng NL, SO→lệnh, checklist 5 bước)                                           | GAP_STATUS                                      |
+| Ngày       | Thay đổi luồng                                                                                         | File / PR liên quan                                     |
+| ---------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| 2026-05-27 | Ghi **reserve tại Release**, gán lô không reserve, cancel release reservation (đồng bộ plan đã retire) | `PRODUCTION_OPERATIONS_LIVE_VI.md`, `LEGACY_ARCHIVE.md` |
+| 2026-05-25 | Pilot warehouse: `.env` inbound PO-only; kho UAT **LOCK-UAT** / **SCRAP-UAT**; WUP-01/04 Pass mini-UAT | `P0_MINI_UAT_CHECKLIST`, `04_WH_RUNBOOK` §2.1.1         |
+| 2026-05-24 | **Tạo LIVE DOC** — E2E, Phase 1, batch 5 bước, P1c, variance UI states                                 | File này                                                |
+| 2026-05-24 | UX-008: cột approval hiển thị «Không yêu cầu» thay vì «Chờ» khi không cần approve                      | `ProductionFgQuantityPolicyService`, batch show         |
+| 2026-05-23 | P1c: Post FG → Purchase Inventory ledger + backfill                                                    | `16_*`                                                  |
+| 2026-05-20 | Post RM UOM `convertToBase`                                                                            | `15_*`                                                  |
+| 2026-05-20 | P0-3…P1-4 Production UX (tổng NL, SO→lệnh, checklist 5 bước)                                           | GAP_STATUS                                              |
 
 ---
 

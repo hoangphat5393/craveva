@@ -266,7 +266,7 @@ Sales Order → Thương mại
 | Phase PM    | Nội dung                                           | Ghi chú triển khai                                                                                     |
 | ----------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | **Phase 1** | Báo giá + BOM trên báo giá + duyệt 2 cấp + chặn SO | **~90% — chốt go-live** · [`PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md) |
-| **Phase 2** | SO → SX → batch → tồn                              | Kế hoạch: [`PHASE2_PM_PLAN_VI.md`](../FUNC_IMPROVE/PHASE2_PM_PLAN_VI.md)                               |
+| **Phase 2** | SO → SX → batch → tồn                              | Vận hành: [`PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)         |
 | **Phase 3** | Giao hàng → Hóa đơn                                | Đã có phần lớn trong ERP                                                                               |
 
 **Công tắc kỹ thuật Phase 1:** module `estimates_phase1_review` / `estimates_phase1_review_enabled()` theo công ty.

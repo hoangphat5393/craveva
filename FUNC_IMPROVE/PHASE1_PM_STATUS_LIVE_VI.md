@@ -60,7 +60,7 @@ Công ty **chỉ bán hàng** (không gia công): **tắt** chế độ này tro
 - Email template riêng đẹp hơn (hiện dùng layout mail chung).
 - Intake Estimate Request mở rộng thêm field OEM.
 
-**Sản xuất & kho** = **Phase 2** — xem kế hoạch: [`PHASE2_PM_PLAN_VI.md`](./PHASE2_PM_PLAN_VI.md).
+**Sản xuất & kho** = **Phase 2** — xem vận hành: [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md), [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md).
 
 **Chốt Phase 1:** UAT báo giá → duyệt → SO trên tenant Biomixing, rồi mở Phase 2.
 

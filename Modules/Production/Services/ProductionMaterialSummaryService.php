@@ -11,8 +11,23 @@ class ProductionMaterialSummaryService
 {
     private const FLOAT_TOLERANCE = 0.0000001;
 
+    public const SCOPE_ACTIVE = 'active';
+
+    public const SCOPE_ALL = 'all';
+
+    public const SCOPE_DRAFT = 'draft';
+
+    public const SCOPE_RELEASED = 'released';
+
+    public const SCOPE_IN_PROGRESS = 'in_progress';
+
     /**
-     * Material shortage summary includes draft orders only (planning before release).
+     * Default scope for material shortage summary (committed production).
+     */
+    public const DEFAULT_STATUS_SCOPE = self::SCOPE_ACTIVE;
+
+    /**
+     * Statuses included in at least one shortage scope (excludes completed/cancelled).
      *
      * @return list<string>
      */
@@ -20,10 +35,22 @@ class ProductionMaterialSummaryService
     {
         return [
             ProductionOrder::STATUS_DRAFT,
-            // ProductionOrder::STATUS_RELEASED,
-            // ProductionOrder::STATUS_IN_PROGRESS,
-            // ProductionOrder::STATUS_COMPLETED,
-            // ProductionOrder::STATUS_CANCELLED,
+            ProductionOrder::STATUS_RELEASED,
+            ProductionOrder::STATUS_IN_PROGRESS,
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function allowedStatusScopes(): array
+    {
+        return [
+            self::SCOPE_ACTIVE,
+            self::SCOPE_ALL,
+            self::SCOPE_DRAFT,
+            self::SCOPE_RELEASED,
+            self::SCOPE_IN_PROGRESS,
         ];
     }
 
@@ -246,7 +273,21 @@ class ProductionMaterialSummaryService
 
     public function normalizeStatusScope(?string $statusScope): string
     {
-        return ProductionOrder::STATUS_DRAFT;
+        $candidate = is_string($statusScope) && $statusScope !== '' ? $statusScope : self::DEFAULT_STATUS_SCOPE;
+
+        return in_array($candidate, self::allowedStatusScopes(), true)
+            ? $candidate
+            : self::DEFAULT_STATUS_SCOPE;
+    }
+
+    /**
+     * Human-readable scope label for UI notes (one string).
+     */
+    public function statusScopeSummaryLabel(string $statusScope): string
+    {
+        $normalized = $this->normalizeStatusScope($statusScope);
+
+        return (string) __('production::app.materialShortageStatusScopes.'.$normalized);
     }
 
     /**
@@ -254,7 +295,24 @@ class ProductionMaterialSummaryService
      */
     public function statusesForScope(?string $statusScope): array
     {
-        return self::summaryEligibleStatuses();
+        return match ($this->normalizeStatusScope($statusScope)) {
+            self::SCOPE_DRAFT => [ProductionOrder::STATUS_DRAFT],
+            self::SCOPE_RELEASED => [ProductionOrder::STATUS_RELEASED],
+            self::SCOPE_IN_PROGRESS => [ProductionOrder::STATUS_IN_PROGRESS],
+            self::SCOPE_ALL => [
+                ProductionOrder::STATUS_DRAFT,
+                ProductionOrder::STATUS_RELEASED,
+                ProductionOrder::STATUS_IN_PROGRESS,
+            ],
+            self::SCOPE_ACTIVE => [
+                ProductionOrder::STATUS_RELEASED,
+                ProductionOrder::STATUS_IN_PROGRESS,
+            ],
+            default => [
+                ProductionOrder::STATUS_RELEASED,
+                ProductionOrder::STATUS_IN_PROGRESS,
+            ],
+        };
     }
 
     /**

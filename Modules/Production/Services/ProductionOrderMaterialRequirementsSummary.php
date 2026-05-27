@@ -257,4 +257,41 @@ class ProductionOrderMaterialRequirementsSummary
 
         return $available;
     }
+
+    /**
+     * Draft preview for production order create/edit (BOM master, not release snapshot).
+     *
+     * @return list<RequirementRow>
+     */
+    public function previewForBom(
+        int $companyId,
+        int $productionBomId,
+        float $plannedQuantity,
+        ?int $rmWarehouseId = null,
+    ): array {
+        if ($plannedQuantity <= 0.0000001) {
+            return [];
+        }
+
+        $bom = ProductionBom::query()
+            ->with(['items.componentProduct.unit', 'items.unit'])
+            ->where(function ($query) use ($companyId): void {
+                $query->whereNull('company_id')->orWhere('company_id', $companyId);
+            })
+            ->find($productionBomId);
+
+        if ($bom === null || $bom->items->isEmpty()) {
+            return [];
+        }
+
+        $order = new ProductionOrder([
+            'company_id' => $companyId,
+            'production_bom_id' => $productionBomId,
+            'planned_quantity' => $plannedQuantity,
+            'rm_warehouse_id' => $rmWarehouseId,
+        ]);
+        $order->setRelation('bom', $bom);
+
+        return $this->forOrder($order);
+    }
 }

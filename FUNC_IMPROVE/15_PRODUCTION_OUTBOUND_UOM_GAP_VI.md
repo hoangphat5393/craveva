@@ -7,7 +7,7 @@
 | **Trạng thái**  | **Fixed** (2026-05-20) — `convertToBase` trước allocation/outbound trong `ProductionPostingService`            |
 | **Phân loại**   | **Bug triển khai** (thiếu `unit_id` trên outbound), **không** phải «chưa làm BIOMIXING» hay «chỉ thiếu shadow» |
 | **Ưu tiên**     | **P0** — rủi ro sai tồn khi BOM ĐVT ≠ đơn vị gốc SP                                                            |
-| **Kế hoạch vá** | [`15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md) (Plan mode)         |
+| **Kế hoạch vá** | Đã xóa (plan mode) — xem `LEGACY_ARCHIVE.md`; code vá 2026-05-20                                               |
 
 **Liên quan:** [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md), [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md), [`04_WH_RUNBOOK_UPGRADE_VI.md`](./04_WH_RUNBOOK_UPGRADE_VI.md) (WUP-06), [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](./DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)
 
@@ -86,7 +86,7 @@
 | Vai trò | File                                                                                                   |
 | ------- | ------------------------------------------------------------------------------------------------------ |
 | PM / BA | §1–§5 file này; workaround §5                                                                          |
-| Dev     | §2 + [`15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md)        |
+| Dev     | §2 doc-to-code; plan vá đã retire (`LEGACY_ARCHIVE.md`)                                                |
 | QA      | Test matrix trong plan; mini UAT `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` mục trừ NL (bổ sung case ĐVT) |
 
 ---

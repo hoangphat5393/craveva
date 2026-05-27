@@ -37,7 +37,14 @@ class ProductionBomsDataTable extends BaseDataTable
         $datatables->editColumn('version', fn (ProductionBom $row): string => e((string) ($row->version ?: '—')));
         $datatables->editColumn('code', fn (ProductionBom $row): string => e((string) ($row->code ?: '—')));
         $datatables->editColumn('items_count', fn (ProductionBom $row): string => (string) ((int) ($row->items_count ?? 0)));
-        $datatables->editColumn('is_default', fn (ProductionBom $row): string => $row->is_default ? e(__('app.yes')) : e(__('app.no')));
+        $datatables->editColumn('is_default', function (ProductionBom $row): string {
+            if ($row->is_default) {
+                return '<i class="fa fa-check-circle text-dark-green" data-toggle="tooltip" title="'.e(__('app.yes')).'"></i>';
+            }
+
+            return '<i class="fa fa-times text-red" data-toggle="tooltip" title="'.e(__('app.no')).'"></i>';
+        });
+        $datatables->addColumn('is_default_export', fn (ProductionBom $row): string => $row->is_default ? __('app.yes') : __('app.no'));
 
         $datatables->addColumn('action', function (ProductionBom $row): string {
             $canView = in_array($this->viewProductionBomPermission, ['all', 'added', 'owned', 'both'], true);
@@ -74,7 +81,7 @@ class ProductionBomsDataTable extends BaseDataTable
 
         $datatables->smart(false);
         $datatables->setRowId(fn (ProductionBom $row): string => 'row-'.$row->id);
-        $datatables->rawColumns(['action']);
+        $datatables->rawColumns(['action', 'is_default']);
 
         return $datatables;
     }
@@ -97,8 +104,12 @@ class ProductionBomsDataTable extends BaseDataTable
             ->withCount(['items', 'productionOrders'])
             ->where('production_boms.company_id', (int) company()->id);
 
-        if (! is_null($request->output_product_id) && (string) $request->output_product_id !== '') {
-            $query->where('production_boms.output_product_id', (int) $request->output_product_id);
+        if (
+            ! is_null($request->unit_type_id)
+            && (string) $request->unit_type_id !== ''
+            && (string) $request->unit_type_id !== 'all'
+        ) {
+            $query->where('output_products.unit_id', (int) $request->unit_type_id);
         }
 
         if (($request->searchText ?? '') !== '') {
@@ -203,6 +214,15 @@ class ProductionBomsDataTable extends BaseDataTable
                 'name' => 'production_boms.is_default',
                 'title' => __('production::app.bomDefaultForManufacturedProduct'),
                 'searchable' => false,
+                'exportable' => false,
+                'className' => 'text-center',
+            ],
+            'is_default_export' => [
+                'data' => 'is_default_export',
+                'name' => 'is_default_export',
+                'title' => __('production::app.bomDefaultForManufacturedProduct'),
+                'visible' => false,
+                'exportable' => true,
             ],
             Column::computed('action', __('app.action'))
                 ->exportable(false)

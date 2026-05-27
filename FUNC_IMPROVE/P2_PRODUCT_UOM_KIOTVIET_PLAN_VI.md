@@ -2,7 +2,7 @@
 
 **Cập nhật:** 21/05/2026 (triển khai A–C xong; UAT còn lại)  
 **Đối tượng đọc:** PM, BA, Dev  
-**Liên quan:** [`PHASE2_PM_PLAN_VI.md`](./PHASE2_PM_PLAN_VI.md) (P2-1 / Sprint D), [`11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md`](./11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md), [`BIOMIXING_MULTITENANT_RISKS_VI.md`](./BIOMIXING_MULTITENANT_RISKS_VI.md)
+**Liên quan:** [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md), [`11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md`](./11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md), [`BIOMIXING_MULTITENANT_RISKS_VI.md`](./BIOMIXING_MULTITENANT_RISKS_VI.md)
 
 ---
 
@@ -285,21 +285,21 @@ Cờ gợi ý: `multi_unit_enabled` per company (ẩn block UOM nếu tắt).
 ### C
 
 - [x] BOM hiển thị quy đổi; NL SX tổng theo base.
-- [x] Post RM consumption quy base — [`15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md) (Done 2026-05-20).
+- [x] Post RM consumption quy base — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) (Fixed 2026-05-20).
 - [ ] Shadow yield UOM nếu PM ký (`yield_uom_shadow_enabled`).
 
 ---
 
 ## 14. Tài liệu & code
 
-| File                                 | Mục đích        |
-| ------------------------------------ | --------------- |
-| `P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md` | Epic này        |
-| `PHASE2_PM_PLAN_VI.md`               | Sprint D / P2-1 |
-| `WarehouseUnitConversionService.php` | Quy SL          |
-| `product-form-fields.blade.php`      | UI gốc          |
-| `PurchaseProductController.php`      | Lưu SP          |
-| `BIOMIXING_GAP_STATUS_VI.md`         | Gap tổng        |
+| File                                 | Mục đích      |
+| ------------------------------------ | ------------- |
+| `P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md` | Epic này      |
+| `BIOMIXING_GAP_STATUS_VI.md`         | P2-UOM status |
+| `WarehouseUnitConversionService.php` | Quy SL        |
+| `product-form-fields.blade.php`      | UI gốc        |
+| `PurchaseProductController.php`      | Lưu SP        |
+| `BIOMIXING_GAP_STATUS_VI.md`         | Gap tổng      |
 
 ---
 

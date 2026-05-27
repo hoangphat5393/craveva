@@ -56,18 +56,14 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success mt-3 mb-0">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger mt-3 mb-0">{{ session('error') }}</div>
-        @endif
+        @include('production::partials.flash-and-validation-alerts')
 
         <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
             {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
         </div>
     </div>
 @endsection
+
 
 @push('scripts')
     @include('sections.datatable_js')

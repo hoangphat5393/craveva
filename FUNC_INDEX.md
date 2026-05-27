@@ -36,7 +36,7 @@ When a module needs deep details (product/client/production integrations), keep 
 
 - `FUNC_BUG/INDEX.md` — **audit nhóm bug/incident:** `FUNC_BUG/AUDIT_BUG_2026_VI.md`
 - `FUNC_IMPORT/INDEX.md` — **audit nhóm import:** `FUNC_IMPORT/AUDIT_IMPORT_2026_VI.md`
-- `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **audit tài liệu nhóm:** `FUNC_IMPROVE/AUDIT_IMPROVE_2026_VI.md`
+- `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **audit:** `FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`; **retired:** `FUNC_IMPROVE/LEGACY_ARCHIVE.md`
 - `FUNC_LOGIC/INDEX.md` — **audit tài liệu nhóm:** `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md`
 - `FUNC_TEST/INDEX.md`
 - `docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md` — audit thư mục `docs/` (runbook, staging, axios-migration; không gộp 40+ file tracker)

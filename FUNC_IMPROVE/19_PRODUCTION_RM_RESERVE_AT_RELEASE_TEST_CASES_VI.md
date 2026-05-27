@@ -1,6 +1,6 @@
 # Test cases — Reserve nguyên liệu Production tại Release
 
-_Cập nhật: **27/05/2026** · Tham chiếu: [`19_PRODUCTION_RM_RESERVE_AT_RELEASE_PLAN_VI.md`](./19_PRODUCTION_RM_RESERVE_AT_RELEASE_PLAN_VI.md)_
+_Cập nhật: **27/05/2026** · Tham chiếu vận hành: [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)_
 
 **Phạm vi:** Reserve RM qua `StockReservationService` khi **Release** lệnh sản xuất; **không** reserve ở Draft; release reservation khi **Cancel** (Released, chưa post RM); **consume** reservation khi **tất cả** batch đã post RM.
 

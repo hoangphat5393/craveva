@@ -10,6 +10,7 @@ use Modules\Production\Entities\ProductionBatchOutput;
 use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
+use Modules\Production\Support\ProductionBomFirstPolicy;
 use Modules\Purchase\Services\ProductionFgInventoryLedgerSync;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Services\StockMovementService;
@@ -35,6 +36,10 @@ class ProductionPostingService
             throw new InvalidArgumentException(__('production::app.onlyDraftReleasable'));
         }
 
+        if (ProductionBomFirstPolicy::requireBomOnOrder()) {
+            $this->assertOrderHasReleasableBom($order);
+        }
+
         DB::transaction(function () use ($order): void {
             $this->syncBomSnapshotForReleasedOrder($order);
             $order->refresh();
@@ -52,6 +57,18 @@ class ProductionPostingService
     /**
      * Freezes BOM component quantities against the {@see ProductionOrder::planned_quantity} at release when a BOM exists.
      */
+    protected function assertOrderHasReleasableBom(ProductionOrder $order): void
+    {
+        if ($order->production_bom_id === null) {
+            throw new InvalidArgumentException(__('production::app.bomRequired'));
+        }
+
+        $bom = ProductionBom::with('items')->find((int) $order->production_bom_id);
+        if ($bom === null || $bom->items->isEmpty()) {
+            throw new InvalidArgumentException(__('production::app.bomHasNoLines'));
+        }
+    }
+
     protected function syncBomSnapshotForReleasedOrder(ProductionOrder $order): void
     {
         $order->bomSnapshotItems()->delete();
@@ -264,7 +281,7 @@ class ProductionPostingService
             'manufacturing_date' => $output->manufacturing_date?->format('Y-m-d'),
             'reference_type' => ProductionBatch::class,
             'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-fg-receipt:' . $output->id,
+            'idempotency_key' => 'production-fg-receipt:'.$output->id,
         ];
 
         DB::transaction(function () use ($payload, $output, $batch, $order): void {
@@ -348,7 +365,7 @@ class ProductionPostingService
                 'batch_id' => (int) $allocation['batch_id'],
                 'reference_type' => ProductionBatch::class,
                 'reference_id' => (int) $batch->id,
-                'idempotency_key' => 'production-consume:' . $consumption->id . ':' . $index,
+                'idempotency_key' => 'production-consume:'.$consumption->id.':'.$index,
             ];
 
             $this->stockMovementService->recordOutbound($payload);
@@ -398,7 +415,7 @@ class ProductionPostingService
             ->where('warehouse_id', $rmWarehouseId)
             ->where('product_id', (int) $consumption->component_product_id)
             ->where('quantity', '>', 0)
-            ->when($preferredBatchId !== null, fn($query) => $query->where('id', '!=', (int) $preferredBatchId))
+            ->when($preferredBatchId !== null, fn ($query) => $query->where('id', '!=', (int) $preferredBatchId))
             ->orderByDesc('quantity')
             ->orderBy('id')
             ->get(['id', 'quantity', 'reserved_quantity']);

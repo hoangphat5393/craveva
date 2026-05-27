@@ -9,6 +9,7 @@ Navigation index for business logic, master guides, flow references, and audit r
 - Warehouse hub: `FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`
 - Maolin hub: `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`
 - Sales fulfillment hub: `FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`
+- **Production vận hành live:** `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`
 - **Biomixing pilot — test & UAT (một cửa, tiếng Việt):** `FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md` — chỉ mục đầy đủ runbook + `php artisan test`; **hàng đợi bước tiếp theo P0:** `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`
 
 ## Domain Index Files
@@ -40,6 +41,8 @@ Navigation index for business logic, master guides, flow references, and audit r
 - `FUNC_LOGIC/AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md` — đã gỡ `POST /ai-order-webhook/{hash}`; chỉ REST `/api/integrations/orders`
 
 ## Audit and Review Documents
+
+**Snapshot audits (đọc kèm living doc — không coi là SSOT vận hành):** xem [`LEGACY_ARCHIVE.md`](LEGACY_ARCHIVE.md).
 
 - `FUNC_LOGIC/AUDIT_WAREHOUSE_MODULE_VI.md`
 - `FUNC_LOGIC/AUDIT_PURCHASE_MODULE_VI.md`

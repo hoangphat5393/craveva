@@ -98,12 +98,12 @@
 | P2-1 / P2-UOM   | **✅ Code** — A/B/C + post lô `convertToBase` (2026-05-20). **UAT:** Oldtown + Luồng D. [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md) |
 | P2-UOM-OUTBOUND | **✅ Fixed 2026-05-20** — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)                                                           |
 | P2-SKU          | **✅ 2026-05-21** — SKU tự động khi tạo SP (Purchase)                                                                                                                |
-| P0-02           | Variance approval UAT — badge UX **Done** (UX-008); xem `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` §3.2                                                                 |
+| P0-02           | Variance approval UAT — badge UX **Done** (UX-008); xem `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` §3.2                                                                    |
 | P0-05 / P0-08   | UAT trace + mini UAT A–D — **chưa ký** (xem [`BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`](./BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md))                            |
 | P2+             | Phiên bản BOM V2; CCP/QA phase 3+                                                                                                                                    |
 | —               | Email/Estimate Request Phase 1 (tùy chọn)                                                                                                                            |
 
-Chi tiết kỹ thuật: `FUNC_IMPROVE/PHASE2_PM_PLAN_VI.md`, `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`.
+Chi tiết kỹ thuật: `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`, `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`, `PROJECT BIOMIXING/UI_RUNBOOK_PHASE2_*`.
 
 ---
 

@@ -16,12 +16,7 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success mt-3 mb-0">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger mt-3 mb-0">{{ session('error') }}</div>
-        @endif
+        @include('production::partials.flash-and-validation-alerts')
 
         <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
             {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
@@ -32,12 +27,12 @@
 @section('filter-section')
     <x-filters.filter-box>
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
-            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('production::app.manufacturedProduct')</p>
-            <div class="select-status">
-                <select class="form-control select-picker" name="output_product_id" id="production-boms-output-product-filter" data-container="body" data-size="8">
-                    <option value="">@lang('app.all')</option>
-                    @foreach ($finishedGoodsFilter as $p)
-                        <option value="{{ $p->id }}" @selected((string) request('output_product_id') === (string) $p->id)>{{ $p->name }}</option>
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('modules.invoices.unitType')</p>
+            <div class="select-status d-flex">
+                <select class="form-control select-picker" name="unit_type_id" id="production-boms-unit-type-filter" data-container="body" data-size="8">
+                    <option value="all" @selected((string) request('unit_type_id', 'all') === 'all')>@lang('app.all')</option>
+                    @foreach ($unitTypes as $unitType)
+                        <option value="{{ $unitType->id }}" @selected((string) request('unit_type_id') === (string) $unitType->id)>{{ $unitType->unit_type }}</option>
                     @endforeach
                 </select>
             </div>
@@ -57,7 +52,7 @@
         </div>
 
         <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
-            <x-forms.button-secondary class="btn-xs {{ request()->filled('output_product_id') || request()->filled('searchText') ? '' : 'd-none' }}" id="production-boms-reset-filters" icon="times-circle">
+            <x-forms.button-secondary class="btn-xs {{ (request()->filled('unit_type_id') && (string) request('unit_type_id') !== 'all') || request()->filled('searchText') ? '' : 'd-none' }}" id="production-boms-reset-filters" icon="times-circle">
                 @lang('app.clearFilters')
             </x-forms.button-secondary>
         </div>
@@ -69,7 +64,7 @@
 
     <script>
         $('#production-boms-table').on('preXhr.dt', function(e, settings, data) {
-            data.output_product_id = $('#production-boms-output-product-filter').val();
+            data.unit_type_id = $('#production-boms-unit-type-filter').val();
             data.searchText = $('#production-boms-search-field').val();
         });
 
@@ -77,33 +72,30 @@
             window.LaravelDataTables["production-boms-table"].draw(true);
         };
 
-        $('#production-boms-output-product-filter').on('change changed.bs.select', function() {
-            if ($(this).val() !== '' || $('#production-boms-search-field').val() !== '') {
-                $('#production-boms-reset-filters').removeClass('d-none');
-            } else {
-                $('#production-boms-reset-filters').addClass('d-none');
-            }
+        const toggleProductionBomsResetButton = () => {
+            const unitType = $('#production-boms-unit-type-filter').val();
+            const hasFilters = (unitType !== '' && unitType !== 'all') || $('#production-boms-search-field').val() !== '';
 
+            $('#production-boms-reset-filters').toggleClass('d-none', !hasFilters);
+        };
+
+        $('#production-boms-unit-type-filter').on('change changed.bs.select', function() {
+            toggleProductionBomsResetButton();
             showProductionBomsTable();
         });
 
         $('#production-boms-search-field').on('keyup', function() {
-            if ($(this).val() !== '' || $('#production-boms-output-product-filter').val() !== '') {
-                $('#production-boms-reset-filters').removeClass('d-none');
-            } else {
-                $('#production-boms-reset-filters').addClass('d-none');
-            }
-
+            toggleProductionBomsResetButton();
             showProductionBomsTable();
         });
 
         $('body').on('click', '#production-boms-reset-filters', function(e) {
             e.preventDefault();
 
-            $('#production-boms-output-product-filter').val('');
+            $('#production-boms-unit-type-filter').val('all');
             $('#production-boms-search-field').val('');
             $('.select-picker').selectpicker('refresh');
-            $('#production-boms-reset-filters').addClass('d-none');
+            toggleProductionBomsResetButton();
 
             showProductionBomsTable();
         });

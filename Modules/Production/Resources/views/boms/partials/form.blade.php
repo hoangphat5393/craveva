@@ -1,5 +1,6 @@
 @php
     use Modules\Production\Support\ProductionBomLineCostCalculator;
+    use Modules\Production\Support\ProductionProductSelectLabel;
 
     /** @var \Illuminate\Support\Collection<int, \App\Models\Product>|array $finishedGoods */
     /** @var \Illuminate\Support\Collection<int, \App\Models\Product>|array $componentProducts */
@@ -92,10 +93,14 @@
 
 <div class="form-row my-3">
     <div class="col-12">
-        <x-forms.select class="mb-0" fieldId="output_product_id" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
+        <x-forms.select class="mb-0" fieldId="output_product_id" :search="true" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
             <option value="">—</option>
             @foreach ($finishedGoods as $p)
-                <option value="{{ $p->id }}" @selected((int) old('output_product_id', isset($bom) ? $bom->output_product_id : 0) === (int) $p->id)>{{ $bomProductLabelWithUnit($p, $bomFgUnitByProductId) }}</option>
+                @php
+                    $fgSelectLabel = ProductionProductSelectLabel::forProduct($p);
+                    $fgSku = trim((string) ($p->sku ?? ''));
+                @endphp
+                <option value="{{ $p->id }}" data-content="{{ $fgSelectLabel }}" @if ($fgSku !== '') data-tokens="{{ $fgSku }}" @endif @selected((int) old('output_product_id', isset($bom) ? $bom->output_product_id : 0) === (int) $p->id)>{{ $fgSelectLabel }}</option>
             @endforeach
         </x-forms.select>
         <p class="f-12 text-dark-grey mb-0 mt-2">@lang('production::app.bomManufacturedProductHelp')</p>
@@ -131,7 +136,7 @@
 
 <div class="form-group my-3">
     <x-forms.label fieldId="notes" :fieldLabel="__('production::app.bomNotes')" fieldRequired="false" />
-    <textarea name="notes" id="notes" class="form-control f-14" rows="2" maxlength="2000">{{ old('notes', isset($bom) ? $bom->notes ?? '' : '') }}</textarea>
+    <textarea name="notes" id="notes" class="form-control f-14 pt-2" rows="4" maxlength="2000">{{ old('notes', isset($bom) ? $bom->notes ?? '' : '') }}</textarea>
 </div>
 
 <h6 class="f-14 text-dark-grey font-weight-bold mb-1">@lang('production::app.bomLines')</h6>
@@ -505,11 +510,11 @@
                         <input type="hidden" name="items[${newIndex}][component_product_id]" class="bom-line-component-id" value="">
                     </td>
                     <td class="align-middle">
-                        <div class="d-flex flex-wrap align-items-center" style="gap: 0.35rem;">
-                            <select name="items[${newIndex}][unit_id]" class="form-control height-35 f-14 bom-line-unit-select" style="min-width: 6rem; flex: 0 1 auto;">
+                        <div class="d-flex flex-nowrap align-items-center bom-line-qty-uom" style="gap: 0.35rem;">
+                            <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14 bom-line-quantity" style="min-width: 4.5rem; max-width: 7rem; flex: 1 1 auto;" value="1">
+                            <select name="items[${newIndex}][unit_id]" class="form-control height-35 f-14 bom-line-unit-select" style="min-width: 5.5rem; max-width: 9rem; flex: 0 0 auto;">
                                 <option value="">—</option>
                             </select>
-                            <input type="number" step="0.0001" min="0.0001" name="items[${newIndex}][quantity]" class="form-control height-35 f-14 bom-line-quantity flex-grow-1" style="min-width: 5rem;" value="1">
                         </div>
                         ${showBomWasteUi ? '' : `<input type="hidden" name="items[${newIndex}][waste_percent]" class="bom-line-waste" value="0">`}
                     </td>

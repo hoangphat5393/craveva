@@ -1,7 +1,8 @@
 @php
-    use Modules\Production\Support\ProductionProductSelectLabel;
+    use Modules\Production\Support\ProductionBomFirstPolicy;
 
     $soPrefill = $salesOrderPrefill ?? null;
+    $bomFirstWorkflow = ProductionBomFirstPolicy::enabled();
     $defaultOutputProductId = old('output_product_id', $soPrefill['output_product_id'] ?? null);
     $defaultBomId = old('production_bom_id', $soPrefill['production_bom_id'] ?? null);
     $defaultPlannedQty = old('planned_quantity', $soPrefill['planned_quantity'] ?? 1);
@@ -39,36 +40,19 @@
 
 <div class="row">
     <div class="col-lg-8">
-        <form method="post" action="{{ route('production.orders.store') }}" id="save-production-order-form" class="bg-white rounded p-4">
+        <form method="post" action="{{ route('production.orders.store') }}" id="save-production-order-form" class="bg-white rounded p-4" data-bom-first="{{ $bomFirstWorkflow ? '1' : '0' }}" data-bom-disable-fg="{{ ProductionBomFirstPolicy::bomFirstDisableFgSelect() ? '1' : '0' }}">
             @csrf
             @include('sections.password-autocomplete-hide')
             <input type="hidden" name="redirect_url" value="{{ $defaultRedirectUrl }}">
 
             <h4 class="mb-3 f-21 font-weight-normal">@lang('production::app.newOrder')</h4>
 
-            <x-forms.select fieldId="output_product_id" :search="true" :fieldLabel="__('production::app.manufacturedProduct')" fieldName="output_product_id" fieldRequired="true">
-                <option value="">—</option>
-                @foreach ($finishedGoods as $p)
-                    @php
-                        $fgSelectLabel = ProductionProductSelectLabel::forProduct($p);
-                        $fgSku = trim((string) ($p->sku ?? ''));
-                    @endphp
-                    <option value="{{ $p->id }}" data-content="{{ $fgSelectLabel }}" @if ($fgSku !== '') data-tokens="{{ $fgSku }}" @endif @selected((string) $defaultOutputProductId === (string) $p->id)>{{ $fgSelectLabel }}</option>
-                @endforeach
-            </x-forms.select>
-
-            <x-forms.select fieldId="production_bom_id" :search="true" :fieldLabel="__('production::app.bom') . ' (' . __('app.optional') . ')'" fieldName="production_bom_id" :fieldRequired="false">
-                <option value="">—</option>
-                @foreach ($boms as $bom)
-                    <option value="{{ $bom->id }}" data-output-product-id="{{ $bom->output_product_id }}" @selected((string) $defaultBomId === (string) $bom->id)>
-                        {{ $bom->labelForSelect() }}
-                    </option>
-                @endforeach
-            </x-forms.select>
-            <p class="f-12 text-muted mt-12 mb-0">
-                @lang('production::app.bomManageFromSettingsHint')
-                <a href="{{ route('production.boms.index') }}">@lang('production::app.menuBillOfMaterials')</a>
-            </p>
+            @include('production::orders.partials.order-bom-header-fields', [
+                'finishedGoods' => $finishedGoods,
+                'boms' => $boms,
+                'defaultOutputProductId' => $defaultOutputProductId,
+                'defaultBomId' => $defaultBomId,
+            ])
 
             <x-forms.select fieldId="rm_warehouse_id" :fieldLabel="__('production::app.rawMaterialWarehouse')" fieldName="rm_warehouse_id" fieldRequired="true">
                 @foreach ($warehouses as $w)
@@ -86,6 +70,8 @@
                 <x-forms.label fieldId="planned_quantity" :fieldLabel="__('production::app.plannedQty')" fieldRequired="true" />
                 <input type="number" step="0.0001" min="0.0001" name="planned_quantity" id="planned_quantity" class="form-control height-35 f-14" value="{{ $defaultPlannedQty }}" required>
             </div>
+
+            @include('production::orders.partials.bom-preview-panel')
 
             <x-forms.select fieldId="sales_order_id" :search="true" :fieldLabel="__('production::app.linkedSalesOrder')" fieldName="sales_order_id" :fieldRequired="false">
                 <option value="">—</option>
@@ -119,6 +105,7 @@
 </div>
 
 @include('production::orders.partials.bom-fg-sync-script')
+@include('production::orders.partials.bom-preview-script')
 
 <script>
     (() => {

@@ -44,7 +44,7 @@
 ## 4) FUNC_IMPORT / FUNC_IMPROVE / FUNC_REPORT / docs / SPECIFICATION / LOG_REPORT
 
 - `FUNC_IMPORT/**` — đặc tả import (sau gộp 2026-05: `IMPORT_SPECS_VI.md`, …)
-- `FUNC_IMPROVE/**` — plan cải tiến (một số file ghi rõ “archived analysis”); **2026-05-12:** gộp AI→SO webhook `13_`+`14_`+`15_` → `FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md`; **audit:** `FUNC_IMPROVE/AUDIT_IMPROVE_2026_VI.md`
+- `FUNC_IMPROVE/**` — plan cải tiến; **living:** `BIOMIXING_GAP_STATUS_VI.md`, `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`; **retired:** `FUNC_IMPROVE/LEGACY_ARCHIVE.md`; **audit:** `DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`
 - `FUNC_REPORT/**` — báo cáo/tài liệu ảnh/chụp màn hình phục vụ PM/QA
 - `docs/**` — runbook staging/hub; **audit:** `docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md`
 - **`SPECIFICATION/`** — spec EN, audit luồng signup/menu, snapshot SSH + GCP/SQL gộp: `SPECIFICATION/INDEX.md`, `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`, **audit:** `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`

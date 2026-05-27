@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Production\Entities\ProductionBatch;
 use Modules\Production\Entities\ProductionOrder;
+use Modules\Production\Support\ProductionBomFirstPolicy;
 use Modules\Production\Support\ProductionTenantAccess;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 
@@ -13,6 +14,10 @@ class StoreProductionBatchConsumptionRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        if (! ProductionBomFirstPolicy::allowManualBatchConsumptionLines()) {
+            return false;
+        }
+
         return ProductionTenantAccess::tenantMayUseProduction()
             && in_array(user()->permission('edit_production_orders'), ['all', 'added', 'owned', 'both'], true);
     }

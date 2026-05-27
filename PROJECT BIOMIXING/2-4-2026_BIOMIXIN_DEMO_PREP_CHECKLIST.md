@@ -6,11 +6,11 @@
 
 ## Project status (read first)
 
-|                        |                                                                                                                                                                                                                                                                                            |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Phase**              | **Demo preparation only** — loading sample/legacy data and rehearsing a scripted walkthrough in Craveva Hub/staging.                                                                                                                                                                       |
-| **Not in scope (yet)** | **No full Production/MES module implementation** is assumed here; this checklist does **not** mean the Biomixing production ERP sub-project has moved to build or go-live. “Production” in the demo is simulated via **Projects / task packs** where noted.                                |
-| **After demo**         | A separate roadmap (e.g. `BIOMIXING_DEV_PLAN.md`) applies for real **module development**, timelines, and Hub go-live. **Before scoping Production build**, read **`BIOMIXING_BASELINE_PREP_2026_VI.md`** (current SO/PO/DO/Warehouse behaviour on Hub). |
+|                        |                                                                                                                                                                                                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Phase**              | **Demo preparation only** — loading sample/legacy data and rehearsing a scripted walkthrough in Craveva Hub/staging.                                                                                                                                        |
+| **Not in scope (yet)** | **No full Production/MES module implementation** is assumed here; this checklist does **not** mean the Biomixing production ERP sub-project has moved to build or go-live. “Production” in the demo is simulated via **Projects / task packs** where noted. |
+| **After demo**         | Status & scope: `FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`. Production ops: `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`. Baseline: `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`.                                                                              |
 
 ---
 

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Test Run Flow - Release Reserve</title>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "default", flowchart: { useMaxWidth: true } });
+  </script>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      color: #222;
+    }
+
+    .card {
+      max-width: 1450px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 22px;
+    }
+
+    p {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      color: #444;
+    }
+
+    ul {
+      margin: 0 0 14px 18px;
+      color: #444;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Production Test Run Flow (Release Reserve)</h1>
+    <p>This flow is for PM and testers to run UAT after enabling raw-material reserve at Release.</p>
+    <ul>
+      <li>Main scope: PR-01 to PR-05 (automated) and PR-10, PR-11, PR-12 (manual).</li>
+      <li>DB checks: <code>stock_reservations</code> and <code>warehouse_product_batches.reserved_quantity</code>.</li>
+    </ul>
+    <div class="mermaid">
+      flowchart TD
+      A([Start Production test run])
+      A --> B[Create Production Order<br />Status = Draft]
+      B --> C{Any reserve on Draft?}
+      C -->|No| C1[PASS PR-01]
+      C -->|Yes| C2[FAIL PR-01]
+
+      C1 --> D[Click Release]
+      D --> E{Enough available stock to reserve?}
+      E -->|No| E1[Error: insufficient raw material to reserve<br />Status remains Draft<br />PASS PR-03]
+      E -->|Yes| E2[Create bill of materials snapshot + Reserve raw materials<br />Status = Released<br />PASS PR-02]
+
+      E1 --> D
+      E2 --> F[Verify stock_reservations<br />reference = ProductionOrder]
+      F --> G[Verify warehouse batch reserved_quantity]
+
+      G --> H{Run Cancel Released scenario?}
+      H -->|Yes| H1[Click Cancel]
+      H1 --> H2[Reservation released<br />reserved_quantity back to 0<br />Status = Cancelled<br />PASS PR-04]
+      H2 --> Z([End Cancel branch])
+      H -->|No| I[Create / open Production Batch]
+
+      I --> J[Create raw material consumption lines]
+      J --> K[Deduct raw materials from stock]
+      K --> L{All order batches have posted raw materials?}
+      L -->|No| L1[Reservation stays active<br />Track PR-12]
+      L -->|Yes| L2[Consume reservation<br />reserved_quantity back to 0<br />PASS PR-05]
+
+      L1 --> M[Post next batch]
+      M --> K
+      L2 --> N[Order status moves to In progress]
+      N --> O[Create manufactured product outputs]
+      O --> P[Post finished goods receipt]
+      P --> Q{Any manufactured product batch still unposted?}
+      Q -->|Yes| O
+      Q -->|No| R[Order status = Completed]
+
+      R --> S[Material shortage summary validation]
+      S --> T{Status filter}
+      T -->|Draft| T1[Do not subtract Production Draft reserve<br />PR-10]
+      T -->|Released + In progress| T2[Available subtracts Production and delivery order reserve<br />PR-11]
+      T1 --> U([Test run completed])
+      T2 --> U
+    </div>
+  </div>
+</body>
+
+</html>

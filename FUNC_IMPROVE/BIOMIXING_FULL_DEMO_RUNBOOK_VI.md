@@ -117,7 +117,7 @@ Sau **Post FG receipt**, tồn phải xuất hiện ở **hai nơi** (khác SSOT
 - **Doc sync Biomixing:** `BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`
 - **Audit phase + go-live:** `BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`
 - Playbook Phase 0–1: `BIOMIXING_PLAYBOOK_P0P1_VI.md`
-- P0 hành động tuần: `P0_NEXT_ACTION_BIOMIXING_VI.md`
+- P0 hàng đợi: `P0_BIOMIXING_NEXT_STEPS_VI.md`
 - Demo script stakeholder (ERP+AI): `PROJECT BIOMIXING/BIOMIXING_DEMO_SCRIPT.md`
 
 ---

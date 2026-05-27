@@ -2,7 +2,7 @@
 
 **Mục đích:** Tóm các **khái niệm** và **lưu ý vận hành/kho** thường gây nhầm giữa B2B, PO và Production — bổ sung cho playbook triển khai; **không** thay thế `FUNC_LOGIC` hay spec kỹ thuật chi tiết.
 
-**Đọc cùng:** **`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`** (luồng bước chuẩn — LIVE) · `BIOMIXING_PLAYBOOK_P0P1_VI.md` · `BIOMIXING_BASELINE_PREP_2026_VI.md`.
+**Đọc cùng:** **`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`** (luồng bước chuẩn — LIVE) · `BIOMIXING_PLAYBOOK_P0P1_VI.md` · `BIOMIXING_GAP_STATUS_VI.md`.
 
 **Cập nhật:** 2026-05
 
@@ -59,16 +59,16 @@ Vật lý: RM “biến thành” FG — trong sổ kho là **xuất RM + nhập
 
 `SO → Production Order → Consume RM → Receive FG → DO → Invoice`
 
-| Bước                           | Tồn kho (tóm tắt)                        | Ghi chú                                                                                                                                                                                                                  |
-| ------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **SO**                         | Chưa đổi tồn (thường)                    | Cam kết bán.                                                                                                                                                                                                             |
-| **Production Order (Draft)**   | Chưa reserve / chưa trừ                  | Lập kế hoạch; sửa BOM / planned qty / kho RM.                                                                                                                                                                            |
-| **Production Order (Release)** | **Reserve RM** (kế hoạch)                | PM chốt: giữ tồn tại Release qua `StockReservationService` — xem [`19_PRODUCTION_RM_RESERVE_AT_RELEASE_PLAN_VI.md`](./19_PRODUCTION_RM_RESERVE_AT_RELEASE_PLAN_VI.md). Chưa code = hàng MVP cũ (chỉ cảnh báo thiếu NVL). |
-| **Consume RM**                 | **Trừ tồn RM**                           | Xuất nguyên liệu theo lô/batch đã chọn.                                                                                                                                                                                  |
-| **Receive FG**                 | **Cộng tồn FG**                          | Nhập thành phẩm + batch FG.                                                                                                                                                                                              |
-| **DO confirm**                 | **Reserved FG** (theo baseline Sales DO) | Giữ hàng để giao.                                                                                                                                                                                                        |
-| **DO ship**                    | **Trừ tồn FG**                           | Xuất giao khách.                                                                                                                                                                                                         |
-| **Invoice**                    | Không đổi tồn (thường)                   | Tài chính theo cấu hình sale/shipment.                                                                                                                                                                                   |
+| Bước                           | Tồn kho (tóm tắt)                        | Ghi chú                                                                                                                                                                 |
+| ------------------------------ | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SO**                         | Chưa đổi tồn (thường)                    | Cam kết bán.                                                                                                                                                            |
+| **Production Order (Draft)**   | Chưa reserve / chưa trừ                  | Lập kế hoạch; sửa BOM / planned qty / kho RM.                                                                                                                           |
+| **Production Order (Release)** | **Reserve RM**                           | Đã triển khai: giữ tồn tại Release qua `StockReservationService`; chặn release nếu thiếu available; tham chiếu vận hành: `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`. |
+| **Consume RM**                 | **Trừ tồn RM**                           | Xuất nguyên liệu theo lô/batch đã chọn.                                                                                                                                 |
+| **Receive FG**                 | **Cộng tồn FG**                          | Nhập thành phẩm + batch FG.                                                                                                                                             |
+| **DO confirm**                 | **Reserved FG** (theo baseline Sales DO) | Giữ hàng để giao.                                                                                                                                                       |
+| **DO ship**                    | **Trừ tồn FG**                           | Xuất giao khách.                                                                                                                                                        |
+| **Invoice**                    | Không đổi tồn (thường)                   | Tài chính theo cấu hình sale/shipment.                                                                                                                                  |
 
 ---
 
@@ -92,6 +92,6 @@ Vật lý: RM “biến thành” FG — trong sổ kho là **xuất RM + nhập
 
 ## Liên hệ tài liệu kỹ thuật
 
-- Baseline kho/DO: `BIOMIXING_BASELINE_PREP_2026_VI.md`, `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md`.
+- Baseline kho/DO: `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md`, `BIOMIXING_PREP_INDEX_EN.md`.
 - Playbook triển khai MVP: `BIOMIXING_PLAYBOOK_P0P1_VI.md`.
-- Roadmap tổng: `BIOMIXING_DEV_PLAN.md`.
+- Trạng thái & backlog: `BIOMIXING_GAP_STATUS_VI.md`.

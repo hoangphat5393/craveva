@@ -10,6 +10,7 @@ use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Modules\Production\DataTables\ProductionOrdersDataTable;
 use Modules\Production\Entities\ProductionBatch;
@@ -18,9 +19,11 @@ use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Http\Concerns\HandlesProductionErrors;
 use Modules\Production\Http\Requests\StoreProductionOrderRequest;
 use Modules\Production\Http\Requests\UpdateProductionOrderRequest;
+use Modules\Production\Services\ProductionBatchPlannedLinesApplicator;
 use Modules\Production\Services\ProductionOrderMaterialRequirementsSummary;
 use Modules\Production\Services\ProductionOrderSalesOrderPrefill;
 use Modules\Production\Services\ProductionPostingService;
+use Modules\Production\Support\ProductionBomFirstPolicy;
 use Modules\Production\Support\ProductionProductUnitLabelMap;
 use Modules\Production\Support\ProductionTenantAccess;
 use Modules\Purchase\Entities\PurchaseManagementSetting;
@@ -73,6 +76,56 @@ class ProductionOrderController extends AccountBaseController
         $this->view = 'production::orders.ajax.create';
 
         return view('production::orders.create', $this->data);
+    }
+
+    public function bomPreview(Request $request): JsonResponse|array
+    {
+        abort_unless(ProductionBomFirstPolicy::showBomPreviewOnOrderForm(), 404);
+
+        $this->assertViewProductionOrders();
+
+        $companyId = (int) company()->id;
+
+        $validated = $request->validate([
+            'production_bom_id' => [
+                'required',
+                'integer',
+                Rule::exists('production_boms', 'id')->where(function ($query) use ($companyId): void {
+                    $query->whereNull('company_id')->orWhere('company_id', $companyId);
+                }),
+            ],
+            'planned_quantity' => ['required', 'numeric', 'min:0.0001'],
+            'rm_warehouse_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('warehouses', 'id')->where('company_id', $companyId),
+            ],
+        ]);
+
+        $plannedFg = (float) $validated['planned_quantity'];
+        $rmWarehouseId = isset($validated['rm_warehouse_id']) && $validated['rm_warehouse_id'] !== ''
+            ? (int) $validated['rm_warehouse_id']
+            : null;
+
+        $rows = $this->materialRequirementsSummary->previewForBom(
+            $companyId,
+            (int) $validated['production_bom_id'],
+            $plannedFg,
+            $rmWarehouseId,
+        );
+
+        $html = view('production::orders.partials.bom-preview-fragment', [
+            'materialRequirements' => $rows,
+            'materialRequirementsPlannedFg' => $plannedFg,
+            'materialRequirementsHasShortfall' => $this->materialRequirementsSummary->hasShortfall($rows),
+            'materialRequirementsShowStock' => $rmWarehouseId !== null && $rmWarehouseId > 0,
+        ])->render();
+
+        return Reply::dataOnly([
+            'status' => 'success',
+            'html' => $html,
+            'lineCount' => count($rows),
+        ]);
     }
 
     public function store(StoreProductionOrderRequest $request): RedirectResponse|JsonResponse
@@ -189,11 +242,13 @@ class ProductionOrderController extends AccountBaseController
             $order->refresh();
 
             if ($order->batches()->doesntExist()) {
-                ProductionBatch::query()->create([
+                $batch = ProductionBatch::query()->create([
                     'company_id' => $order->company_id,
                     'production_order_id' => $order->id,
                     'batch_code' => 'PB-'.$order->id.'-'.strtoupper(substr(str_replace('.', '', uniqid('', true)), -8)),
                 ]);
+
+                app(ProductionBatchPlannedLinesApplicator::class)->autoApplyIfConfigured($batch->fresh(['order']));
             }
         } catch (\Throwable $e) {
             return $this->handleProductionThrowable($request, 'production_order_release', $e);

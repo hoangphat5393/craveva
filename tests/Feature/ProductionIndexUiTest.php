@@ -112,7 +112,7 @@ it('returns datatable json for production order and bom ajax requests', function
             ['data' => 'is_default', 'name' => 'production_boms.is_default', 'searchable' => false],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
         ], [
-            'output_product_id' => '',
+            'unit_type_id' => 'all',
             'searchText' => '',
         ])));
 

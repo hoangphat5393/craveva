@@ -15,7 +15,7 @@
 | 3   | **Test & UAT một cửa**                                    | [`BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`](./BIOMIXING_UAT_AND_TEST_GUIDE_VI.md)                                                       |
 | 4   | **Audit 3 thư mục (FUNC_IMPROVE / FUNC_LOGIC / PROJECT)** | [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](./DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)                               |
 | 5   | Phase 1 PM                                                | [`PHASE1_PM_STATUS_LIVE_VI.md`](./PHASE1_PM_STATUS_LIVE_VI.md)                                                                     |
-| 6   | Phase 2 PM                                                | [`PHASE2_PM_PLAN_VI.md`](./PHASE2_PM_PLAN_VI.md)                                                                                   |
+| 6   | Phase 2 Production ops                                    | [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)                                 |
 | 7   | Playbook dev P0–P1                                        | [`BIOMIXING_PLAYBOOK_P0P1_VI.md`](./BIOMIXING_PLAYBOOK_P0P1_VI.md)                                                                 |
 | 8   | Demo Hub                                                  | [`BIOMIXING_FULL_DEMO_RUNBOOK_VI.md`](./BIOMIXING_FULL_DEMO_RUNBOOK_VI.md)                                                         |
 | 9   | P0 task + DoD                                             | [`P0_EXECUTION_LOG.md`](./P0_EXECUTION_LOG.md), [`P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md`](./P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md) |
@@ -83,7 +83,7 @@ php artisan warehouse:backfill-opening-stock-to-default --dry-run
 1. **Một thay đổi code lớn** → cập nhật **`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`** (§ bước + §9 changelog) + `BIOMIXING_GAP_STATUS_VI.md` + epic doc (`15_*`, `16_*`, …) + mục changelog §5 file này.
 2. **Audit định kỳ** → cập nhật `BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md` + `DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`.
 3. **Không nhân bản diagram** từ `PROJECT BIOMIXING/` sang `FUNC_IMPROVE/` — chỉ link.
-4. **Tài liệu cũ 2026-02–04** (`BIOMIXING_GAP_ANALYSIS`, `FLOW_CRACEVA_GAP`) — đọc kèm banner baseline; không ghi đè bằng nhận định mới.
+4. **Tài liệu cũ 2026-02–04** — đã retire; xem [`LEGACY_ARCHIVE.md`](./LEGACY_ARCHIVE.md).
 
 ---
 
@@ -91,11 +91,11 @@ php artisan warehouse:backfill-opening-stock-to-default --dry-run
 
 ### 2026-05-24 — LIVE business flow + UX-008
 
-| File | Nội dung |
-| ---- | -------- |
-| **`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`** | SSOT luồng E2E + mermaid + §9 changelog |
-| `.cursor/rules/biomixing-business-flow-live.mdc` | Rule cập nhật LIVE khi đổi nghiệp vụ |
-| UX-008 | `outputVarianceApprovalUiState` + UI 3 trạng thái |
+| File                                             | Nội dung                                          |
+| ------------------------------------------------ | ------------------------------------------------- |
+| **`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`**         | SSOT luồng E2E + mermaid + §9 changelog           |
+| `.cursor/rules/biomixing-business-flow-live.mdc` | Rule cập nhật LIVE khi đổi nghiệp vụ              |
+| UX-008                                           | `outputVarianceApprovalUiState` + UI 3 trạng thái |
 
 ### 2026-05-24 — Full process audit + documentation sync
 
@@ -109,7 +109,7 @@ php artisan warehouse:backfill-opening-stock-to-default --dry-run
 | `PROJECT BIOMIXING/README.md`                         | Living docs: 16, audit, P1c          |
 | `BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`                  | Test bundle + Luồng E + backfill     |
 | `BIOMIXING_FULL_DEMO_RUNBOOK_VI.md`                   | Post FG → Inventory, backfill        |
-| `PHASE2_PM_PLAN_VI.md`                                | P1c, DoD, % MVP, tài liệu            |
+| `PRODUCTION_OPERATIONS_LIVE_VI.md`                    | Reserve, lifecycle, shortage scope   |
 | `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`               | Luồng E (FG → Inventory)             |
 | `P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md`               | Link audit, TC-P0-08-E               |
 | `PROJECT BIOMIXING/PHASE1_2_BUSINESS_FLOW_PM_VI.md`   | % Phase 2, link FUNC_IMPROVE         |

@@ -27,10 +27,9 @@
 
 BOM line cùng ĐVT với `products.unit_id`; không post đến khi vá.
 
-## Spec & kế hoạch fix
+## Spec
 
-- Gap (living doc): [`../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)
-- Plan: [`../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md`](../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_FIX_PLAN_VI.md)
+- Gap (living doc, Fixed): [`../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)
 
 ## Đã vá
 

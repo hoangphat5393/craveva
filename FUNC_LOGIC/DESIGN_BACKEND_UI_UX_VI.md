@@ -18,7 +18,7 @@
 | Bước | Việc làm                                                                                                                                  |
 | ---- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | 1    | Chọn **màn tham chiếu** gần nhất trong Hub (Orders = list + status inline; Products = filter + cột nhị phân; …).                          |
-| 2    | Copy cấu trúc Blade: `@extends`, `@section('filter-section')`, action bar, `x-datatable.actions`, `@push('scripts')` + `datatable_js`.    |
+| 2    | Copy cấu trúc Blade: `@extends`, `@section('filter-section')`, action bar, `x-datatable.actions`, `@push('scripts')` + `datatable_js`. Select dài → **mục 3.5**. |
 | 3    | Cột **Action** (mục **4**); trạng thái: nếu có — pattern **mục 5** (nhị phân) hoặc **mục 6** (đa trạng thái + inline) và **bám map màu**. |
 | 4    | Form create/edit: xử lý lỗi validation & redirect AJAX theo **mục 12** (tránh toast sai icon / thiếu field).                              |
 | 5    | Sau khi code: chạy checklist **mục 10**.                                                                                                  |
@@ -43,6 +43,82 @@
 - **Tìm kiếm:** `input-group` + `fa-search`, `@lang('app.startTyping')`.
 - **Reset:** `x-forms.button-secondary` `#reset-filters`, `d-none` khi chưa lọc.
 - **Tham chiếu:** `resources/views/products/index.blade.php`, `resources/views/orders/index.blade.php`.
+
+---
+
+## 3.5 Select-picker — dropdown có tìm kiếm (chuẩn bắt buộc khi list dài)
+
+**Khi nào dùng:** mọi `<select>` mà option **render từ server (Blade)** hoặc **nạp / cập nhật bằng JS** với **≈ 15+ mục** hoặc user cần **gõ để lọc** (sản phẩm, kho, BOM, khách hàng, …). **Không** để `<select>` native scroll dài.
+
+**Tên trong repo:** class **`select-picker`** + plugin jQuery **Bootstrap Select** (`bootstrap-select`), đã load global trong `resources/views/layouts/app.blade.php` và init trong `resources/js/custom.js`.
+
+### 3.5.1 Form Hub — component `x-forms.select`
+
+| Thuộc tính | Giá trị |
+| ---------- | -------- |
+| Component | `<x-forms.select :search="true" …>` → tự gắn `class="form-control select-picker"` + `data-live-search="true"` |
+| File component | `resources/views/components/forms/select.blade.php` |
+| Chiều cao menu | `data-size="10"` (mặc định component); filter bar có thể `data-size="8"` |
+
+**Mẫu copy (form create/edit):**
+
+```blade
+<x-forms.select fieldId="output_product_id" :search="true" fieldName="output_product_id" :fieldLabel="__('…')" fieldRequired="true">
+    <option value="">—</option>
+    @foreach ($products as $p)
+        @php
+            $label = \Modules\Production\Support\ProductionProductSelectLabel::forProduct($p);
+            $sku = trim((string) ($p->sku ?? ''));
+        @endphp
+        <option value="{{ $p->id }}"
+            data-content="{{ $label }}"
+            @if ($sku !== '') data-tokens="{{ $sku }}" @endif
+            @selected((int) old('output_product_id') === (int) $p->id)>
+            {{ $label }}
+        </option>
+    @endforeach
+</x-forms.select>
+```
+
+- **`data-tokens`:** SKU (hoặc mã phụ) để live-search khớp khi user gõ mã, không chỉ tên.
+- **Sản phẩm:** nhãn chuẩn `ProductionProductSelectLabel::forProduct($product)` — `Tên (SKU)`; controller `get([..., 'sku'])`.
+- **Sau khi inject HTML trong modal/AJAX:** `$(formSelector).find('.select-picker').selectpicker();`
+- **Sau khi đổi option bằng JS:** `.selectpicker('refresh')` hoặc `destroy` + `selectpicker()` lại.
+- **Lắng nghe đổi giá trị:** `$('#field').on('changed.bs.select', fn)` (không chỉ `change` nếu picker đã init).
+
+### 3.5.2 Filter bar / ô không dùng `x-forms.select`
+
+```blade
+<x-forms.label fieldId="my-filter" :fieldLabel="__('…')" />
+<x-forms.input-group>
+    <select id="my-filter" name="my_filter" class="form-control select-picker"
+        data-live-search="true" data-size="8" data-container="body">
+        <option value="">@lang('app.all')</option>
+        @foreach ($items as $item)
+            <option value="{{ $item->id }}">{{ $item->name }}</option>
+        @endforeach
+    </select>
+</x-forms.input-group>
+```
+
+- **`data-container="body"`:** tránh menu bị cắt trong `overflow:hidden` / DataTable / modal.
+- **DataTable AJAX:** trong `preXhr.dt` gửi `$('#my-filter').val()`; reset filter gọi `.selectpicker('refresh')`.
+
+### 3.5.3 Tham chiếu nhanh trong codebase
+
+| Use case | File |
+| -------- | ---- |
+| BOM — Manufactured product + Add raw material | `Modules/Production/Resources/views/boms/partials/form.blade.php` |
+| Production order — FG, BOM | `Modules/Production/Resources/views/orders/ajax/create.blade.php` |
+| Filter list (status, material, …) | `Modules/Production/Resources/views/orders/index.blade.php`, `material-shortages/index.blade.php` |
+| Invoice / Order add line product | `resources/views/orders/ajax/create.blade.php` (`data-content` + SKU) |
+
+### 3.5.4 Checklist select (gắn vào review PR)
+
+- [ ] List dài → `select-picker` + `data-live-search="true"` (hoặc `:search="true"` trên `x-forms.select`).
+- [ ] Product select → `sku` trong query + `ProductionProductSelectLabel` + `data-tokens` khi có SKU.
+- [ ] Modal/AJAX form → gọi `.selectpicker()` sau render; đổi option → `refresh`.
+- [ ] Filter DataTable → `data-container="body"` nếu menu bị kẹt layout.
 
 ---
 
@@ -252,6 +328,7 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 
 - [ ] Primary / secondary đúng component Hub.
 - [ ] Filter + search + reset (nếu là list có lọc).
+- [ ] **Select dài (§3.5):** `select-picker` + live search; product → SKU + `data-tokens`; AJAX/modal → `selectpicker()` / `refresh`.
 - [ ] **Cột Action (§4):** `task_view` + `task_view_more` + `icon-options-vertical`, menu `dropdown-menu-right`, icon `mr-2`, quyền + thứ tự mục.
 - [ ] Trạng thái: pattern **§5** (chấm), **§5.4** (badge readonly), hoặc **§6** (inline select) — **một** pattern mỗi bảng; map màu nhất quán.
 - [ ] Inline status: **focus prev**, **revert** khi lỗi, refresh bảng.
@@ -268,10 +345,11 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 
 - Cột **Stock Health** (`PurchaseInventoryDataTable`): chỉ **badge** theo tồn / HSD (Critical, Low, Normal, Expired, near expiry theo rule trong code) — **không** dùng icon chấm tròn trước badge cho trạng thái active/inactive sản phẩm (tránh trùng ngữ nghĩa với chấm trạng thái §5–6).
 
-### 11.2 BOM — đơn vị trong nhãn select (không cột Unit type riêng)
+### 11.2 BOM — select Manufactured product & dòng nguyên liệu
 
-- **Finished good:** một cột full width (`col-12`); nhãn mỗi `<option>` dùng **`$bomProductLabelWithUnit($p, $bomFgUnitByProductId)`** — tên + `(unit)` khi map có unit hợp lệ; không còn ô đọc unit bên cạnh.
-- **Dòng nguyên liệu:** bảng **3 cột** (Component RM, Quantity per FG, Action); không cột Unit type; option component cũng dùng **`$bomProductLabelWithUnit`**.
+- **Manufactured product (`output_product_id`):** `<x-forms.select :search="true">` + **`ProductionProductSelectLabel::forProduct`** + `data-tokens` (SKU) — cùng chuẩn **mục 3.5** và Production order create. Controller `ProductionBomController::addProductData()` load `id`, `name`, `sku`, `unit_id`.
+- **Add raw material (`#add-bom-component`):** `<select class="form-control select-picker" data-live-search="true" data-size="8">` + nhãn **`$bomProductLabelWithUnit`** (tên + đơn vị RM).
+- **Dòng nguyên liệu trong bảng:** bảng component + qty/UOM; option component dùng **`$bomProductLabelWithUnit`**.
 - **JS:** `change` (capture trên `document`) + jQuery delegation `changed.bs.select` / `hidden.bs.select` cho `.bom-component-select` và `#output_product_id` — chỉ **`enforceComponentNotEqualFg`** / **`applyFgRestrictionAllRows`** (ẩn/disable option RM trùng FG, `refreshPicker`). Gọi `bindBomUnitPickerListeners()` sau **+ Add** / `window load` / `setTimeout` 150–500ms.
 - **Dòng đầu không xóa:** hàng component **index 0** không render nút remove (Blade `@if ($i > 0)`); hàng thêm bằng **+ Add** có nút remove; `syncRemoveRowButtons()` giữ quy tắc sau reindex/xóa dòng.
 - **Backend:** `ProductionBomController::addProductData()` vẫn gán `bomFgUnitByProductId` / `bomComponentUnitByProductId` (truy vấn **`unit_types`** theo tenant / `null`) — chỉ phục vụ nhãn option trong Blade, không còn JSON map + đồng bộ JS sang cột phụ.
@@ -281,21 +359,16 @@ data-content="<i class="fa fa-circle mr-2 text-warning"></i> Pending"
 
 **File:** `Modules/Purchase/DataTables/PurchaseInventoryDataTable.php`, `Modules/Production/Support/ProductionProductUnitLabelMap.php`, `Modules/Production/Resources/views/boms/partials/form.blade.php`, `Modules/Production/Resources/views/boms/index.blade.php`, `Modules/Production/Resources/views/orders/index.blade.php`, `Modules/Production/Resources/views/orders/show.blade.php`, `Modules/Production/Http/Controllers/ProductionBomController.php`, `Modules/Production/Http/Controllers/ProductionOrderController.php`.
 
-### 11.3 Production order create/edit — select lớn (FG + BOM)
+### 11.3 Production — màn dùng select-picker (tóm tắt)
 
-Danh sách **Manufactured product** và **Bill of materials** có thể rất dài (~10k SKU). **Không** dùng `<select>` scroll thuần; bắt buộc **Bootstrap select-picker** có tìm kiếm.
+| Màn / field | `:search` / `data-live-search` | Nhãn |
+| ----------- | ------------------------------ | ---- |
+| BOM create/edit — **Manufactured product** | Có (`x-forms.select`) | `ProductionProductSelectLabel` + `data-tokens` (SKU) |
+| BOM — **Add raw material** | Có (select thuần trong `input-group`) | `$bomProductLabelWithUnit` |
+| Production order — FG, BOM | Có | FG: `ProductionProductSelectLabel`; BOM: `labelForSelect()` |
+| List filters (orders, BOMs, material shortage) | Có khi list dài | Theo ngữ cảnh |
 
-| Field                                          | Component                                                     | Search             | Nhãn option                                                                                              |
-| ---------------------------------------------- | ------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------- |
-| **Manufactured product** (`output_product_id`) | `<x-forms.select :search="true">` → `data-live-search="true"` | Gõ tên hoặc SKU    | `ProductionProductSelectLabel::forProduct($p)` → `Tên (SKU)`; `data-tokens` = SKU để live-search khớp mã |
-| **Bill of materials** (`production_bom_id`)    | Cùng `:search="true"`                                         | Gõ tên FG / mã BOM | `ProductionBom::labelForSelect()` (đã có `FG — code`)                                                    |
-| **Linked sales order**                         | Đã có `:search="true"`                                        | —                  | —                                                                                                        |
-
-- **Controller:** `ProductionOrderController::addProductData()` load FG với `id`, `name`, `sku` (không đổi query scope `forBomOutput()`).
-- **JS:** `production::orders.partials.bom-fg-sync-script` — sau khi đổi BOM vẫn gọi `selectpicker('refresh')` trên `#output_product_id` / `#production_bom_id`.
-- **Tham chiếu pattern SKU:** `resources/views/orders/ajax/create.blade.php`, `invoices/ajax/edit.blade.php` (`data-content` + SKU trong ngoặc).
-
-**File:** `Modules/Production/Support/ProductionProductSelectLabel.php`, `Modules/Production/Resources/views/orders/create.blade.php`, `Modules/Production/Resources/views/orders/edit.blade.php`, `tests/Unit/ProductionProductSelectLabelTest.php`.
+Chi tiết kỹ thuật: **mục 3.5**. **File:** `ProductionProductSelectLabel.php`, `boms/partials/form.blade.php`, `orders/ajax/create.blade.php`, `tests/Unit/ProductionProductSelectLabelTest.php`.
 
 ---
 
@@ -594,4 +667,4 @@ Không tự làm thêm kiểu load list khác.
 
 ---
 
-_Cập nhật: 2026-05-25 — §14 chốt DataTable-only cho admin list và thêm roadmap chuyển `Warehouse stock / movements / product-batches`. Trước: 2026-05-24 — §13 điều khoản PO/SO/DO theo công ty. Trước nữa: 2026-05-23 — §5.4 badge; §11.3 Production searchable select._
+_Cập nhật: 2026-05-27 — §3.5 select-picker (searchable dropdown) chuẩn repo; BOM Manufactured product bật `:search="true"` + SKU tokens. Trước: 2026-05-25 — §14 DataTable-only Warehouse. Trước: 2026-05-23 — §5.4 badge._

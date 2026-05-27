@@ -13,17 +13,24 @@ Toàn bộ **Markdown triển khai** nằm tại:
 **[`FUNC_IMPROVE/`](../FUNC_IMPROVE/)** — các file triển khai có tiền tố `BIOMIXING_*` và audit tách `BIOMIXING_MIGRATION_AUDIT_2026_VI.md` (xem [`FUNC_IMPROVE/INDEX.md`](../FUNC_IMPROVE/INDEX.md) mục Biomixing).
 
 - Chỉ mục (EN): [`FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`](../FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md)
-- Audit tách thư mục: [`FUNC_IMPROVE/BIOMIXING_MIGRATION_AUDIT_2026_VI.md`](../FUNC_IMPROVE/BIOMIXING_MIGRATION_AUDIT_2026_VI.md)
+- File đã retire: [`FUNC_IMPROVE/LEGACY_ARCHIVE.md`](../FUNC_IMPROVE/LEGACY_ARCHIVE.md)
+
+## SOP gửi khách / PM (phi kỹ thuật — Production)
+
+| Ngôn ngữ       | File                                                           |
+| -------------- | -------------------------------------------------------------- |
+| **English**    | [`PRODUCTION_MODULE_SOP_EN.md`](./PRODUCTION_MODULE_SOP_EN.md) |
+| **Tiếng Việt** | [`PRODUCTION_MODULE_SOP_VI.md`](./PRODUCTION_MODULE_SOP_VI.md) |
 
 ## Living documentation (trạng thái code — đọc trước demo/UAT)
 
 | Mục                       | File                                                                                                                                                                                                 |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Luồng nghiệp vụ LIVE**  | [`FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`](../FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md) — SSOT bước/gate/tồn kho; cập nhật mỗi đợt dev                                              |
+| **Luồng nghiệp vụ LIVE**  | [`FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`](../FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md) — SSOT bước/gate/tồn kho; cập nhật mỗi đợt dev                                               |
 | **Doc sync (2026-05-24)** | [`FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](../FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md) — manifest đồng bộ tài liệu Biomixing                                        |
 | **Audit quy trình phase** | [`FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`](../FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md)                                                                              |
 | **Gap / đã làm gì**       | [`FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`](../FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md)                                                                                                              |
-| **Phase 1 / 2 PM**        | [`FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md), [`PHASE2_PM_PLAN_VI.md`](../FUNC_IMPROVE/PHASE2_PM_PLAN_VI.md)                                            |
+| **Phase 1 / 2 PM**        | [`FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md), [`FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)           |
 | **UOM + giá (P2)**        | [`FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](../FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                                                                                              |
 | **Post RM UOM**           | [`FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) — **Fixed** 2026-05-20                                                                   |
 | **Post FG → Inventory**   | [`FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](../FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md) — **P1c** 2026-05-23; backfill `production:backfill-fg-inventory-ledger` |

@@ -14,6 +14,25 @@ return [
          * Set true when PM enables scrap allowance in UI again.
          */
         'show_bom_waste_percent_ui' => false,
+
+        /*
+         * BOM-first workflow (Biomixing): required BOM on orders, FG derived from BOM, AJAX recipe preview on form,
+         * manual "add raw material" on batch disabled. Set false to restore legacy FG-first + optional BOM + manual batch lines.
+         */
+        'bom_first_workflow_enabled' => true,
+        'require_bom_on_production_order' => true,
+        'bom_first_disable_fg_select' => true,
+        'show_bom_preview_on_order_form' => true,
+        'allow_manual_batch_consumption_lines' => false,
+
+        /*
+         * Batch planned RM lines (former checklist "Step 1"):
+         * - auto_apply: insert production_batch_consumptions from order BOM snapshot on release / batch open.
+         * - show_* false: hide manual button + workflow step; restore via PRODUCTION_BATCH_STEP1_RESTORE_VI.md
+         */
+        'auto_apply_bom_snapshot_on_batch' => true,
+        'show_batch_workflow_step_planned_lines' => false,
+        'show_apply_planned_from_snapshot_button' => false,
     ],
 
     'phase2' => [

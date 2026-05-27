@@ -14,6 +14,9 @@
             return;
         }
 
+        const bomFirst = form.dataset.bomFirst === '1';
+        const bomDisableFg = form.dataset.bomDisableFg === '1';
+
         function upsertHiddenOutputField() {
             let hidden = document.getElementById('output_product_id_hidden');
             if (!hidden) {
@@ -40,15 +43,33 @@
             }
         }
 
+        function triggerPreviewRefresh() {
+            $(document).trigger('production:bom-preview-refresh');
+        }
+
         function syncFgByBom() {
             const selectedOption = $bomSelect.find('option:selected');
             const bomOutputProductId = selectedOption.data('output-product-id');
+            const hasBom = Boolean($bomSelect.val());
 
             if (bomOutputProductId) {
                 $fgSelect.val(String(bomOutputProductId));
-                $fgSelect.prop('disabled', true);
-                upsertHiddenOutputField();
+                if (bomFirst && bomDisableFg) {
+                    $fgSelect.prop('disabled', true);
+                    upsertHiddenOutputField();
+                }
                 refreshPicker($fgSelect);
+                triggerPreviewRefresh();
+
+                return;
+            }
+
+            if (bomFirst && bomDisableFg) {
+                $fgSelect.val('');
+                $fgSelect.prop('disabled', true);
+                removeHiddenOutputField();
+                refreshPicker($fgSelect);
+                triggerPreviewRefresh();
 
                 return;
             }
@@ -56,6 +77,7 @@
             $fgSelect.prop('disabled', false);
             removeHiddenOutputField();
             refreshPicker($fgSelect);
+            triggerPreviewRefresh();
         }
 
         $bomSelect.on('changed.bs.select change', syncFgByBom);

@@ -3,7 +3,7 @@
     $selectedUnitId = isset($selectedUnitId) ? (string) $selectedUnitId : '';
     $unitsForProduct = $unitsForProduct ?? [];
 @endphp
-<select name="items[{{ $rowIndex }}][unit_id]" class="form-control height-35 f-14 w-100 bom-line-unit-select">
+<select name="items[{{ $rowIndex }}][unit_id]" class="form-control height-35 f-14 bom-line-unit-select" style="min-width: 5.5rem; max-width: 9rem; flex: 0 0 auto;">
     @if ($unitsForProduct === [])
         <option value="">—</option>
     @else

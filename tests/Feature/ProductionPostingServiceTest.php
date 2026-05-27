@@ -21,6 +21,7 @@ beforeEach(function (): void {
     DB::reconnect('sqlite');
 
     Config::set('warehouse.allow_negative_stock', false);
+    Config::set('production.ui.bom_first_workflow_enabled', false);
 
     Schema::create('companies', function ($table): void {
         $table->increments('id');
@@ -149,18 +150,18 @@ beforeEach(function (): void {
         $table->timestamps();
     });
 
-    $migration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
+    $migration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
     $migration->up();
 
-    $productionFgQuantityPolicyMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
+    $productionFgQuantityPolicyMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
     $productionFgQuantityPolicyMigration->up();
 
-    $bomSnapshotMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
+    $bomSnapshotMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
     $bomSnapshotMigration->up();
-    $yieldUomShadowMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
+    $yieldUomShadowMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
     $yieldUomShadowMigration->up();
 
-    $wastePercentMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_20_160000_add_waste_percent_to_production_bom_tables.php';
+    $wastePercentMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_20_160000_add_waste_percent_to_production_bom_tables.php';
     $wastePercentMigration->up();
 
     DB::table('companies')->insert([
@@ -1147,7 +1148,7 @@ it('blocks release when insufficient available raw material to reserve', functio
         'planned_quantity' => 10,
     ]);
 
-    expect(fn() => app(ProductionPostingService::class)->releaseOrder($order))
+    expect(fn () => app(ProductionPostingService::class)->releaseOrder($order))
         ->toThrow(InvalidArgumentException::class);
 
     expect($order->fresh()->status)->toBe(ProductionOrder::STATUS_DRAFT);

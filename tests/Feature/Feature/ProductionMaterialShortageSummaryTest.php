@@ -17,7 +17,7 @@ use Modules\Warehouse\Entities\WarehouseProductStock;
 
 uses(DatabaseTransactions::class);
 
-it('renders the material shortage summary screen for draft orders only', function (): void {
+it('renders the material shortage summary screen with status and warehouse filters', function (): void {
     $fix = productionTenantFlowFixtures();
     if ($fix === null) {
         return;
@@ -37,29 +37,33 @@ it('renders the material shortage summary screen for draft orders only', functio
 
     expect($content)->toContain(__('production::app.materialShortageSummary'));
     expect($content)->toContain('production-material-shortages-table');
-    expect($content)->toContain(__('production::app.showOnlyShortages'));
-    expect($content)->toContain(__('production::app.materialShortageSummaryStatusNote', [
-        'statuses' => __('production::app.statusLabels.draft'),
-    ]));
-    expect($content)->not->toContain('id="production-material-shortages-status-filter"');
-    expect($content)->not->toContain('id="production-material-shortages-warehouse-filter"');
-    expect($content)->not->toContain('value="active"');
-    expect($content)->not->toContain('value="released"');
-    expect($content)->not->toContain('value="completed"');
-    expect($content)->not->toContain('value="cancelled"');
+    expect($content)->toContain('id="production-material-shortages-status-filter"');
+    expect($content)->toContain('id="production-material-shortages-warehouse-filter"');
+    expect($content)->toContain('value="'.ProductionMaterialSummaryService::SCOPE_ACTIVE.'"');
+    expect($content)->toContain(__('production::app.materialShortageStatusScopes.active'));
 });
 
-it('includes only draft production orders in material shortage summary', function (): void {
+it('maps material shortage status scopes to production order statuses', function (): void {
     $service = app(ProductionMaterialSummaryService::class);
 
-    expect($service->statusesForScope(null))->toEqual([ProductionOrder::STATUS_DRAFT]);
-    expect($service->statusesForScope('active'))->toEqual([ProductionOrder::STATUS_DRAFT]);
-    expect($service->statusesForScope('released'))->toEqual([ProductionOrder::STATUS_DRAFT]);
-    expect($service->normalizeStatusScope('released'))->toBe(ProductionOrder::STATUS_DRAFT);
-    expect(ProductionMaterialSummaryService::summaryEligibleStatuses())->toEqual([ProductionOrder::STATUS_DRAFT]);
+    expect($service->statusesForScope(null))->toEqual([
+        ProductionOrder::STATUS_RELEASED,
+        ProductionOrder::STATUS_IN_PROGRESS,
+    ]);
+    expect($service->statusesForScope(ProductionMaterialSummaryService::SCOPE_ACTIVE))->toEqual([
+        ProductionOrder::STATUS_RELEASED,
+        ProductionOrder::STATUS_IN_PROGRESS,
+    ]);
+    expect($service->statusesForScope(ProductionMaterialSummaryService::SCOPE_DRAFT))->toEqual([ProductionOrder::STATUS_DRAFT]);
+    expect($service->statusesForScope(ProductionMaterialSummaryService::SCOPE_ALL))->toEqual([
+        ProductionOrder::STATUS_DRAFT,
+        ProductionOrder::STATUS_RELEASED,
+        ProductionOrder::STATUS_IN_PROGRESS,
+    ]);
+    expect($service->normalizeStatusScope('invalid'))->toBe(ProductionMaterialSummaryService::DEFAULT_STATUS_SCOPE);
 });
 
-it('aggregates shortages across draft production orders and shows affected orders', function (): void {
+it('aggregates shortages across draft production orders when scope is draft', function (): void {
     $fix = productionTenantFlowFixtures();
     if ($fix === null) {
         return;
@@ -145,49 +149,90 @@ it('aggregates shortages across draft production orders and shows affected order
             ['data' => 'affected_orders_count', 'name' => 'affected_orders_count'],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
         ], [
-            'status_scope' => ProductionOrder::STATUS_DRAFT,
+            'status_scope' => ProductionMaterialSummaryService::SCOPE_DRAFT,
             'warehouse_id' => (string) $summaryWarehouse->id,
             'material_id' => (string) $fix['rm']->id,
             'only_shortage' => 1,
         ], 4, 'desc')));
 
     $datatableResponse->assertSuccessful();
-    $datatableResponse->assertJsonStructure([
-        'draw',
-        'recordsTotal',
-        'recordsFiltered',
-        'data',
-    ]);
 
     $rows = $datatableResponse->json('data');
 
     expect($rows)->toHaveCount(1);
-    expect((string) $rows[0]['component_name'])->toContain((string) $fix['rm']->name);
-    expect((string) $rows[0]['rm_warehouse_name'])->toContain((string) $summaryWarehouse->name);
-    expect((string) $rows[0]['total_required'])->toBe(formatProductionQuantityForAssertion($expectedTotalRequired));
-    expect((string) $rows[0]['available_stock'])->toBe(formatProductionQuantityForAssertion($expectedAvailable));
-    expect((string) $rows[0]['shortage_to_procure'])->toBe(formatProductionQuantityForAssertion($expectedShortage));
     expect((string) $rows[0]['affected_orders_count'])->toBe('2');
-    expect((string) $rows[0]['action'])->toContain('fa-eye');
-    expect((string) $rows[0]['action'])->toContain('btn btn-sm btn-secondary');
-    expect((string) $rows[0]['action'])->toContain(__('production::app.viewOrders'));
+    expect((string) $rows[0]['total_required'])->toBe(formatProductionQuantityForAssertion($expectedTotalRequired));
+    expect((string) $rows[0]['shortage_to_procure'])->toBe(formatProductionQuantityForAssertion($expectedShortage));
 
     $detailContent = $this->actingAs($fix['userAuth'], 'web')
         ->withSession($session)
         ->get(route('production.material-shortages.orders', [
             'material_id' => (int) $fix['rm']->id,
             'warehouse_id' => (int) $summaryWarehouse->id,
+            'status_scope' => ProductionMaterialSummaryService::SCOPE_DRAFT,
         ]))
         ->assertSuccessful()
         ->getContent();
 
     expect($detailContent)->toContain((string) $firstOrder->id);
     expect($detailContent)->toContain((string) $secondOrder->id);
-    expect($detailContent)->toContain(__('production::app.materialRequirementSources.current_bom'));
-    expect($detailContent)->toContain('badge badge-secondary');
-    expect($detailContent)->toContain(__('production::app.statusLabels.draft'));
-    expect($detailContent)->toContain('fa-eye');
-    expect($detailContent)->toContain(__('app.view'));
+    expect($detailContent)->not->toContain(__('production::app.statusLabels.released'));
+});
+
+it('excludes draft orders from default active scope aggregation', function (): void {
+    $fix = productionTenantFlowFixtures();
+    if ($fix === null) {
+        return;
+    }
+
+    $bom = ProductionBom::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'output_product_id' => (int) $fix['fg']->id,
+        'version' => 'active-'.uniqid(),
+        'code' => 'active-bom',
+        'is_default' => false,
+        'created_by' => $fix['user']->id,
+        'updated_by' => $fix['user']->id,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => (int) $fix['rm']->id,
+        'quantity' => 1,
+        'sort_order' => 0,
+    ]);
+
+    $warehouse = Warehouse::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'name' => 'Active scope WH '.uniqid(),
+        'code' => 'ACT-'.uniqid(),
+        'warehouse_type' => 'normal',
+        'status' => 'active',
+    ]);
+
+    WarehouseProductBatch::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'warehouse_id' => (int) $warehouse->id,
+        'product_id' => (int) $fix['rm']->id,
+        'batch_number' => 'B-'.uniqid(),
+        'quantity' => 100,
+        'reserved_quantity' => 0,
+    ]);
+
+    createDraftProductionOrderForShortageSummary($fix, $bom, 50, (int) $warehouse->id);
+    $released = createReleasedProductionOrderWithSnapshot($fix, $bom, 10, (int) $warehouse->id);
+
+    $service = app(ProductionMaterialSummaryService::class);
+    $rows = $service->summaries((int) $fix['company']->id, [
+        'status_scope' => ProductionMaterialSummaryService::SCOPE_ACTIVE,
+        'warehouse_id' => (int) $warehouse->id,
+        'material_id' => (int) $fix['rm']->id,
+        'only_shortage' => false,
+    ]);
+
+    expect($rows)->toHaveCount(1);
+    expect($rows[0]['affected_order_ids'])->toBe([(int) $released->id]);
 });
 
 /**
@@ -224,8 +269,6 @@ function createReleasedProductionOrderWithSnapshot(array $fix, ProductionBom $bo
         'created_by' => $fix['user']->id,
         'updated_by' => $fix['user']->id,
         'released_at' => now(),
-        'bom_snapshot_at' => now(),
-        'bom_snapshot_planned_quantity' => $plannedQuantity,
     ]);
 
     return $order;

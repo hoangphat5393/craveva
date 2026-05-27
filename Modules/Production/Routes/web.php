@@ -36,6 +36,7 @@ Route::group([
 
     Route::resource('boms', ProductionBomController::class);
 
+    Route::get('orders/bom-preview', [ProductionOrderController::class, 'bomPreview'])->name('orders.bom-preview');
     Route::resource('orders', ProductionOrderController::class)->except(['destroy']);
     Route::get('material-shortages', [ProductionMaterialSummaryController::class, 'index'])->name('material-shortages.index');
     Route::get('material-shortages/orders', [ProductionMaterialSummaryController::class, 'orders'])->name('material-shortages.orders');

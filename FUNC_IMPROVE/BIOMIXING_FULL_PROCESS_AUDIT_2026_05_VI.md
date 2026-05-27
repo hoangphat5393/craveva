@@ -105,15 +105,15 @@ Draft order (FG, BOM?, kho RM/FG, planned qty, SO?)
 
 ### 3.4 Gap còn lại (Phase 2)
 
-| ID         | Hạng mục                                                                      | Mức             | Khuyến nghị                                   |
-| ---------- | ----------------------------------------------------------------------------- | --------------- | --------------------------------------------- |
-| **P0-02**  | UAT variance approval + role matrix signed                                    | Trung           | BA 2 user (có/không `edit_production_orders`) |
-| **UX-VAR** | Badge variance | ✅ **Done 2026-05-24** | `outputVarianceApprovalUiState` — «Không yêu cầu» / «Chờ» / «Đã duyệt»; xem `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` §3.2 |
-| **P0-05**  | UAT trace 2 chiều + screenshot                                                | Trung           | Checklist `P0_05_TRACE_*`                     |
-| P2+        | Nhiều batch / chia planned RM                                                 | Trung           | Backlog MVP                                   |
-| P2-UOM     | UAT Oldtown + Luồng D trên UI                                                 | Trung           | Code done; biên bản D                         |
-| —          | CCP / receiving QC / COA / sampling                                           | Cao (phase sau) | `BIOMIXING_DEV_PLAN` Phase 3–4                |
-| —          | Reverse movement sau post                                                     | Thấp            | MVP idempotent only                           |
+| ID         | Hạng mục                                   | Mức                    | Khuyến nghị                                                                                                           |
+| ---------- | ------------------------------------------ | ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **P0-02**  | UAT variance approval + role matrix signed | Trung                  | BA 2 user (có/không `edit_production_orders`)                                                                         |
+| **UX-VAR** | Badge variance                             | ✅ **Done 2026-05-24** | `outputVarianceApprovalUiState` — «Không yêu cầu» / «Chờ» / «Đã duyệt»; xem `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` §3.2 |
+| **P0-05**  | UAT trace 2 chiều + screenshot             | Trung                  | Checklist `P0_05_TRACE_*`                                                                                             |
+| P2+        | Nhiều batch / chia planned RM              | Trung                  | Backlog MVP                                                                                                           |
+| P2-UOM     | UAT Oldtown + Luồng D trên UI              | Trung                  | Code done; biên bản D                                                                                                 |
+| —          | CCP / receiving QC / COA / sampling        | Cao (phase sau)        | `BIOMIXING_GAP_STATUS_VI.md`                                                                                          |
+| —          | Reverse movement sau post                  | Thấp                   | MVP idempotent only                                                                                                   |
 
 ### 3.5 Nghiệp vụ kho — đã vá (ghi cho audit)
 

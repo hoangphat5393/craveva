@@ -5,6 +5,7 @@ namespace Modules\Production\Http\Controllers;
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
+use App\Models\UnitType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,11 +40,9 @@ class ProductionBomController extends AccountBaseController
         $this->pageTitle = __('production::app.menuBillOfMaterials');
         $companyId = (int) company()->id;
 
-        $this->finishedGoodsFilter = Product::withoutGlobalScopes()
-            ->where('company_id', $companyId)
-            ->forBomOutput()
-            ->orderBy('name')
-            ->get(['id', 'name']);
+        $this->unitTypes = UnitType::query()
+            ->orderBy('unit_type')
+            ->get(['id', 'unit_type']);
 
         return $dataTable->render('production::boms.index', $this->data);
     }
@@ -275,7 +274,7 @@ class ProductionBomController extends AccountBaseController
             ->forBomOutput()
             ->with('unit:id,unit_type')
             ->orderBy('name')
-            ->get(['id', 'name', 'unit_id']);
+            ->get(['id', 'name', 'sku', 'unit_id']);
 
         $this->componentProducts = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)

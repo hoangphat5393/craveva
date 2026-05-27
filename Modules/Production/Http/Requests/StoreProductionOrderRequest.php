@@ -6,10 +6,13 @@ use App\Models\Order;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Production\Entities\ProductionBom;
+use Modules\Production\Http\Requests\Concerns\ValidatesProductionOrderBomPolicy;
 use Modules\Production\Support\ProductionTenantAccess;
 
 class StoreProductionOrderRequest extends FormRequest
 {
+    use ValidatesProductionOrderBomPolicy;
+
     protected function prepareForValidation(): void
     {
         $bomId = $this->input('production_bom_id');
@@ -42,13 +45,7 @@ class StoreProductionOrderRequest extends FormRequest
 
         return [
             'output_product_id' => ['required', 'integer', Rule::exists('products', 'id')->where('company_id', $companyId)],
-            'production_bom_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('production_boms', 'id')->where(function ($query) use ($companyId): void {
-                    $query->whereNull('company_id')->orWhere('company_id', $companyId);
-                }),
-            ],
+            'production_bom_id' => $this->productionBomIdRules($companyId),
             'rm_warehouse_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
             'fg_warehouse_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
             'planned_quantity' => ['required', 'numeric', 'min:0.0001'],
@@ -71,6 +68,8 @@ class StoreProductionOrderRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {
+            $this->validateProductionOrderBomPolicy($validator);
+
             $bomId = $this->input('production_bom_id');
             if ($bomId === null || $bomId === '') {
                 return;

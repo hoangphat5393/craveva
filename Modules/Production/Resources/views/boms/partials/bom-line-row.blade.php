@@ -16,13 +16,13 @@
         <input type="hidden" name="items[{{ $rowIndex }}][component_product_id]" class="bom-line-component-id" value="{{ $componentProductId }}">
     </td>
     <td class="align-middle">
-        <div class="d-flex flex-wrap align-items-center" style="gap: 0.35rem;">
+        <div class="d-flex flex-nowrap align-items-center bom-line-qty-uom" style="gap: 0.35rem;">
+            <input type="number" step="0.0001" min="0.0001" name="items[{{ $rowIndex }}][quantity]" class="form-control height-35 f-14 bom-line-quantity" style="min-width: 4.5rem; max-width: 7rem; flex: 1 1 auto;" value="{{ $qty }}">
             @include('production::boms.partials.bom-line-unit-select', [
                 'rowIndex' => $rowIndex,
                 'selectedUnitId' => $lineUnitId,
                 'unitsForProduct' => $unitsForRow,
             ])
-            <input type="number" step="0.0001" min="0.0001" name="items[{{ $rowIndex }}][quantity]" class="form-control height-35 f-14 bom-line-quantity flex-grow-1" style="min-width: 5rem;" value="{{ $qty }}">
         </div>
         @if (!$showBomWasteUi)
             <input type="hidden" name="items[{{ $rowIndex }}][waste_percent]" class="bom-line-waste" value="0">

@@ -87,9 +87,58 @@ class StoreProductionBatchOutputRequest extends FormRequest
                     trim((string) $this->input('variance_reason', '')),
                 );
             } catch (\InvalidArgumentException $e) {
-                $validator->errors()->add('quantity', $e->getMessage());
+                $policyMessage = $e->getMessage();
+                $validator->errors()->add('quantity', $policyMessage);
+
+                if (
+                    trim((string) $this->input('variance_reason', '')) === ''
+                    && in_array($policyMessage, [
+                        __('production::app.fgControlledBeyondToleranceRequiresReason'),
+                        __('production::app.fgFlexibleOverPlannedRequiresReason'),
+                    ], true)
+                ) {
+                    $validator->errors()->add(
+                        'variance_reason',
+                        __('production::app.fgFillVarianceReasonToContinue', [
+                            'planned' => $order->planned_quantity,
+                            'entered' => $incomingQty,
+                        ]),
+                    );
+                }
             }
         });
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'quantity.required' => __('production::app.fgOutputQuantityRequired'),
+            'quantity.numeric' => __('production::app.fgOutputQuantityNumeric'),
+            'quantity.min' => __('production::app.fgOutputQuantityMin'),
+            'batch_number.required' => __('production::app.fgOutputBatchNumberRequired'),
+            'warehouse_id.required' => __('production::app.fgOutputWarehouseRequired'),
+            'warehouse_id.exists' => __('production::app.fgOutputWarehouseInvalid'),
+            'expiration_date.date' => __('production::app.fgOutputDateInvalid'),
+            'manufacturing_date.date' => __('production::app.fgOutputDateInvalid'),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'quantity' => __('production::app.fgQty'),
+            'batch_number' => __('production::app.fgBatchNumber'),
+            'warehouse_id' => __('warehouse::app.warehouse'),
+            'variance_reason' => __('production::app.fgVarianceReason'),
+            'expiration_date' => __('production::app.expiry'),
+            'manufacturing_date' => __('production::app.mfgDate'),
+        ];
     }
 
     protected function normalizeDateInput(mixed $value): ?string

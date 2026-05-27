@@ -7,10 +7,13 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionOrder;
+use Modules\Production\Http\Requests\Concerns\ValidatesProductionOrderBomPolicy;
 use Modules\Production\Support\ProductionTenantAccess;
 
 class UpdateProductionOrderRequest extends FormRequest
 {
+    use ValidatesProductionOrderBomPolicy;
+
     protected function prepareForValidation(): void
     {
         $bomId = $this->input('production_bom_id');
@@ -48,13 +51,7 @@ class UpdateProductionOrderRequest extends FormRequest
 
         return [
             'output_product_id' => ['required', 'integer', Rule::exists('products', 'id')->where('company_id', $companyId)],
-            'production_bom_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('production_boms', 'id')->where(function ($query) use ($companyId): void {
-                    $query->whereNull('company_id')->orWhere('company_id', $companyId);
-                }),
-            ],
+            'production_bom_id' => $this->productionBomIdRules($companyId),
             'rm_warehouse_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
             'fg_warehouse_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
             'planned_quantity' => ['required', 'numeric', 'min:0.0001'],
@@ -87,6 +84,8 @@ class UpdateProductionOrderRequest extends FormRequest
             if ($order instanceof ProductionOrder && $order->status !== ProductionOrder::STATUS_DRAFT) {
                 $validator->errors()->add('status', __('production::app.onlyDraftEditable'));
             }
+
+            $this->validateProductionOrderBomPolicy($validator);
 
             $bomId = $this->input('production_bom_id');
             if ($bomId === null || $bomId === '') {

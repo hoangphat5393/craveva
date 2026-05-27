@@ -15,14 +15,9 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success mt-3 mb-0">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger mt-3 mb-0">{{ session('error') }}</div>
-        @endif
+        @include('production::partials.flash-and-validation-alerts')
 
-        @if ($order->production_bom_id === null)
+        @if ($order->production_bom_id === null && !\Modules\Production\Support\ProductionBomFirstPolicy::requireBomOnOrder())
             <div class="alert alert-warning mt-3 mb-0 f-14">
                 @lang('production::app.bomMissingHint')
             </div>

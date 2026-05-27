@@ -1,0 +1,43 @@
+flowchart TD
+    A([Bắt đầu test run Production])
+    A --> B[Tạo Production Order<br/>Status = Draft]
+    B --> C{Draft có reserve chưa?}
+    C -->|Không| C1[PASS PR-01]
+    C -->|Có| C2[FAIL PR-01]
+
+    C1 --> D[Nhấn Release]
+    D --> E{Đủ available để reserve?}
+    E -->|Không đủ| E1[Lỗi insufficientRmToReserve<br/>Status vẫn Draft<br/>PASS PR-03]
+    E -->|Đủ| E2[Snapshot BOM + Reserve RM<br/>Status = Released<br/>PASS PR-02]
+
+    E1 --> D
+    E2 --> F[Kiểm tra stock_reservations<br/>reference = ProductionOrder]
+    F --> G[Kiểm tra reserved_quantity trên warehouse batch]
+
+    G --> H{Test Cancel Released?}
+    H -->|Có| H1[Nhấn Cancel]
+    H1 --> H2[Reservation release<br/>reserved_quantity về 0<br/>Status = Cancelled<br/>PASS PR-04]
+    H2 --> Z([Kết thúc nhánh Cancel])
+    H -->|Không| I[Tạo / mở Production Batch]
+
+    I --> J[Tạo RM consumption lines]
+    J --> K[Deduct raw materials from stock]
+    K --> L{Đã post RM cho tất cả batch của order?}
+    L -->|Chưa| L1[Reservation vẫn active<br/>theo dõi PR-12]
+    L -->|Rồi| L2[Consume reservation<br/>reserved_quantity về 0<br/>PASS PR-05]
+
+    L1 --> M[Post batch tiếp theo]
+    M --> K
+    L2 --> N[Status chuyển In progress]
+    N --> O[Tạo FG outputs]
+    O --> P[Post finished goods receipt]
+    P --> Q{Còn batch FG chưa post?}
+    Q -->|Có| O
+    Q -->|Không| R[Status = Completed]
+
+    R --> S[Material shortage summary check]
+    S --> T{Filter Status}
+    T -->|Draft| T1[Không trừ reserve Production Draft<br/>PR-10]
+    T -->|Released + In progress| T2[Available đã trừ reserve Production/Sales<br/>PR-11]
+    T1 --> U([Hoàn tất test run])
+    T2 --> U

@@ -58,6 +58,13 @@ final class ProductionBatchWorkflowSteps
             ],
         ];
 
+        if (! ProductionBatchPlannedLinesPolicy::showBatchWorkflowStepPlannedLines()) {
+            $steps = array_values(array_filter(
+                $steps,
+                static fn (array $step): bool => $step['key'] !== 'planned_lines',
+            ));
+        }
+
         $markedCurrent = false;
         foreach ($steps as $index => $step) {
             if ($markedCurrent) {
@@ -75,6 +82,15 @@ final class ProductionBatchWorkflowSteps
             $steps[$last]['current'] = true;
         }
 
+        foreach ($steps as $index => $step) {
+            $steps[$index]['display_label'] = ($index + 1).'. '.$this->stepTextWithoutLeadingNumber($step['label']);
+        }
+
         return $steps;
+    }
+
+    private function stepTextWithoutLeadingNumber(string $label): string
+    {
+        return preg_replace('/^\d+\.\s*/u', '', $label) ?? $label;
     }
 }

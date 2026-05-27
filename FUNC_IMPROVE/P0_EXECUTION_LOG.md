@@ -1,7 +1,7 @@
 # P0 Execution Log - Biomixing
 
 Ngay tao: 2026-05-09  
-Lien ket ke hoach: `FUNC_IMPROVE/P0_NEXT_ACTION_BIOMIXING_VI.md`  
+Lien ket ke hoach: `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`  
 **Bảng test case QA/BA một lượt (P0):** `FUNC_IMPROVE/P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md`
 
 **Buoc tiep theo (hang doi):** `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`  

@@ -79,7 +79,7 @@
             <table class="inv-note mt-3">
                 <tr>
                     <td><strong>@lang('app.note')</strong></td>
-                    <td style="text-align: right;"><strong>@lang('modules.invoiceSettings.orderAndSalesDoTerms')</strong></td>
+                    <td style="text-align: right;"><strong>@lang('modules.invoiceSettings.saleOrderAndDeliveryOrderTerms')</strong></td>
                 </tr>
                 <tr>
                     <td style="vertical-align: text-top">

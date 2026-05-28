@@ -21,7 +21,6 @@ class UpdatePurchaseSettingRequest extends CoreRequest
             'bill_prefix' => 'required',
             'vendor_credit_prefix' => 'required',
             'purchase_terms' => 'nullable|string',
-            'grn_terms' => 'nullable|string',
         ];
 
         $rules = $this->customFieldRules($rules);

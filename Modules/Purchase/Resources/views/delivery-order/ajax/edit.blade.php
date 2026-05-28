@@ -78,7 +78,7 @@
                 <div class="row p-20 border-top-grey">
                     @include('partials.company-document-terms-readonly', [
                         'termsText' => $grnTermsText,
-                        'label' => __('purchase::modules.purchaseSettings.grnTerms'),
+                        'label' => __('purchase::modules.purchaseSettings.purchaseOrderAndGrnTerms'),
                         'wrapperClass' => 'col-md-12 col-sm-12 p-0 c-inv-note-terms',
                     ])
                 </div>

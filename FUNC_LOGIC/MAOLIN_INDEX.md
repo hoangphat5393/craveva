@@ -56,11 +56,12 @@ _Nội dung gộp từ bản tóm `MAOLIN_FOCUSED_SCOPE_\*` (đã xóa để tr�
 
 ## 4) Tài liệu liên quan ngoài thư mục MAOLIN-only
 
-| File                                                                                                                                                                             | Ghi chú                                                 |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                                                                       | PO/DO/Invoice/Warehouse (nghiep vu canonical).          |
-| [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) + [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md) + [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md) | Warehouse: mục lục + flow nghiệp vụ + runbook kỹ thuật. |
-| [`CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md`](../FUNC_IMPROVE/08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                                                                        | Import client (kỹ thuật).                               |
+| File                                                                                                                                                                             | Ghi chú                                                                                                           |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                                                                       | PO/DO/Invoice/Warehouse (nghiep vu canonical).                                                                    |
+| [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) + [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md) + [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md) | Warehouse: mục lục + flow nghiệp vụ + runbook kỹ thuật.                                                           |
+| [`CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md`](../FUNC_IMPROVE/08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                                                                        | Import client (kỹ thuật).                                                                                         |
+| [`MAOLIN_DIGIWIN_ORDER_EXPORT_TEMPLATE_NOTE.md`](MAOLIN_DIGIWIN_ORDER_EXPORT_TEMPLATE_NOTE.md)                                                                                   | **Export tối → DigiWin:** mẫu 11 cột `訂單寫入模板` (file trong `PROJECT MAOLIN/`). Chưa code — spec cho dev sau. |
 
 ---
 

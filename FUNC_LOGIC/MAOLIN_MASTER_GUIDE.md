@@ -246,6 +246,7 @@ Chi tiết thao tác: `WAREHOUSE_MASTER_GUIDE.md`.
 **Tối export (hệ thống → DigiWin):**
 
 - [ ] Chuẩn format theo DigiWin template (Phase 1 contract)
+- [ ] **Đơn bán (SO):** đúng 11 cột file mẫu `PROJECT MAOLIN/(Order Sample) 訂單寫入模板資料_260525.xlsx` — chi tiết: [`MAOLIN_DIGIWIN_ORDER_EXPORT_TEMPLATE_NOTE.md`](MAOLIN_DIGIWIN_ORDER_EXPORT_TEMPLATE_NOTE.md)
 - [ ] Export theo key ổn định + timestamp (delta hoặc full snapshot)
 
 ---

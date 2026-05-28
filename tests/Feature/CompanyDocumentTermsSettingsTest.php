@@ -93,8 +93,8 @@ function companyDocumentTermsFinanceUser(array $modules = ['orders']): ?array
         );
     }
 
-    Cache::forget('permission-manage_finance_setting-'.$user->id);
-    Cache::forget('user_modules_'.$user->id);
+    Cache::forget('permission-manage_finance_setting-' . $user->id);
+    Cache::forget('user_modules_' . $user->id);
 
     return ['company' => $company, 'user' => $user->fresh(), 'userAuth' => $userAuth];
 }
@@ -117,7 +117,7 @@ it('stores sale order terms on invoice settings prefix update', function (): voi
         test()->markTestSkipped('No invoice setting for company.');
     }
 
-    $terms = 'Sale order terms unique '.uniqid();
+    $terms = 'Sale order terms unique ' . uniqid();
 
     $payload = [
         'order_prefix' => $setting->order_prefix ?? 'SO',
@@ -140,7 +140,7 @@ it('stores sale order terms on invoice settings prefix update', function (): voi
             'status' => 'active',
         ],
     );
-    Cache::forget('user_modules_'.$fix['user']->id);
+    Cache::forget('user_modules_' . $fix['user']->id);
 
     $payload['invoice_prefix'] = $setting->invoice_prefix ?? 'INV';
     $payload['invoice_number_separator'] = $setting->invoice_number_separator ?? '#';
@@ -160,7 +160,7 @@ it('stores sale order terms on invoice settings prefix update', function (): voi
             'status' => 'active',
         ],
     );
-    Cache::forget('user_modules_'.$fix['user']->id);
+    Cache::forget('user_modules_' . $fix['user']->id);
 
     $payload['estimate_prefix'] = $setting->estimate_prefix ?? 'EST';
     $payload['estimate_number_separator'] = $setting->estimate_number_separator ?? '#';
@@ -201,7 +201,7 @@ it('redirects legacy delivery order settings to purchase settings document terms
                 'permission_type_id' => (int) $typeAllId,
             ],
         );
-        Cache::forget('permission-view_purchase_setting-'.$fix['user']->id);
+        Cache::forget('permission-view_purchase_setting-' . $fix['user']->id);
     }
 
     $response = test()->actingAs($fix['userAuth'], 'web')
@@ -212,7 +212,7 @@ it('redirects legacy delivery order settings to purchase settings document terms
         ])
         ->get(route('delivery-order-settings.index'));
 
-    $response->assertRedirect(route('purchase-settings.index', ['tab' => 'general']).'#document-terms');
+    $response->assertRedirect(route('purchase-settings.index', ['tab' => 'general']) . '#document-terms');
 });
 
 it('stores sale order terms on sales order settings tab update', function (): void {
@@ -233,7 +233,7 @@ it('stores sale order terms on sales order settings tab update', function (): vo
         test()->markTestSkipped('No invoice setting for company.');
     }
 
-    $terms = 'Sale order tab terms '.uniqid();
+    $terms = 'Sale order tab terms ' . uniqid();
 
     $response = test()->actingAs($fix['userAuth'], 'web')
         ->withSession([
@@ -254,11 +254,7 @@ it('stores sale order terms on sales order settings tab update', function (): vo
     expect($setting->order_terms)->toBe($terms);
 });
 
-it('stores grn terms on purchase settings prefix update', function (): void {
-    if (! Schema::hasColumn('purchase_settings', 'grn_terms')) {
-        test()->markTestSkipped('grn_terms column missing.');
-    }
-
+it('stores shared purchase and grn terms on purchase settings prefix update', function (): void {
     $fix = companyDocumentTermsFinanceUser(['purchase']);
     if ($fix === null) {
         return;
@@ -272,7 +268,7 @@ it('stores grn terms on purchase settings prefix update', function (): void {
         test()->markTestSkipped('No purchase setting for company.');
     }
 
-    $terms = 'GRN terms unique '.uniqid();
+    $terms = 'Purchase and goods receipt terms ' . uniqid();
 
     $response = test()->actingAs($fix['userAuth'], 'web')
         ->withSession([
@@ -290,12 +286,11 @@ it('stores grn terms on purchase settings prefix update', function (): void {
             'vendor_credit_prefix' => $purchaseSetting->vendor_credit_prefix ?? 'VC',
             'vendor_credit_number_seprator' => $purchaseSetting->vendor_credit_number_seprator ?? '#',
             'vendor_credit_digit' => $purchaseSetting->vendor_credit_number_digit ?? 3,
-            'purchase_terms' => $purchaseSetting->purchase_terms,
-            'grn_terms' => $terms,
+            'purchase_terms' => $terms,
         ]);
 
     $response->assertSuccessful();
 
     $purchaseSetting->refresh();
-    expect($purchaseSetting->grn_terms)->toBe($terms);
+    expect($purchaseSetting->purchase_terms)->toBe($terms);
 });

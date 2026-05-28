@@ -187,11 +187,12 @@ return [
         'vendorCreditExample' => '供應商信用號範例',
         'termsAndCondition' => '附帶條約',
 
-        'documentTermsSection' => 'Document terms (PO & GRN)',
-        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
-        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
-        'grnTerms' => 'GRN — Terms and Conditions',
-        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => '票據訂單數字',
+        'documentTermsSection' => 'Document terms (Purchase order & Goods receipt note)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes. Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'purchaseOrderAndGrnTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'grnTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'grnTermsHelp' => 'Shared with purchase order terms on all purchase documents.',        'billOrderDigits' => '票據訂單數字',
         'billOrderExample' => '票據訂單範例',
     ],
     'vendorCredit' => [

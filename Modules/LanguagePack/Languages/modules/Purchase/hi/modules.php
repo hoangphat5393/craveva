@@ -167,11 +167,12 @@ return [
         'vendorCreditExample' => 'विक्रेता क्रेडिट संख्या उदाहरण',
         'termsAndCondition' => 'नियम व शर्तें',
 
-        'documentTermsSection' => 'Document terms (PO & GRN)',
-        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
-        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
-        'grnTerms' => 'GRN — Terms and Conditions',
-        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'बिल आदेश अंक',
+        'documentTermsSection' => 'Document terms (Purchase order & Goods receipt note)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes. Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'purchaseOrderAndGrnTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'grnTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'grnTermsHelp' => 'Shared with purchase order terms on all purchase documents.',        'billOrderDigits' => 'बिल आदेश अंक',
         'billOrderExample' => 'बिल ऑर्डर उदाहरण',
     ],
     'vendorCredit' => [

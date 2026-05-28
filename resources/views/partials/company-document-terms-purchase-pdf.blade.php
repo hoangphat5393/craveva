@@ -4,6 +4,6 @@
 @endphp
 @if (trim($resolvedPurchaseTerms) !== '')
     <div class="word-break" style="margin-top: 10px;">
-        <b>@lang('purchase::modules.purchaseSettings.purchaseOrderTerms')</b><br>{!! nl2br($resolvedPurchaseTerms) !!}
+        <b>@lang('purchase::modules.purchaseSettings.purchaseOrderAndGrnTerms')</b><br>{!! nl2br($resolvedPurchaseTerms) !!}
     </div>
 @endif

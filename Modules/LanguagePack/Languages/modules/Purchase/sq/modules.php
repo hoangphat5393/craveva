@@ -167,11 +167,12 @@ return [
         'vendorCreditExample' => 'Shembull i numrit të kredisë së shitësit',
         'termsAndCondition' => 'Termat dhe Kushtet',
 
-        'documentTermsSection' => 'Document terms (PO & GRN)',
-        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
-        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
-        'grnTerms' => 'GRN — Terms and Conditions',
-        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'Shifrat e porosisë së faturave',
+        'documentTermsSection' => 'Document terms (Purchase order & Goods receipt note)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes. Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'purchaseOrderAndGrnTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'grnTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'grnTermsHelp' => 'Shared with purchase order terms on all purchase documents.',        'billOrderDigits' => 'Shifrat e porosisë së faturave',
         'billOrderExample' => 'Shembull i porosisë së faturës',
     ],
     'vendorCredit' => [

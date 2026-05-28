@@ -51,11 +51,7 @@
             <p class="f-13 text-dark-grey mb-3">@lang('purchase::modules.purchaseSettings.documentTermsSectionHelp')</p>
         </div>
         <div class="col-lg-12">
-            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.purchaseSettings.purchaseOrderTerms')" fieldId="purchase_terms" fieldName="purchase_terms" :fieldValue="$purchaseSetting->purchase_terms" />
-        </div>
-        <div class="col-lg-12 mt-3">
-            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.purchaseSettings.grnTerms')" fieldId="grn_terms" fieldName="grn_terms" :fieldValue="$purchaseSetting->grn_terms ?? ''" />
-            <p class="f-12 text-dark-grey mb-0">@lang('purchase::modules.purchaseSettings.grnTermsHelp')</p>
+            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.purchaseSettings.purchaseOrderAndGrnTerms')" fieldId="purchase_terms" fieldName="purchase_terms" :fieldValue="$purchaseSetting->purchase_terms" />
         </div>
     </div>
 </div>

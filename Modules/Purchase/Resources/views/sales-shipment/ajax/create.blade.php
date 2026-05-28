@@ -54,7 +54,7 @@
                             @endphp
                             @include('partials.company-document-terms-readonly', [
                                 'termsText' => $salesDoTermsText,
-                                'label' => __('modules.invoiceSettings.orderAndSalesDoTerms'),
+                                'label' => __('modules.invoiceSettings.saleOrderAndDeliveryOrderTerms'),
                             ])
                         </div>
                     </div>

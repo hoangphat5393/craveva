@@ -167,11 +167,12 @@ return [
         'vendorCreditExample' => 'مثال على رقم ائتمان البائع',
         'termsAndCondition' => 'أحكام وشروط',
 
-        'documentTermsSection' => 'Document terms (PO & GRN)',
-        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes (GRN). Per-document notes are entered on each form.',
-        'purchaseOrderTerms' => 'Purchase order (PO) — Terms and Conditions',
-        'grnTerms' => 'GRN — Terms and Conditions',
-        'grnTermsHelp' => 'If empty, purchase order terms are used on GRN forms and PDFs.',        'billOrderDigits' => 'أرقام طلب الفاتورة',
+        'documentTermsSection' => 'Document terms (Purchase order & Goods receipt note)',
+        'documentTermsSectionHelp' => 'Company-wide terms shown on purchase orders and goods receipt notes. Per-document notes are entered on each form.',
+        'purchaseOrderTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'purchaseOrderAndGrnTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'grnTerms' => 'Purchase order & Goods receipt note — Terms and Conditions',
+        'grnTermsHelp' => 'Shared with purchase order terms on all purchase documents.',        'billOrderDigits' => 'أرقام طلب الفاتورة',
         'billOrderExample' => 'مثال على طلب الفاتورة',
     ],
     'vendorCredit' => [

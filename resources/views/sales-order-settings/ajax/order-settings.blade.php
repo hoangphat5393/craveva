@@ -24,8 +24,8 @@
                     <p class="f-13 text-dark-grey mb-3">@lang('modules.invoiceSettings.documentTermsSectionHelp')</p>
                 </div>
                 <div class="col-lg-12">
-                    <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.orderAndSalesDoTerms')" fieldId="order_terms" fieldName="order_terms" :fieldValue="$invoiceSetting->order_terms ?? ''" />
-                    <p class="f-12 text-dark-grey mb-0">@lang('modules.invoiceSettings.orderAndSalesDoTermsHelp')</p>
+                    <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.invoiceSettings.saleOrderAndDeliveryOrderTerms')" fieldId="order_terms" fieldName="order_terms" :fieldValue="$invoiceSetting->order_terms ?? ''" />
+                    <p class="f-12 text-dark-grey mb-0">@lang('modules.invoiceSettings.saleOrderAndDeliveryOrderTermsHelp')</p>
                 </div>
             </div>
         </div>

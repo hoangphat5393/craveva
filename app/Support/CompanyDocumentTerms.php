@@ -24,17 +24,7 @@ class CompanyDocumentTerms
 
     public static function resolveGrnTerms(?PurchaseSetting $purchaseSetting): string
     {
-        if ($purchaseSetting === null) {
-            return '';
-        }
-
-        $grnTerms = trim((string) ($purchaseSetting->grn_terms ?? ''));
-
-        if ($grnTerms !== '') {
-            return $grnTerms;
-        }
-
-        return trim((string) ($purchaseSetting->purchase_terms ?? ''));
+        return self::resolvePurchaseOrderTerms($purchaseSetting);
     }
 
     public static function resolvePurchaseOrderTerms(?PurchaseSetting $purchaseSetting): string

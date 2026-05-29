@@ -22,7 +22,7 @@ return [
     'warehouses' => '仓库',
     'stockMovements' => '库存流水',
     'noStockFound' => '未找到库存',
-    'adjustStock' => '仓库库存',
+    'adjustStock' => '库存概览',
     'adjustStockAction' => '库存调整',
     'adjustStockCta' => '新建库存调整',
     'transferStock' => '仓库调拨',

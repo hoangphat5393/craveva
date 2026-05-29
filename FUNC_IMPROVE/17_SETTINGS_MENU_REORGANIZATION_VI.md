@@ -225,12 +225,12 @@ Nếu PM chỉ thêm menu trái (AI Workspace, Reports, Recruit…):
 
 - File: `resources/views/sections/menu.blade.php`
 - Đã có nhóm accordion: Home, Work Management, Sales, Operations, Finance, People…
-- Đề xuất tách doc: `FUNC_IMPROVE/18_APP_SIDEBAR_MENU_VI.md` (khi có yêu cầu riêng).
+- **Đã implement:** `FUNC_IMPROVE/18_APP_SIDEBAR_MENU_VI.md` (UX-009 — Phương án A, 2026-05-29).
 
 ---
 
 ## 9. Lịch sử
 
-| Ngày       | Ghi chú                                                                            |
-| ---------- | ---------------------------------------------------------------------------------- |
+| Ngày       | Ghi chú                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------- |
 | 2026-05-29 | UX-007 implemented: `setting-menu-group`, reorder `setting-sidebar.blade.php`, lang en/vi, tests. |

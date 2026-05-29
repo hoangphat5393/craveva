@@ -179,7 +179,7 @@ class WarehouseStockController extends AccountBaseController
             if ($request->ajax()) {
                 session()->flash('success', __('warehouse::app.success_stock_adjustment_saved'));
 
-                return response()->json(Reply::redirect(route('warehouse.stock.index')));
+                return response()->json(Reply::redirect(route('warehouse.stock.index'), 'warehouse::app.success_stock_adjustment_saved'));
             }
 
             return redirect()->route('warehouse.stock.index')->with('success', __('warehouse::app.success_stock_adjustment_saved'));
@@ -208,10 +208,10 @@ class WarehouseStockController extends AccountBaseController
             ->whereIn('product_id', $productIds)
             ->groupBy('warehouse_id', 'product_id')
             ->get()
-            ->keyBy(fn ($row) => $row->warehouse_id.':'.$row->product_id);
+            ->keyBy(fn($row) => $row->warehouse_id . ':' . $row->product_id);
 
         $stocks->getCollection()->transform(function ($stock) use ($batchAgg) {
-            $key = $stock->warehouse_id.':'.$stock->product_id;
+            $key = $stock->warehouse_id . ':' . $stock->product_id;
             $reserved = (float) ($batchAgg->get($key)->reserved ?? 0);
             $onHand = (float) $stock->quantity;
             $available = max(0.0, $onHand - $reserved);

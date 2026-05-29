@@ -169,3 +169,4 @@ Cùng nền ERP nhưng **không trộn** khi lên backlog:
 - `PROJECT BIOMIXING/PHASE1_TO_3_END_TO_END_FLOW.mmd`
 - `DIAGRAM/chat_ai_hub.mmd` và `DIAGRAM/chat_ai_hub.html`
 - `PROJECT BIOMIXING/2-4-2026_Biomixing_Proposal_CravevaERP_Formatted.pdf`
+

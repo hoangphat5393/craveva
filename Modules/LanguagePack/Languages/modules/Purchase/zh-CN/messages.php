@@ -26,5 +26,5 @@ return [
     'confirmInactiveStatus' => '它还将更改每个库存产品的起草状态！',
     'orderMarkAsSent' => '订单发送成功',
     'orderSentSuccessfully' => '订单标记为已发送成功',
-    'billSentSuccessfully' => '比尔发送成功。',
+    'billSentSuccessfully' => '供应商账单已成功发送。',
 ];

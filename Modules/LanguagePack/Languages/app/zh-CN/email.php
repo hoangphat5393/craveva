@@ -138,7 +138,7 @@ return [
     'invoices' => [
         'paymentReceived' => '已收到付款：确认',
         'paymentReceivedForInvoice' => '已收到发票付款',
-        'paymentReceivedForOrder' => '已收到订单付款',
+        'paymentReceivedForOrder' => '已收到销售订单付款',
         'action' => '查看发票',
         'newPaymentReceived' => '收到新付款',
         'paymentReminder' => '收到付款提醒',

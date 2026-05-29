@@ -195,7 +195,7 @@ class WarehouseController extends AccountBaseController
         $batch = $this->importJobProcessChunked($request, WarehouseImport::class, ImportWarehouseChunkJob::class, $chunkSize);
         $batchId = data_get($batch, 'id');
         if ($batchId) {
-            Cache::put('import_metrics_'.$batchId, [
+            Cache::put('import_metrics_' . $batchId, [
                 'created' => 0,
                 'updated' => 0,
                 'skipped' => 0,
@@ -231,11 +231,11 @@ class WarehouseController extends AccountBaseController
             'status.required' => __('warehouse::app.validation_status_required'),
             'status.in' => __('warehouse::app.validation_status_invalid'),
         ], [
-            'name' => __('warehouse name'),
-            'code' => __('warehouse code'),
-            'warehouse_type' => __('warehouse type'),
-            'address' => __('address'),
-            'status' => __('status'),
+            'name' => __('warehouse::app.name'),
+            'code' => __('warehouse::app.code'),
+            'warehouse_type' => __('warehouse::app.warehouseType'),
+            'address' => __('warehouse::app.address'),
+            'status' => __('warehouse::app.statusLabel'),
         ]);
 
         $companyId = $this->warehouseCompanyId();
@@ -275,7 +275,7 @@ class WarehouseController extends AccountBaseController
             if ($request->ajax()) {
                 session()->flash('success', __('warehouse::app.success_warehouse_created'));
 
-                return response()->json(Reply::redirect(route('warehouse.index')));
+                return response()->json(Reply::redirect(route('warehouse.index'), 'warehouse::app.success_warehouse_created'));
             }
 
             return redirect()->route('warehouse.index')->with('success', __('warehouse::app.success_warehouse_created'));
@@ -336,7 +336,7 @@ class WarehouseController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50|unique:warehouses,code,'.$id,
+            'code' => 'nullable|string|max:50|unique:warehouses,code,' . $id,
             'warehouse_type' => 'nullable|in:normal,locked,scrap,transit',
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
@@ -350,11 +350,11 @@ class WarehouseController extends AccountBaseController
             'status.required' => __('warehouse::app.validation_status_required'),
             'status.in' => __('warehouse::app.validation_status_invalid'),
         ], [
-            'name' => __('warehouse name'),
-            'code' => __('warehouse code'),
-            'warehouse_type' => __('warehouse type'),
-            'address' => __('address'),
-            'status' => __('status'),
+            'name' => __('warehouse::app.name'),
+            'code' => __('warehouse::app.code'),
+            'warehouse_type' => __('warehouse::app.warehouseType'),
+            'address' => __('warehouse::app.address'),
+            'status' => __('warehouse::app.statusLabel'),
         ]);
 
         try {
@@ -384,7 +384,7 @@ class WarehouseController extends AccountBaseController
             if ($request->ajax()) {
                 session()->flash('success', __('warehouse::app.success_warehouse_updated'));
 
-                return response()->json(Reply::redirect(route('warehouse.index')));
+                return response()->json(Reply::redirect(route('warehouse.index'), 'warehouse::app.success_warehouse_updated'));
             }
 
             return redirect()->route('warehouse.index')->with('success', __('warehouse::app.success_warehouse_updated'));
@@ -463,7 +463,7 @@ class WarehouseController extends AccountBaseController
         foreach ($warehouses as $warehouse) {
             $blockMessage = $this->deleteBlockedMessage($warehouse);
             if ($blockMessage !== null) {
-                return response()->json(Reply::error($warehouse->name.': '.$blockMessage), 422);
+                return response()->json(Reply::error($warehouse->name . ': ' . $blockMessage), 422);
             }
         }
 

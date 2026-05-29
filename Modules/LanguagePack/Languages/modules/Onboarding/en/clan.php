@@ -24,7 +24,7 @@ return [
         'offboardingSettings' => 'Offboarding Settings',
         'addOnboardingTask' => 'Add Onboarding Task',
         'addOffboardingTask' => 'Add Offboarding Task',
-        'onOffboardingSettings' => 'On Offboarding Settings',
+        'onOffboardingSettings' => 'Onboarding & offboarding settings',
     ],
     'viewFile' => 'View File',
     'submittedOn' => 'Submitted On',

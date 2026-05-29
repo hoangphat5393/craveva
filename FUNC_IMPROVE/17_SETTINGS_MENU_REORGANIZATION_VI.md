@@ -2,7 +2,7 @@
 
 **Ngày:** 2026-05-23  
 **Nguồn:** Phản hồi PM — menu Settings (cột giữa khi vào `/account/settings` và các trang con) quá dài, khó tìm; SO / PO / DO settings nằm rải rác.  
-**Trạng thái:** Đề xuất — **chưa implement** (chỉ tài liệu).  
+**Trạng thái:** **Đã implement** (UX-007, Phương án A — 2026-05-29).  
 **Liên quan:** `FUNC_IMPROVE/05_SO_DO_PO_GRN_REFACTOR_VI.md`, `FUNC_LOGIC/DESIGN_BACKEND_UI_UX_VI.md` §13 (company document terms), `FUNC_IMPROVE/10_UX_UI_IMPROVEMENT_BACKLOG.md` (UX-007).
 
 ---
@@ -233,4 +233,4 @@ Nếu PM chỉ thêm menu trái (AI Workspace, Reports, Recruit…):
 
 | Ngày       | Ghi chú                                                                            |
 | ---------- | ---------------------------------------------------------------------------------- |
-| 2026-05-23 | Tạo doc từ phân tích conversation Settings UX (SO/PO/DO alignment + menu quá dài). |
+| 2026-05-29 | UX-007 implemented: `setting-menu-group`, reorder `setting-sidebar.blade.php`, lang en/vi, tests. |

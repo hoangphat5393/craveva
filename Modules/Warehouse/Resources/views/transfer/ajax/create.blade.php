@@ -56,55 +56,8 @@
     </div>
 </div>
 
-<script>
-    const getReadableApiError = (error, fallbackMessage = @json(__('warehouse::app.unableSaveWarehouseTransfer'))) => {
-        const err = error?.responseJSON || error?.response?.data || {};
-        const errors = err?.errors || {};
-        const lines = [];
-
-        Object.keys(errors).forEach((field) => {
-            const messages = Array.isArray(errors[field]) ? errors[field] : [errors[field]];
-            messages.forEach((msg) => {
-                if (msg) lines.push(msg);
-            });
-        });
-
-        if (lines.length > 0) {
-            return lines.join('\n');
-        }
-
-        return err?.message || fallbackMessage;
-    };
-
-    $(function() {
-        if (typeof $.fn.selectpicker === 'function') {
-            $('.select-picker').selectpicker('refresh');
-        }
-    });
-
-    $('#save-transfer-form').click(function() {
-        const $btn = $('#save-transfer-form');
-        $btn.prop('disabled', true);
-        $.easyBlockUI('#save-transfer-data-form');
-        window.apiHttp.postUrlEncoded("{{ route('warehouse.transfer.store') }}", $('#save-transfer-data-form').serialize())
-            .then(function(response) {
-                if (response.status === 'success' && response.action === 'redirect') {
-                    window.location.href = response.url;
-                }
-            })
-            .catch(function(err) {
-                const readableMessage = getReadableApiError(err);
-                Swal.fire({
-                    icon: 'error',
-                    title: @json(__('warehouse::app.validationFailedTitle')),
-                    text: readableMessage,
-                    timer: 7000,
-                    timerProgressBar: true,
-                });
-            })
-            .finally(function() {
-                $btn.prop('disabled', false);
-                $.easyUnblockUI('#save-transfer-data-form');
-            });
-    });
-</script>
+@include('warehouse::partials.ajax-form-submit-script', [
+    'formId' => 'save-transfer-data-form',
+    'buttonId' => 'save-transfer-form',
+    'submitUrl' => route('warehouse.transfer.store'),
+])

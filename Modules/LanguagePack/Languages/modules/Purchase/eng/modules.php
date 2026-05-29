@@ -288,7 +288,7 @@ return [
         'shipped' => 'Shipped (stock out)',
         'delivered' => 'Delivered',
         'cancelled' => 'Cancelled',
-        'reverse' => 'Reverse shipment',
+        'reverse' => 'Reverse sales delivery order',
     ],
     'order' => [
         'orderNumber' => 'Order Number',

@@ -24,6 +24,26 @@
             height: calc(100vh - 80px);
         }
 
+        li.settings-menu-group {
+            list-style: none;
+            padding: 18px 24px 4px;
+
+            &:first-child {
+                padding-top: 10px;
+            }
+
+            .settings-menu-group-label {
+                display: block;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                color: #99a5b5;
+                line-height: 1.35;
+                white-space: normal;
+            }
+        }
+
         li a {
             padding: 15px 24px;
             white-space: break-spaces;

@@ -235,7 +235,7 @@ return [
     'approveVariance' => 'Phê duyệt chênh lệch',
     'fgVarianceApprovalRequired' => 'Cần phê duyệt chênh lệch trước khi nhập thành phẩm.',
     'fgVarianceAlreadyPosted' => 'Dòng thành phẩm này đã được hạch toán.',
-    'salesDoBlockedByProductionQualityLock' => 'Không thể giao đơn bán vì lệnh sản xuất liên kết chưa hoàn thành.',
+    'salesDoBlockedByProductionQualityLock' => 'Không thể xuất giao phiếu Sales DO vì lệnh sản xuất liên kết chưa hoàn thành.',
     'inventoryFlowHintTitle' => 'Phát hành lệnh chưa làm tăng tồn kho',
     'inventoryFlowHintBody' => 'Phát hành chỉ chốt kế hoạch và định mức nguyên vật liệu. Để tăng tồn thành phẩm: trừ tồn nguyên liệu → khai báo thành phẩm → nhập kho thành phẩm.',
     'inventoryAggregationHintTitle' => 'Tồn kho có thể cộng số lượng thay vì tạo dòng mới',

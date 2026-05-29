@@ -17,7 +17,7 @@ return [
         'payCode' => 'Mã thanh toán',
         'overtimePolicyEmployee' => 'Nhân viên chính sách ngoài giờ',
         'overtimeSetting' => 'Cài đặt ngoài giờ',
-        'overtimeSettings' => 'Cài đặt ngoài giờ',
+        'overtimeSettings' => 'Cài đặt làm thêm giờ',
         'overtimeRequest' => 'Yêu cầu làm thêm giờ',
     ],
     'week' => 'Tuần',

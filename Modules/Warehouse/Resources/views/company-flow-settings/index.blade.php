@@ -70,15 +70,31 @@
 @push('scripts')
     <script>
         $('#save-flow-settings').click(function() {
-            $.easyAjax({
-                url: "{{ route('warehouse.company-flow-settings.update') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-flow-settings",
-                data: $('#editSettings').serialize(),
-            });
+            const $btn = $('#save-flow-settings');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded("{{ route('warehouse.company-flow-settings.update') }}", $('#editSettings').serialize())
+                .then(function(response) {
+                    if (response.status === 'success' && response.message && typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3500,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#editSettings');
+                });
         });
     </script>
 @endpush

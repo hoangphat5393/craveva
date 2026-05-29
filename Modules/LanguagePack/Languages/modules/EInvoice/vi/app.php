@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'einvoice' => 'E-Invoice',
-        'einvoiceSettings' => 'E-Invoice Settings',
+        'einvoiceSettings' => 'Cài đặt hóa đơn điện tử',
     ],
     'settingForm' => [
         'electronicAddress' => 'Electronic Address',

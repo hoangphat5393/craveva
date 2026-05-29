@@ -140,14 +140,14 @@ return [
     'invoices' => [
         'paymentReceived' => 'Thanh toán đã nhận: Xác nhận',
         'paymentReceivedForInvoice' => 'Thanh toán nhận được cho hóa đơn',
-        'paymentReceivedForOrder' => 'Đã nhận được thanh toán cho đơn hàng',
+        'paymentReceivedForOrder' => 'Đã nhận thanh toán cho đơn bán hàng',
         'action' => 'Xem hóa đơn',
         'newPaymentReceived' => 'Khoản thanh toán mới đã nhận được',
         'paymentReminder' => 'Đã nhận được lời nhắc thanh toán',
     ],
     'orders' => [
-        'action' => 'Xem đơn hàng',
-        'subject' => 'Đã nhận được đơn hàng mới',
+        'action' => 'Xem đơn bán hàng',
+        'subject' => 'Đã nhận đơn bán hàng mới',
     ],
     'eventReminder' => [
         'subject' => 'Lời nhắc: Sự kiện sắp tới - Lưu lại ngày tháng!',
@@ -183,11 +183,11 @@ return [
         'updateTextSms' => 'Hóa đơn đã được cập nhật. Vui lòng kiểm tra hóa đơn :invoice_number.',
     ],
     'order' => [
-        'subject' => 'Đơn hàng mới đã được đặt',
-        'text' => 'Một đơn đặt hàng mới đã được đặt. Vui lòng click vào link bên dưới để xem đơn hàng.',
-        'action' => 'Xem đơn hàng',
-        'updateSubject' => 'Đã cập nhật đơn hàng',
-        'updateText' => 'Đơn hàng đã được cập nhật. Vui lòng click vào link bên dưới để xem đơn hàng.',
+        'subject' => 'Đơn bán hàng mới',
+        'text' => 'Có đơn bán hàng mới. Vui lòng bấm liên kết bên dưới để xem chi tiết.',
+        'action' => 'Xem đơn bán hàng',
+        'updateSubject' => 'Đã cập nhật đơn bán hàng',
+        'updateText' => 'Đơn bán hàng đã được cập nhật. Vui lòng bấm liên kết bên dưới để xem chi tiết.',
     ],
     'projectReminder' => [
         'text' => 'Điều này nhằm nhắc nhở bạn về ngày đến hạn của các dự án sau đây.',

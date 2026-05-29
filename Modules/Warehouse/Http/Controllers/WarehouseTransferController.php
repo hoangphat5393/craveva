@@ -118,7 +118,7 @@ class WarehouseTransferController extends AccountBaseController
             if ($request->ajax()) {
                 session()->flash('success', __('warehouse::app.success_warehouse_transfer_saved'));
 
-                return response()->json(Reply::redirect(route('warehouse.stock.index')));
+                return response()->json(Reply::redirect(route('warehouse.stock.index'), 'warehouse::app.success_warehouse_transfer_saved'));
             }
 
             return redirect()->route('warehouse.stock.index')->with('success', __('warehouse::app.success_warehouse_transfer_saved'));

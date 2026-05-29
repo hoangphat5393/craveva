@@ -58,7 +58,7 @@ return [
         'prefixSettings' => '前缀设置',
         'vendorReport' => '供应商报告',
         'orderReport' => '采购订单报告',
-        'inventory' => '库存',
+        'inventory' => '期初库存',
         'stockAdjustments' => '库存调整',
         'bill' => '账单',
         'bills' => '账单',

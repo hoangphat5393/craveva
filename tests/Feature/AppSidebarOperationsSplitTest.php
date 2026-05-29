@@ -8,7 +8,16 @@ it('exposes split operations menu labels in english', function (): void {
     expect(__('app.menu.procurement'))->toBe('Purchasing')
         ->and(__('app.menu.salesFulfillment'))->toBe('Sales orders')
         ->and(__('app.menu.inventoryWarehouse'))->toBe('Inventory')
-        ->and(__('app.menu.productionHub'))->toBe('Production');
+        ->and(__('app.menu.productionHub'))->toBe('Production')
+        ->and(__('app.menu.sales'))->toBe('Customer Management')
+        ->and(__('purchase::app.menu.inventory'))->toBe('Opening stock');
+});
+
+it('exposes ux-010 sidebar labels in vietnamese', function (): void {
+    app()->setLocale('vi');
+
+    expect(__('app.menu.sales'))->toBe('Quản lý khách hàng')
+        ->and(__('purchase::app.menu.inventory'))->toBe('Tồn đầu kỳ');
 });
 
 it('purchase sidebar template uses split menu keys instead of single operations accordion', function (): void {

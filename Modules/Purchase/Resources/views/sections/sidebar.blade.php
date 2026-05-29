@@ -43,14 +43,16 @@
     $inventoryWarehouseMenuActive = request()->routeIs('purchase-products.*', 'purchase_products.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*');
     $productionMenuActive = request()->routeIs('production.*');
 
-    $walletIconPath =
-        '<path d="m14.12 10.163 1.715.858c.22.11.22.424 0 .534L8.267 15.34a.6.6 0 0 1-.534 0L.165 11.555a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0l5.317-2.66zM7.733.063a.6.6 0 0 1 .534 0l7.568 3.784a.3.3 0 0 1 0 .535L8.267 8.165a.6.6 0 0 1-.534 0L.165 4.382a.299.299 0 0 1 0-.535z" /><path d="m14.12 6.576 1.715.858c.22.11.22.424 0 .534l-7.568 3.784a.6.6 0 0 1-.534 0L.165 7.968a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0z" />';
+    $procurementIconPath = '<path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l2.7 3.45a1.5 1.5 0 0 1 .329.938V12.5A1.5 1.5 0 0 1 15.5 14H14v1.5a1.5 1.5 0 0 1-3 0V14H5v1.5a1.5 1.5 0 0 1-3 0V14H.5a1.5 1.5 0 0 1-1.485-1.269L0 12.02V3.5zm1 .5v8h10V4H1zm12.5 3a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5h1z" />';
+
+    $productionIconPath =
+        '<path d="M7.752 1.011a.23.23 0 0 1 .192.073l4.411 4.352a.24.24 0 0 1 .054.238l-2.293 6.113a.24.24 0 0 1-.221.161h-6.41a.24.24 0 0 1-.221-.161L.795 5.674a.24.24 0 0 1 .054-.238l4.41-4.352a.23.23 0 0 1 .192-.073h5.31z" /><path d="M2 8.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />';
 @endphp
 @if (in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()) && ($showProcurementMenu || $showSalesFulfillmentMenu || $showInventoryWarehouseMenu || $showProductionMenu))
 
     @if ($showProcurementMenu)
-        <x-menu-item icon="wallet" :text="__('app.menu.procurement')" :addon="App::environment('demo')" :active="$procurementMenuActive">
-            <x-slot name="iconPath">{!! $walletIconPath !!}</x-slot>
+        <x-menu-item icon="truck" :text="__('app.menu.procurement')" :addon="App::environment('demo')" :active="$procurementMenuActive">
+            <x-slot name="iconPath">{!! $procurementIconPath !!}</x-slot>
             <div class="accordionItemContent pb-2">
                 <x-sub-menu-item :link="route('vendors.index')" :text="__('purchase::app.menu.vendor')" :permission="$purchaseViewVendorPermission != 'none' && $purchaseViewVendorPermission != ''" />
                 <x-sub-menu-item :link="route('purchase-order.index')" :text="__('purchase::app.menu.purchaseOrder')" :permission="$purchaseViewOrderPermission != 'none' && $purchaseViewOrderPermission != ''" />
@@ -105,12 +107,8 @@
     @endif
 
     @if ($showProductionMenu)
-        <x-menu-item icon="gear" :text="__('app.menu.productionHub')" :active="$productionMenuActive">
-            <x-slot name="iconPath">
-                <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z" />
-                <path
-                    d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z" />
-            </x-slot>
+        <x-menu-item icon="box-seam" :text="__('app.menu.productionHub')" :active="$productionMenuActive">
+            <x-slot name="iconPath">{!! $productionIconPath !!}</x-slot>
             <div class="accordionItemContent pb-2">
                 <x-sub-menu-item :link="route('production.orders.index')" :text="__('production::app.menuProductionOrders')" :permission="true" :active="request()->routeIs('production.orders.*', 'production.batches.*', 'production.outputs.post-fg-receipt')" />
                 <x-sub-menu-item :link="route('production.boms.index')" :text="__('production::app.menuBillOfMaterials')" :permission="true" :active="request()->routeIs('production.boms.*')" />

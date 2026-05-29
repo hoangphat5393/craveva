@@ -73,51 +73,13 @@
             </x-menu-item>
         @endif
 
-        {{-- Sales & CRM --}}
-        @if (!in_array('client', user_roles()) && in_array('leads', user_modules()) && (($sidebarUserPermissions['view_lead'] != 5 && $sidebarUserPermissions['view_lead'] != 'none') || ($sidebarUserPermissions['view_deals'] != 5 && $sidebarUserPermissions['view_deals'] != 'none')))
-            <x-menu-item icon="person" :text="__('app.menu.sales')">
-                <x-slot name="iconPath">
-                    <path d="M8 9.05a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
-                    <path d="M1 1a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h.5a.5.5 0 0 0 .5-.5.5.5 0 0 1 1 0 .5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5.5.5 0 0 1 1 0 .5.5 0 0 0 .5.5h.5a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H6.707L6 1.293A1 1 0 0 0 5.293 1zm0 1h4.293L6 2.707A1 1 0 0 0 6.707 3H15v10h-.085a1.5 1.5 0 0 0-2.4-.63C11.885 11.223 10.554 10 8 10c-2.555 0-3.886 1.224-4.514 2.37a1.5 1.5 0 0 0-2.4.63H1z" />
-                </x-slot>
-                <div class="accordionItemContent ">
-                    @if ($sidebarUserPermissions['view_lead'] != 5 && $sidebarUserPermissions['view_lead'] != 'none')
-                        <x-sub-menu-item :link="route('lead-contact.index')" :text="__('app.leadContact')" />
-                    @endif
-
-                    @if ($sidebarUserPermissions['view_deals'] != 5 && $sidebarUserPermissions['view_deals'] != 'none')
-                        <x-sub-menu-item :link="route('deals.index')" :text="__('app.deal')" />
-                    @endif
-
-                    @if (!in_array('client', user_roles()) && in_array('clients', user_modules()) && $sidebarUserPermissions['view_clients'] != 5 && $sidebarUserPermissions['view_clients'] != 'none')
-                        <x-sub-menu-item :link="route('clients.index')" :text="__('app.menu.clients')" />
-                    @endif
-
-                    @if (in_array('leads', user_modules()) && $sidebarUserPermissions['view_lead_proposals'] != 5 && $sidebarUserPermissions['view_lead_proposals'] != 'none')
-                        <x-sub-menu-item :link="route('proposals.index')" :text="__('app.menu.proposal')" />
-                    @endif
-
-                    @if (in_array('estimates', user_modules()) && $sidebarUserPermissions['view_estimates'] != 5 && $sidebarUserPermissions['view_estimates'] != 'none')
-                        <x-sub-menu-item :link="route('estimates.index')" :text="__('app.quotation_ui.menu')" />
-                    @endif
-                </div>
-            </x-menu-item>
-        @endif
-
-
-        @if (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 5 && $sidebarUserPermissions['view_order'] != 'none' && false)
-            <x-menu-item icon="cart3" :text="__('app.menu.orders')" :link="route('orders.index')">
-                <x-slot name="iconPath">
-                    <path
-                        d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-                </x-slot>
-            </x-menu-item>
-        @endif
-
-        {{-- Operation --}}
+        {{-- Operations: Purchasing, Sales orders, Inventory, Production --}}
         @includeIf('purchase::sections.sidebar')
 
-        {{-- Warehouse: submenu nằm trong Operations (purchase::sections.sidebar), tránh trùng menu --}}
+        {{-- Customer Management (after operations block — UX-012) --}}
+        @include('sections.partials.customer-management-sidebar-accordion')
+
+        {{-- Warehouse: submenu in purchase::sections.sidebar --}}
 
         {{-- Tier Pricing --}}
         @includeIf('pricing::sections.sidebar')
@@ -155,71 +117,8 @@
             </x-menu-item>
         @endif
 
-        {{-- People (HR & Performance) --}}
-        @if (
-            !in_array('client', user_roles()) &&
-                (in_array('employees', user_modules()) || in_array('leaves', user_modules()) || in_array('attendance', user_modules()) || in_array('holidays', user_modules())) &&
-                ($sidebarUserPermissions['view_employees'] != 5 || $sidebarUserPermissions['view_leave'] != 5 || $sidebarUserPermissions['view_attendance'] != 5 || $sidebarUserPermissions['view_holiday'] != 5) &&
-                ($sidebarUserPermissions['view_employees'] != 'none' || $sidebarUserPermissions['view_leave'] != 'none' || $sidebarUserPermissions['view_attendance'] != 'none' || $sidebarUserPermissions['view_holiday'] != 'none' || $sidebarUserPermissions['view_shift_roster'] != 'none'))
-            <x-menu-item icon="people" :text="__('app.menu.people')">
-                <x-slot name="iconPath">
-                    <path
-                        d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0  0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0  0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0  0 0 0-4z" />
-                </x-slot>
-                <div class="accordionItemContent">
-                    @if (in_array('employees', user_modules()) && $sidebarUserPermissions['view_employees'] != 5 && $sidebarUserPermissions['view_employees'] != 'none' && isset($sidebarUserPermissions['view_employee_menu']) && $sidebarUserPermissions['view_employee_menu'] == 4)
-                        <x-sub-menu-item :link="route('employees.index')" :text="__('app.menu.employees')" />
-                    @endif
-                    @if (in_array('leaves', user_modules()) && $sidebarUserPermissions['view_leave'] != 5 && $sidebarUserPermissions['view_leave'] != 'none')
-                        <x-sub-menu-item :link="route('leaves.index')" :text="__('app.menu.leaves')" />
-                    @endif
-                    @if (in_array('attendance', user_modules()) && isset($sidebarUserPermissions['view_shift_roster']) && $sidebarUserPermissions['view_shift_roster'] != 5 && $sidebarUserPermissions['view_shift_roster'] != 'none')
-                        <x-sub-menu-item :link="route('shifts.index')" :text="__('app.menu.shiftRoster')" />
-                    @endif
-                    @if (in_array('attendance', user_modules()) && $sidebarUserPermissions['view_attendance'] != 5 && $sidebarUserPermissions['view_attendance'] != 'none')
-                        <x-sub-menu-item :link="route('attendances.index')" :text="__('app.menu.attendance')" />
-                    @endif
-                    @if (in_array('holidays', user_modules()) && $sidebarUserPermissions['view_holiday'] != 5 && $sidebarUserPermissions['view_holiday'] != 'none')
-                        <x-sub-menu-item :link="route('holidays.index')" :text="__('app.menu.holiday')" />
-                    @endif
-                    @if (isset($sidebarUserPermissions['view_designation']) && $sidebarUserPermissions['view_designation'] == 4)
-                        <x-sub-menu-item :link="route('designations.index')" :text="__('app.menu.designation')" />
-                    @endif
-                    @if (isset($sidebarUserPermissions['view_department']) && $sidebarUserPermissions['view_department'] == 4)
-                        <x-sub-menu-item :link="route('departments.index')" :text="__('app.menu.department')" />
-                    @endif
-                    @if (isset($sidebarUserPermissions['view_appreciation']) && $sidebarUserPermissions['view_appreciation'] != 5)
-                        <x-sub-menu-item :link="route('appreciations.index')" :text="__('app.menu.appreciation')" />
-                    @endif
-                    @if (isset($sidebarUserPermissions['view_appreciation']) && $sidebarUserPermissions['view_appreciation'] == 5 && isset($sidebarUserPermissions['manage_award']) && $sidebarUserPermissions['manage_award'] == 4)
-                        <x-sub-menu-item :link="route('awards.index')" :text="__('app.menu.appreciation')" />
-                    @endif
-                    @foreach ($cravevaPlugins as $item)
-                        @includeIf(strtolower($item) . '::sections.hr.sidebar')
-                    @endforeach
-
-                    @php
-                        $viewPayrollPermission = user()->permission('view_payroll');
-                    @endphp
-                    @if (in_array(\Modules\Payroll\Entities\PayrollSetting::MODULE_NAME, user_modules()) && $viewPayrollPermission != 'none' && Route::has('payroll.index'))
-                        <x-sub-menu-item :link="route('payroll.index')" :text="__('payroll::app.menu.payroll')" />
-                        <x-sub-menu-item :link="route('employee-salary.index')" :text="__('payroll::app.menu.employeeSalary')" :permission="user()->permission('manage_employee_salary') == 'all'" />
-                        <x-sub-menu-item :link="route('payroll-expenses.index')" :text="__('payroll::app.payrollExpenses')" />
-                        <x-sub-menu-item :link="route('overtime-requests.index')" :text="__('payroll::modules.payroll.overtimeRequest')" />
-                    @endif
-
-                    @php
-                        $viewPerformancePermission = user()->permission('view_performance_module');
-                    @endphp
-                    @if (module_enabled('Performance') && in_array(\Modules\Performance\Entities\PerformanceSetting::MODULE_NAME, user_modules()) && $viewPerformancePermission == 'all')
-                        <x-sub-menu-item :link="route('performance-dashboard.index')" :text="__('app.menu.performanceDashboard')" />
-                        <x-sub-menu-item :link="route('objectives.index')" :text="__('app.menu.okrObjectives')" />
-                        <x-sub-menu-item :link="route('okr-scoring.index')" :text="__('performance::app.okrScoring')" />
-                        <x-sub-menu-item :link="route('meetings.index')" :text="__('app.menu.meetings')" />
-                    @endif
-                </div>
-            </x-menu-item>
-        @endif
+        {{-- Human Resources & Payroll (UX-011 v2: split L1) --}}
+        @include('sections.partials.people-sidebar-accordions')
 
 
 
@@ -267,48 +166,9 @@
             </x-menu-item>
         @endif
 
-
-
-        @if ((in_array('tasks', user_modules()) || in_array('events', user_modules()) || in_array('holidays', user_modules()) || in_array('tickets', user_modules()) || in_array('leaves', user_modules())) && false)
-            <x-menu-item icon="calendar-range" :text="__('app.menu.myCalendar')" :link="route('my-calendar.index')">
-                <x-slot name="iconPath">
-                    <path d="M9 7a1 1 0 0 1 1-1h5v2h-5a1 1 0 0 1-1-1M1 9h4a1 1 0 0 1 0 2H1z" />
-                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0  0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
-                </x-slot>
-            </x-menu-item>
-        @endif
-
-        @if (in_array('events', user_modules()) && $sidebarUserPermissions['view_events'] != 5 && $sidebarUserPermissions['view_events'] != 'none' && false)
-            <x-menu-item icon="calendar-event" :text="__('app.menu.events')" :link="route('events.index')">
-                <x-slot name="iconPath">
-                    <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0  0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
-                </x-slot>
-            </x-menu-item>
-        @endif
-
-        @if (in_array('messages', user_modules()) && false)
-            <x-menu-item class="message-menu" icon="chat-left-text" :text="__('app.menu.messages')" :link="route('messages.index')" :count="$unreadMessagesCount">
-                <x-slot name="iconPath">
-                    <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                    <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" />
-                </x-slot>
-            </x-menu-item>
-        @endif
-
         @includeIf('letter::sections.sidebar')
 
-        @if (false)
-            @includeIf('policy::sections.sidebar')
-        @endif
-
-        @if (false)
-            @includeIf('performance::sections.sidebar')
-        @endif
-
-        @if (false)
-            @includeIf('payroll::sections.sidebar')
-        @endif
+        {{-- Policy: under Admin & IT. Performance/Payroll: Human Resources + Payroll accordions. --}}
 
         @includeIf('recruit::sections.sidebar')
 
@@ -358,10 +218,6 @@
                 </x-slot>
 
                 <div class="accordionItemContent">
-                    @if (false && ($canManageCompanySetting || $isAdminRole))
-                        <x-sub-menu-item :link="$canManageCompanySetting ? route('company-settings.index') : route('profile-settings.index')" :text="__('app.menu.accountSettings')" />
-                    @endif
-
                     @if ($canViewServerManager && Route::has('server-manager.index'))
                         <x-sub-menu-item :link="route('server-manager.index')" :text="__('servermanager::app.menu.serverManager')" />
                     @endif
@@ -399,16 +255,6 @@
                         <x-sub-menu-item :link="route('biolinks.index')" :text="__('biolinks::app.biolinks')" />
                     @endif
                 </div>
-            </x-menu-item>
-        @endif
-
-        @if (false && ($canManageCompanySetting || $isAdminRole))
-            <x-menu-item icon="gear" :text="__('app.menu.accountSettings')" :link="$canManageCompanySetting ? route('company-settings.index') : route('profile-settings.index')">
-                <x-slot name="iconPath">
-                    <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z" />
-                    <path
-                        d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z" />
-                </x-slot>
             </x-menu-item>
         @endif
 
@@ -498,52 +344,8 @@
             </x-menu-item>
         @endif
 
-        <!-- NAV ITEM - HR COLLAPASE MENU -->
-        @if (
-            !in_array('client', user_roles()) &&
-                (in_array('employees', user_modules()) || in_array('leaves', user_modules()) || in_array('attendance', user_modules()) || in_array('holidays', user_modules())) &&
-                ($sidebarUserPermissions['view_employees'] != 5 || $sidebarUserPermissions['view_leave'] != 5 || $sidebarUserPermissions['view_attendance'] != 5 || $sidebarUserPermissions['view_holiday'] != 5) &&
-                ($sidebarUserPermissions['view_employees'] != 'none' || $sidebarUserPermissions['view_leave'] != 'none' || $sidebarUserPermissions['view_attendance'] != 'none' || $sidebarUserPermissions['view_holiday'] != 'none' || $sidebarUserPermissions['view_shift_roster'] != 'none'))
-            <x-menu-item icon="people" :text="__('app.menu.people')">
-                <x-slot name="iconPath">
-                    <path
-                        d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
-                </x-slot>
-                <div class="accordionItemContent">
-                    @if (in_array('employees', user_modules()) && $sidebarUserPermissions['view_employees'] != 5 && $sidebarUserPermissions['view_employees'] != 'none' && isset($sidebarUserPermissions['view_employee_menu']) && $sidebarUserPermissions['view_employee_menu'] == 4)
-                        <x-sub-menu-item :link="route('employees.index')" :text="__('app.menu.employees')" />
-                    @endif
-                    @if (in_array('leaves', user_modules()) && $sidebarUserPermissions['view_leave'] != 5 && $sidebarUserPermissions['view_leave'] != 'none')
-                        <x-sub-menu-item :link="route('leaves.index')" :text="__('app.menu.leaves')" />
-                    @endif
-                    @if (in_array('attendance', user_modules()) && isset($sidebarUserPermissions['view_shift_roster']) && $sidebarUserPermissions['view_shift_roster'] != 5 && $sidebarUserPermissions['view_shift_roster'] != 'none')
-                        <x-sub-menu-item :link="route('shifts.index')" :text="__('app.menu.shiftRoster')" />
-                    @endif
-                    @if (in_array('attendance', user_modules()) && $sidebarUserPermissions['view_attendance'] != 5 && $sidebarUserPermissions['view_attendance'] != 'none')
-                        <x-sub-menu-item :link="route('attendances.index')" :text="__('app.menu.attendance')" />
-                    @endif
-                    @if (in_array('holidays', user_modules()) && $sidebarUserPermissions['view_holiday'] != 5 && $sidebarUserPermissions['view_holiday'] != 'none')
-                        <x-sub-menu-item :link="route('holidays.index')" :text="__('app.menu.holiday')" />
-                    @endif
-                    @if (isset($sidebarUserPermissions['view_designation']) && $sidebarUserPermissions['view_designation'] == 4)
-                        <x-sub-menu-item :link="route('designations.index')" :text="__('app.menu.designation')" />
-                    @endif
-                    @if (isset($sidebarUserPermissions['view_department']) && $sidebarUserPermissions['view_department'] == 4)
-                        <x-sub-menu-item :link="route('departments.index')" :text="__('app.menu.department')" />
-                    @endif
-                    @if (isset($sidebarUserPermissions['view_appreciation']) && $sidebarUserPermissions['view_appreciation'] != 5)
-                        <x-sub-menu-item :link="route('appreciations.index')" :text="__('app.menu.appreciation')" />
-                    @endif
-                    @if (isset($sidebarUserPermissions['view_appreciation']) && $sidebarUserPermissions['view_appreciation'] == 5 && isset($sidebarUserPermissions['manage_award']) && $sidebarUserPermissions['manage_award'] == 4)
-                        <x-sub-menu-item :link="route('awards.index')" :text="__('app.menu.appreciation')" />
-                    @endif
-                    <!-- NAV ITEM - CUSTOM MODULES  -->
-                    @foreach ($cravevaPlugins as $item)
-                        @includeIf(strtolower($item) . '::sections.hr.sidebar')
-                    @endforeach
-                </div>
-            </x-menu-item>
-        @endif
+        <!-- NAV ITEM - HR & PAYROLL (split L1) -->
+        @include('sections.partials.people-sidebar-accordions')
 
         <!-- NAV ITEM - WORK COLLAPSE MENU -->
         @if (

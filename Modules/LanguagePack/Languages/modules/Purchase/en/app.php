@@ -71,7 +71,7 @@ return [
         'prefixSettings' => 'Prefix Settings',
         'vendorReport' => 'Vendor Report',
         'orderReport' => 'Purchase Order Report',
-        'inventory' => 'Inventory',
+        'inventory' => 'Opening stock',
         'stockAdjustments' => 'Stock Adjustments',
         'bill' => 'Bill',
         'bills' => 'Bills',

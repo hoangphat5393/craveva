@@ -107,7 +107,8 @@ class ChatboxTest extends TestCase
             $response = $this->get(route('dashboard'));
 
             $response->assertStatus(200);
-            $response->assertSee('id="ai-assistant-widget-menu-item"', false);
+            $response->assertSee('js-ai-assistant-widget-toggle', false);
+            $response->assertSee('id="craveva-ai-menu-item"', false);
         } finally {
             $global->update($backup);
             cache()->forget('global_setting');

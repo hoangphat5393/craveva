@@ -71,7 +71,7 @@ return [
         'prefixSettings' => 'Cài đặt tiền tố',
         'vendorReport' => 'Báo cáo nhà cung cấp',
         'orderReport' => 'Báo cáo đơn đặt hàng',
-        'inventory' => 'Điều chỉnh tồn (Purchase)',
+        'inventory' => 'Tồn đầu kỳ',
         'stockAdjustments' => 'Điều chỉnh kho',
         'bill' => 'Hóa đơn mua',
         'bills' => 'Hóa đơn nhà cung cấp',

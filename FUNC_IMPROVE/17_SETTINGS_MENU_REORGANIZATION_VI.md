@@ -225,7 +225,7 @@ Nếu PM chỉ thêm menu trái (AI Workspace, Reports, Recruit…):
 
 - File: `resources/views/sections/menu.blade.php`
 - Đã có nhóm accordion: Home, Work Management, Sales, Operations, Finance, People…
-- **Đã implement:** `FUNC_IMPROVE/18_APP_SIDEBAR_MENU_VI.md` (UX-009 — Phương án A, 2026-05-29).
+- **Đã implement:** `FUNC_IMPROVE/18_APP_SIDEBAR_MENU_VI.md` (UX-009 — tách 4 accordion ERP).
 
 ---
 

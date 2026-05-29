@@ -725,7 +725,7 @@
                     }
                 }
 
-                $(document).on('click', '#ai-assistant-widget-menu-item a', function(e) {
+                $(document).on('click', '.js-ai-assistant-widget-toggle', function(e) {
                     e.preventDefault();
                     toggleAiAssistantWidget();
                 });

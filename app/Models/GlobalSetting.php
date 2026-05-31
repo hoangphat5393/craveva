@@ -453,7 +453,7 @@ class GlobalSetting extends BaseModel
             return asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->light_logo);
+        return asset_url_local_s3('app-logo/'.$this->light_logo);
     }
 
     public function defaultLogo()
@@ -462,7 +462,7 @@ class GlobalSetting extends BaseModel
             return asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->logo);
+        return asset_url_local_s3('app-logo/'.$this->logo);
     }
 
     public function getLightLogoUrlAttribute()
@@ -471,7 +471,7 @@ class GlobalSetting extends BaseModel
             return asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->light_logo);
+        return asset_url_local_s3('app-logo/'.$this->light_logo);
     }
 
     public function getDarkLogoUrlAttribute()
@@ -480,7 +480,7 @@ class GlobalSetting extends BaseModel
             return asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->logo);
+        return asset_url_local_s3('app-logo/'.$this->logo);
     }
 
     public function getLoginBackgroundUrlAttribute()
@@ -490,7 +490,7 @@ class GlobalSetting extends BaseModel
             return null;
         }
 
-        return asset_url_local_s3('login-background/' . $this->login_background);
+        return asset_url_local_s3('login-background/'.$this->login_background);
     }
 
     public function maskedDefaultLogo(): Attribute
@@ -501,7 +501,7 @@ class GlobalSetting extends BaseModel
                     return asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
             },
         );
     }
@@ -524,7 +524,7 @@ class GlobalSetting extends BaseModel
                     return asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->light_logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->light_logo);
             },
         );
     }
@@ -537,7 +537,7 @@ class GlobalSetting extends BaseModel
                     return asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->light_logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->light_logo);
             },
         );
     }
@@ -550,7 +550,7 @@ class GlobalSetting extends BaseModel
                     return asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
             },
         );
     }
@@ -563,7 +563,7 @@ class GlobalSetting extends BaseModel
                     return null;
                 }
 
-                return $this->generateMaskedImageAppUrl('login-background/' . $this->login_background);
+                return $this->generateMaskedImageAppUrl('login-background/'.$this->login_background);
             },
         );
     }
@@ -576,7 +576,7 @@ class GlobalSetting extends BaseModel
                     return asset('favicon.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('favicon/' . $this->favicon);
+                return $this->generateMaskedImageAppUrl('favicon/'.$this->favicon);
             },
         );
     }
@@ -593,14 +593,14 @@ class GlobalSetting extends BaseModel
                     return $this->logo_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo_front);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo_front);
             },
         );
     }
 
     public function getShowPublicMessageAttribute()
     {
-        if (str_contains(request()->url(), request()->getHost() . '/public')) {
+        if (str_contains(request()->url(), request()->getHost().'/public')) {
             return true;
         }
 
@@ -619,7 +619,7 @@ class GlobalSetting extends BaseModel
             return asset('favicon.png');
         }
 
-        return asset_url_local_s3('favicon/' . $this->favicon);
+        return asset_url_local_s3('favicon/'.$this->favicon);
     }
 
     public function getLogoFrontUrlAttribute()
@@ -632,7 +632,7 @@ class GlobalSetting extends BaseModel
             return $this->logo_url;
         }
 
-        return asset_url_local_s3('app-logo/' . $this->logo_front);
+        return asset_url_local_s3('app-logo/'.$this->logo_front);
     }
 
     public static function checkListCompleted()
@@ -730,6 +730,26 @@ class GlobalSetting extends BaseModel
         return ! in_array('admin', user_roles());
     }
 
+    public function hasAiWorkspaceEmbedCode(): bool
+    {
+        return filled(trim((string) $this->ai_workspace_embed_code));
+    }
+
+    public function hasAiAssistantWidgetEmbedCode(): bool
+    {
+        return filled(trim((string) $this->ai_assistant_widget_embed_code));
+    }
+
+    public function hasAiWorkspaceIntegration(): bool
+    {
+        return $this->hasAiWorkspaceEmbedCode() || $this->aiWorkspaceWidgetScriptUrl() !== null;
+    }
+
+    public function hasAiAssistantWidgetIntegration(): bool
+    {
+        return $this->hasAiAssistantWidgetEmbedCode() || $this->aiAssistantWidgetScriptUrl() !== null;
+    }
+
     public function aiWorkspaceWidgetScriptUrl(): ?string
     {
         return $this->aiAgentWidgetScriptUrl(
@@ -754,6 +774,6 @@ class GlobalSetting extends BaseModel
 
         $base = rtrim((string) $apiBase, '/');
 
-        return $base . '/api/v1/agents/' . $agentId . '/widget.js';
+        return $base.'/api/v1/agents/'.$agentId.'/widget.js';
     }
 }

@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 uses(DatabaseTransactions::class);
 
-it('persists ai assistant widget fields on app settings update', function () {
+it('persists ai assistant widget embed code on craveva ai settings update', function () {
     $userAuth = new UserAuth;
     $userAuth->email = 'ai-assistant-widget-test@example.com';
     $userAuth->password = bcrypt('password');
@@ -45,29 +45,22 @@ it('persists ai assistant widget fields on app settings update', function () {
     }
 
     $backup = [
-        'ai_assistant_widget_agent_id' => $global->ai_assistant_widget_agent_id,
-        'ai_assistant_widget_api_base' => $global->ai_assistant_widget_api_base,
-        'ai_assistant_widget_api_key' => $global->ai_assistant_widget_api_key,
+        'ai_assistant_widget_embed_code' => $global->ai_assistant_widget_embed_code,
     ];
 
     $this->actingAs($userAuth);
 
-    $agentId = '69ccc35e7d0ece6ff702487b';
-    $apiBase = 'https://ai.craveva.com';
+    $embedCode = '<script>window.aiAssistantWidgetTest = true;</script>';
 
-    $response = $this->put(route('app-settings.update', $global->id), [
+    $response = $this->put(route('craveva-ai-settings.update', $global->id), [
         'page' => 'ai-assistant-widget-setting',
-        'ai_assistant_widget_agent_id' => $agentId,
-        'ai_assistant_widget_api_base' => $apiBase,
-        'ai_assistant_widget_api_key' => 'assistant-widget-api-key',
+        'ai_assistant_widget_embed_code' => $embedCode,
     ]);
 
     $response->assertSuccessful();
 
     $global->refresh();
-    expect($global->ai_assistant_widget_agent_id)->toBe($agentId);
-    expect($global->ai_assistant_widget_api_base)->toBe($apiBase);
-    expect($global->ai_assistant_widget_api_key)->toBe('assistant-widget-api-key');
+    expect($global->ai_assistant_widget_embed_code)->toBe($embedCode);
 
     $global->update($backup);
     cache()->forget('global_setting');

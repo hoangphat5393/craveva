@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use App\Http\Requests\Admin\App\UpdateAiAssistantWidgetSetting;
-use App\Http\Requests\Admin\App\UpdateAiWorkspaceSetting;
 use App\Http\Requests\Admin\App\UpdateAppSetting;
 use App\Models\Company;
 use App\Models\Currency;
@@ -18,11 +16,10 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 
 class AppSettingController extends AccountBaseController
@@ -41,17 +38,17 @@ class AppSettingController extends AccountBaseController
     }
 
     /**
-     * @return Application|Factory|View
+     * @return Application|Factory|View|RedirectResponse
      */
     public function index()
     {
         $tab = request('tab');
 
-        $this->activeSettingMenu = match ($tab) {
-            'ai-workspace-setting' => 'ai_workspace_settings',
-            'ai-assistant-widget-setting' => 'ai_assistant_widget_settings',
-            default => 'app_settings',
-        };
+        if (in_array($tab, ['ai-workspace-setting', 'ai-assistant-widget-setting'], true)) {
+            return redirect()->route('craveva-ai-settings.index', ['tab' => $tab]);
+        }
+
+        $this->activeSettingMenu = 'app_settings';
 
         switch ($tab) {
 
@@ -68,16 +65,6 @@ class AppSettingController extends AccountBaseController
                 abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
 
                 $this->view = 'app-settings.ajax.map-setting';
-                break;
-            case 'ai-workspace-setting':
-                abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
-
-                $this->view = 'app-settings.ajax.ai-workspace-setting';
-                break;
-            case 'ai-assistant-widget-setting':
-                abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
-
-                $this->view = 'app-settings.ajax.ai-assistant-widget-setting';
                 break;
             default:
                 $this->view = 'app-settings.ajax.app-setting';
@@ -133,23 +120,8 @@ class AppSettingController extends AccountBaseController
                 isCraveva() ? $this->updateGoogleMapSetting($request) : '';
                 break;
             case 'ai-workspace-setting':
-                abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
-                $aiWorkspaceRequest = UpdateAiWorkspaceSetting::createFrom($request);
-                $aiWorkspaceRequest->setContainer(app())->setRedirector(app('redirect'));
-                $validator = Validator::make($request->all(), $aiWorkspaceRequest->rules());
-                $aiWorkspaceRequest->withValidator($validator);
-                $validator->validate();
-                $this->updateAiWorkspaceSetting($request);
-                break;
             case 'ai-assistant-widget-setting':
-                abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_app_settings'));
-                $aiAssistantWidgetRequest = UpdateAiAssistantWidgetSetting::createFrom($request);
-                $aiAssistantWidgetRequest->setContainer(app())->setRedirector(app('redirect'));
-                $validator = Validator::make($request->all(), $aiAssistantWidgetRequest->rules());
-                $aiAssistantWidgetRequest->withValidator($validator);
-                $validator->validate();
-                $this->updateAiAssistantWidgetSetting($request);
-                break;
+                abort(404);
             default:
                 $this->updateAppSetting($request);
                 break;
@@ -269,49 +241,6 @@ class AppSettingController extends AccountBaseController
     {
         $globalSetting = \global_setting();
         $globalSetting->google_map_key = $request->google_map_key;
-        $globalSetting->save();
-        cache()->forget('global_setting');
-    }
-
-    public function updateAiWorkspaceSetting(Request $request): void
-    {
-        $this->updateAiAgentSetting($request, [
-            'agent_id' => 'ai_workspace_agent_id',
-            'api_base' => 'ai_workspace_api_base',
-            'api_key' => 'ai_workspace_api_key',
-            'api_key_remove' => 'ai_workspace_api_key_remove',
-        ]);
-    }
-
-    public function updateAiAssistantWidgetSetting(Request $request): void
-    {
-        $this->updateAiAgentSetting($request, [
-            'agent_id' => 'ai_assistant_widget_agent_id',
-            'api_base' => 'ai_assistant_widget_api_base',
-            'api_key' => 'ai_assistant_widget_api_key',
-            'api_key_remove' => 'ai_assistant_widget_api_key_remove',
-        ]);
-    }
-
-    /**
-     * @param  array{agent_id: string, api_base: string, api_key: string, api_key_remove: string}  $fields
-     */
-    protected function updateAiAgentSetting(Request $request, array $fields): void
-    {
-        $globalSetting = GlobalSetting::first();
-        $globalSetting->{$fields['agent_id']} = $request->filled($fields['agent_id'])
-            ? $request->input($fields['agent_id'])
-            : null;
-        $globalSetting->{$fields['api_base']} = $request->filled($fields['api_base'])
-            ? rtrim((string) $request->input($fields['api_base']), '/')
-            : null;
-
-        if ($request->boolean($fields['api_key_remove'])) {
-            $globalSetting->{$fields['api_key']} = null;
-        } elseif ($request->filled($fields['api_key'])) {
-            $globalSetting->{$fields['api_key']} = $request->input($fields['api_key']);
-        }
-
         $globalSetting->save();
         cache()->forget('global_setting');
     }

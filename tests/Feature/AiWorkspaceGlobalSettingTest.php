@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 uses(DatabaseTransactions::class);
 
-it('persists ai workspace fields on app settings update', function () {
+it('persists ai workspace embed code on craveva ai settings update', function () {
     $userAuth = new UserAuth;
     $userAuth->email = 'ai-workspace-test@example.com';
     $userAuth->password = bcrypt('password');
@@ -45,62 +45,34 @@ it('persists ai workspace fields on app settings update', function () {
     }
 
     $backup = [
-        'ai_workspace_agent_id' => $global->ai_workspace_agent_id,
-        'ai_workspace_api_base' => $global->ai_workspace_api_base,
-        'ai_workspace_api_key' => $global->ai_workspace_api_key,
+        'ai_workspace_embed_code' => $global->ai_workspace_embed_code,
     ];
 
     $this->actingAs($userAuth);
 
-    $agentId = '69ccc35e7d0ece6ff702487b';
-    $apiBase = 'https://ai.craveva.com';
+    $embedCode = '<script>window.aiWorkspaceTest = true;</script>';
 
-    $response = $this->put(route('app-settings.update', $global->id), [
+    $response = $this->put(route('craveva-ai-settings.update', $global->id), [
         'page' => 'ai-workspace-setting',
-        'ai_workspace_agent_id' => $agentId,
-        'ai_workspace_api_base' => $apiBase,
-        'ai_workspace_api_key' => 'test-api-key-value',
+        'ai_workspace_embed_code' => $embedCode,
     ]);
 
     $response->assertSuccessful();
 
     $global->refresh();
-    expect($global->ai_workspace_agent_id)->toBe($agentId);
-    expect($global->ai_workspace_api_base)->toBe($apiBase);
-    expect($global->ai_workspace_api_key)->toBe('test-api-key-value');
+    expect($global->ai_workspace_embed_code)->toBe($embedCode);
 
     $global->update($backup);
     cache()->forget('global_setting');
 });
 
-it('rejects invalid ai workspace agent id', function () {
-    $userAuth = new UserAuth;
-    $userAuth->email = 'ai-workspace-invalid@example.com';
-    $userAuth->password = bcrypt('password');
-    $userAuth->save();
+it('clears ai workspace embed code when empty string is submitted', function () {
+    $userAuth = UserAuth::query()->whereHas('users', function ($query) {
+        $query->where('is_superadmin', 1)->where('status', 'active');
+    })->first();
 
-    $user = User::factory()->create([
-        'email' => 'ai-workspace-invalid@example.com',
-        'user_auth_id' => $userAuth->id,
-        'is_superadmin' => 1,
-        'login' => 'enable',
-        'status' => 'active',
-    ]);
-
-    $superadminPermissions = Permission::whereHas('module', function ($query) {
-        $query->withoutGlobalScopes()->where('is_superadmin', '1');
-    })->where('name', 'manage_superadmin_app_settings')->get();
-
-    if ($superadminPermissions->isEmpty()) {
-        test()->markTestSkipped('manage_superadmin_app_settings permission not found.');
-    }
-
-    foreach ($superadminPermissions as $permission) {
-        UserPermission::create([
-            'user_id' => $user->id,
-            'permission_id' => $permission->id,
-            'permission_type_id' => 4,
-        ]);
+    if (! $userAuth) {
+        test()->markTestSkipped('No superadmin UserAuth found.');
     }
 
     $global = GlobalSetting::first();
@@ -108,13 +80,25 @@ it('rejects invalid ai workspace agent id', function () {
         test()->markTestSkipped('No global_settings row.');
     }
 
-    $this->actingAs($userAuth);
+    $backup = [
+        'ai_workspace_embed_code' => $global->ai_workspace_embed_code,
+    ];
 
-    $response = $this->put(route('app-settings.update', $global->id), [
-        'page' => 'ai-workspace-setting',
-        'ai_workspace_agent_id' => 'not-a-valid-objectid',
-        'ai_workspace_api_base' => 'https://ai.craveva.com',
-    ]);
+    $global->update(['ai_workspace_embed_code' => '<script></script>']);
+    cache()->forget('global_setting');
 
-    $response->assertSessionHasErrors(['ai_workspace_agent_id']);
+    try {
+        $this->actingAs($userAuth);
+
+        $this->put(route('craveva-ai-settings.update', $global->id), [
+            'page' => 'ai-workspace-setting',
+            'ai_workspace_embed_code' => '',
+        ])->assertSuccessful();
+
+        $global->refresh();
+        expect($global->ai_workspace_embed_code)->toBeNull();
+    } finally {
+        $global->update($backup);
+        cache()->forget('global_setting');
+    }
 });

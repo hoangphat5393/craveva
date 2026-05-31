@@ -83,15 +83,11 @@ class ChatboxTest extends TestCase
         }
 
         $backup = [
-            'ai_assistant_widget_agent_id' => $global->ai_assistant_widget_agent_id,
-            'ai_assistant_widget_api_base' => $global->ai_assistant_widget_api_base,
-            'ai_assistant_widget_api_key' => $global->ai_assistant_widget_api_key,
+            'ai_assistant_widget_embed_code' => $global->ai_assistant_widget_embed_code,
         ];
 
         $global->update([
-            'ai_assistant_widget_agent_id' => '69ccc35e7d0ece6ff702487b',
-            'ai_assistant_widget_api_base' => 'https://ai.craveva.com',
-            'ai_assistant_widget_api_key' => null,
+            'ai_assistant_widget_embed_code' => '<script>document.body.dataset.aiAssistantTest="1";</script>',
         ]);
         cache()->forget('global_setting');
 
@@ -134,15 +130,11 @@ class ChatboxTest extends TestCase
         }
 
         $backup = [
-            'ai_assistant_widget_agent_id' => $global->ai_assistant_widget_agent_id,
-            'ai_assistant_widget_api_base' => $global->ai_assistant_widget_api_base,
-            'ai_assistant_widget_api_key' => $global->ai_assistant_widget_api_key,
+            'ai_assistant_widget_embed_code' => $global->ai_assistant_widget_embed_code,
         ];
 
         $global->update([
-            'ai_assistant_widget_agent_id' => '69ccc35e7d0ece6ff702487b',
-            'ai_assistant_widget_api_base' => 'https://ai.craveva.com',
-            'ai_assistant_widget_api_key' => null,
+            'ai_assistant_widget_embed_code' => '<script>document.body.dataset.aiAssistantTest="1";</script>',
         ]);
         cache()->forget('global_setting');
 

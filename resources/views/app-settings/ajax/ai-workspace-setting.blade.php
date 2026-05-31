@@ -1,19 +1,14 @@
-<div class="col-lg-12 col-md-12 ntfcn-tab-content-left w-100 ml-3 ">
+<div class="p-4 col-lg-12 col-md-12 ntfcn-tab-content-left w-100">
     <div class="row">
         <div class="col-lg-12 mb-2">
-            <p class="f-14 text-dark-grey">@lang('modules.accountSettings.aiWorkspacePageHelp')</p>
-        </div>
-        <div class="col-lg-6 mb-0">
-            <x-forms.text :fieldLabel="__('modules.accountSettings.aiWorkspaceAgentId')" :fieldPlaceholder="__('placeholders.id')" fieldName="ai_workspace_agent_id" fieldId="ai_workspace_agent_id" :fieldValue="global_setting()->ai_workspace_agent_id" />
-        </div>
-        <div class="col-lg-6 mb-0">
-            <x-forms.text :fieldLabel="__('modules.accountSettings.aiWorkspaceApiBase')" :fieldPlaceholder="__('modules.accountSettings.aiWorkspaceApiBasePlaceholder')" fieldName="ai_workspace_api_base" fieldId="ai_workspace_api_base" :fieldValue="global_setting()->ai_workspace_api_base" />
-        </div>
-        <div class="col-lg-8 mb-0">
-            <x-forms.password :fieldLabel="__('modules.accountSettings.aiWorkspaceApiKey')" :fieldPlaceholder="__('modules.accountSettings.aiWorkspaceApiKeyPlaceholder')" fieldName="ai_workspace_api_key" fieldId="ai_workspace_api_key" fieldValue="" :fieldHelp="__('modules.accountSettings.aiWorkspaceApiKeyHelp')" />
+            <p class="f-14 text-dark-grey">{{ __('modules.accountSettings.aiWorkspaceEmbedHelp') }}</p>
         </div>
         <div class="col-lg-12 mb-0">
-            <x-forms.checkbox :fieldLabel="__('modules.accountSettings.aiWorkspaceRemoveApiKey')" fieldName="ai_workspace_api_key_remove" fieldId="ai_workspace_api_key_remove" fieldValue="1" :checked="false" />
+            <div class="form-group my-3">
+                <x-forms.label fieldId="ai_workspace_embed_code" :fieldLabel="__('modules.accountSettings.aiWorkspaceEmbedCode')" />
+                <textarea class="form-control f-13 font-monospace" rows="16" name="ai_workspace_embed_code" id="ai_workspace_embed_code" placeholder="{{ __('modules.accountSettings.aiWorkspaceEmbedPlaceholder') }}">{{ old('ai_workspace_embed_code', global_setting()->ai_workspace_embed_code) }}</textarea>
+                <small class="f-12 text-dark-grey d-block mt-1">{{ __('modules.accountSettings.aiWorkspaceEmbedHint') }}</small>
+            </div>
         </div>
     </div>
 </div>
@@ -26,7 +21,7 @@
 
 <script>
     $('body').on('click', '#save-ai-workspace-setting-form', function() {
-        const url = "{{ route('app-settings.update', [global_setting()->id]) }}?page=ai-workspace-setting";
+        const url = "{{ route('craveva-ai-settings.update', [global_setting()->id]) }}?page=ai-workspace-setting";
 
         $.easyAjax({
             url: url,

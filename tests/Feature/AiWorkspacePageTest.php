@@ -22,15 +22,11 @@ it('renders ai workspace page with widget loader when configured', function () {
     }
 
     $backup = [
-        'ai_workspace_agent_id' => $global->ai_workspace_agent_id,
-        'ai_workspace_api_base' => $global->ai_workspace_api_base,
-        'ai_workspace_api_key' => $global->ai_workspace_api_key,
+        'ai_workspace_embed_code' => $global->ai_workspace_embed_code,
     ];
 
     $global->update([
-        'ai_workspace_agent_id' => '69ccc35e7d0ece6ff702487b',
-        'ai_workspace_api_base' => 'https://ai.craveva.com',
-        'ai_workspace_api_key' => null,
+        'ai_workspace_embed_code' => '<script>window.aiWorkspacePageTest = true;</script>',
     ]);
     cache()->forget('global_setting');
 
@@ -46,9 +42,7 @@ it('renders ai workspace page with widget loader when configured', function () {
 
         $response->assertSuccessful();
         $response->assertSee('id="ai-workspace-page-root"', false);
-        $response->assertSee('data-ai-workspace-page', false);
-        $response->assertSee('69ccc35e7d0ece6ff702487b', false);
-        $response->assertSee('widget.js', false);
+        $response->assertSee('window.aiWorkspacePageTest = true', false);
     } finally {
         $global->update($backup);
         cache()->forget('global_setting');
@@ -70,12 +64,14 @@ it('returns 404 when ai workspace is not configured', function () {
     }
 
     $backup = [
+        'ai_workspace_embed_code' => $global->ai_workspace_embed_code,
         'ai_workspace_agent_id' => $global->ai_workspace_agent_id,
         'ai_workspace_api_base' => $global->ai_workspace_api_base,
         'ai_workspace_api_key' => $global->ai_workspace_api_key,
     ];
 
     $global->update([
+        'ai_workspace_embed_code' => null,
         'ai_workspace_agent_id' => null,
         'ai_workspace_api_base' => null,
         'ai_workspace_api_key' => null,

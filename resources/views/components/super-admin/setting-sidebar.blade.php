@@ -20,8 +20,7 @@
     <ul class="settings-menu" id="settingsMenu">
         @if (user()->permission('manage_superadmin_app_settings') == 'all')
             <x-setting-menu-item :active="$activeMenu" menu="app_settings" :href="route('app-settings.index')" :text="__('app.menu.appSettings')" />
-            <x-setting-menu-item :active="$activeMenu" menu="ai_workspace_settings" :href="route('app-settings.index', ['tab' => 'ai-workspace-setting'])" :text="__('app.menu.aiWorkspace')" />
-            <x-setting-menu-item :active="$activeMenu" menu="ai_assistant_widget_settings" :href="route('app-settings.index', ['tab' => 'ai-assistant-widget-setting'])" :text="__('app.menu.aiAssistantWidget')" />
+            <x-setting-menu-item :active="$activeMenu" menu="craveva_ai_settings" :href="route('craveva-ai-settings.index')" :text="__('app.menu.cravevaAi')" />
         @endif
         <x-setting-menu-item :active="$activeMenu" menu="profile_settings" :href="route('superadmin.settings.super-admin-profile.index')" :text="__('app.menu.profileSettings')" />
 
@@ -113,8 +112,21 @@
 
     $("#search-setting-menu").on("keyup", function() {
         var value = this.value.toLowerCase().trim();
-        $("#settingsMenu li").show().filter(function() {
-            return $(this).text().toLowerCase().trim().indexOf(value) == -1;
-        }).hide();
+        var $menuItems = $("#settingsMenu li").not(".settings-menu-group");
+
+        if (value === '') {
+            $menuItems.show();
+            $("#settingsMenu li.settings-menu-group").show();
+            return;
+        }
+
+        $menuItems.hide().filter(function() {
+            return $(this).text().toLowerCase().trim().indexOf(value) !== -1;
+        }).show();
+
+        $("#settingsMenu li.settings-menu-group").each(function() {
+            var hasVisibleItems = $(this).nextUntil(".settings-menu-group").filter(":visible").length > 0;
+            $(this).toggle(hasVisibleItems);
+        });
     });
 </script>

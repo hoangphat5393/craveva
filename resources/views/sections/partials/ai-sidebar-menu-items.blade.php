@@ -1,6 +1,6 @@
 @php
-    $hasAiWorkspace = (bool) global_setting()->aiWorkspaceWidgetScriptUrl();
-    $hasAiAssistant = (bool) global_setting()->aiAssistantWidgetScriptUrl();
+    $hasAiWorkspace = global_setting()->hasAiWorkspaceIntegration();
+    $hasAiAssistant = global_setting()->hasAiAssistantWidgetIntegration();
     $showCravevaAiMenu = $hasAiWorkspace || $hasAiAssistant;
     $cravevaAiMenuActive = request()->routeIs('ai-workspace.*');
     $starIconPath =

@@ -14,8 +14,7 @@ class AiWorkspaceController extends AccountBaseController
         $this->middleware(function ($request, $next) {
             abort_403(! $this->canAccessAiWorkspace());
 
-            $scriptUrl = global_setting()->aiWorkspaceWidgetScriptUrl();
-            abort_unless($scriptUrl, 404);
+            abort_unless(global_setting()->hasAiWorkspaceIntegration(), 404);
 
             return $next($request);
         });
@@ -23,12 +22,6 @@ class AiWorkspaceController extends AccountBaseController
 
     public function index(): View
     {
-        $global = global_setting();
-
-        $this->widgetScriptUrl = $global->aiWorkspaceWidgetScriptUrl();
-        $this->agentId = $global->ai_workspace_agent_id;
-        $this->apiKey = $global->ai_workspace_api_key;
-
         return view('ai-workspace.index', $this->data);
     }
 

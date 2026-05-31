@@ -4,7 +4,6 @@ namespace App\Http\Requests\Admin\App;
 
 use App\Http\Requests\CoreRequest;
 use App\Models\GlobalSetting;
-use Illuminate\Contracts\Validation\Validator;
 
 class UpdateAiWorkspaceSetting extends CoreRequest
 {
@@ -19,29 +18,7 @@ class UpdateAiWorkspaceSetting extends CoreRequest
     public function rules(): array
     {
         return [
-            'ai_workspace_agent_id' => ['nullable', 'string', 'max:32', 'regex:/^[a-f0-9]{24}$/i'],
-            'ai_workspace_api_base' => ['nullable', 'string', 'url', 'max:255'],
-            'ai_workspace_api_key' => ['nullable', 'string', 'max:500'],
-            'ai_workspace_api_key_remove' => ['sometimes', 'boolean'],
+            'ai_workspace_embed_code' => ['nullable', 'string', 'max:50000'],
         ];
-    }
-
-    public function withValidator(Validator $validator): void
-    {
-        $validator->after(function (Validator $validator): void {
-            $agent = $this->input('ai_workspace_agent_id');
-            $base = $this->input('ai_workspace_api_base');
-            $hasAgent = filled($agent);
-            $hasBase = filled($base);
-
-            if ($hasAgent xor $hasBase) {
-                if (! $hasBase) {
-                    $validator->errors()->add('ai_workspace_api_base', __('validation.required'));
-                }
-                if (! $hasAgent) {
-                    $validator->errors()->add('ai_workspace_agent_id', __('validation.required'));
-                }
-            }
-        });
     }
 }

@@ -612,18 +612,25 @@
 
 
     @php
-        $aiAssistantWidgetUrl = global_setting()->aiAssistantWidgetScriptUrl();
-        $aiAssistantWidgetApiKey = global_setting()->ai_assistant_widget_api_key;
+        $globalAi = global_setting();
+        $hasAiAssistantEmbed = $globalAi->hasAiAssistantWidgetEmbedCode();
+        $aiAssistantWidgetUrl = $hasAiAssistantEmbed ? null : $globalAi->aiAssistantWidgetScriptUrl();
+        $aiAssistantWidgetApiKey = $globalAi->ai_assistant_widget_api_key;
+        $hasAiAssistantIntegration = $globalAi->hasAiAssistantWidgetIntegration();
     @endphp
-    @if ($aiAssistantWidgetUrl)
-        <!-- AI Assistant Widget host (Craveva widget nodes are appended to document.body) -->
+    @if ($hasAiAssistantIntegration)
         <div id="ai-chatbot-container" class="d-none" aria-hidden="true"></div>
+
+        @if ($hasAiAssistantEmbed)
+            {!! $globalAi->ai_assistant_widget_embed_code !!}
+        @endif
 
         <script>
             $(document).ready(function() {
                 const widgetScriptUrl = @json($aiAssistantWidgetUrl);
                 const aiAssistantWidgetApiKey = @json($aiAssistantWidgetApiKey);
-                let isScriptLoaded = false;
+                const usesEmbedCode = @json($hasAiAssistantEmbed);
+                let isScriptLoaded = usesEmbedCode;
                 let isWidgetOpen = false;
 
                 function getCravevaWidgetElements() {
@@ -670,8 +677,16 @@
                 }
 
                 function loadWidget() {
+                    if (usesEmbedCode) {
+                        return waitForCravevaWidget();
+                    }
+
                     if (isScriptLoaded) {
                         return waitForCravevaWidget();
+                    }
+
+                    if (!widgetScriptUrl) {
+                        return Promise.resolve(false);
                     }
 
                     return new Promise((resolve) => {

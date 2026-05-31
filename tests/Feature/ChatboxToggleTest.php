@@ -18,9 +18,7 @@ class ChatboxToggleTest extends TestCase
         $global = GlobalSetting::first();
         if ($global) {
             $global->update([
-                'ai_assistant_widget_agent_id' => '69ccc35e7d0ece6ff702487b',
-                'ai_assistant_widget_api_base' => 'https://ai.craveva.com',
-                'ai_assistant_widget_api_key' => null,
+                'ai_assistant_widget_embed_code' => '<script>document.body.dataset.aiAssistantTest="1";</script>',
             ]);
             cache()->forget('global_setting');
         }
@@ -84,7 +82,7 @@ class ChatboxToggleTest extends TestCase
         $response->assertSee('function showChat()', false);
         $response->assertSee('function hideChat()', false);
         $response->assertSee('function toggleAiAssistantWidget()', false);
-        $response->assertSee('function setCravevaWidgetVisible(', false);
+        $response->assertSee('usesEmbedCode', false);
     }
 
     #[Test]

@@ -1,19 +1,14 @@
-<div class="col-lg-12 col-md-12 ntfcn-tab-content-left w-100 ml-3 ">
+<div class="p-4 col-lg-12 col-md-12 ntfcn-tab-content-left w-100">
     <div class="row">
         <div class="col-lg-12 mb-2">
-            <p class="f-14 text-dark-grey">@lang('modules.accountSettings.aiAssistantWidgetHelp')</p>
-        </div>
-        <div class="col-lg-6 mb-0">
-            <x-forms.text :fieldLabel="__('modules.accountSettings.aiAssistantWidgetAgentId')" :fieldPlaceholder="__('placeholders.id')" fieldName="ai_assistant_widget_agent_id" fieldId="ai_assistant_widget_agent_id" :fieldValue="global_setting()->ai_assistant_widget_agent_id" />
-        </div>
-        <div class="col-lg-6 mb-0">
-            <x-forms.text :fieldLabel="__('modules.accountSettings.aiAssistantWidgetApiBase')" :fieldPlaceholder="__('modules.accountSettings.aiAssistantWidgetApiBasePlaceholder')" fieldName="ai_assistant_widget_api_base" fieldId="ai_assistant_widget_api_base" :fieldValue="global_setting()->ai_assistant_widget_api_base" />
-        </div>
-        <div class="col-lg-8 mb-0">
-            <x-forms.password :fieldLabel="__('modules.accountSettings.aiAssistantWidgetApiKey')" :fieldPlaceholder="__('modules.accountSettings.aiAssistantWidgetApiKeyPlaceholder')" fieldName="ai_assistant_widget_api_key" fieldId="ai_assistant_widget_api_key" fieldValue="" :fieldHelp="__('modules.accountSettings.aiAssistantWidgetApiKeyHelp')" />
+            <p class="f-14 text-dark-grey">{{ __('modules.accountSettings.aiAssistantWidgetEmbedHelp') }}</p>
         </div>
         <div class="col-lg-12 mb-0">
-            <x-forms.checkbox :fieldLabel="__('modules.accountSettings.aiAssistantWidgetRemoveApiKey')" fieldName="ai_assistant_widget_api_key_remove" fieldId="ai_assistant_widget_api_key_remove" fieldValue="1" :checked="false" />
+            <div class="form-group my-3">
+                <x-forms.label fieldId="ai_assistant_widget_embed_code" :fieldLabel="__('modules.accountSettings.aiAssistantWidgetEmbedCode')" />
+                <textarea class="form-control f-13 font-monospace" rows="16" name="ai_assistant_widget_embed_code" id="ai_assistant_widget_embed_code" placeholder="{{ __('modules.accountSettings.aiAssistantWidgetEmbedPlaceholder') }}">{{ old('ai_assistant_widget_embed_code', global_setting()->ai_assistant_widget_embed_code) }}</textarea>
+                <small class="f-12 text-dark-grey d-block mt-1">{{ __('modules.accountSettings.aiAssistantWidgetEmbedHint') }}</small>
+            </div>
         </div>
     </div>
 </div>
@@ -26,7 +21,7 @@
 
 <script>
     $('body').on('click', '#save-ai-assistant-widget-setting-form', function() {
-        const url = "{{ route('app-settings.update', [global_setting()->id]) }}?page=ai-assistant-widget-setting";
+        const url = "{{ route('craveva-ai-settings.update', [global_setting()->id]) }}?page=ai-assistant-widget-setting";
 
         $.easyAjax({
             url: url,

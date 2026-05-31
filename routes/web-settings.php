@@ -1,10 +1,12 @@
 <?php
 
 /* Setting menu routes starts from here */
+
 use App\Http\Controllers\AppSettingController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\BusinessAddressController;
 use App\Http\Controllers\ContractSettingController;
+use App\Http\Controllers\CravevaAiSettingController;
 use App\Http\Controllers\CurrencySettingController;
 use App\Http\Controllers\CustomFieldController;
 use App\Http\Controllers\CustomLinkSettingController;
@@ -64,6 +66,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account/settings'], function 
 
     Route::post('app-settings/deleteSessions', [AppSettingController::class, 'deleteSessions'])->name('app-settings.delete_sessions');
     Route::resource('app-settings', AppSettingController::class);
+    Route::resource('craveva-ai-settings', CravevaAiSettingController::class)->only(['index', 'update']);
     Route::resource('profile-settings', ProfileSettingController::class);
 
     /* 2FA */
@@ -261,7 +264,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account/settings'], function 
     Route::resource('custom-link-settings', CustomLinkSettingController::class);
 
     Route::resource('sign-up-settings', SignUpSettingController::class)->only(['index', 'update']);
-
 });
 
 Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
@@ -272,5 +274,4 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::post('update-settings/deleteFile', [UpdateAppController::class, 'deleteFile'])->name('update-settings.deleteFile');
     Route::get('update-settings/install', [UpdateAppController::class, 'install'])->name('update-settings.install');
     Route::resource('update-settings', UpdateAppController::class);
-
 });

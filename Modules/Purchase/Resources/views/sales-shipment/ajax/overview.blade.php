@@ -1,12 +1,4 @@
 @php
-    $statusClass = match ($shipment->status) {
-        'draft' => 'text-dark border-dark',
-        'confirmed' => 'text-info border-info',
-        'shipped' => 'text-primary border-primary',
-        'delivered' => 'text-success border-success',
-        'cancelled' => 'text-danger border-danger',
-        default => 'text-dark border-dark',
-    };
     $canUpdate = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.update');
     $canShip = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.ship');
     $canCancel = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.cancel');
@@ -37,9 +29,7 @@
                         @endif
                     </td>
                     <td align="right">
-                        <span class="unpaid rounded f-14 {{ $statusClass }}">
-                            @lang('purchase::modules.salesShipment.' . $shipment->status)
-                        </span>
+                        {!! \Modules\Purchase\Support\SalesDoStatusBadge::html((string) $shipment->status) !!}
                     </td>
                 </tr>
             </table>

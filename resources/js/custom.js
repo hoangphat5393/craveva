@@ -2,6 +2,44 @@ const initPurchaseProductUnitConversions = require('./purchase-product-unit-conv
 window.initPurchaseProductUnitConversions = initPurchaseProductUnitConversions;
 
 /**
+ * Filter bar select-picker (Clients pattern): live search, body container, compact menu.
+ *
+ * @param {string|HTMLElement|JQuery} [root] `#filter-form`, a select element, or a wrapper.
+ */
+window.initFilterSelectPickers = function initFilterSelectPickers(root) {
+    var $selects;
+    if (root) {
+        var $root = root instanceof $ ? root : $(root);
+        $selects = $root.is('select.select-picker') ? $root : $root.find('.select-picker');
+    } else {
+        $selects = $('#filter-form .select-picker');
+    }
+
+    $selects.each(function () {
+        var $el = $(this);
+        if ($el.closest('#product-unit-conversions-section').length > 0) {
+            return;
+        }
+        if ($el.hasClass('bom-line-unit-select') || $el.closest('#bom-lines-body').length > 0) {
+            return;
+        }
+        if (!$el.attr('data-container')) {
+            $el.attr('data-container', 'body');
+        }
+        if (!$el.attr('data-size')) {
+            $el.attr('data-size', '8');
+        }
+        if (!$el.attr('data-live-search')) {
+            $el.attr('data-live-search', 'true');
+        }
+        if ($el.data('selectpicker')) {
+            $el.selectpicker('destroy');
+        }
+        $el.selectpicker();
+    });
+};
+
+/**
  * Refresh product form unit type select after add/edit in modal.
  * List filters also use id unit_type_id; scope to name="unit_type" / RIGHT_MODAL.
  */
@@ -61,15 +99,22 @@ window.init = function init() {
 
         return true;
     });
+
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
         $selectPickers.selectpicker('mobile');
     } else {
-        $selectPickers.each(function () {
+        $selectPickers.filter(function () {
+            return $(this).closest('#filter-form').length === 0;
+        }).each(function () {
             var $el = $(this);
             if (!$el.data('selectpicker')) {
                 $el.selectpicker();
             }
         });
+    }
+
+    if (typeof window.initFilterSelectPickers === 'function') {
+        window.initFilterSelectPickers();
     }
     // $(parent + ".select2").select2();
     /*******************************************************

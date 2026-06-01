@@ -97,10 +97,18 @@ body {
 }
 
 .settings-menu {
-    li a {
-        font-size: 13px !important;
-        padding: 7px 24px !important;
-    }
+  > li.accordionItem > .settings-sidebar-heading.nav-item {
+    font-size: 13px !important;
+    padding: 10px 32px 10px 16px !important;
+    margin: 2px 8px !important;
+    text-transform: none !important;
+  }
+
+  > li.accordionItem > .accordionItemContent > a.settings-menu-link {
+    font-size: 13px !important;
+    padding: 8px 12px 8px 36px !important;
+    margin: 0 8px !important;
+  }
 }
 
 .settings-sidebar {
@@ -138,10 +146,10 @@ body {
     font-size: 13px;
 }
 
-.openIt .accordionItemContent {
+.sidebar-menu .openIt > .accordionItemContent {
     display: flex;
     flex-direction: column;
-    gap: 3px
+    gap: 3px;
 }
 
 .sidebar-toggled {

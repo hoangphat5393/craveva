@@ -4,8 +4,6 @@
     max-height: 100%;
     max-width: 270px;
     position: fixed;
-    white-space: nowrap;
-
     @include media-breakpoint-down(md) {
         max-width: 0px;
         transition: 0.3s;
@@ -44,24 +42,128 @@
             }
         }
 
-        li a {
-            padding: 15px 24px;
-            white-space: break-spaces;
+        // Accordion — same DOM pattern as .sidebar-menu (nav-item + accordionItemContent > a)
+        > li.accordionItem.settings-menu-accordion {
+            list-style: none;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
 
-            &:hover {
+            > .settings-sidebar-heading.nav-item {
+                display: block;
+                width: auto;
+                line-height: 1.5;
+                padding: 10px 32px 10px 16px;
+                margin: 2px 8px;
+                border: 0;
+                border-radius: 6px;
+                text-decoration: none;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 600;
+                letter-spacing: normal;
+                text-transform: none;
+                color: #616e80 !important;
+                white-space: normal;
+                word-break: break-word;
+                background: transparent;
+                overflow: visible;
+                text-overflow: unset;
+
+                span {
+                    display: block;
+                    padding: 0;
+                    padding-right: 8px;
+                }
+
+                &:hover {
+                    color: $dark_text !important;
+                    background-color: rgba(0, 0, 0, 0.04);
+                }
+            }
+
+            &.closeIt > .accordionItemContent {
+                height: 0 !important;
+                overflow: hidden !important;
+                transform: none !important;
+                float: none !important;
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            &.openIt > .accordionItemContent {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 2px;
+                height: auto !important;
+                overflow: visible !important;
+                transform: none !important;
+                float: none !important;
+                padding: 0 8px 8px !important;
+                margin: 0 !important;
+            }
+
+            > .accordionItemContent > a.settings-menu-link {
+                display: block;
+                padding: 8px 12px 8px 36px;
+                margin: 0 8px;
+                font-size: 13px;
+                font-weight: 400;
+                line-height: 1.45;
+                white-space: normal;
+                word-break: break-word;
+                text-decoration: none;
+                border: 0;
+                border-radius: 0;
                 color: $dark_text !important;
-                background-color: #e8eef385;
-                border-right: 2px solid #28313c85;
+
+                &:hover:not(.active) {
+                    color: $dark_text !important;
+                    background-color: #e8eef385;
+                    border-right: 2px solid #28313c85;
+                }
+
+                &.active,
+                &.active:hover {
+                    color: $dark_text !important;
+                    background-color: $grey;
+                    border-right: 2px solid $dark_text;
+                    font-weight: 500;
+                }
             }
         }
-    }
 
-    li.active {
-        background-color: $grey;
+        > li:not(.accordionItem) {
+            list-style: none;
 
-        a {
-            color: $dark_text;
-            border-right: 2px solid $dark_text;
+            > a.settings-menu-link {
+                display: block;
+                padding: 12px 24px;
+                font-size: 13px;
+                color: $dark_text !important;
+                text-decoration: none;
+                white-space: normal;
+                word-break: break-word;
+
+                &:hover:not(.active) {
+                    background-color: #e8eef385;
+                    border-right: 2px solid #28313c85;
+                }
+
+                &.active {
+                    background-color: $grey;
+                    border-right: 2px solid $dark_text;
+                    font-weight: 500;
+                }
+            }
+
+            &.active > a.settings-menu-link {
+                background-color: $grey;
+                border-right: 2px solid $dark_text;
+                font-weight: 500;
+            }
         }
     }
 }

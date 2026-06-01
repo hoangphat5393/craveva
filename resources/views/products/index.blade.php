@@ -12,12 +12,12 @@
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">
                 @lang('modules.productCategory.productCategory')</p>
             <div class="select-status d-flex">
-                <select class="form-control select-picker" name="category_id" id="category_id">
+                <x-filters.select name="category_id" id="category_id">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                     @endforeach
-                </select>
+                </x-filters.select>
             </div>
         </div>
         <!-- CATEGORY END -->
@@ -27,9 +27,9 @@
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">
                 @lang('modules.productCategory.productSubCategory')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="sub_category" id="sub_category">
+                <x-filters.select name="sub_category" id="sub_category">
                     <option selected value="all">@lang('app.all')</option>
-                </select>
+                </x-filters.select>
             </div>
         </div>
         <!-- SUBCATEGORY END -->
@@ -40,12 +40,12 @@
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">
                 @lang('modules.invoices.unitType')</p>
             <div class="select-status d-flex">
-                <select class="form-control select-picker" name="unit_type_id" id="filter_unit_type_id">
+                <x-filters.select name="unit_type_id" id="filter_unit_type_id">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($unitTypes as $unitType)
                         <option value="{{ $unitType->id }}">{{ $unitType->unit_type }}</option>
                     @endforeach
-                </select>
+                </x-filters.select>
             </div>
         </div>
 
@@ -170,8 +170,12 @@
                 opts += `<option value='${project.id}'>${project.category_name}</option>`
             })
 
-            $('#sub_category').html('<option value="all">@lang('app.all')</option>' + opts)
-            $("#sub_category").selectpicker("refresh");
+            $('#sub_category').html('<option value="all">@lang('app.all')</option>' + opts);
+            if (typeof window.initFilterSelectPickers === 'function') {
+                window.initFilterSelectPickers('#sub_category');
+            } else {
+                $('#sub_category').selectpicker('refresh');
+            }
         });
 
         $('#products-table').on('preXhr.dt', function(e, settings, data) {
@@ -216,13 +220,15 @@
             $('#filter-form')[0].reset();
 
             $('#category_id').val('all');
-            $('.select-picker').val('all');
+            $('#filter_unit_type_id').val('all');
 
             $('#sub_category').html('<option value="all">@lang('app.all')</option>');
 
-            $('#filter_unit_type_id').val('all');
-
-            $('.select-picker').selectpicker("refresh");
+            if (typeof window.initFilterSelectPickers === 'function') {
+                window.initFilterSelectPickers();
+            } else {
+                $('#filter-form .select-picker').selectpicker('refresh');
+            }
 
             $('#reset-filters').addClass('d-none');
 

@@ -127,12 +127,13 @@ it('renders grouped settings menu with sales items before procurement items', fu
         ->get(route('company-settings.index'));
 
     $response->assertSuccessful();
-    $response->assertSee('settings-menu-group', false);
-    $response->assertSee('Sales &amp; billing', false);
-    $response->assertSee('Procurement, warehouse &amp; production', false);
-    $response->assertSee('Invoice &amp; Estimate Settings', false);
-    $response->assertSee(__('app.menu.saleOrderSettings'), false);
-    $response->assertSee('Purchase &amp; goods receipt settings', false);
+    $response->assertSee('settings-menu-accordion', false);
+    $response->assertSee('accordionItemHeading', false);
+    $response->assertSee(__('app.menu.settingsMenuGroupSales'));
+    $response->assertSee(__('app.menu.settingsMenuGroupProcurement'));
+    $response->assertSee(__('app.menu.financeSettings'));
+    $response->assertSee(__('app.menu.saleOrderSettings'));
+    $response->assertSee(__('purchase::app.menu.purchaseSettings'));
 
     $html = $response->getContent();
     $saleOrderPos = strpos($html, (string) route('sales-order-settings.index'));

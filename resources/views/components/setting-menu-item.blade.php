@@ -1,7 +1,20 @@
+@aware(['inAccordion' => false])
+
 @php
     $hrefStr = is_string($href ?? null) ? $href : '#';
     $textStr = is_string($text ?? null) ? $text : (is_array($text ?? null) ? implode(', ', $text) : (string) ($text ?? ''));
+    $isLinkActive = $isActive($menu);
+    $linkClass = 'f-14 text-dark-grey settings-menu-link'.($isLinkActive ? ' active' : '');
 @endphp
-<li {{ $isActive($menu) ? 'class=active' : '' }} {{ $attributes }}>
-    <a class="d-block f-15 text-dark-grey border-bottom-grey" href="{{ $hrefStr }}">{{ $textStr }}</a>
-</li>
+
+@if ($inAccordion)
+    <a {{ $attributes->merge([
+        'class' => $linkClass,
+        'href' => $hrefStr,
+        'title' => $textStr,
+    ]) }}>{{ $textStr }}</a>
+@else
+    <li {{ $isLinkActive ? 'class=active' : '' }} {{ $attributes->except('inAccordion') }}>
+        <a class="{{ $linkClass }}" href="{{ $hrefStr }}" title="{{ $textStr }}">{{ $textStr }}</a>
+    </li>
+@endif

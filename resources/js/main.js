@@ -17,13 +17,19 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e) e.preventDefault();
 
         var parent = this.parentNode;
+        var menuRoot = this.closest('.sidebar-menu, .settings-menu');
+        if (!menuRoot) {
+            return;
+        }
+
         // Check if it's currently closed by checking the class list
         var isClosed = parent.classList.contains('closeIt');
 
-        // Close all items
-        for (var i = 0; i < accItem.length; i++) {
-            accItem[i].classList.remove('openIt');
-            accItem[i].classList.add('closeIt');
+        // Close accordion items in this menu only (main sidebar vs settings sidebar)
+        var menuAccordions = menuRoot.getElementsByClassName('accordionItem');
+        for (var i = 0; i < menuAccordions.length; i++) {
+            menuAccordions[i].classList.remove('openIt');
+            menuAccordions[i].classList.add('closeIt');
         }
 
         // If it was closed, open it

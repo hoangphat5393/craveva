@@ -621,6 +621,45 @@
     @if ($hasAiAssistantIntegration)
         <div id="ai-chatbot-container" class="d-none" aria-hidden="true"></div>
 
+        <style>
+            #craveva-chat-window,
+            button.craveva-chat-button {
+                z-index: 10001 !important;
+            }
+
+            #craveva-chat-window input[type="text"],
+            #craveva-chat-window input[type="email"],
+            #craveva-chat-window textarea {
+                box-sizing: border-box;
+                flex: 1 1 auto;
+                min-width: 0;
+                width: auto;
+                height: auto;
+                min-height: unset;
+                max-height: none;
+                margin: 0;
+                -webkit-appearance: none;
+                appearance: none;
+            }
+
+            #craveva-chat-window h3,
+            #craveva-chat-window p {
+                margin: 0;
+            }
+
+            button.craveva-chat-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                text-transform: none;
+            }
+
+            #craveva-chat-window button {
+                text-transform: none;
+            }
+        </style>
+
         @if ($hasAiAssistantEmbed)
             {!! $globalAi->ai_assistant_widget_embed_code !!}
         @endif
@@ -638,22 +677,6 @@
                         button: document.querySelector('.craveva-chat-button'),
                         window: document.getElementById('craveva-chat-window'),
                     };
-                }
-
-                function setCravevaWidgetVisible(visible) {
-                    const {
-                        button,
-                        window: chatWindow
-                    } = getCravevaWidgetElements();
-
-                    [button, chatWindow].forEach((element) => {
-                        if (!element) {
-                            return;
-                        }
-
-                        element.style.display = visible ? '' : 'none';
-                        element.setAttribute('aria-hidden', visible ? 'false' : 'true');
-                    });
                 }
 
                 function waitForCravevaWidget(maxWaitMs = 10000) {
@@ -708,27 +731,60 @@
                     });
                 }
 
+                function showChatWindow(chatWindow, button) {
+                    chatWindow.style.display = 'flex';
+                    chatWindow.setAttribute('aria-hidden', 'false');
+
+                    if (button) {
+                        button.style.display = 'none';
+                        button.setAttribute('aria-hidden', 'true');
+                    }
+                }
+
+                function hideChatWindow(chatWindow, button) {
+                    if (chatWindow) {
+                        chatWindow.style.display = 'none';
+                        chatWindow.setAttribute('aria-hidden', 'true');
+                    }
+
+                    if (button) {
+                        button.style.display = 'flex';
+                        button.setAttribute('aria-hidden', 'false');
+                    }
+                }
+
                 function showChat() {
                     loadWidget().then((ready) => {
                         if (!ready) {
                             return;
                         }
 
-                        setCravevaWidgetVisible(true);
-
                         const {
-                            button
+                            button,
+                            window: chatWindow
                         } = getCravevaWidgetElements();
-                        if (button) {
-                            button.click();
+
+                        if (chatWindow) {
+                            showChatWindow(chatWindow, button);
+                            isWidgetOpen = true;
+
+                            return;
                         }
 
-                        isWidgetOpen = true;
+                        if (button) {
+                            button.click();
+                            isWidgetOpen = true;
+                        }
                     });
                 }
 
                 function hideChat() {
-                    setCravevaWidgetVisible(false);
+                    const {
+                        button,
+                        window: chatWindow
+                    } = getCravevaWidgetElements();
+
+                    hideChatWindow(chatWindow, button);
                     isWidgetOpen = false;
                 }
 
@@ -739,6 +795,17 @@
                         showChat();
                     }
                 }
+
+                const widgetCloseObserver = new MutationObserver(() => {
+                    if (isWidgetOpen && !document.getElementById('craveva-chat-window')) {
+                        isWidgetOpen = false;
+                    }
+                });
+
+                widgetCloseObserver.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                });
 
                 $(document).on('click', '.js-ai-assistant-widget-toggle', function(e) {
                     e.preventDefault();

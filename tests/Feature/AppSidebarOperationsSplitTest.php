@@ -6,17 +6,17 @@ it('exposes split operations menu labels in english', function (): void {
     app()->setLocale('en');
 
     expect(__('app.menu.procurement'))->toBe('Purchasing')
-        ->and(__('app.menu.salesFulfillment'))->toBe('Sales orders')
+        ->and(__('app.menu.salesFulfillment'))->toBe('Sales')
         ->and(__('app.menu.inventoryWarehouse'))->toBe('Inventory')
         ->and(__('app.menu.productionHub'))->toBe('Production')
-        ->and(__('app.menu.sales'))->toBe('Customer Management')
-        ->and(__('purchase::app.menu.inventory'))->toBe('Opening stock');
+        ->and(__('app.menu.sales'))->toBe('Customer')
+        ->and(__('purchase::app.menu.inventory'))->toBe('Opening Stock');
 });
 
 it('exposes ux-010 sidebar labels in vietnamese', function (): void {
     app()->setLocale('vi');
 
-    expect(__('app.menu.sales'))->toBe('Quản lý khách hàng')
+    expect(__('app.menu.sales'))->toBe('Khách hàng')
         ->and(__('purchase::app.menu.inventory'))->toBe('Tồn đầu kỳ');
 });
 

@@ -25,6 +25,16 @@ it('defines production BOM raw material type values', function (): void {
     expect(ProductType::bomRawMaterialValues())->toBe(['raw_material']);
 });
 
+it('allows alternate unit conversions only for raw material and semi finished', function (): void {
+    expect(ProductType::alternateUnitConversionValues())->toBe(['raw_material', 'semi_finished']);
+    expect(ProductType::supportsAlternateUnitConversions('raw_material'))->toBeTrue();
+    expect(ProductType::supportsAlternateUnitConversions('semi_finished'))->toBeTrue();
+    expect(ProductType::supportsAlternateUnitConversions('goods'))->toBeFalse();
+    expect(ProductType::supportsAlternateUnitConversions('packaging'))->toBeFalse();
+    expect(ProductType::supportsAlternateUnitConversions('service'))->toBeFalse();
+    expect(ProductType::supportsAlternateUnitConversions(null))->toBeFalse();
+});
+
 it('treats only service as non-stockable', function (): void {
     expect(ProductType::isStockable('goods'))->toBeTrue();
     expect(ProductType::isStockable('raw_material'))->toBeTrue();

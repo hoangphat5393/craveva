@@ -47,7 +47,7 @@ class StorePurchaseProductRequest extends CoreRequest
             'shelf_life_days' => 'nullable|integer|min:0',
         ];
 
-        $rules = array_merge($rules, $this->productUnitConversionRules());
+        $rules = array_merge($rules, $this->productUnitConversionRulesForRequestType());
 
         $rules = $this->customFieldRules($rules);
 

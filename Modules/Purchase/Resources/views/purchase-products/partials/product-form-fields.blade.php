@@ -7,16 +7,14 @@
     $showTrackInventory = $hasProduct ? !$serviceType : true;
     $trackInventoryChecked = $hasProduct && (int) $product->track_inventory === 1;
     $showOpeningStock = $hasProduct ? !$serviceType && $trackInventoryChecked : false;
-    $warehouseStockUi = in_array('warehouse', user_modules() ?: [], true)
-        || in_array('production', user_modules() ?: [], true);
+    $warehouseStockUi = in_array('warehouse', user_modules() ?: [], true) || in_array('production', user_modules() ?: [], true);
     $activeWarehouseCount = 0;
     if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && \Illuminate\Support\Facades\Schema::hasTable('warehouses')) {
-        $activeWarehouseCount = \Modules\Warehouse\Entities\Warehouse::where('company_id', company()->id)
-            ->where('status', 'active')->count();
+        $activeWarehouseCount = \Modules\Warehouse\Entities\Warehouse::where('company_id', company()->id)->where('status', 'active')->count();
     }
     $openingStockFieldHelp = __('purchase::app.openingStockFieldHelp');
     if ($warehouseStockUi) {
-        $openingStockFieldHelp .= ' '.__('purchase::app.openingStockFieldHelpExtended');
+        $openingStockFieldHelp .= ' ' . __('purchase::app.openingStockFieldHelpExtended');
     }
 @endphp
 
@@ -158,6 +156,7 @@
 </div>
 
 @include('purchase::purchase-products.partials.product-unit-conversions')
+@include('purchase::purchase-products.partials.product-type-dependent-fields')
 
 {{-- 4. Tax & sales options --}}
 <div class="col-12 purchase-product-form-section">

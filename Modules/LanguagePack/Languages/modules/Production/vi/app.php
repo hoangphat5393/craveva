@@ -173,7 +173,7 @@ return [
     'bomComponentQty' => 'SL / 1 SP SX',
     'bomComponentQtyAndUom' => 'SL + ĐVT / 1 SP SX',
     'bomComponentUnitCost' => 'Giá vốn / đơn vị',
-    'bomComponentLineTotal' => 'Thành tiền',
+    'bomComponentLineTotal' => 'Tổng',
     'bomTotalComponentCost' => 'Tổng giá vốn thành phần / 1 sản phẩm sản xuất',
     'bomCostingHelp' => 'Giá vốn lấy từ Giá vốn (Cost Price) trên sản phẩm nguyên liệu (đơn vị gốc). Chỉ mang tính tham chiếu, không lưu vào định mức nguyên vật liệu.',
     'bomUomSelectHelp' => 'Chọn đơn vị tính cho từng dòng. Số lượng tính cho 1 sản phẩm sản xuất theo đơn vị đó. Lệnh SX sẽ quy đổi về đơn vị gốc khi tính tổng tồn kho.',

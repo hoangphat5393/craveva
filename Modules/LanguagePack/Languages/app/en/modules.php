@@ -1615,8 +1615,8 @@ return [
     ],
     'productImage' => 'Product Image',
     'productCategory' => [
-        'productCategory' => 'Product Category',
-        'productSubCategory' => 'Product Sub Category',
+        'productCategory' => 'Category',
+        'productSubCategory' => 'Sub Category',
         'subCategory' => 'Sub Category',
         'category' => 'Category',
         'filterByCategory' => 'Filter by category',

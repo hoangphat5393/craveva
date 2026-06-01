@@ -1,12 +1,16 @@
 @php
+    use App\Enums\ProductType;
+
     $uomEnabled = ($productUnitConversionsEnabled ?? false) && isset($unit_types);
     $uomRows = $productUnitConversionRows ?? [];
     $currencyCode = company()->currency->currency_code;
     $unitOptionsJson = isset($unit_types) ? $unit_types->map(fn($u) => ['id' => $u->id, 'label' => ucwords($u->unit_type)])->values() : collect();
+    $selectedProductType = old('type', isset($product) && filled($product?->type) ? $product->type : ProductType::Goods->value);
+    $showUomSection = ProductType::supportsAlternateUnitConversions($selectedProductType);
 @endphp
 
 @if ($uomEnabled)
-    <div class="col-12 purchase-product-form-section" id="product-unit-conversions-section" data-unit-options="{{ $unitOptionsJson->toJson() }}" data-blocked-msg="{{ e(__('purchase::app.productUnitAddRowBlocked')) }}">
+    <div class="col-12 purchase-product-form-section @unless ($showUomSection) d-none @endunless" id="product-unit-conversions-section" data-unit-options="{{ $unitOptionsJson->toJson() }}" data-blocked-msg="{{ e(__('purchase::app.productUnitAddRowBlocked')) }}">
         @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionUnits')])
         <p class="text-muted f-12 mb-3">@lang('purchase::app.productUnitConversionsHelp')</p>
 

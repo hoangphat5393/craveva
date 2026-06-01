@@ -58,5 +58,11 @@ class PurchaseProductsDataTableTest extends TestCase
         $columns = $method->invoke($dataTable);
 
         $this->assertArrayHasKey(__('purchase::modules.product.type'), $columns);
+        $this->assertArrayHasKey(__('purchase::modules.product.dataTableImage'), $columns);
+        $this->assertArrayHasKey(__('purchase::modules.product.dataTablePriceInclusiveTax'), $columns);
+        $this->assertArrayHasKey(__('purchase::modules.product.dataTableAllowClientPurchase'), $columns);
+        $this->assertSame('Image', $columns[__('purchase::modules.product.dataTableImage')]['title']);
+        $this->assertSame('Price (Inclusive Tax)', $columns[__('purchase::modules.product.dataTablePriceInclusiveTax')]['title']);
+        $this->assertSame('Client Purchase', $columns[__('purchase::modules.product.dataTableAllowClientPurchase')]['title']);
     }
 }

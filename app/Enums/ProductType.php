@@ -41,6 +41,25 @@ enum ProductType: string
     }
 
     /**
+     * Product types that may define alternate units of measure (case, pack, …) on the product form.
+     *
+     * @return list<string>
+     */
+    public static function alternateUnitConversionValues(): array
+    {
+        return [
+            self::RawMaterial->value,
+            self::SemiFinished->value,
+        ];
+    }
+
+    public static function supportsAlternateUnitConversions(?string $type): bool
+    {
+        return $type !== null
+            && in_array($type, self::alternateUnitConversionValues(), true);
+    }
+
+    /**
      * @return list<string>
      */
     public static function bomComponentValues(): array

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Warehouse\Services;
 
+use App\Enums\ProductType;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -105,6 +106,14 @@ class ProductUnitConversionSyncService
 
     public function syncFromRequest(Product|PurchaseProduct $product, Request $request): void
     {
+        $type = (string) ($product->type ?? $request->input('type', ''));
+
+        if (! ProductType::supportsAlternateUnitConversions($type)) {
+            $this->sync($product, []);
+
+            return;
+        }
+
         $baseUnitId = (int) ($product->unit_id ?? $request->input('unit_type', 0));
         $rows = $this->parseRowsFromRequest($request, $baseUnitId);
         $this->sync($product, $rows);

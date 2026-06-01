@@ -2027,8 +2027,8 @@ return [
         'subCategory' => '子类别',
         'subCategoryName' => '子类别名称',
         'category' => '类别',
-        'productCategory' => '产品分类',
-        'productSubCategory' => '产品子类别',
+        'productCategory' => '类别',
+        'productSubCategory' => '子类别',
         'filterByCategory' => '按类别过滤',
     ],
     'leads' => [

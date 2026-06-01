@@ -153,25 +153,15 @@
             });
         });
 
-        function togglePurchaseProductTypeFields(type) {
-            if (type === 'service') {
-                $('#sku_id').addClass('d-none');
-                $('.track_inventory_div').addClass('d-none');
-                $('.track_inventory').addClass('d-none');
-            } else {
-                $('#sku_id').removeClass('d-none');
-                $('.track_inventory_div').removeClass('d-none');
-                if ($('#track_inventory').prop('checked') === true) {
-                    $('.track_inventory').removeClass('d-none');
-                }
+        $('#type').on('change changed.bs.select', function() {
+            if (typeof window.togglePurchaseProductTypeFields === 'function') {
+                window.togglePurchaseProductTypeFields($(this).val());
             }
-        }
-
-        $('#type').on('change', function() {
-            togglePurchaseProductTypeFields($(this).val());
         });
 
-        togglePurchaseProductTypeFields($('#type').val());
+        if (typeof window.togglePurchaseProductTypeFields === 'function') {
+            window.togglePurchaseProductTypeFields($('#type').val());
+        }
 
         if (!$('#purchase_information').prop('checked')) {
             $('.purchase_information').addClass('d-none');

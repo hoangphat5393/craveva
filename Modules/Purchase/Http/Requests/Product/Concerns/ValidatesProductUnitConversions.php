@@ -4,8 +4,24 @@ declare(strict_types=1);
 
 namespace Modules\Purchase\Http\Requests\Product\Concerns;
 
+use App\Enums\ProductType;
+
 trait ValidatesProductUnitConversions
 {
+    /**
+     * @return array<string, mixed>
+     */
+    protected function productUnitConversionRulesForRequestType(): array
+    {
+        $type = (string) ($this->input('type') ?? '');
+
+        if (! ProductType::supportsAlternateUnitConversions($type)) {
+            return [];
+        }
+
+        return $this->productUnitConversionRules();
+    }
+
     /**
      * @return array<string, mixed>
      */

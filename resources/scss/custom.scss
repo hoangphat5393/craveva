@@ -60,16 +60,32 @@ body.dark-theme {
     padding: 0.5rem;
 }
 
-/* Column visibility dropdown - ensure readable contrast (fix for hide/show fields) */
+/* Column visibility dropdown - grid layout + readable contrast */
 .dt-button-collection {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(9rem, 1fr));
+    gap: 0.25rem;
+    padding: 0.5rem !important;
+    min-width: min(36rem, 92vw);
+    max-width: min(42rem, 96vw);
+    max-height: min(70vh, 28rem);
+    overflow-x: hidden;
+    overflow-y: auto;
     background-color: #fff !important;
 
     .dt-button,
     .buttons-columnVisibility,
     button.dt-button {
+        width: 100% !important;
+        margin: 0 !important;
+        text-align: left;
+        white-space: normal;
+        line-height: 1.35;
+        font-size: 13px;
+        box-sizing: border-box;
         color: #212529 !important;
         background-color: transparent;
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 0.65rem;
     }
 
     .dt-button:hover,

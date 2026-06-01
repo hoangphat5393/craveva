@@ -45,7 +45,7 @@ class UpdatePurchaseProductRequest extends CoreRequest
 
         ];
 
-        $rules = array_merge($rules, $this->productUnitConversionRules());
+        $rules = array_merge($rules, $this->productUnitConversionRulesForRequestType());
 
         $rules = $this->customFieldRules($rules);
 

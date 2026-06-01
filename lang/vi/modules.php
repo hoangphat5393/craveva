@@ -2199,9 +2199,9 @@ return [
     'productCategory' => [
         'subCategory' => 'Danh mục phụ',
         'subCategoryName' => 'Tên danh mục phụ',
-        'category' => 'Loại',
-        'productCategory' => 'danh mục sản phẩm',
-        'productSubCategory' => 'Danh mục phụ sản phẩm',
+        'category' => 'Danh mục',
+        'productCategory' => 'Danh mục',
+        'productSubCategory' => 'Danh mục phụ',
         'filterByCategory' => 'Lọc theo danh mục',
     ],
     'leads' => [

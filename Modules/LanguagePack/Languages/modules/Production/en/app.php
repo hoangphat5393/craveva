@@ -173,7 +173,7 @@ return [
     'bomComponentQty' => 'Qty / 1 Manufactured Product',
     'bomComponentQtyAndUom' => 'Qty / 1 Manufactured Product',
     'bomComponentUnitCost' => 'Unit Cost',
-    'bomComponentLineTotal' => 'Line Total',
+    'bomComponentLineTotal' => 'Total',
     'bomTotalComponentCost' => 'Total Component Cost Per 1 Manufactured Product',
     'bomCostingHelp' => 'Unit costs come from each component product’s cost price (base unit). Amounts are indicative only and are not saved on the bill of materials.',
     'bomUomSelectHelp' => 'Choose the unit of measure for each line. Quantities are per 1 manufactured product in that unit. Production orders convert to base unit for stock totals.',

@@ -4,7 +4,7 @@ return [
     'menu' => [
         'salaryGroup' => 'Salary Groups',
         'salaryComponents' => 'Salary Components',
-        'salaryTds' => 'Salary TDS',
+        'salaryTds' => 'Salary Tds',
         'payrollSettings' => 'Payroll Settings',
         'payroll' => 'Payroll',
         'employeeSalary' => 'Employee Salary',

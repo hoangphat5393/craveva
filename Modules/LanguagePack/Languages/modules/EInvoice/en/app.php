@@ -3,13 +3,13 @@
 return [
     'menu' => [
         'einvoice' => 'E-Invoice',
-        'einvoiceSettings' => 'E-invoice settings',
+        'einvoiceSettings' => 'E-Invoice Settings',
     ],
     'settingForm' => [
         'electronicAddress' => 'Electronic Address',
         'electronicAddressScheme' => 'Electronic Address Scheme',
-        'companyID' => 'Company ID',
-        'companyIDScheme' => 'Company ID Scheme',
+        'companyID' => 'Company Id',
+        'companyIDScheme' => 'Company Id Scheme',
         'companyTaxIdNote' => 'Companytaxidnote',
     ],
     'companyAddressNote' => 'This module uses the country from the Business Address. If you have not selected a country, please choose one from the :link',

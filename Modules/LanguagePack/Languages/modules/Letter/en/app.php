@@ -5,7 +5,6 @@ return [
         'letter' => 'Letter',
         'template' => 'Template',
         'generate' => 'Generate',
-
     ],
     'fields' => [
         'letterType' => 'Letter Type',
@@ -15,7 +14,7 @@ return [
         'bottom' => 'Bottom',
         'employeeName' => 'Employee Name',
     ],
-    'adjustSpaceSetting' => 'Adjust space setting (in pixel)',
+    'adjustSpaceSetting' => 'Adjust Space Setting (In Pixel)',
     'download' => 'Download',
     'print' => 'Print',
     'editLetter' => 'Edit Letter',
@@ -26,7 +25,7 @@ return [
     'addTemplate' => 'Add Template',
     'editTemplate' => 'Edit Template',
     'showTemplate' => 'Show Template',
-    'clickToCopy' => 'Click to copy',
+    'clickToCopy' => 'Click To Copy',
     'availableVariables' => 'Available Variables :',
     'employeeInfo' => 'If no employee is selected, then employee name can be entered manually.',
 ];

@@ -43,6 +43,8 @@ it('renders ai workspace page with widget loader when configured', function () {
         $response->assertSuccessful();
         $response->assertSee('id="ai-workspace-page-root"', false);
         $response->assertSee('window.aiWorkspacePageTest = true', false);
+        $response->assertSee('ai-workspace-body', false);
+        $response->assertDontSee('id="ai-chatbot-container"', false);
     } finally {
         $global->update($backup);
         cache()->forget('global_setting');
@@ -82,6 +84,50 @@ it('returns 404 when ai workspace is not configured', function () {
         $this->actingAs($userAuth);
 
         $this->get(route('ai-workspace.index'))->assertNotFound();
+    } finally {
+        $global->update($backup);
+        cache()->forget('global_setting');
+    }
+});
+
+it('does not execute ai workspace embed outside the workspace page', function () {
+    $userAuth = UserAuth::query()->whereHas('users', function ($query) {
+        $query->where('is_superadmin', 0)->where('status', 'active');
+    })->first();
+
+    if (! $userAuth) {
+        test()->markTestSkipped('No company admin UserAuth found.');
+    }
+
+    $global = GlobalSetting::first();
+    if (! $global) {
+        test()->markTestSkipped('No global_settings row.');
+    }
+
+    $backup = [
+        'ai_workspace_embed_code' => $global->ai_workspace_embed_code,
+        'ai_assistant_widget_embed_code' => $global->ai_assistant_widget_embed_code,
+    ];
+
+    $marker = 'ai-workspace-isolated-' . uniqid();
+
+    $global->update([
+        'ai_workspace_embed_code' => '<script>window.' . $marker . ' = true;</script>',
+        'ai_assistant_widget_embed_code' => null,
+    ]);
+    cache()->forget('global_setting');
+
+    try {
+        $user = User::where('user_auth_id', $userAuth->id)->first();
+        if ($user) {
+            session(['user' => $user]);
+        }
+
+        $this->actingAs($userAuth);
+
+        $this->get(route('dashboard'))
+            ->assertSuccessful()
+            ->assertDontSee('<script>window.' . $marker . ' = true;</script>', false);
     } finally {
         $global->update($backup);
         cache()->forget('global_setting');

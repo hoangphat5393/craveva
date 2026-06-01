@@ -25,5 +25,7 @@ it('ai sidebar partial uses single craveva ai accordion', function (): void {
 
     expect($contents)->toContain("__('app.menu.cravevaAi')")
         ->and($contents)->toContain('js-ai-assistant-widget-toggle')
+        ->and($contents)->toContain('target="_blank"')
+        ->and($contents)->toContain('route(\'ai-workspace.index\')')
         ->and($contents)->not->toContain('ai-assistant-widget-menu-item');
 });

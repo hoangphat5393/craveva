@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.ai-workspace')
 
 @section('content')
-    <div class="content-wrapper ai-workspace-page">
+    <div class="ai-workspace-page">
         <div id="ai-workspace-page-root" class="ai-workspace-page__root"></div>
     </div>
 @endsection

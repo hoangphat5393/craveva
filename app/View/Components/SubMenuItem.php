@@ -17,17 +17,23 @@ class SubMenuItem extends Component
 
     public $active;
 
+    public ?string $target;
+
+    public ?string $rel;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($text, $link, $permission = true, $addon = false, $active = false)
+    public function __construct($text, $link, $permission = true, $addon = false, $active = false, ?string $target = null, ?string $rel = null)
     {
         $this->text = $text;
         $this->link = $link;
         $this->addon = $addon;
         $this->active = $this->resolveActiveState((bool) $active, (string) $link);
+        $this->target = $target;
+        $this->rel = $rel ?? ($target === '_blank' ? 'noopener noreferrer' : null);
         // Show icon only when permission is true
         $this->permission = $permission;
     }

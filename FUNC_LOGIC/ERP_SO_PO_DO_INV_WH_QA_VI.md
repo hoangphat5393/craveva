@@ -216,7 +216,7 @@ php artisan test --compact tests/Feature/WarehouseUpgradeP0Test.php tests/Featur
 
 ## G. Áp dụng cho **PROJECT MAOLIN New** — chọn phương án nào?
 
-**Căn cứ tài liệu nội bộ:** `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`, `FUNC_LOGIC/PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md` (DigiWin là ERP chính Phase 1, sync file sáng/tối; master khách có **kho chỉ định** 指定庫別名稱; tồn theo **kho/lô** trong `Quote, unit price, inventory.xlsx`).
+**Căn cứ tài liệu nội bộ:** `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md` (DigiWin là ERP chính Phase 1, sync file sáng/tối; master khách có **kho chỉ định** 指定庫別名稱; tồn theo **kho/lô**).
 
 | Giai đoạn / mục tiêu                                                                                                                    | Phương án khuyến nghị                                                                                                                                                   | Lý do ngắn                                                                                                          |
 | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |

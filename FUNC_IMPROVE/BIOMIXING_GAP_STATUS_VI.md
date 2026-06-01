@@ -1,23 +1,21 @@
 # Biomixing — trạng thái Phase 1 & 2 (đối chiếu code)
 
 **Cập nhật:** 2026-05-24  
-**Doc sync manifest:** [`BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](./BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md)  
-**Audit quy trình theo phase:** [`BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`](./BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md)  
-**Audit tài liệu:** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](./DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)  
-**UOM post lô:** [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) — **Fixed 2026-05-20**
-**Nguồn yêu cầu gốc:** `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md` (gộp từ PM_REQUEST, PM REQUEST CHAT, RTF).  
+**Doc hub:** [`BIOMIXING_DOC_HUB_VI.md`](./BIOMIXING_DOC_HUB_VI.md)  
+**UOM post lô:** `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 — **Fixed 2026-05-20**
+**Nguồn yêu cầu gốc:** `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`
 **Multi-tenant / rủi ro B2B vs Production:** [`BIOMIXING_MULTITENANT_RISKS_VI.md`](./BIOMIXING_MULTITENANT_RISKS_VI.md)
 
 ---
 
 ## Thư mục `PROJECT BIOMIXING/` (27 file — vai trò)
 
-| Nhóm             | File                                                                                                     | Mục đích                                         |
-| ---------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| Yêu cầu PM       | `PM_YEU_CAU_TONG_HOP_VI.md`, `PM_REQUEST_VI.md`, `PM_REQUEST.md`, `PM REQUEST CHAT.md`, `PM request.rtf` | Luồng Oldtown, duyệt President/VP, BOM, sản xuất |
-| Kế hoạch / demo  | `2-4-2026_BIOMIXIN_DEMO_PREP_CHECKLIST.md`, `BIOMIXING_*_CHECKLIST*.md`                                  | Checklist demo & UAT                             |
-| Kỹ thuật / sơ đồ | `*.mmd`, `DIAGRAM_*`, `FLOW_*`                                                                           | Sequence, ERD, luồng                             |
-| Vận hành         | `RUNBOOK_*`, `ENV_*`                                                                                     | Triển khai, hostname                             |
+| Nhóm             | File                                                            | Mục đích             |
+| ---------------- | --------------------------------------------------------------- | -------------------- |
+| Yêu cầu PM       | `PM_YEU_CAU_TONG_HOP_VI.md`                                     |
+| Kế hoạch / demo  | `BIOMIXING_FULL_DEMO_RUNBOOK_VI.md`, `BIOMIXING_DEMO_SCRIPT.md` |
+| Kỹ thuật / sơ đồ | `*.mmd`, `DIAGRAM_*`, `FLOW_*`                                  | Sequence, ERD, luồng |
+| Vận hành         | `RUNBOOK_*`, `ENV_*`                                            | Triển khai, hostname |
 
 **Triển khai thực tế** nằm ở `app/`, `Modules/Production/`, `FUNC_IMPROVE/`, không nằm hết trong folder BIOMIXING.
 
@@ -87,19 +85,19 @@
 
 ### Bổ sung P1c (2026-05-23)
 
-| ID  | Hạng mục                                                                                                                                                                                       |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P1c | **Post FG → Purchase Inventory ledger** — [`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](./16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md); backfill `production:backfill-fg-inventory-ledger` |
+| ID  | Hạng mục                                                                                                                            |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| P1c | **Post FG → Purchase Inventory ledger** — `PRODUCTION_OPERATIONS_LIVE_VI.md` §2; backfill `production:backfill-fg-inventory-ledger` |
 
 ### Còn lại (Phase 2+ / UAT)
 
 | ID              | Hạng mục                                                                                                                                                             |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P2-1 / P2-UOM   | **✅ Code** — A/B/C + post lô `convertToBase` (2026-05-20). **UAT:** Oldtown + Luồng D. [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md) |
-| P2-UOM-OUTBOUND | **✅ Fixed 2026-05-20** — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)                                                           |
+| P2-UOM-OUTBOUND | **✅ Fixed 2026-05-20** — `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 · `FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md`                                                        |
 | P2-SKU          | **✅ 2026-05-21** — SKU tự động khi tạo SP (Purchase)                                                                                                                |
 | P0-02           | Variance approval UAT — badge UX **Done** (UX-008); xem `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` §3.2                                                                    |
-| P0-05 / P0-08   | UAT trace + mini UAT A–D — **chưa ký** (xem [`BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`](./BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md))                            |
+| P0-05 / P0-08   | UAT trace + mini UAT A–D — **chưa ký** (xem `P0_BIOMIXING_NEXT_STEPS_VI.md`, `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`)                                                |
 | P2+             | Phiên bản BOM V2; CCP/QA phase 3+                                                                                                                                    |
 | —               | Email/Estimate Request Phase 1 (tùy chọn)                                                                                                                            |
 

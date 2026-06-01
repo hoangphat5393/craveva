@@ -1,42 +1,55 @@
 # PROJECT BIOMIXING — sơ đồ, proposal & tài liệu sản phẩm
 
-Thư mục này giữ **tài liệu không thuần “triển khai kỹ thuật trong repo”**:
+Thư mục **collateral sản phẩm** (diagram, proposal, PM gốc, UI runbook). **Triển khai / gap / UAT:** [`FUNC_IMPROVE/`](../FUNC_IMPROVE/) — hub [`BIOMIXING_DOC_HUB_VI.md`](../FUNC_IMPROVE/BIOMIXING_DOC_HUB_VI.md).
 
-- **Sơ đồ** (`.mmd`, bản `.html` render), **PDF proposal**, hình ảnh / PDF minh họa
-- **Markdown** mang tính **proposal**, **demo**, **PM**, **bối cảnh Phase / approval** (President, VP Pricing, v.v.)
-- **PM gốc (RTF):** [`PM request.rtf`](./PM%20request.rtf) → EN: [`PM_REQUEST.md`](./PM_REQUEST.md) · **VI:** [`PM_REQUEST_VI.md`](./PM_REQUEST_VI.md) (dịch: `python scripts/bulk_translate_file.py ... --mode md-whole`)
+**File đã retire:** [`LEGACY_ARCHIVE.md`](LEGACY_ARCHIVE.md)
 
-## Triển khai chức năng (dev / baseline / playbook / gap)
+---
 
-Toàn bộ **Markdown triển khai** nằm tại:
+## Living docs (đọc trước)
 
-**[`FUNC_IMPROVE/`](../FUNC_IMPROVE/)** — các file triển khai có tiền tố `BIOMIXING_*` và audit tách `BIOMIXING_MIGRATION_AUDIT_2026_VI.md` (xem [`FUNC_IMPROVE/INDEX.md`](../FUNC_IMPROVE/INDEX.md) mục Biomixing).
+| Mục                 | File                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| Luồng vận hành SSOT | [`BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`](../FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md) |
+| Trạng thái code     | [`BIOMIXING_GAP_STATUS_VI.md`](../FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md)                 |
+| Demo kỹ thuật Hub   | [`BIOMIXING_FULL_DEMO_RUNBOOK_VI.md`](../FUNC_IMPROVE/BIOMIXING_FULL_DEMO_RUNBOOK_VI.md)   |
+| UAT / test          | [`BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`](../FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md) |
+| Production ops      | [`PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)       |
 
-- Chỉ mục (EN): [`FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`](../FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md)
-- File đã retire: [`FUNC_IMPROVE/LEGACY_ARCHIVE.md`](../FUNC_IMPROVE/LEGACY_ARCHIVE.md)
+---
 
-## SOP gửi khách / PM (phi kỹ thuật — Production)
+## PM & bối cảnh nghiệp vụ
 
-| Ngôn ngữ       | File                                                                                                                                      |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **English**    | [`PRODUCTION_MODULE_SOP_EN.md`](./PRODUCTION_MODULE_SOP_EN.md) · Word: [`PRODUCTION_MODULE_SOP_EN.docx`](./PRODUCTION_MODULE_SOP_EN.docx) |
-| **Tiếng Việt** | [`PRODUCTION_MODULE_SOP_VI.md`](./PRODUCTION_MODULE_SOP_VI.md)                                                                            |
+| File                                                                         | Vai trò                                 |
+| ---------------------------------------------------------------------------- | --------------------------------------- |
+| [`PM_YEU_CAU_TONG_HOP_VI.md`](./PM_YEU_CAU_TONG_HOP_VI.md)                   | Yêu cầu PM gốc (gộp Gary + Phase 1 OEM) |
+| [`BIOMIXING_PHASES_1_4_SUMMARY_VI.md`](./BIOMIXING_PHASES_1_4_SUMMARY_VI.md) | Bản đồ Phase 1→4 một trang              |
+| [`PHASE_BUSINESS_CONTEXT_EXAMPLE.md`](./PHASE_BUSINESS_CONTEXT_EXAMPLE.md)   | President / VP / approval context       |
 
-Regenerate EN Word from markdown: `pandoc PRODUCTION_MODULE_SOP_EN.md -o PRODUCTION_MODULE_SOP_EN.docx` (run inside this folder).
+---
 
-## Living documentation (trạng thái code — đọc trước demo/UAT)
+## UI runbook (thao tác Hub)
 
-| Mục                       | File                                                                                                                                                                                                 |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Luồng nghiệp vụ LIVE**  | [`FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`](../FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md) — SSOT bước/gate/tồn kho; cập nhật mỗi đợt dev                                               |
-| **Doc sync (2026-05-24)** | [`FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](../FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md) — manifest đồng bộ tài liệu Biomixing                                        |
-| **Audit quy trình phase** | [`FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`](../FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md)                                                                              |
-| **Gap / đã làm gì**       | [`FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`](../FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md)                                                                                                              |
-| **Phase 1 / 2 PM**        | [`FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md), [`FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)           |
-| **UOM + giá (P2)**        | [`FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](../FUNC_IMPROVE/P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                                                                                              |
-| **Post RM UOM**           | [`FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) — **Fixed** 2026-05-20                                                                   |
-| **Post FG → Inventory**   | [`FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](../FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md) — **P1c** 2026-05-23; backfill `production:backfill-fg-inventory-ledger` |
-| **Opening stock ↔ kho**   | [`FUNC_IMPROVE/13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`](../FUNC_IMPROVE/13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md)                                                                                |
-| **Test & UAT một cửa**    | [`FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`](../FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md)                                                                                              |
-| **Audit 3 thư mục**       | [`FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](../FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)                                                                      |
-| **Luồng kho / SO**        | [`FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`](../FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md)                                                                                                        |
+| Phase               | File                                                                                                 |
+| ------------------- | ---------------------------------------------------------------------------------------------------- |
+| 1 — Báo giá → SO    | [`UI_RUNBOOK_PHASE1_QUOTATION_TO_SO_VI.md`](./UI_RUNBOOK_PHASE1_QUOTATION_TO_SO_VI.md)               |
+| 2 — Planning pre-SX | [`UI_RUNBOOK_PHASE2_PLANNING_PREPRODUCTION_VI.md`](./UI_RUNBOOK_PHASE2_PLANNING_PREPRODUCTION_VI.md) |
+
+---
+
+## SOP khách / demo
+
+| File                                                                                                       | Vai trò                                  |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| [`PRODUCTION_MODULE_SOP_VI.md`](./PRODUCTION_MODULE_SOP_VI.md) / [`_EN.md`](./PRODUCTION_MODULE_SOP_EN.md) | SOP Production gửi khách                 |
+| [`BIOMIXING_DEMO_SCRIPT.md`](./BIOMIXING_DEMO_SCRIPT.md)                                                   | Kịch bản demo ERP+AI (overlay marketing) |
+| [`BIOMIXING_PROPOSAL_REVISED.md`](./BIOMIXING_PROPOSAL_REVISED.md) · PDF proposal                          | Positioning / scope ban đầu              |
+
+---
+
+## Diagram & assets
+
+- `.mmd` + `.html`: `PHASE1_*`, `PHASE2_*`, `PHASE3_*`, `PHASE1_TO_3_*`, `FULL_FLOW_DIAGRAM.html`
+- Test flow reserve: `PRODUCTION_RELEASE_RESERVE_TEST_FLOW_*.mmd`
+
+Regenerate Word SOP EN: `pandoc PRODUCTION_MODULE_SOP_EN.md -o PRODUCTION_MODULE_SOP_EN.docx`

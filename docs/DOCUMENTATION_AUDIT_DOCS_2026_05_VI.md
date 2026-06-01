@@ -29,7 +29,7 @@
 
 ## 5) Liên quan
 
-- Incident staging chi tiết (archive): `FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md`
+- Incident staging: `FUNC_BUG/STAGING_QUICK_REF_VI.md` → `docs/SERVER_RUNBOOK_VI.md`
 - Tra cứu bug: `FUNC_BUG/REGISTRY.md`
 - Snapshot đếm dòng backend: `LOG_REPORT/INDEX.md` + `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`
 - Đặc tả / snapshot infra app: `SPECIFICATION/INDEX.md` + `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`
@@ -41,5 +41,5 @@
 | Việc                            | Chi tiết                                                                                                                                                                                                                                        |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Canonical**                   | Inbound tạo Sales Order từ AI/third-party: **`docs/AI_ORDER_INTEGRATION_REST.md`**, **`docs/AI_ORDER_INTEGRATION_REST_SETUP_VI.md`** (`POST /api/integrations/orders`). Gỡ legacy path: **`FUNC_LOGIC/AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`**. |
-| **Audit nhóm FUNC_LOGIC**       | **`FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md`** §10 (đồng bộ tài liệu sau REST + `md_master_sync`).                                                                                                                                                     |
+| **Cleanup FUNC\_\***            | **`FUNC_REPORT/DOCUMENTATION_CLEANUP_AUDIT_2026_05_27.md`** (pass 1–6).                                                                                                                                                                         |
 | **Staging deploy (PowerShell)** | **`scripts/upload_staging.ps1`** — mặc định **có** push local (add/commit nếu cần) rồi SSH; dùng **`-DeployOnly`** khi chỉ muốn server `git pull` code đã có trên `origin`.                                                                     |

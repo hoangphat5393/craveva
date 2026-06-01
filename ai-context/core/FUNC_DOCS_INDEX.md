@@ -16,8 +16,6 @@
     - `FUNC_LOGIC/WAREHOUSE_INDEX.md`
     - `FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`
     - `FUNC_LOGIC/WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`
-    - `FUNC_LOGIC/AUDIT_WAREHOUSE_MODULE_VI.md`
-    - `FUNC_LOGIC/AUDIT_PURCHASE_MODULE_VI.md`
     - `FUNC_LOGIC/UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`
 - Sales → PO/DO/SO/Invoice (workflows):
     - `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
@@ -33,18 +31,14 @@
 
 ## 3) FUNC_BUG (bug notes)
 
-- **`FUNC_BUG/REGISTRY.md`** — bảng tra cứu nhanh (ưu tiên)
-- `FUNC_BUG/README.md` — hướng dẫn thư mục; `FUNC_BUG/INDEX.md` → redirect README/REGISTRY
-- `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md` — lỗi decrypt secrets trên settings
-- `FUNC_BUG/CLIENT_IMPORT_MASTER.md` + **`FUNC_BUG/CLIENT_IMPORT_DETAILS_VI.md`** (chi tiết đã gộp)
-- `FUNC_BUG/PRODUCT_IMPORT_MASTER.md` + **`FUNC_BUG/PRODUCT_IMPORT_DETAILS_VI.md`** (chi tiết đã gộp)
-- `FUNC_BUG/FULL_TEST_SUITE_FAILURES_SNAPSHOT.md` — snapshot test failures
-- **Staging archive (incident):** `FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md` — canonical vận hành vẫn là `docs/SERVER_RUNBOOK_VI.md` / `docs/STAGING_OPERATIONS.md`
+- **`FUNC_BUG/REGISTRY.md`** — bảng tra cứu
+- `FUNC_BUG/CLIENT_IMPORT_VI.md`, `FUNC_BUG/PRODUCT_IMPORT_VI.md`
+- **Staging:** `FUNC_BUG/STAGING_QUICK_REF_VI.md` → `docs/SERVER_RUNBOOK_VI.md`
 
 ## 4) FUNC_IMPORT / FUNC_IMPROVE / FUNC_REPORT / docs / SPECIFICATION / LOG_REPORT
 
 - `FUNC_IMPORT/**` — đặc tả import (sau gộp 2026-05: `IMPORT_SPECS_VI.md`, …)
-- `FUNC_IMPROVE/**` — plan cải tiến; **living:** `BIOMIXING_GAP_STATUS_VI.md`, `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`; **retired:** `FUNC_IMPROVE/LEGACY_ARCHIVE.md`; **audit:** `DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`
+- `FUNC_IMPROVE/**` — **living:** `BIOMIXING_GAP_STATUS_VI.md`, `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`, `BIOMIXING_DOC_HUB_VI.md`; **retired:** `LEGACY_ARCHIVE.md`
 - `FUNC_REPORT/**` — báo cáo/tài liệu ảnh/chụp màn hình phục vụ PM/QA
 - `docs/**` — runbook staging/hub; **audit:** `docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md`
 - **`SPECIFICATION/`** — spec EN, audit luồng signup/menu, snapshot SSH + GCP/SQL gộp: `SPECIFICATION/INDEX.md`, `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`, **audit:** `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`

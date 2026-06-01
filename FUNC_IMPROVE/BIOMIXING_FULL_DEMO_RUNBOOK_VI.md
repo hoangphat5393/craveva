@@ -90,35 +90,55 @@ Sau **Post FG receipt**, tồn phải xuất hiện ở **hai nơi** (khác SSOT
 | E2   | Mở Inventory list, lọc SP FG + kho `fg_warehouse_id` | Có dòng tồn; `net_quantity` khớp on-hand warehouse (làm tròn hiển thị có thể lệch ε)         |
 | E3   | (Ops) Dữ liệu cũ trước P1c                           | `php artisan production:backfill-fg-inventory-ledger --dry-run` rồi chạy thật nếu thiếu dòng |
 
-**Living doc:** `FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md` · UAT: `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` **Luồng E**.
+**Living doc:** `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` §2 · UAT: `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` **Luồng E**.
 
 ### Phần F — Tuỳ chọn Phase 2 (chỉ khi chủ động bật)
 
-- **`production.phase2.enforce_variance_approval`**: FG vượt ngưỡng cần **Approve variance** trước khi post receipt (badge UX: `10_UX_UI_IMPROVEMENT_BACKLOG.md` UX-008).
+- **`production.phase2.enforce_variance_approval`**: FG vượt ngưỡng cần **Approve variance** trước khi post receipt (badge UX: `UX_MENU_AND_SETTINGS_VI.md` Phần A/C, UX-008 Done).
 - **`production.phase2.yield_uom_shadow_enabled`**: chỉ bật khi có sign-off governance (đã có test service khi flag bật).
 
 ---
 
 ## 3. Troubleshooting ngắn
 
-| Hiện tượng                                          | Hướng xử lý                                                                                                          |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| 403 trên `/account/production/*`                    | Bật module `production` + quyền role; có thể cần re-login để rebuild `user_modules`.                                 |
-| Không vào được batch / stock                        | Kiểm tra `company_id` và quyền `view_*` tương ứng.                                                                   |
-| Planned RM không nút BOM                            | Order phải **released**, có snapshot, batch **chưa** có dòng consumption đã sinh tay.                                |
-| Trừ tồn RM lỗi                                      | Kiểm tra `warehouse.allow_negative_stock`, lô RM đủ số trong **đúng kho RM**.                                        |
-| Reconciliation báo mismatch liên tục                | Tune `equality_epsilon` / `warning_absolute_delta`; nhớ có thể có làm tròn số hiển thị vs DB.                        |
-| FG có trên Stock batches nhưng không thấy Inventory | Đã vá P1c — chạy backfill; tìm SP theo tên/SKU không phải mã lô; xem `16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`. |
+| Hiện tượng                                          | Hướng xử lý                                                                                                 |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 403 trên `/account/production/*`                    | Bật module `production` + quyền role; có thể cần re-login để rebuild `user_modules`.                        |
+| Không vào được batch / stock                        | Kiểm tra `company_id` và quyền `view_*` tương ứng.                                                          |
+| Planned RM không nút BOM                            | Order phải **released**, có snapshot, batch **chưa** có dòng consumption đã sinh tay.                       |
+| Trừ tồn RM lỗi                                      | Kiểm tra `warehouse.allow_negative_stock`, lô RM đủ số trong **đúng kho RM**.                               |
+| Reconciliation báo mismatch liên tục                | Tune `equality_epsilon` / `warning_absolute_delta`; nhớ có thể có làm tròn số hiển thị vs DB.               |
+| FG có trên Stock batches nhưng không thấy Inventory | Đã vá P1c — chạy backfill; tìm SP theo tên/SKU không phải mã lô; xem `PRODUCTION_OPERATIONS_LIVE_VI.md` §2. |
 
 ---
 
 ## 4. Liên kết nhanh trong repo
 
-- **Doc sync Biomixing:** `BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`
-- **Audit phase + go-live:** `BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`
+- **Doc hub Biomixing:** `BIOMIXING_DOC_HUB_VI.md`
+- **Trạng thái phase:** `BIOMIXING_GAP_STATUS_VI.md`
 - Playbook Phase 0–1: `BIOMIXING_PLAYBOOK_P0P1_VI.md`
 - P0 hàng đợi: `P0_BIOMIXING_NEXT_STEPS_VI.md`
-- Demo script stakeholder (ERP+AI): `PROJECT BIOMIXING/BIOMIXING_DEMO_SCRIPT.md`
+- Demo script stakeholder (ERP+AI overlay): `PROJECT BIOMIXING/BIOMIXING_DEMO_SCRIPT.md`
+- **Dữ liệu mẫu từ khách (CORE):** § Phụ lục A bên dưới
+
+---
+
+## Phụ lục A — Dữ liệu demo CORE (từ khách Biomixing)
+
+**CORE tối thiểu** (Excel/CSV): một end-to-end story — **không** chỉ master rời.
+
+| ID  | Nội dung                   | File mẫu                      |
+| --- | -------------------------- | ----------------------------- |
+| A1  | Customer / distributor     | `01_customers.xlsx`           |
+| A2  | Product/SKU (FG + RM)      | `02_products_sku.xlsx`        |
+| A3  | Warehouse + location       | `03_warehouse_locations.xlsx` |
+| A4  | Inventory snapshot         | `04_inventory_snapshot.xlsx`  |
+| A5  | Supplier                   | `05_suppliers.xlsx`           |
+| A6  | **Story pack** (zip S1–S7) | `00_story_pack_order001.zip`  |
+
+SUPPLEMENTARY (tùy): shop flowchart R1/R2, QA checklist B3 — tăng realism, không thay A1–A6.
+
+_Lịch sử checklist đầy đủ EN: `git log -- PROJECT BIOMIXING/2-4-2026_BIOMIXIN_DEMO_PREP_CHECKLIST.md`_
 
 ---
 

@@ -279,7 +279,7 @@ return [
         'startTime' => 'Start Time',
         'endTime' => 'End Time',
         'memo' => 'Memo',
-        'WeekRange' => 'Weekrange',
+        'WeekRange' => 'Week range',
         'visaDetails' => 'Visa Details',
         'maritalStatus' => 'Marital Status',
         'gender' => 'Gender',

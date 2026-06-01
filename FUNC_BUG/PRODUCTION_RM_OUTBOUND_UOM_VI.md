@@ -31,7 +31,7 @@ BOM line cùng ĐVT với `products.unit_id`; không post đến khi vá.
 
 ## Spec
 
-- Gap (living doc, Fixed): [`../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](../FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)
+- Gap (living doc, Fixed): [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) §2
 
 ## Đã vá
 

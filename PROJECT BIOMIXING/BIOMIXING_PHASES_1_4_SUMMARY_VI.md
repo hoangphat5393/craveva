@@ -44,7 +44,7 @@
 ## Ghi chú
 
 - Các diagram `.mmd` và proposal PDF mô tả **mục tiêu / positioning** (có thể có thêm AI, task Project, v.v.); **triển khai trong Hub** có thể dùng **tên màn hình khác** nhưng vẫn nằm trong bốn “ô” trên.
-- Chi tiết pilot / P0: xem `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md` và `FUNC_IMPROVE/PRODUCTION_MODULE_PROGRESS_REPORT_EN.md`.
+- Chi tiết pilot / P0: `FUNC_IMPROVE/BIOMIXING_PLAYBOOK_P0P1_VI.md`, `BIOMIXING_GAP_STATUS_VI.md`.
 
 ---
 

@@ -3,7 +3,7 @@
 _Tóm tắt ngắn. **Bản yêu cầu gộp đầy đủ (Gary + Phase 1 chat, tiếng Việt có dấu, không AI):** [`PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`](../PROJECT%20BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md)._
 
 **Tiến độ live (đánh dấu ✅/🟡/⬜):** `PHASE1_PM_STATUS_LIVE_VI.md`  
-_Technical gap + trang triển khai: `PHASE1_QUOTATION_PM_GAP_ANALYSIS_VI.md`._
+_Technical gap + trạng thái: `PHASE1_PM_STATUS_LIVE_VI.md`._
 
 ---
 
@@ -167,12 +167,12 @@ Màn hình trọng tâm: **`/account/estimates/{id}`** (chi tiết báo giá).
 
 ## 9. Liên kết tài liệu khác
 
-| File                                                  | Dùng khi                          |
-| ----------------------------------------------------- | --------------------------------- |
-| `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`         | **Spec PM gộp** (Gary + Phase 1)  |
-| `PHASE1_QUOTATION_PM_GAP_ANALYSIS_VI.md`              | Bảng gap kỹ thuật, URL, file code |
-| `PHASE1_PM_STATUS_LIVE_VI.md`                         | % tiến độ cho PM                  |
-| `PROJECT BIOMIXING/PHASE_BUSINESS_CONTEXT_EXAMPLE.md` | President vs VP nghĩa nghiệp vụ   |
+| File                                                  | Dùng khi                         |
+| ----------------------------------------------------- | -------------------------------- |
+| `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`         | **Spec PM gộp** (Gary + Phase 1) |
+| `PHASE1_PM_STATUS_LIVE_VI.md`                         | Bảng gap / trạng thái Phase 1    |
+| `PHASE1_PM_STATUS_LIVE_VI.md`                         | % tiến độ cho PM                 |
+| `PROJECT BIOMIXING/PHASE_BUSINESS_CONTEXT_EXAMPLE.md` | President vs VP nghĩa nghiệp vụ  |
 
 ---
 

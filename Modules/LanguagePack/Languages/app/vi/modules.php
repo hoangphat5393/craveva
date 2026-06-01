@@ -366,7 +366,7 @@ return [
             'followUp-updated' => 'Theo dõi giao dịch được cập nhật',
             'followUp-deleted' => 'Theo dõi giao dịch đã bị xóa',
         ],
-        'WeekRange' => 'Week Range',
+        'WeekRange' => 'Khoảng tuần',
         'userIdRequired' => 'User Id Required',
         'userIdExists' => 'User Id Exists',
         'documentNameRequired' => 'Document Name Required',

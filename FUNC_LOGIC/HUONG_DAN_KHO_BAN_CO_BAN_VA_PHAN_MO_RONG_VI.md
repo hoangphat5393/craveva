@@ -43,7 +43,7 @@ Luồng **SO → Sales DO → ship → invoice** và **PO → GRN → nhập** *
 **Ví dụ C — hai kho:**  
 Hàng nhập vào **Kho Bắc** (PO/GRN đúng kho). Khách thường lấy từ **Kho Nam** → cần **Sales DO** (hoặc invoice mode) trỏ **Kho Nam** _và_ tồn Nam phải đủ, **hoặc** **chuyển kho** Bắc → Nam trước khi giao.
 
-Tài liệu **chuyên về đa kho** (bảng, rủi ro, import khách gắn kho): [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md), [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md), phần chuyển kho trong [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md).  
+Tài liệu **chuyên về đa kho:** [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md), phần chuyển kho trong [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md).  
 Master “kho mặc định khách” trong quy trình tổng: [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md) §1.
 
 ---
@@ -114,14 +114,14 @@ Có thể **kiểm tra còn bán được không** trước khi tạo đơn — 
 
 ## 7) Tài liệu đi sâu hơn (khi cần)
 
-| Nhu cầu                                                 | File                                                                                                                            |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Đa kho** (tồn theo kho, transfer, import khách → kho) | [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md) · [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md) |
-| Quy trình đầy đủ PO / DO / SO / Invoice / kho           | [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                      |
-| Biến `.env` giải thích từng dòng                        | [`WH_PURCHASE_ENV_REFERENCE_VI.md`](WH_PURCHASE_ENV_REFERENCE_VI.md)                            |
-| So sánh kỳ vọng vs code (QA, có mục multi-warehouse)    | [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                  |
-| Audit tổng quan ổn định luồng                           | [`ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md)                            |
-| Smoke test sau khi đổi cấu hình                         | [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                  |
-| Luồng kho thuần (điều chỉnh, **chuyển kho**, movement)  | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                                                        |
+| Nhu cầu                                                 | File                                                                                       |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Đa kho** (tồn theo kho, transfer, import khách → kho) | [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)                                   |
+| Quy trình đầy đủ PO / DO / SO / Invoice / kho           | [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md) |
+| Biến `.env` giải thích từng dòng                        | [`WH_PURCHASE_ENV_REFERENCE_VI.md`](WH_PURCHASE_ENV_REFERENCE_VI.md)                       |
+| So sánh kỳ vọng vs code (QA, có mục multi-warehouse)    | [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                             |
+| Audit tổng quan ổn định luồng                           | [`ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md)             |
+| Smoke test sau khi đổi cấu hình                         | [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                             |
+| Luồng kho thuần (điều chỉnh, **chuyển kho**, movement)  | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                   |
 
 **Mục lục nhanh:** [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) · [`SALES_FULFILLMENT_DOCS_INDEX.md`](SALES_FULFILLMENT_DOCS_INDEX.md)

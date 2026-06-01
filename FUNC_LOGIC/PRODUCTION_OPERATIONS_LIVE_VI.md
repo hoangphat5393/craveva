@@ -51,12 +51,14 @@ _Mục tiêu: tài liệu vận hành sống cho module Production, dùng để 
 ### Khi Post RM (Deduct raw materials)
 
 - Hệ thống xuất kho RM (`quantity` giảm).
+- **UOM:** trước allocation/outbound, `ProductionPostingService::postSingleConsumption` quy đổi planned qty sang **base unit** (`convertToBase`). Bug ticket: [`FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md`](../FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md) — **Fixed 2026-05-20**.
 - Khi tất cả batch của order đã post RM -> `consume` reservation của order.
 - Sau đó order chuyển `In progress` (nếu trước đó là `Released`).
 
 ### Khi Post FG
 
-- Hệ thống nhập kho FG.
+- Hệ thống nhập kho FG (`warehouse_product_batches` + trace).
+- **Inventory ledger (P1c):** đồng thời ghi `purchase_stock_adjustments` / `purchase_inventory_adjustment` để SP hiện trên màn Inventory (Purchase). Backfill lịch sử: `php artisan production:backfill-fg-inventory-ledger`.
 - Khi không còn output unposted -> order chuyển `Completed`.
 
 ## 3) Material shortage summary (đang vận hành)
@@ -91,7 +93,44 @@ _Mục tiêu: tài liệu vận hành sống cho module Production, dùng để 
 ## 7) Batch — planned RM (ex–Step 1)
 
 - **Không còn** bước checklist / nút _Create planned raw material lines from BOM snapshot_ trên UI mặc định.
-- **Release** (tạo batch đầu) và **mở màn batch** (nếu chưa có dòng RM): hệ thống tự ghi `production_batch_consumptions` từ **BOM snapshot trên lệnh** (đã chốt lúc release).
-- Checklist batch bắt đầu từ **gán lô RM** → deduct → FG → post FG.
-- **Khôi phục** nút + Step 1 thủ công: xem `FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md` (`production.ui.auto_apply_bom_snapshot_on_batch`, `show_batch_workflow_step_planned_lines`, `show_apply_planned_from_snapshot_button`).
-- **Audit đồng bộ module:** `FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md`
+- **Release** và **mở màn batch** (chưa có dòng RM): tự ghi `production_batch_consumptions` từ BOM snapshot trên lệnh.
+- Checklist batch: **4 bước** (1 = gán lô RM → deduct → FG → post FG).
+
+### Hành vi & code
+
+| Sự kiện                    | Hệ thống                                                                           |
+| -------------------------- | ---------------------------------------------------------------------------------- |
+| Release (batch `PB-…` đầu) | `ProductionBatchPlannedLinesApplicator` → `applySnapshotToBatch()`                 |
+| Mở batch chưa có RM        | Cùng auto-apply                                                                    |
+| DB                         | `production_batch_consumptions`; `warehouse_product_batch_id` null đến bước gán lô |
+
+**Code:** `ProductionBatchPlannedLinesPolicy`, `ProductionPlannedConsumptionFromSnapshotService`, `ProductionBatchWorkflowSteps`.
+
+### Config (`production.ui`)
+
+| Key                                       | Mặc định | Ý nghĩa                 |
+| ----------------------------------------- | -------- | ----------------------- |
+| `auto_apply_bom_snapshot_on_batch`        | `true`   | Tự insert planned lines |
+| `show_batch_workflow_step_planned_lines`  | `false`  | Hiện step 1 checklist   |
+| `show_apply_planned_from_snapshot_button` | `false`  | Nút magic trên batch    |
+
+**Khôi phục Step 1 thủ công:** đặt 3 key trên = `false`/`true`/`true` → `config:clear` → route `POST .../apply-planned-from-bom-snapshot` vẫn tồn tại.
+
+---
+
+## 8) Phụ lục — audit snapshot (dev/QA)
+
+_Luồng chuẩn: BOM master → lệnh draft (BOM bắt buộc) → Release (reserve + snapshot + batch) → batch 4 bước._
+
+**Config SSOT:** `Modules/Production/Config/config.php` → `production.ui.*`
+
+**File quan trọng:** `ProductionBomFirstPolicy`, `ProductionBatchWorkflowSteps`, `batches/show.blade.php`, `PRODUCTION_PRODUCT_TYPES_VI.md`, SOP `PROJECT BIOMIXING/PRODUCTION_MODULE_SOP_*`.
+
+**Lưu ý khi đổi code:**
+
+1. Preview form = BOM **master**; dòng batch = snapshot **trên lệnh** lúc release.
+2. Planned qty chia đều theo số batch.
+3. Material shortage scopes: `ProductionMaterialSummaryService::statusesForScope()`.
+4. Test: `ProductionOrderBomFirstWorkflowTest`, `ProductionPostingServiceTest`.
+
+_Gộp từ `PRODUCTION_BATCH_STEP1_RESTORE_VI.md` + `PRODUCTION_MODULE_AUDIT_VI.md` (pass 4, 2026-05-27)._

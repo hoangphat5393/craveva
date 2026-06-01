@@ -4,7 +4,7 @@ Dùng file này để vào nhanh tài liệu mới nhất, tránh đọc nhầm 
 
 ## Canonical (ưu tiên đọc)
 
-0. **`FUNC_LOGIC/HUONG_DAN_KHO_BAN_CO_BAN_VA_PHAN_MO_RONG_VI.md`** — mô hình đơn giản + **§3 đa kho** (kho trên PO/GRN/Sales DO, kho mặc định khách, chuyển kho) + ví dụ A/B/C; chi tiết đa kho → `multi_warehouse_audit_report.md`.
+0. **`FUNC_LOGIC/HUONG_DAN_KHO_BAN_CO_BAN_VA_PHAN_MO_RONG_VI.md`** — mô hình đơn giản + **§3 đa kho**; chi tiết → `WAREHOUSE_MASTER_GUIDE.md`.
 1. `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md`
 2. `FUNC_LOGIC/ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md` (schema canonical + legacy matrix)
 3. `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`

@@ -9,7 +9,7 @@ php artisan test --compact tests/Feature/BiomixingDemoRoutesReadinessTest.php te
 ```
 
 **Phiên bản:** 2026-05-24  
-**Tài liệu chi tiết (tham chiếu):** `P0_EXECUTION_LOG.md`, `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` (luồng A–E), `BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`, `BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`, `P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_VI.md`, `P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md`, `16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`, `04_WH_RUNBOOK_UPGRADE_VI.md` (§1 + §2.1.1).
+**Tài liệu chi tiết (tham chiếu):** `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` (luồng A–E), `BIOMIXING_DOC_HUB_VI.md`, `P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md`, `P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md`, `PRODUCTION_OPERATIONS_LIVE_VI.md` §2, `04_WH_RUNBOOK_UPGRADE_VI.md` (§1 + §2.1.1).
 
 ---
 
@@ -20,9 +20,9 @@ php artisan test --compact tests/Feature/BiomixingDemoRoutesReadinessTest.php te
 3. **Bước tự động (không bắt buộc nhưng nên chạy 1 lần):** trong thư mục gốc repo, chạy lệnh `php artisan test` ở đầu file — xác nhận route + wiring không gãy sau build.
 4. **Phần A — test trên trình duyệt:** đi **theo thứ tự dòng** trong bảng (TC-P0-01-01 → … → TC-P0-08-E). Với mỗi dòng: đọc **Điều kiện** → làm **Bước thực hiện** trên UI → so **Kỳ vọng** → ghi **P** (Pass) / **F** (Fail) / **N** (N/A) và cột **Evidence** (screenshot, URL, mã issue).
 5. **Phần B (WUP):** mở `04_WH_RUNBOOK_UPGRADE_VI.md` §1 theo cột **Tham chiếu runbook**, thực hiện từng kịch bản tương ứng WUP-01…07 → ghi P/F/N; đồng thời **điền bảng §2.1.1** trong file runbook (hoặc ghi link biên bản ngoài rồi dán link vào cột Evidence ở đây).
-6. **Kết thúc:** làm mục **Sau khi chạy xong** (tổng kết, cập nhật `P0_EXECUTION_LOG.md`, chữ ký).
+6. **Kết thúc:** làm mục **Sau khi chạy xong** (tổng kết, cập nhật `P0_BIOMIXING_NEXT_STEPS_VI.md`, chữ ký).
 
-**Ghi chú:** Các dòng **TC-P0-08-A/B/C/E** chỉ tóm tắt; chi tiết A1–C4, D1–D3, E1–E3 trong `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`. Trace hai chiều: `P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_VI.md`.
+**Ghi chú:** Các dòng **TC-P0-08-A/B/C/E** chỉ tóm tắt; chi tiết A1–C4, D1–D3, E1–E3 trong `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`. Trace hai chiều: `P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md`.
 
 ---
 
@@ -57,8 +57,8 @@ php artisan test --compact tests/Feature/BiomixingDemoRoutesReadinessTest.php te
 | TC-P0-08-A  | P0-08 | Luồng Estimate → Sales Order                     | Có quyền Estimate + Order; có báo giá mẫu hoặc tạo mới                                   | Làm theo `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` luồng A (A1–A4)                                                              | Kết luận luồng A: Pass/Fail                                                                              | Partial         | Mini UAT: Partial (smoke)              |
 | TC-P0-08-B  | P0-08 | Luồng SO → DO → Invoice                          | Có SO + tồn đủ (nếu cần)                                                                 | Checklist luồng B (B1–B4)                                                                                                     | Kết luận luồng B: Pass/Fail; không double outbound                                                       | Partial         | Mini UAT: Partial (smoke)              |
 | TC-P0-08-C  | P0-08 | Luồng PO → GRN → Bill                            | Có vendor + PO                                                                           | Checklist luồng C (C1–C4)                                                                                                     | Kết luận luồng C: Pass/Fail                                                                              | Partial         | Mini UAT: Partial (smoke)              |
-| TC-P0-08-D  | P0-08 | Luồng Production — Post RM (UOM)                 | BOM g↔kg hoặc case tương tự; lệnh + batch released                                       | Checklist luồng D (D1–D3) — xem `15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`                                                        | Post RM trừ đúng đơn vị gốc; không lỗi 100×                                                              | Partial         | Mini UAT: Partial; code fixed          |
-| TC-P0-08-E  | P0-08 | Luồng Production — Post FG → Inventory (P1c)     | Batch đã post FG; user có quyền xem Purchase Inventory                                   | Checklist luồng E (E1–E3) — xem `16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`                                                | Inventory có dòng SP FG; `net_quantity` khớp warehouse; không cần tìm theo mã lô                         | P               | batch/14; Bánh kem qty 12              |
+| TC-P0-08-D  | P0-08 | Luồng Production — Post RM (UOM)                 | BOM g↔kg hoặc case tương tự; lệnh + batch released                                       | Checklist luồng D (D1–D3) — `PRODUCTION_OPERATIONS_LIVE_VI.md` §2                                                             | Post RM trừ đúng đơn vị gốc; không lỗi 100×                                                              | Partial         | Mini UAT: Partial; code fixed          |
+| TC-P0-08-E  | P0-08 | Luồng Production — Post FG → Inventory (P1c)     | Batch đã post FG; user có quyền xem Purchase Inventory                                   | Checklist luồng E (E1–E3) — `PRODUCTION_OPERATIONS_LIVE_VI.md` §2                                                             | Inventory có dòng SP FG; `net_quantity` khớp warehouse; không cần tìm theo mã lô                         | P               | batch/14; Bánh kem qty 12              |
 
 ---
 
@@ -81,7 +81,7 @@ php artisan test --compact tests/Feature/BiomixingDemoRoutesReadinessTest.php te
 ## Sau khi chạy xong
 
 1. **Tổng kết:** đếm Pass / Fail / N/A; liệt kê issue S1–S3 (S1 = chặn pilot).
-2. **Cập nhật** `FUNC_IMPROVE/P0_EXECUTION_LOG.md` (các dòng P0-02, P0-05, P0-07, P0-08): cột Evidence + % tiến độ + Status khi đủ bằng chứng.
+2. **Cập nhật** `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md` (các mục P0-02, P0-05, P0-07, P0-08) khi đủ bằng chứng.
 3. **Chữ ký:** BA / PM xác nhận cuối bảng (dòng dưới đây).
 
 | Vai trò | Họ tên                 | Ngày       | Ghi chú                        |

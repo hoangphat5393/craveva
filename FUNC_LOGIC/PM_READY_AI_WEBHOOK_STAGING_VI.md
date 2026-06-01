@@ -126,7 +126,7 @@ Thông điệp cụ thể phụ thuộc locale và rule trong `StoreAiOrderWebho
 
 - Thêm bảng log inbound (`ai_order_webhook_logs`) nếu cần audit chi tiết.
 - Mapping `line_user_id → client_code` tự động (tùy nghiệp vụ).
-- Cân nhắc chữ ký **HMAC** thay cho shared secret đơn (tài liệu cải tiến: [`../FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md#part-3-api-tab--ringfence-prompt`](../FUNC_IMPROVE/SO_AI_WEBHOOK_PROMPTS_VI.md#part-3-api-tab--ringfence-prompt)).
+- Cân nhắc chữ ký **HMAC** thay cho shared secret đơn (backlog cải tiến — xem `12_AI_THIRDPARTY_SO_OPTIONS_VI.md`).
 
 ---
 

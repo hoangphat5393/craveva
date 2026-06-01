@@ -1,11 +1,11 @@
 # Biomixing — Luồng nghiệp vụ chuẩn (LIVE DOC)
 
-| Thuộc tính                | Giá trị                                                                                                                                                                             |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Vai trò**               | **Nguồn sự thật nghiệp vụ (SSOT)** cho toàn bộ pilot Biomixing — đọc trước khi code, vá lỗi, UAT, demo                                                                              |
-| **Cập nhật**              | 2026-05-24                                                                                                                                                                          |
-| **Không thay thế**        | Playbook kỹ thuật (`BIOMIXING_PLAYBOOK_P0P1_VI.md`), audit (`BIOMIXING_FULL_PROCESS_AUDIT_*`), khái niệm (`BIOMIXING_FLOW_CONCEPTS_VI.md`) — file này là **luồng bước–cửa–tồn kho** |
-| **Bắt buộc khi đổi code** | Mỗi PR/sprint chạm nghiệp vụ Production / Estimate / Warehouse pilot → **cập nhật mục tương ứng + § Changelog** dưới đây                                                            |
+| Thuộc tính                | Giá trị                                                                                                                                   |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vai trò**               | **Nguồn sự thật nghiệp vụ (SSOT)** cho toàn bộ pilot Biomixing — đọc trước khi code, vá lỗi, UAT, demo                                    |
+| **Cập nhật**              | 2026-05-24                                                                                                                                |
+| **Không thay thế**        | Playbook kỹ thuật (`BIOMIXING_PLAYBOOK_P0P1_VI.md`), khái niệm (`BIOMIXING_FLOW_CONCEPTS_VI.md`) — file này là **luồng bước–cửa–tồn kho** |
+| **Bắt buộc khi đổi code** | Mỗi PR/sprint chạm nghiệp vụ Production / Estimate / Warehouse pilot → **cập nhật mục tương ứng + § Changelog** dưới đây                  |
 
 **Quy tắc maintainer (tránh lặp lỗi):**
 
@@ -14,7 +14,7 @@
 3. Vá bug nghiệp vụ → ghi 1 dòng changelog + link epic (`15_*`, `16_*`, …).
 4. Không copy diagram sang `PROJECT BIOMIXING/` — chỉ **link** file này.
 
-**Liên kết vận hành:** [`BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md`](./BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md) · [`P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`](./P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md) · [`BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`](./BIOMIXING_UAT_AND_TEST_GUIDE_VI.md)
+**Liên kết vận hành:** [`BIOMIXING_DOC_HUB_VI.md`](./BIOMIXING_DOC_HUB_VI.md) · [`P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`](./P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md) · [`BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`](./BIOMIXING_UAT_AND_TEST_GUIDE_VI.md)
 
 ---
 
@@ -119,16 +119,16 @@ stateDiagram-v2
 
 ### 3.1 Bảng bước chi tiết
 
-| #    | Bước UI (checklist 4 bước trên batch) | Route / action                  | Tiên quyết                      | Tồn kho (SSOT)                                                                             | Inventory list                        |
-| ---- | ------------------------------------- | ------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------- |
-| 3.1  | Tạo / mở batch                        | Release → batch; `batches.show` | Released; snapshot trên lệnh    | **Tự** insert `production_batch_consumptions` (xem `PRODUCTION_BATCH_STEP1_RESTORE_VI.md`) | —                                     |
-| 3.2  | **Gán lô RM**                         | Assign batch per consumption    | Đã có dòng planned RM           | **Không** tăng reserve (reserve đã ở Release)                                              | —                                     |
-| 3.3  | **Post RM**                           | `post-consumptions`             | Đã gán lô                       | **Trừ** `warehouse_product_batches` + movement                                             | Không bắt buộc                        |
-| 3.4  | Thêm **FG output**                    | `outputs.store`                 | Đã post RM                      | —                                                                                          | —                                     |
-| 3.4a | **Variance**                          | Cột approval                    | Xem § 3.2 FG policy             | —                                                                                          | —                                     |
-| 3.5  | **Post FG**                           | `post-fg-receipt`               | Policy OK; approve nếu bắt buộc | **Cộng** warehouse batch FG                                                                | **P1c:** `purchase_stock_adjustments` |
-| —    | _(Legacy)_ Sinh planned RM thủ công   | `applyPlannedFromBomSnapshot`   | Chỉ khi bật lại config Step 1   | —                                                                                          | —                                     |
-| 3.7  | Trace                                 | `batches/{id}/trace`            | Đã post                         | Link P↔W                                                                                   | —                                     |
+| #    | Bước UI (checklist 4 bước trên batch) | Route / action                  | Tiên quyết                      | Tồn kho (SSOT)                                                                        | Inventory list                        |
+| ---- | ------------------------------------- | ------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------- |
+| 3.1  | Tạo / mở batch                        | Release → batch; `batches.show` | Released; snapshot trên lệnh    | **Tự** insert `production_batch_consumptions` (`PRODUCTION_OPERATIONS_LIVE_VI.md` §7) | —                                     |
+| 3.2  | **Gán lô RM**                         | Assign batch per consumption    | Đã có dòng planned RM           | **Không** tăng reserve (reserve đã ở Release)                                         | —                                     |
+| 3.3  | **Post RM**                           | `post-consumptions`             | Đã gán lô                       | **Trừ** `warehouse_product_batches` + movement                                        | Không bắt buộc                        |
+| 3.4  | Thêm **FG output**                    | `outputs.store`                 | Đã post RM                      | —                                                                                     | —                                     |
+| 3.4a | **Variance**                          | Cột approval                    | Xem § 3.2 FG policy             | —                                                                                     | —                                     |
+| 3.5  | **Post FG**                           | `post-fg-receipt`               | Policy OK; approve nếu bắt buộc | **Cộng** warehouse batch FG                                                           | **P1c:** `purchase_stock_adjustments` |
+| —    | _(Legacy)_ Sinh planned RM thủ công   | `applyPlannedFromBomSnapshot`   | Chỉ khi bật lại config Step 1   | —                                                                                     | —                                     |
+| 3.7  | Trace                                 | `batches/{id}/trace`            | Đã post                         | Link P↔W                                                                              | —                                     |
 
 **`batch_number` trên FG:** mã **lô thành phẩm** (vd. `PB-20260524-01`), **không** phải SKU. Tìm trên Inventory theo **tên SP / SKU**.
 
@@ -159,13 +159,13 @@ stateDiagram-v2
 
 **Backfill dữ liệu cũ:** `php artisan production:backfill-fg-inventory-ledger`
 
-**Epic:** [`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](./16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md)
+**Epic:** `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 (P1c)
 
 ### 3.4 Post RM — quy đổi UOM
 
 BOM có thể nhập **g** trên SP base **kg** → post phải trừ **0,1 kg**, không **100 kg**.
 
-**Epic:** [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) — Fixed 2026-05-20.
+**Epic:** `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 + `FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md` — Fixed 2026-05-20.
 
 **UAT:** Luồng D.
 
@@ -212,7 +212,7 @@ Thêm SP với **Opening stock** trên form Purchase ≠ tự có trên kho cho 
 | P → W | Production batch → Trace | Link `warehouse-product-batches/{id}` |
 | W → P | Warehouse batch detail   | Link `production.batches.trace`       |
 
-**UAT:** TC-P0-05-01…06 · `P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_VI.md`.
+**UAT:** TC-P0-05-01…06 · `P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md`.
 
 ---
 
@@ -248,13 +248,13 @@ Thêm SP với **Opening stock** trên form Purchase ≠ tự có trên kho cho 
 
 ## 8. Chưa trong pilot (không ghi vào luồng chuẩn trên)
 
-| Hạng mục                                      | Phase   | Ghi chú                      |
-| --------------------------------------------- | ------- | ---------------------------- |
-| CCP / HACCP automation                        | 3+      | `BIOMIXING_GAP_STATUS_VI.md` |
-| Receiving QC GRN đầy đủ                       | 3+      | —                            |
-| Multi-batch chia RM khác equal-split          | 2+      | Backlog                      |
-| Reverse movement sau post                     | —       | MVP chỉ idempotent skip      |
-| Inventory list = warehouse only (một SSOT UI) | backlog | `06_INVENTORY`               |
+| Hạng mục                                      | Phase   | Ghi chú                                        |
+| --------------------------------------------- | ------- | ---------------------------------------------- |
+| CCP / HACCP automation                        | 3+      | `BIOMIXING_GAP_STATUS_VI.md`                   |
+| Receiving QC GRN đầy đủ                       | 3+      | —                                              |
+| Multi-batch chia RM khác equal-split          | 2+      | Backlog                                        |
+| Reverse movement sau post                     | —       | MVP chỉ idempotent skip                        |
+| Inventory list = warehouse only (một SSOT UI) | backlog | `13_OPENING_STOCK_*`, `WAREHOUSE_MASTER_GUIDE` |
 
 ---
 

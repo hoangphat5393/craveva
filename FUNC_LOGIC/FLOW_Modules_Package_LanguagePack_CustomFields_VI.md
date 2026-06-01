@@ -12,7 +12,7 @@ Thay thế: `FLOW_LanguagePack_Module.md`, `Package_Modules_Commands.md`.
 3. [Laravel modules (nwidart) & lệnh `packages:modules`](#3-laravel-modules-nwidart--lệnh-packagesmodules)
 4. [Tóm tắt lệnh](#4-tóm-tắt-lệnh)
 
-**Tham chiếu thêm (không gộp vào file này):** bảng slug CF theo module — [CF_SYSTEMWIDE_AUDIT_VI.md](CF_SYSTEMWIDE_AUDIT_VI.md).
+**Tham chiếu thêm:** CF theo module — xem bảng trong file này (audit snapshot `CF_SYSTEMWIDE_AUDIT_VI.md` đã retire pass 6).
 
 ---
 

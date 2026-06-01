@@ -452,16 +452,16 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 
 | Resource                                                          | Description                                                                                    |
 | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `ai-context/core/SYSTEM_OVERVIEW.md`                               | AI context: tổng quan hệ thống (routes, scan coverage, risk signals).                           |
-| `ai-context/core/MODULE_INDEX.md`                                  | AI context: mục lục module → context theo module.                                               |
-| `ai-context/core/FUNC_DOCS_INDEX.md`                               | AI context: map tài liệu `FUNC_*` vào kiến trúc retrieval.                                      |
+| `ai-context/core/SYSTEM_OVERVIEW.md`                              | AI context: tổng quan hệ thống (routes, scan coverage, risk signals).                          |
+| `ai-context/core/MODULE_INDEX.md`                                 | AI context: mục lục module → context theo module.                                              |
+| `ai-context/core/FUNC_DOCS_INDEX.md`                              | AI context: map tài liệu `FUNC_*` vào kiến trúc retrieval.                                     |
 | `FUNC_LOGIC/README.md`                                            | Logic & flow docs index (login, package/module commands, flows).                               |
 | `FUNC_LOGIC/FLOW_ADD_CLIENT.md`                                   | Flow: add client (form + import), DB writes, role/permissions.                                 |
 | `FUNC_LOGIC/FLOW_ADD_PRODUCT.md`                                  | Flow: add product.                                                                             |
 | `FUNC_LOGIC/FLOW_ADD_INVENTORY.md`                                | Flow: add inventory.                                                                           |
 | `FUNC_LOGIC/Login_Flow.md`                                        | Login flow (Fortify, session).                                                                 |
 | `FUNC_LOGIC/FLOW_Modules_Package_LanguagePack_CustomFields_VI.md` | Package → module_settings, nwidart `modules_statuses.json`, LanguagePack, custom fields audit. |
-| `FUNC_LOGIC/DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md`                 | Developer Tools gateway DB, `user_can_access_developertools_module`, AI SQL DDL block.         |
+| `FUNC_LOGIC/DEVELOPER_TOOLS_EXT_PLAN.md`                          | Developer Tools — kế hoạch mở rộng.                                                            |
 | `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md`                | Fix: Social Auth Settings crash `The MAC is invalid.` when encrypted secrets cannot decrypt.   |
 | `docs/MENU_ROUTES_AND_CACHE.md`                                   | Why menu routes can fail and how to fix (route:clear, Route::has).                             |
 | `docs/PACKAGE_MODULES_ACTIVATE.md`                                | Activating package modules.                                                                    |

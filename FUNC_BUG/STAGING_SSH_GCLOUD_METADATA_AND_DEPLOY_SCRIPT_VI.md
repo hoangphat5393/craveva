@@ -3,7 +3,7 @@
 **Cập nhật:** 2026-05-13  
 **Phạm vi:** VM `craveva-staging` (GCP), SSH từ Windows, metadata `ssh-keys`, script deploy `scripts/upload_staging.ps1`.  
 **Runbook chung:** `docs/SERVER_RUNBOOK_VI.md`, `docs/STAGING_OPERATIONS.md`.  
-**Archive incident dài (có mục SSH cũ):** `FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md` — nếu mâu thuẫn với file này, **ưu tiên file này** cho SSH/metadata/deploy script sau 2026-05.
+**SSH / deploy (canonical):** file này. Incident cũ đã retire — `git log -- FUNC_BUG/STAGING_INCIDENTS_ARCHIVE_VI.md`.
 
 ---
 

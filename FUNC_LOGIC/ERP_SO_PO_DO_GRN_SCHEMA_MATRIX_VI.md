@@ -146,7 +146,7 @@ Dùng các cột này để hiển thị “Mã chứng từ cũ” / tra cứu 
 
 **D) Custom fields / báo cáo tùy chỉnh**
 
-- Nhóm CF **Delivery Order** đã được gỡ theo migration native columns (xem `FUNC_LOGIC/CF_SYSTEMWIDE_AUDIT_VI.md`). Rà **report SQL / BI** còn join tới tên bảng cũ — **sửa** sang `grns` / `sales_dos`.
+- Nhóm CF **Delivery Order** đã được gỡ theo migration native columns. Rà **report SQL / BI** còn join tới tên bảng cũ — **sửa** sang `grns` / `sales_dos`.
 
 **E) Hành vi sản phẩm (UX)**
 
@@ -244,10 +244,10 @@ Nhiều invoice trên một SO; `default_warehouse_id` khách; job không có `u
 | **File này**                                                                                                                  | Master: luồng bán, schema, legacy đã gỡ (3 env), audit gộp |
 | [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)                                                                                    | Mục lục — trỏ file này                                     |
 | [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md)                                                  | Checklist UAT E2E canonical                                |
-| [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                | Bảng issue QA chi tiết                                     |
+| [`ERP_SO_PO_DO_INV_WH_QA_VI.md`](ERP_SO_PO_DO_INV_WH_QA_VI.md)                                                                | Bảng issue QA chi tiết                                     |
 | [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                    | Hướng dẫn vận hành                                         |
 | [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                                                            | EN, class-level                                            |
-| [`SO_DO_PO_GRN_REFACTOR_VI.md`](../FUNC_IMPROVE/05_SO_DO_PO_GRN_REFACTOR_VI.md)                                                  | Lịch sử quyết định refactor                                |
+| [`SO_DO_PO_GRN_REFACTOR_VI.md`](../FUNC_IMPROVE/05_SO_DO_PO_GRN_REFACTOR_VI.md)                                               | Lịch sử quyết định refactor                                |
 | [`docs/PHAN_TICH_MODULE_WAREHOUSE_SO_PO_DO_INVOICE_GRN_VI.md`](../docs/PHAN_TICH_MODULE_WAREHOUSE_SO_PO_DO_INVOICE_GRN_VI.md) | Stub trỏ FUNC_LOGIC                                        |
 
 ---

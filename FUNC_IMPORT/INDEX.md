@@ -4,17 +4,15 @@ Navigation index for import-related specifications, runtime mechanics, and archi
 
 ## Canonical documents (đọc theo thứ tự này)
 
-1. **`FUNC_IMPORT/IMPORT_SPECS_VI.md`** — Map cột Maolin → Craveva: Product, Client, Inventory (Purchase), Sale Order, Quotation (Estimates).
-2. **`FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md`** — Chunk vs 1-dòng/job, poll + `config/app.php` (`import_progress_*`), CF map, **phụ lục** tracker SO/PO ↔ Inventory (staging).
-3. **`FUNC_IMPORT/IMPORT_PROMPTS_ARCHIVE_VI.md`** — Prompt hand-off **đã triển khai** (Quotation import, Sales history); giữ để tái sử dụng pattern.
+1. **`FUNC_IMPORT/IMPORT_SPECS_VI.md`** — Map cột Maolin → Craveva: Product, Client, Inventory, Sale Order, Quotation.
+2. **`FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md`** — Chunk vs 1-dòng/job, poll + `config/app.php`, CF map, tracker SO/PO ↔ Inventory.
 
-## Audit & maintenance
+## Liên quan
 
-- **`FUNC_IMPORT/AUDIT_IMPORT_2026_VI.md`** — Lịch sử gộp file 2026-05-12 + danh sách file đã thay thế.
-- Giữ `INDEX.md` làm **route map**; khi thêm domain import mới: cập nhật `IMPORT_SPECS_VI.md` (mục mới) hoặc tách file chuyên sâu nếu > ~400 dòng và link từ đây.
+- Maolin: `FUNC_LOGIC/MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md`, `MAOLIN_MASTER_GUIDE.md`
+- Bug import: `FUNC_BUG/CLIENT_IMPORT_VI.md`, `FUNC_BUG/PRODUCT_IMPORT_VI.md`
+- Production UOM: `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` §2
 
-## Liên quan `FUNC_LOGIC` / Production UOM
+## Lịch sử gộp (2026-05-12)
 
-- Chuỗi import Maolin tổng thể: `FUNC_LOGIC/MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md`, `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`.
-- **Không** thuộc import: lỗ hổng trừ tồn lô SX khi BOM ĐVT ≠ base — `FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`.
-- Báo cáo số dòng backend (không phải log ứng dụng): `LOG_REPORT/README.md` · `LOG_REPORT/INDEX.md` · audit: `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`.
+10 file `IMPORT_*` cũ → 3 canonical ở trên. Chi tiết file đã xóa: `git log -- FUNC_IMPORT/`.

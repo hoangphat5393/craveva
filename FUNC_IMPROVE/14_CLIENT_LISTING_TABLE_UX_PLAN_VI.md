@@ -16,7 +16,7 @@
 | Contract pricing        | Bảng `client_product_pricing` — menu Contract Pricing                                           |
 | Custom field client     | Nhóm **Client** → model `App\Models\ClientDetails` → `custom_fields` + `custom_fields_data`     |
 
-**Tài liệu liên quan:** `FUNC_LOGIC/FLOW_ADD_CLIENT.md` (§9 DB vs Custom Field), `FUNC_LOGIC/FLOW_Pricing_Module_VI.md`, `FUNC_IMPROVE/07_PRICING_MODULE_DEV_TASKS.md`, `FUNC_IMPROVE/08_CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md`, `FUNC_IMPROVE/10_UX_UI_IMPROVEMENT_BACKLOG.md`.
+**Tài liệu liên quan:** `FUNC_LOGIC/FLOW_ADD_CLIENT.md`, `FLOW_Pricing_Module_VI.md`, `07_PRICING_MODULE_DEV_TASKS.md`, `UX_MENU_AND_SETTINGS_VI.md` Phần D (UX-006).
 
 ---
 
@@ -330,7 +330,7 @@ flowchart LR
 
 ## 9. Backlog UX (đăng ký)
 
-Thêm vào `FUNC_IMPROVE/10_UX_UI_IMPROVEMENT_BACKLOG.md`:
+Thêm vào `UX_MENU_AND_SETTINGS_VI.md` Phần D khi có ID mới.
 
 | ID     | Module  | Màn hình           | Đề xuất                                                                                 | Ưu tiên |
 | ------ | ------- | ------------------ | --------------------------------------------------------------------------------------- | ------- |

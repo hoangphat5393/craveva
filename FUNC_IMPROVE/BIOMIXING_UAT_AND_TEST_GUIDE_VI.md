@@ -6,7 +6,7 @@
 
 **Chỉ mục tài liệu tổng (tiếng Anh):** `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`
 
-**Doc sync Biomixing (2026-05-24):** `FUNC_IMPROVE/BIOMIXING_DOCUMENTATION_SYNC_2026_05_VI.md` · **Audit phase:** `FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`
+**Doc hub Biomixing:** `FUNC_IMPROVE/BIOMIXING_DOC_HUB_VI.md`
 
 **Cài đặt & pilot trên máy local (Herd/Valet/Docker, migrate, module):** `FUNC_IMPROVE/BIOMIXING_LOCAL_DEV_SETUP_VI.md`
 
@@ -39,7 +39,7 @@ Luồng tenant Production (HTTP + DB thật, có thể skip nếu DB thiếu d�
 php artisan test --compact tests/Feature/ProductionBomAndOrderTenantFlowTest.php
 ```
 
-Báo cáo tiến độ module Production (tiếng Anh, có bảng P0): `FUNC_IMPROVE/PRODUCTION_MODULE_PROGRESS_REPORT_EN.md`
+Trạng thái module Production: `FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md` · vận hành: `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`
 
 ---
 
@@ -47,16 +47,15 @@ Báo cáo tiến độ module Production (tiếng Anh, có bảng P0): `FUNC_IMP
 
 **Hang doi buoc tiep theo (thu tu lam):** `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`
 
-| Việc                                                     | Tài liệu                                                                                                                                                |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Bảng test case QA/BA (một lượt)**                      | `FUNC_IMPROVE/P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md` — gom TC P0-01,02,03,05,06,08 + WUP-01…07                                                          |
-| Theo dõi task P0, trạng thái, DoD                        | `FUNC_IMPROVE/P0_EXECUTION_LOG.md`                                                                                                                      |
-| Thứ tự ưu tiên tuần                                      | `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`                                                                                                            |
-| **3 luồng gốc + Production:** A–D (+ **E** FG→Inventory) | `FUNC_IMPROVE/P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` (**P0-08**)                                                                                        |
-| **Audit toàn phase + còn thiếu gì**                      | `FUNC_IMPROVE/BIOMIXING_FULL_PROCESS_AUDIT_2026_05_VI.md`                                                                                               |
-| Trace **Warehouse ↔ Production** (hai chiều)             | **VI:** `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_VI.md` — **EN:** `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_EN.md` (**P0-05**) |
-| Duyệt lệch FG — ma trận quyền                            | `FUNC_IMPROVE/P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md` (**P0-02**)                                                                                       |
-| Shadow Yield/UOM (governance, mặc định tắt pilot)        | `FUNC_IMPROVE/P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md` (**P0-03**)                                                                                  |
+| Việc                                                     | Tài liệu                                                                                       |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Bảng test case QA/BA (một lượt)**                      | `FUNC_IMPROVE/P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md` — gom TC P0-01,02,03,05,06,08 + WUP-01…07 |
+| Theo dõi task P0, trạng thái, DoD                        | `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`                                                   |
+| Thứ tự ưu tiên tuần                                      | `FUNC_IMPROVE/P0_BIOMIXING_NEXT_STEPS_VI.md`                                                   |
+| **3 luồng gốc + Production:** A–D (+ **E** FG→Inventory) | `FUNC_IMPROVE/P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` (**P0-08**)                               |
+| Trace **Warehouse ↔ Production**                         | `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md` (**P0-05**, VI+EN)                   |
+| Duyệt lệch FG — ma trận quyền                            | `FUNC_IMPROVE/P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md` (**P0-02**)                              |
+| Shadow Yield/UOM (governance, mặc định tắt pilot)        | `FUNC_IMPROVE/P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md` (**P0-03**)                         |
 
 ---
 
@@ -121,12 +120,12 @@ Báo cáo tiến độ module Production (tiếng Anh, có bảng P0): `FUNC_IMP
 
 ## 9) Epic doc (debug nhanh)
 
-| Chủ đề               | File                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------ |
-| Post RM UOM          | `FUNC_IMPROVE/15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`                                  |
-| Post FG → Inventory  | `FUNC_IMPROVE/16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`                          |
-| Opening stock vs kho | `FUNC_IMPROVE/13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`                             |
-| FG variance          | `FUNC_IMPROVE/01_PROD_BOM_FG_POLICY_VI.md`, `P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md` |
+| Chủ đề               | File                                                                                           |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| Post RM UOM          | `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` §2 · `FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md` |
+| Post FG → Inventory  | `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` §2                                               |
+| Opening stock vs kho | `FUNC_IMPROVE/13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`                                       |
+| FG variance          | `P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md`, `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` §3.2            |
 
 ---
 

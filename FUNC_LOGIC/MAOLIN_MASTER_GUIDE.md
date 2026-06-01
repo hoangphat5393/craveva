@@ -254,7 +254,7 @@ Chi tiết thao tác: `WAREHOUSE_MASTER_GUIDE.md`.
 ## 10) Phụ lục — tài liệu chi tiết (khi cần đào sâu)
 
 - Import mapping (ready-to-use): `MAOLIN_IMPORT_MAPPING.md`
-- File-by-file analysis: `PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`
+- File-by-file analysis (retired): `git log -- FUNC_LOGIC/PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`
 - Warehouse docs (UI + CF + runbook): `WAREHOUSE_MASTER_GUIDE.md`
 
 ## Auto-added links by md_master_sync.ps1
@@ -267,6 +267,5 @@ Chi tiết thao tác: `WAREHOUSE_MASTER_GUIDE.md`.
 - `FLOW_ADD_CLIENT.md`
 - `FLOW_Pricing_Module_VI.md`
 - `FLOW_USERS_CLIENT.md`
-- `MIAOLIN_SALES_ORDER_API_DATABASE_ALL_FIELDS.md`
-- `MIAOLIN_SALES_ORDER_API_DATABASE_REQUIRED_FIELDS.md`
+- `MIAOLIN_SALES_ORDER_API_FIELDS.md`
 - `SCHEMATIC_USERS_CLIENT_1_1_VI.md`

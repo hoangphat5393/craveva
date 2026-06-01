@@ -198,12 +198,12 @@ ProductUnitPriceResolver
 
 ### Giai đoạn C — Biomixing
 
-| #   | Việc                                                                                                                                        |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| C1  | BOM báo giá: hiển thị quy đổi SL (read-only)                                                                                                |
-| C2  | Tổng NL lệnh SX: `convertToBase` — **✅** `ProductionOrderMaterialRequirementsSummary`                                                      |
-| C2b | **Post RM outbound** `convertToBase` — **✅ 2026-05-20** → [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) |
-| C3  | Bật `yield_uom_shadow_enabled` sau sign-off                                                                                                 |
+| #   | Việc                                                                                             |
+| --- | ------------------------------------------------------------------------------------------------ |
+| C1  | BOM báo giá: hiển thị quy đổi SL (read-only)                                                     |
+| C2  | Tổng NL lệnh SX: `convertToBase` — **✅** `ProductionOrderMaterialRequirementsSummary`           |
+| C2b | **Post RM outbound** `convertToBase` — **✅ 2026-05-20** → `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 |
+| C3  | Bật `yield_uom_shadow_enabled` sau sign-off                                                      |
 
 ---
 
@@ -285,7 +285,7 @@ Cờ gợi ý: `multi_unit_enabled` per company (ẩn block UOM nếu tắt).
 ### C
 
 - [x] BOM hiển thị quy đổi; NL SX tổng theo base.
-- [x] Post RM consumption quy base — [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md) (Fixed 2026-05-20).
+- [x] Post RM consumption quy base — `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 (Fixed 2026-05-20).
 - [ ] Shadow yield UOM nếu PM ký (`yield_uom_shadow_enabled`).
 
 ---
@@ -328,7 +328,7 @@ Cờ gợi ý: `multi_unit_enabled` per company (ẩn block UOM nếu tắt).
 | **C**   | ✅ Done    | Order totals + post lô (`ProductionPostingService` 2026-05-20)                                                        |
 | **UAT** | ⏳ Pending | Checklist §11 + Luồng D (`P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`)                                                     |
 
-**Audit tài liệu:** [`DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`](./DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md)
+**Cleanup log:** [`../FUNC_REPORT/DOCUMENTATION_CLEANUP_AUDIT_2026_05_27.md`](../FUNC_REPORT/DOCUMENTATION_CLEANUP_AUDIT_2026_05_27.md)
 
 ---
 

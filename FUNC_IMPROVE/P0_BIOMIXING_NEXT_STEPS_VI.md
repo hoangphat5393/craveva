@@ -1,7 +1,7 @@
 # Biomixing P0 — Các bước tiếp theo (hàng đợi)
 
 **Cập nhật:** 2026-05-09  
-**Mục đích:** Sau khi **P0-01 Done** và phần lớn code P0-04/05/06 xong, các việc còn lại chủ yếu là **QA / BA / PM** (UAT, biên bản, sign-off). File này là **thứ tự làm việc đề xuất**; cập nhật `P0_EXECUTION_LOG.md` khi từng mục hoàn tất.
+**Mục đích:** Sau khi **P0-01 Done** và phần lớn code P0-04/05/06 xong, các việc còn lại chủ yếu là **QA / BA / PM** (UAT, biên bản, sign-off). Cập nhật bảng dưới khi từng mục hoàn tất.
 
 **Bảng test case một lượt (ưu tiên cho QA/BA):** `FUNC_IMPROVE/P0_QA_BA_MASTER_TEST_CASE_TABLE_VI.md`
 
@@ -31,11 +31,10 @@ php artisan test --compact tests/Feature/BiomixingDemoRoutesReadinessTest.php te
 
 ## Liên kết nhanh
 
-| Nội dung             | File                                                         |
-| -------------------- | ------------------------------------------------------------ |
-| Log trạng thái P0    | `FUNC_IMPROVE/P0_EXECUTION_LOG.md`                           |
-| Checklist trace (VI) | `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_VI.md` |
-| Checklist trace (EN) | `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST_EN.md` |
-| Mini UAT 3 luồng     | `FUNC_IMPROVE/P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`         |
-| WUP + mẫu UAT        | `FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE_VI.md` §2.1 + **§2.1.1** |
-| Hub test một cửa     | `FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`            |
+| Nội dung         | File                                                              |
+| ---------------- | ----------------------------------------------------------------- |
+| Trạng thái P0    | File này + `BIOMIXING_GAP_STATUS_VI.md`                           |
+| Checklist trace  | `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md` (VI+EN) |
+| Mini UAT 3 luồng | `FUNC_IMPROVE/P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`              |
+| WUP + mẫu UAT    | `FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE_VI.md` §2.1 + **§2.1.1**      |
+| Hub test một cửa | `FUNC_IMPROVE/BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`                 |

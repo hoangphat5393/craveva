@@ -183,10 +183,9 @@ Con theo doi:
 
 ## Auto-added links by md_master_sync.ps1
 
-- `AUDIT_WAREHOUSE_MODULE_VI.md`
+- Living guides: `WAREHOUSE_MASTER_GUIDE.md`, `ERP_SO_PO_DO_INV_WH_QA_VI.md`
 - `ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`
 - `ERP_SO_PO_DO_INV_WH_QA_VI.md`
-- `multi_warehouse_audit_report.md`
 - `PROMPT_REFACTOR_SO_DO_PO_GRN_VI.md`
 - `QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
 - `WH_PURCHASE_ENV_REFERENCE_VI.md`

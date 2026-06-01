@@ -161,7 +161,7 @@ Biến thể **không BOM / không dùng nút snapshot:** vẫn thêm dòng RM t
 
 **Ghi nhận kho (conceptual payloads)** — chỉ guideline; payload đầy đủ spike từ `StockMovementService` + các caller hiện có (Purchase/Delivery):
 
-- **Outbound RM (consumption):** `company_id`, `warehouse_id`, `product_id`, `quantity` (**đã quy về base unit** hoặc kèm `unit_id` để `StockMovementService` convert — **bắt buộc** khi BOM ĐVT ≠ `products.unit_id`; xem [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md)), `batch_id`, `reference_type`, `reference_id` (ProductionBatch id khuyến nghị), `idempotency_key`.
+- **Outbound RM (consumption):** `company_id`, `warehouse_id`, `product_id`, `quantity` (**đã quy về base unit** hoặc kèm `unit_id` để `StockMovementService` convert — **bắt buộc** khi BOM ĐVT ≠ `products.unit_id`; xem [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) §2), `batch_id`, `reference_type`, `reference_id` (ProductionBatch id khuyến nghị), `idempotency_key`.
 - **Inbound FG:** dùng `recordInbound` / `recordInboundBatch` với FG `batch_number`, optional `expiry`/`expiration_date`, `reference_type`, `reference_id`.
 
 ---

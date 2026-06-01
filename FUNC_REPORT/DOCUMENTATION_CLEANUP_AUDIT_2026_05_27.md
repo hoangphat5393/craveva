@@ -11,8 +11,12 @@
 | Ma trận bảo tồn nghiệp vụ                                          | **Xong** — `FUNC_IMPROVE/LEGACY_ARCHIVE.md`                                |
 | **Pass 3** — `FUNC_LOGIC/LEGACY_ARCHIVE.md`, INDEX audit snapshots | **Xong**                                                                   |
 | **Doc ↔ code** — material shortage status scopes                   | **Xong** — UI filter + service; mặc định `active` (Released + In progress) |
+| **Pass 4–5** — gộp UX/import/Biomixing hub/staging quick ref       | **Xong** (2026-05-27)                                                      |
+| **Pass 6** — xóa legacy đã hoàn thiện (audit, gap, archive)        | **Xong** (2026-05-27)                                                      |
+| **Pass 7** — gộp/xóa backlog archive (UX, import, AI prompts)      | **Xong** (2026-05-27)                                                      |
+| **Pass 8** — rút gọn `05_SO_DO_PO` + dọn `PROJECT BIOMIXING`       | **Xong** (2026-05-27)                                                      |
 
-**Kết luận:** Đợt **rà soát + dọn tài liệu + đồng bộ shortage** (**pass 1–3**) **hoàn tất**. Không còn hạng mục bắt buộc trong phạm vi audit 2026-05-27.
+**Kết luận:** Pass 1–8 hoàn tất. Chi tiết: `FUNC_IMPROVE/LEGACY_ARCHIVE.md` · `PROJECT BIOMIXING/LEGACY_ARCHIVE.md`.
 
 ---
 

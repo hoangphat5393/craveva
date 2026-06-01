@@ -115,8 +115,7 @@ Buoc ket noi AI duoc xem la dat khi:
 
 - `FUNC_LOGIC/API_DATA_TYPE_LIST_VI.md` (danh sach data type canonical).
 - `docs/AI_ORDER_INTEGRATION_REST.md` (tham chieu API don hang REST).
-- `FUNC_LOGIC/MIAOLIN_SALES_ORDER_API_DATABASE_REQUIRED_FIELDS.md` (field bat buoc cho Sales Order).
-- `FUNC_LOGIC/MIAOLIN_SALES_ORDER_API_DATABASE_ALL_FIELDS.md` (day du field Sales Order).
+- `FUNC_LOGIC/MIAOLIN_SALES_ORDER_API_FIELDS.md` (required + full list).
 
 ---
 

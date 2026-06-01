@@ -61,7 +61,7 @@ Hướng dẫn: đánh dấu **Pass / Fail / N/A**; ghi **ISS-xxx** nếu lỗi;
 
 ## Luồng D — Production (trừ NL — UOM)
 
-> **Đã vá code 2026-05-20** — UAT Luồng D: BOM line **g** trên SP **kg** → sau Post RM, tồn giảm **0,1** (không **100**). Ref: [`15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md`](./15_PRODUCTION_OUTBOUND_UOM_GAP_VI.md).
+> **Đã vá code 2026-05-20** — UAT Luồng D: BOM line **g** trên SP **kg** → sau Post RM, tồn giảm **0,1** (không **100**). Ref: `PRODUCTION_OPERATIONS_LIVE_VI.md` §2.
 
 | Bước | Mô tả ngắn                                   | Kết quả        | Ghi chú                                                                                                                                                                                                                  |
 | ---- | -------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -75,7 +75,7 @@ Hướng dẫn: đánh dấu **Pass / Fail / N/A**; ghi **ISS-xxx** nếu lỗi;
 
 ## Luồng E — Production post FG → Inventory (P1c)
 
-> **Đã vá code 2026-05-23** — Sau Post FG receipt, SP FG phải có dòng trên **Purchase → Inventory** (tìm theo tên/SKU, không mã lô). Ref: [`16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md`](./16_PRODUCTION_FG_INVENTORY_LEDGER_SYNC_VI.md).
+> **Đã vá code 2026-05-23** — Sau Post FG receipt, SP FG phải có dòng trên **Purchase → Inventory** (tìm theo tên/SKU, không mã lô). Ref: `PRODUCTION_OPERATIONS_LIVE_VI.md` §2.
 
 | Bước | Mô tả ngắn                                          | Kết quả | Ghi chú                                                                                                                                               |
 | ---- | --------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |

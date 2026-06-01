@@ -94,4 +94,4 @@ _Purpose: a live operations document for the Production module, so business ques
 - The checklist step and **Create planned raw material lines from bill of materials snapshot** button are **hidden** by default.
 - On **release** (first batch created) and when **opening the batch screen** (if no RM lines yet), the system auto-inserts `production_batch_consumptions` from the order **BOM snapshot** (frozen at release).
 - The batch checklist starts at **assign raw material warehouse batch** → deduct → add manufactured product → post FG.
-- To restore manual Step 1: see `FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md` (`production.ui.auto_apply_bom_snapshot_on_batch`, `show_batch_workflow_step_planned_lines`, `show_apply_planned_from_snapshot_button`).
+- To restore manual Step 1: see `PRODUCTION_OPERATIONS_LIVE_EN.md` §7 (`production.ui.*` config keys).

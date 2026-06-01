@@ -19,6 +19,7 @@ This file is the root navigation layer only. Detailed business flow and module l
 | `FUNC_IMPROVE` | Improvement proposals, refactor plans, optimization tasks               | `FUNC_IMPROVE/INDEX.md` |
 | `FUNC_LOGIC`   | Master business logic, functional flow, audits, cross-module references | `FUNC_LOGIC/INDEX.md`   |
 | `FUNC_TEST`    | Test strategy, test cases, UAT execution matrix                         | `FUNC_TEST/INDEX.md`    |
+| `FUNC_REPORT`  | Cleanup audit logs, infra snapshots                                     | `FUNC_REPORT/INDEX.md`  |
 
 **Báo cáo số dòng code (không thuộc nhóm FUNC\_\*):** `LOG_REPORT/README.md` — thư mục **`LOG_REPORT/`** (đổi tên từ `LOC_REPORT/`, 2026-05-12). Mục lục / audit gọn file: `LOG_REPORT/INDEX.md`, `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`.
 
@@ -35,11 +36,11 @@ When a module needs deep details (product/client/production integrations), keep 
 ## 3) Group Index Files (Level 2 navigation)
 
 - `FUNC_BUG/REGISTRY.md` — bảng tra cứu bug; `FUNC_BUG/README.md` — hướng dẫn thư mục
-- `FUNC_IMPORT/INDEX.md` — **audit nhóm import:** `FUNC_IMPORT/AUDIT_IMPORT_2026_VI.md`
-- `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **audit:** `FUNC_IMPROVE/DOCUMENTATION_AUDIT_CROSS_FOLDER_2026_05_VI.md`; **retired:** `FUNC_IMPROVE/LEGACY_ARCHIVE.md`
-- `FUNC_LOGIC/INDEX.md` — **audit tài liệu nhóm:** `FUNC_LOGIC/AUDIT_LOGIC_2026_VI.md`
+- `FUNC_IMPORT/INDEX.md` — import specs (gộp 2026-05-12)
+- `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **retired:** `FUNC_IMPROVE/LEGACY_ARCHIVE.md`
+- `FUNC_LOGIC/INDEX.md` — **retired snapshots:** `FUNC_LOGIC/LEGACY_ARCHIVE.md`
 - `FUNC_TEST/INDEX.md`
-- `docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md` — audit thư mục `docs/` (runbook, staging, axios-migration; không gộp 40+ file tracker)
+- `FUNC_REPORT/INDEX.md` — cleanup log + Cloud SQL archive
 - `LOG_REPORT/INDEX.md` — snapshot LOC backend; **audit:** `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`
 - `SPECIFICATION/INDEX.md` — spec + snapshot infra; **audit:** `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`
 

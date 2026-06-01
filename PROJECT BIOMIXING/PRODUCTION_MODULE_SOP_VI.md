@@ -37,7 +37,7 @@ Khách hàng mới thường nhầm **“thêm sản phẩm”** chung chung. Tr
 - **Không** tạo NVL kiểu “Manufactured product” rồi kéo vào dòng nguyên liệu BOM — dropdown **sẽ không có** sản phẩm đó.
 - Pilot một bước (chỉ nguyên liệu → thành phẩm): có thể bỏ qua `semi_finished`; vẫn nên dùng `packaging` nếu trừ tồn bao bì.
 
-**Chi tiết + sơ đồ:** [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) · [`FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md`](../FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md)
+**Chi tiết:** [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) §0
 
 ---
 
@@ -267,9 +267,6 @@ Sau **Nhập TP**, hàng ở **kho TP** — dùng cho SO, phiếu giao (DO), hó
 
 ## Tài liệu kỹ thuật (nội bộ)
 
-- [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) — loại SP & BOM
-- [`FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md`](../FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md) — mua hàng vs tồn
-- [`FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)
-- [`FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md`](../FUNC_LOGIC/PRODUCTION_MODULE_AUDIT_VI.md)
-- [`FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md`](../FUNC_LOGIC/PRODUCTION_BATCH_STEP1_RESTORE_VI.md)
+- [`FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md) — loại SP & BOM (§0 mua vs tồn)
+- [`FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) §7–§8
 - [`PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd`](./PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd)

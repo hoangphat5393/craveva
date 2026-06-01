@@ -6,7 +6,21 @@
 
 **Thuật ngữ (không viết tắt trên tài liệu khách):** [`PRODUCTION_TERMINOLOGY_CODE_VS_UI_VI.md`](./PRODUCTION_TERMINOLOGY_CODE_VS_UI_VI.md)
 
-**Đọc cùng:** [`FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md`](../FUNC_IMPROVE/PRODUCT_TYPE_BUYER_VS_INVENTORY_VI.md) · [`PROJECT BIOMIXING/PRODUCTION_MODULE_SOP_VI.md`](../PROJECT%20BIOMIXING/PRODUCTION_MODULE_SOP_VI.md)
+**Đọc cùng:** [`PROJECT BIOMIXING/PRODUCTION_MODULE_SOP_VI.md`](../PROJECT%20BIOMIXING/PRODUCTION_MODULE_SOP_VI.md)
+
+---
+
+## 0. Người mua vs tồn kho (hay nhầm)
+
+| Loại UI        | `type`          | Người mua (SO/PO)   | Tồn / BOM                        |
+| -------------- | --------------- | ------------------- | -------------------------------- |
+| Finished Goods | `goods`         | Khách đặt SO        | Nhận SX, ship DO                 |
+| Raw Material   | `raw_material`  | Mua NCC (PO)        | Tiêu hao BOM                     |
+| Packaging      | `packaging`     | Mua NCC             | Tiêu hao nếu theo dõi SKU bao bì |
+| Semi Finished  | `semi_finished` | Thường không bán SO | Chỉ khi dùng trong BOM/quy trình |
+| Service        | `service`       | Có thể bán          | Không tồn                        |
+
+**Packaging:** khách lẻ không «mua túi», nhưng xưởng vẫn mua NCC và trừ tồn. **BTP:** thường không bán SO; vẫn cần tồn nếu cất trung gian trong SX.
 
 ---
 

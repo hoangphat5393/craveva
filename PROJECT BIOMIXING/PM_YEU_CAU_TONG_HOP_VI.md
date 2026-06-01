@@ -1,12 +1,11 @@
 # Yêu cầu PM Biomixing — Bản gộp tiếng Việt
 
-_Tài liệu chính thức gộp từ: (1) spec Gary — [`PM_REQUEST.md`](./PM_REQUEST.md) / [`PM_REQUEST_VI.md`](./PM_REQUEST_VI.md); (2) phần Phase 1 báo giá OEM từ [`PM REQUEST CHAT.md`](./PM%20REQUEST%20CHAT.md). **Đã bỏ** mọi bước AI / AI Agent. Rà soát thuật ngữ ERP bằng tiếng Việt có dấu._
+_Tài liệu chính thức gộp từ spec Gary + Phase 1 báo giá OEM. **Đã bỏ** mọi bước AI / AI Agent trong bản gộp._
 
-| Tài liệu liên quan                                                                                              | Mục đích                                      |
-| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| [`FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md)                       | Tiến độ triển khai (~65%, cập nhật theo code) |
-| [`FUNC_IMPROVE/PHASE1_QUOTATION_PM_HUMAN_VI.md`](../FUNC_IMPROVE/PHASE1_QUOTATION_PM_HUMAN_VI.md)               | Tóm tắt ngắn cho dev nội bộ                   |
-| [`FUNC_IMPROVE/PHASE1_QUOTATION_PM_GAP_ANALYSIS_VI.md`](../FUNC_IMPROVE/PHASE1_QUOTATION_PM_GAP_ANALYSIS_VI.md) | Gap kỹ thuật, URL, file code                  |
+| Tài liệu liên quan                                                                                | Mục đích                                              |
+| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [`FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md)         | Tiến độ triển khai (~95% Phase 1, cập nhật theo code) |
+| [`FUNC_IMPROVE/PHASE1_QUOTATION_PM_HUMAN_VI.md`](../FUNC_IMPROVE/PHASE1_QUOTATION_PM_HUMAN_VI.md) | Tóm tắt ngắn cho dev nội bộ                           |
 
 **Ngày gộp:** 20/05/2026 · **Nguồn Gary:** 15/05/2026
 

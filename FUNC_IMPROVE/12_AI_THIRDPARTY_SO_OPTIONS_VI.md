@@ -57,7 +57,7 @@ Biến môi trường liên quan inbound AI: [`../FUNC_LOGIC/WH_PURCHASE_ENV_REF
 ## 5. Liên kết nội bộ
 
 - Runbook PM (curl, payload, response): [`../FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md`](../FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md)
-- Inbound/outbound & module Webhooks: [`../FUNC_LOGIC/WAREHOUSE_INDEX.md`](../FUNC_LOGIC/WAREHOUSE_INDEX.md) (mục thuật ngữ), [`../FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md`](../FUNC_LOGIC/AUDIT_WEBHOOKS_MODULE_VI.md)
+- Inbound/outbound & module Webhooks: [`../FUNC_LOGIC/WAREHOUSE_INDEX.md`](../FUNC_LOGIC/WAREHOUSE_INDEX.md), [`../FUNC_LOGIC/AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`](../FUNC_LOGIC/AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md)
 - Runbook kho + webhook AI (sellable): [`04_WH_RUNBOOK_UPGRADE_VI.md`](04_WH_RUNBOOK_UPGRADE_VI.md)
 
 ---

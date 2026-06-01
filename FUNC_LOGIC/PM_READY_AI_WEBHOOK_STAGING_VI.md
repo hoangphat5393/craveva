@@ -133,6 +133,6 @@ Thông điệp cụ thể phụ thuộc locale và rule trong `StoreAiOrderWebho
 ## Liên kết
 
 - Secret DB + client: [`AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md`](AI_ORDER_WEBHOOK_SECRET_VA_CLIENT_CODE_VI.md)
-- Audit API: [`AUDIT_AI_ORDER_INBOUND_SO_API_VI.md`](AUDIT_AI_ORDER_INBOUND_SO_API_VI.md)
+- Audit API: [`docs/AI_ORDER_INTEGRATION_REST.md`](../docs/AI_ORDER_INTEGRATION_REST.md)
 
 _Chỉ mục:_ [`INDEX.md`](INDEX.md).

@@ -36,7 +36,7 @@
 | `Modules/Payroll/Routes/api.php`                                                          | _(toàn bộ block comment)_                                                                                            | —                                              | Nếu bật: sẽ có `ApiRoute::resource('payroll', ...)` — dạng REST resource điển hình.                                        |
 | `Modules/Production/Asset/EInvoice/QRCode/Subdomain/Sms/Zoom/LanguagePack/Routes/api.php` | _(file rỗng hoặc chỉ `<?php`)_                                                                                       | —                                              | Chưa đăng ký route API trong file.                                                                                         |
 
-**Inbound Sales Order (AI):** **`POST /api/integrations/orders`** trong **`routes/api.php`** (middleware `ai.integration.*`) — xem [`AUDIT_AI_ORDER_INBOUND_SO_API_VI.md`](AUDIT_AI_ORDER_INBOUND_SO_API_VI.md), [`AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`](AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md). _(Legacy `POST /ai-order-webhook/{hash}` đã gỡ.)_
+**Inbound Sales Order (AI):** **`POST /api/integrations/orders`** — xem [`docs/AI_ORDER_INTEGRATION_REST.md`](../docs/AI_ORDER_INTEGRATION_REST.md), [`AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md`](AI_ORDER_LEGACY_WEBHOOK_REMOVED_VI.md).
 
 ---
 
@@ -58,7 +58,7 @@
 
 ## 5) Liên kết
 
-- Inbound AI → SO (không phải `/api`): [`AUDIT_AI_ORDER_INBOUND_SO_API_VI.md`](AUDIT_AI_ORDER_INBOUND_SO_API_VI.md)
+- Inbound AI → SO: [`docs/AI_ORDER_INTEGRATION_REST.md`](../docs/AI_ORDER_INTEGRATION_REST.md)
 - Phương án REST/Sanctum tương lai: [`../FUNC_IMPROVE/12_AI_THIRDPARTY_SO_OPTIONS_VI.md`](../FUNC_IMPROVE/12_AI_THIRDPARTY_SO_OPTIONS_VI.md)
 
 _Chỉ mục:_ [`INDEX.md`](INDEX.md).

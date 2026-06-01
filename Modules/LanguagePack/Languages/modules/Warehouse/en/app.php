@@ -88,7 +88,7 @@ return [
     'err_missing_unit_conversion' => 'Missing unit conversion for product :product_id and unit :unit_id.',
     'err_insufficient_stock' => 'Insufficient stock. Available: :available, requested: :requested.',
     'err_ai_order_insufficient_sellable' => 'Insufficient available-for-sale stock for product :product_id (required: :needed, available for sale: :sellable).',
-    'warehouseFlowSettingsMenu' => 'Warehouse & Inventory Settings',
+    'warehouseFlowSettingsMenu' => 'Warehouse',
     'warehouseFlowSettingsHeading' => 'Warehouse Flow & Stock Settings',
     'warehouseFlowSettingsHelp' => 'These settings apply to the current company. If nothing is saved here, the company uses the default warehouse rules.',
     'statusLabel' => 'Status',

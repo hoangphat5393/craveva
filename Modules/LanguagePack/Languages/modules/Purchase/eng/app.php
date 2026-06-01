@@ -54,7 +54,7 @@ return [
     'defaultImage' => 'Default Image',
     'menu' => [
         'purchase' => 'Purchase',
-        'purchaseSettings' => 'Purchase & goods receipt settings',
+        'purchaseSettings' => 'Purchase',
         'deliveryOrderSettings' => 'Goods Received Note Settings',
         'purchaseNotificationSettings' => 'Purchase Notification Settings',
         'new-purchase-bill' => 'New Purchase Bill',

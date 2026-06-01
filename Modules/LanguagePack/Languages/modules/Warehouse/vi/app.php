@@ -87,7 +87,7 @@ return [
     'err_missing_unit_conversion' => 'Thiếu quy đổi đơn vị cho sản phẩm :product_id, đơn vị :unit_id.',
     'err_insufficient_stock' => 'Không đủ tồn: hiện có :available, yêu cầu :requested.',
     'err_ai_order_insufficient_sellable' => 'Không đủ tồn sẵn sàng bán cho sản phẩm :product_id (cần :needed, sẵn sàng bán :sellable).',
-    'warehouseFlowSettingsMenu' => 'Cài đặt kho & tồn kho',
+    'warehouseFlowSettingsMenu' => 'Kho',
     'warehouseFlowSettingsHeading' => 'Cài đặt luồng kho & tồn',
     'warehouseFlowSettingsHelp' => 'Các cài đặt này áp dụng cho công ty hiện tại. Nếu chưa lưu tại đây, công ty sẽ dùng bộ quy tắc kho mặc định của hệ thống.',
     'statusLabel' => 'Trạng thái',

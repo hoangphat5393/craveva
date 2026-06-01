@@ -147,5 +147,90 @@ it('renders grouped settings menu with sales items before procurement items', fu
 it('uses invoice and estimate label instead of finance settings in english', function (): void {
     app()->setLocale('en');
 
-    expect(__('app.menu.financeSettings'))->toBe('Invoice & Estimate Settings');
+    expect(__('app.menu.financeSettings'))->toBe('Invoices & Estimates');
+});
+
+it('renders billing as a top-level settings item without an admin accordion', function (): void {
+    if (! Schema::hasTable('role_user') || ! Schema::hasTable('roles')) {
+        test()->markTestSkipped('Role tables are missing.');
+
+        return;
+    }
+
+    $adminRoleId = DB::table('roles')->where('name', 'admin')->value('id');
+    if ($adminRoleId === null) {
+        test()->markTestSkipped('Admin role missing.');
+
+        return;
+    }
+
+    $superadminRoleId = DB::table('roles')->where('name', 'superadmin')->value('id');
+
+    $userIdQuery = DB::table('role_user')->where('role_id', $adminRoleId);
+    if ($superadminRoleId !== null) {
+        $userIdQuery->whereNotIn('user_id', DB::table('role_user')->where('role_id', $superadminRoleId)->select('user_id'));
+    }
+
+    $userId = $userIdQuery->value('user_id');
+    if ($userId === null) {
+        test()->markTestSkipped('No company admin without superadmin role.');
+
+        return;
+    }
+
+    $user = User::withoutGlobalScopes()->find($userId);
+    if ($user === null || $user->company_id === null) {
+        test()->markTestSkipped('Admin user not found.');
+
+        return;
+    }
+
+    $company = Company::withoutGlobalScopes()->find($user->company_id);
+    $userAuth = UserAuth::query()->find($user->user_auth_id ?? 0);
+    if ($company === null || $userAuth === null) {
+        test()->markTestSkipped('Admin user company or auth missing.');
+
+        return;
+    }
+
+    if ($userAuth->email_verified_at === null) {
+        $userAuth->forceFill(['email_verified_at' => now()])->save();
+    }
+
+    app()->setLocale('en');
+
+    $response = test()->actingAs($userAuth, 'web')
+        ->withSession([
+            'company' => $company,
+            'multi_company_selected' => 1,
+            'user_company_count' => 1,
+        ])
+        ->get(route('billing.index'));
+
+    if ($response->status() === 403) {
+        test()->markTestSkipped('Billing route forbidden for selected admin user.');
+
+        return;
+    }
+
+    $response->assertSuccessful();
+
+    $html = (string) $response->getContent();
+    $billingUrl = (string) route('billing.index');
+
+    $dom = new DOMDocument;
+    @$dom->loadHTML($html);
+    $xpath = new DOMXPath($dom);
+    $billingLinks = $xpath->query('//*[@id="settingsMenu"]//a[contains(@class, "accordionItemHeading") and contains(@href, "billing")]');
+
+    expect($billingLinks->length)->toBeGreaterThan(0);
+
+    $billingListItem = $billingLinks->item(0)?->parentNode;
+    while ($billingListItem !== null && $billingListItem->nodeName !== 'li') {
+        $billingListItem = $billingListItem->parentNode;
+    }
+
+    expect($billingListItem)->not->toBeNull();
+    expect($billingListItem->getAttribute('class'))->toContain('settings-menu-single-link');
+    expect($billingLinks->item(0)?->getAttribute('class'))->toContain('settings-sidebar-heading');
 });

@@ -54,7 +54,7 @@ return [
     'defaultImage' => 'Hình ảnh mặc định',
     'menu' => [
         'purchase' => 'Mua',
-        'purchaseSettings' => 'Cài đặt mua hàng & nhập kho',
+        'purchaseSettings' => 'Mua hàng',
         'deliveryOrderSettings' => 'Cài đặt phiếu nhận hàng',
         'purchaseNotificationSettings' => 'Cài đặt thông báo mua hàng',
         'new-purchase-bill' => 'Hóa đơn mua hàng mới',

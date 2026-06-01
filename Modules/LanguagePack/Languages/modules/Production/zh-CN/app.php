@@ -184,7 +184,7 @@ return [
     'bomSelectPlaceholder' => '— 选择物料清单 —',
     'bomSelectFirstHint' => '请先选择物料清单；制造品将自动填充。',
     'bomManageFromSettingsHint' => '若物料清单下拉为空，请在此创建或管理：',
-    'productionSettingsMenu' => '生产设置',
+    'productionSettingsMenu' => '生产',
     'productionSettingsHeading' => '生产设置',
     'productionSettingsFgPolicySection' => '制造品数量政策',
     'productionSettingsFgPolicyHelp' => '将制造品产出过账入库时，系统会将生产订单上已登记合计与计划数量比较。按公司适用。',

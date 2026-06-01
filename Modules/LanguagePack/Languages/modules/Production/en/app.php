@@ -184,7 +184,7 @@ return [
     'bomSelectPlaceholder' => '— Select Bill Of Materials —',
     'bomSelectFirstHint' => 'Choose a bill of materials first; the manufactured product is filled in automatically.',
     'bomManageFromSettingsHint' => 'If the Bill of Materials dropdown is empty, create or manage records here:',
-    'productionSettingsMenu' => 'Production Settings',
+    'productionSettingsMenu' => 'Production',
     'productionSettingsHeading' => 'Production Settings',
     'productionSettingsFgPolicySection' => 'Manufactured Product Quantity Policy',
     'productionSettingsFgPolicyHelp' => 'When you post manufactured product output to stock, the system compares the total registered quantity on the production order to the planned quantity. Applies per company.',

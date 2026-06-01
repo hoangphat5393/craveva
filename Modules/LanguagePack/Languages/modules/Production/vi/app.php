@@ -184,7 +184,7 @@ return [
     'bomSelectPlaceholder' => '— Chọn định mức nguyên vật liệu —',
     'bomSelectFirstHint' => 'Hãy chọn định mức trước; thành phẩm sẽ được điền tự động theo định mức.',
     'bomManageFromSettingsHint' => 'Nếu dropdown định mức nguyên vật liệu trống, tạo hoặc quản lý tại:',
-    'productionSettingsMenu' => 'Cài đặt Sản xuất',
+    'productionSettingsMenu' => 'Sản xuất',
     'productionSettingsHeading' => 'Cài đặt Sản xuất',
     'productionSettingsFgPolicySection' => 'Chính sách số lượng sản phẩm sản xuất',
     'productionSettingsFgPolicyHelp' => 'Khi nhập sản phẩm sản xuất vào kho, hệ thống so sánh tổng SL đã đăng ký trên lệnh SX với SL kế hoạch. Áp dụng theo từng công ty.',

@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'asset' => 'Tài sản',
-        'assetSettings' => 'Cài đặt tài sản',
+        'assetSettings' => 'Tài sản',
     ],
     'addNewAsset' => 'Thêm tài sản mới',
     'lentToEmployee' => 'Cho nhân viên mượn',

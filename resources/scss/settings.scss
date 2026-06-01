@@ -50,7 +50,8 @@
             padding: 0;
             box-shadow: none;
 
-            > .settings-sidebar-heading.nav-item {
+            > .settings-sidebar-heading.nav-item,
+            > .accordionItemHeading.settings-sidebar-heading {
                 display: block;
                 width: auto;
                 line-height: 1.5;
@@ -77,7 +78,8 @@
                     padding-right: 8px;
                 }
 
-                &:hover {
+                &:hover,
+                &.active {
                     color: $dark_text !important;
                     background-color: rgba(0, 0, 0, 0.04);
                 }
@@ -163,6 +165,48 @@
                 background-color: $grey;
                 border-right: 2px solid $dark_text;
                 font-weight: 500;
+            }
+        }
+
+        > li.settings-menu-heading-item:not(.accordionItem) {
+            list-style: none;
+
+            > a.settings-menu-heading-link {
+                display: block;
+                width: auto;
+                line-height: 1.5;
+                padding: 10px 32px 10px 16px;
+                margin: 2px 8px;
+                border: 0;
+                border-radius: 6px;
+                text-decoration: none;
+                font-size: 13px;
+                font-weight: 600;
+                letter-spacing: normal;
+                text-transform: none;
+                color: #616e80 !important;
+                white-space: normal;
+                word-break: break-word;
+                background: transparent;
+
+                span {
+                    display: block;
+                    padding: 0;
+                    padding-right: 8px;
+                }
+
+                &:hover:not(.active) {
+                    color: $dark_text !important;
+                    background-color: rgba(0, 0, 0, 0.04);
+                }
+
+                &.active,
+                &.active:hover {
+                    color: $dark_text !important;
+                    background-color: $grey;
+                    border-right: 2px solid $dark_text;
+                    font-weight: 600;
+                }
             }
         }
     }

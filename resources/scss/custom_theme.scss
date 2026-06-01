@@ -97,11 +97,13 @@ body {
 }
 
 .settings-menu {
-  > li.accordionItem > .settings-sidebar-heading.nav-item {
+  > li.accordionItem > .settings-sidebar-heading.nav-item,
+  > li.accordionItem > .accordionItemHeading.settings-sidebar-heading {
     font-size: 13px !important;
     padding: 10px 32px 10px 16px !important;
     margin: 2px 8px !important;
     text-transform: none !important;
+    font-weight: 600 !important;
   }
 
   > li.accordionItem > .accordionItemContent > a.settings-menu-link {

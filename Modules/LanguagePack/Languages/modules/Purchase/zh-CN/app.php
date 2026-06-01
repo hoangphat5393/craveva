@@ -41,7 +41,7 @@ return [
     'defaultImage' => '默认图片',
     'menu' => [
         'purchase' => '采购',
-        'purchaseSettings' => '采购与收货设置',
+        'purchaseSettings' => '采购',
         'deliveryOrderSettings' => '收货单设置',
         'purchaseNotificationSettings' => '采购通知设置',
         'new-purchase-bill' => '新采购账单',

@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Response;
 use Illuminate\View\Component;
 
 class SettingMenuItem extends Component
@@ -15,17 +16,20 @@ class SettingMenuItem extends Component
 
     public $menu;
 
+    public bool $heading;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($href, $text, $menu, $active = false)
+    public function __construct($href, $text, $menu, $active = false, bool $heading = false)
     {
         $this->text = $text;
         $this->href = $href;
         $this->active = $active;
         $this->menu = $menu;
+        $this->heading = $heading;
     }
 
     /**
@@ -41,7 +45,7 @@ class SettingMenuItem extends Component
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function isActive($option)
     {

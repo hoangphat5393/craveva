@@ -13,8 +13,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function toggleItem(e) {
+        var href = this.getAttribute('href');
+        if (href && href !== 'javascript:;' && href !== '#' && href.indexOf('javascript:') !== 0) {
+            return;
+        }
+
         // Prevent default anchor behavior
-        if (e) e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
 
         var parent = this.parentNode;
         var menuRoot = this.closest('.sidebar-menu, .settings-menu');

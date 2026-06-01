@@ -29,9 +29,7 @@
             </x-setting-menu-accordion>
         @endif
 
-        <x-setting-menu-accordion :title="__('app.menu.settingsMenuGroupPersonal')">
-            <x-setting-menu-item :active="$activeMenu" menu="profile_settings" :href="route('profile-settings.index')" :text="__('app.menu.profileSettings')" />
-        </x-setting-menu-accordion>
+        <x-setting-menu-accordion :title="__('app.menu.settingsMenuGroupPersonal')" :href="route('profile-settings.index')" menu="profile_settings" :active="$activeMenu" />
 
         @if (
             (user()->permission('manage_finance_setting') == 'all' && (in_array('invoices', user_modules()) || in_array('estimates', user_modules()) || in_array('orders', user_modules()) || in_array('leads', user_modules()) || in_array('payments', user_modules())))
@@ -204,26 +202,38 @@
             @endif
         </x-setting-menu-accordion>
 
-        @if (
-            (user_can_access_developertools_module() && (\Route::has('developertools.index') || \Route::has('developertools.codemap')))
-            || in_array('superadmin', user_roles())
-            || in_array('admin', user_roles())
-        )
+        @php
+            $settingsShowDeveloperTools = user_can_access_developertools_module() && \Route::has('developertools.index');
+            $settingsShowCodeMap = user_can_access_developertools_module() && \Route::has('developertools.codemap');
+            $settingsShowDatabaseBackup = in_array('superadmin', user_roles());
+            $settingsShowBilling = in_array('admin', user_roles());
+            $settingsAdminTechnicalCount = (int) $settingsShowDeveloperTools + (int) $settingsShowCodeMap + (int) $settingsShowDatabaseBackup;
+        @endphp
+
+        @if ($settingsShowBilling)
+            <x-setting-menu-accordion :title="__('superadmin.menu.billing')" :href="route('billing.index')" menu="billing" :active="$activeMenu" />
+        @endif
+
+        @if ($settingsAdminTechnicalCount === 1)
+            @if ($settingsShowDeveloperTools)
+                <x-setting-menu-accordion :title="__('app.menu.developerTools')" :href="route('developertools.index')" menu="developertools" :active="$activeMenu" />
+            @elseif ($settingsShowCodeMap)
+                <x-setting-menu-accordion :title="__('app.menu.codeMap')" :href="route('developertools.codemap')" menu="codemap" :active="$activeMenu" />
+            @elseif ($settingsShowDatabaseBackup)
+                <x-setting-menu-accordion :title="__('app.menu.databaseBackupSetting')" :href="route('database-backup-settings.index')" menu="database_backup_settings" :active="$activeMenu" />
+            @endif
+        @elseif ($settingsAdminTechnicalCount > 1)
             <x-setting-menu-accordion :title="__('app.menu.settingsMenuGroupAdminTechnical')">
-                @if (user_can_access_developertools_module() && \Route::has('developertools.index'))
+                @if ($settingsShowDeveloperTools)
                     <x-setting-menu-item :active="$activeMenu" menu="developertools" :href="route('developertools.index')" :text="__('app.menu.developerTools')" />
                 @endif
 
-                @if (user_can_access_developertools_module() && \Route::has('developertools.codemap'))
+                @if ($settingsShowCodeMap)
                     <x-setting-menu-item :active="$activeMenu" menu="codemap" :href="route('developertools.codemap')" :text="__('app.menu.codeMap')" />
                 @endif
 
-                @if (in_array('superadmin', user_roles()))
+                @if ($settingsShowDatabaseBackup)
                     <x-setting-menu-item :active="$activeMenu" menu="database_backup_settings" :href="route('database-backup-settings.index')" :text="__('app.menu.databaseBackupSetting')" />
-                @endif
-
-                @if (in_array('admin', user_roles()))
-                    <x-setting-menu-item :active="$activeMenu" menu="billing" :href="route('billing.index')" :text="__('superadmin.menu.billing')" />
                 @endif
             </x-setting-menu-accordion>
         @endif
@@ -271,16 +281,30 @@
     $("#search-setting-menu").on("keyup", function() {
         var value = this.value.toLowerCase().trim();
         var $accordions = $("#settingsMenu > li.settings-menu-accordion");
+        var $topLevelLinks = $("#settingsMenu > li:not(.accordionItem) > a.settings-menu-link");
 
         if (value === '') {
             $accordions.show();
             $accordions.find('.accordionItemContent > a.settings-menu-link').show();
+            $topLevelLinks.parent('li').show();
             openSettingsMenuAccordionForActiveItem();
             return;
         }
 
+        $topLevelLinks.each(function() {
+            var matches = $(this).text().toLowerCase().trim().indexOf(value) !== -1;
+            $(this).parent('li').toggle(matches);
+        });
+
         $accordions.each(function() {
             var $accordion = $(this);
+            if ($accordion.hasClass('settings-menu-single-link')) {
+                var headingMatches = $accordion.find('.accordionItemHeading').text().toLowerCase().trim().indexOf(value) !== -1;
+                $accordion.toggle(headingMatches);
+
+                return;
+            }
+
             var $links = $accordion.find('.accordionItemContent > a.settings-menu-link');
             var hasVisibleItems = false;
 

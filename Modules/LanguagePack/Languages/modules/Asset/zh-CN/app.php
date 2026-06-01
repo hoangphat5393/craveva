@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'asset' => '资产',
-        'assetSettings' => '资产设置',
+        'assetSettings' => '资产',
     ],
     'addNewAsset' => '添加新资产',
     'lentToEmployee' => '借给员工',

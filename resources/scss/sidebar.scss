@@ -251,6 +251,12 @@
 }
 
 // Settings sidebar accordion (light panel) — same chevron mechanic as main menu
+.settings-menu > li.accordionItem.settings-menu-single-link {
+    > .accordionItemHeading::after {
+        display: none !important;
+    }
+}
+
 .settings-menu > li.accordionItem {
     > .accordionItemHeading::after {
         font-family: 'simple-line-icons';

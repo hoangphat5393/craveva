@@ -82,7 +82,7 @@ return [
     'reservedQuantity' => '预留数量',
     'availableQuantity' => '可用数量',
     'sellableQuantity' => '可售数量',
-    'warehouseFlowSettingsMenu' => '仓库与库存设置',
+    'warehouseFlowSettingsMenu' => '仓库',
     'warehouseFlowSettingsHeading' => '仓库流程与库存设置',
     'warehouseFlowSettingsHelp' => '这些设置仅适用于当前公司。如果这里未保存任何内容，系统将使用默认仓库规则。',
     'flow_allow_negative_stock' => '允许出库时出现负库存',

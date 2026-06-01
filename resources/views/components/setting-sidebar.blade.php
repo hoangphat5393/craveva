@@ -21,7 +21,7 @@
 
         @if (user()->permission('manage_company_setting') == 'all')
             <x-setting-menu-accordion :title="__('app.menu.settingsMenuGroupCompany')">
-                <x-setting-menu-item :active="$activeMenu" menu="company_settings" :href="route('company-settings.index')" :text="__('app.menu.accountSettings')" />
+                <x-setting-menu-item :active="$activeMenu" menu="company_settings" :href="route('company-settings.index')" :text="__('app.menu.settingsMenuItemCompanyGeneral')" />
 
                 <x-setting-menu-item :active="$activeMenu" menu="business_address" :href="route('business-address.index')" :text="__('app.menu.businessAddresses')" />
 
@@ -269,7 +269,7 @@
 
     function openSettingsMenuAccordionForActiveItem() {
         document.querySelectorAll('#settingsMenu .settings-menu-accordion').forEach(function(accordion) {
-            if (accordion.querySelector('.accordionItemContent a.active')) {
+            if (accordion.querySelector('.accordionItemContent a.active') || accordion.querySelector('.accordionItemHeading.active')) {
                 accordion.classList.remove('closeIt');
                 accordion.classList.add('openIt');
             }

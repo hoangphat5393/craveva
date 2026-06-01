@@ -7,7 +7,7 @@ return [
     'metrics' => '指标',
     'checkIn' => '签入',
     'checkIns' => '签入',
-    'performanceSettings' => '绩效设置',
+    'performanceSettings' => '绩效',
     'goalTypeSettings' => '目标类型设置',
     'keyResult' => '关键结果',
     'keyResults' => '关键结果',

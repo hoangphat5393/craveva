@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'recruit' => 'Tuyển dụng',
-        'recruitSetting' => 'Cài đặt tuyển dụng',
+        'recruitSetting' => 'Tuyển dụng',
         'recruitersSettings' => 'Cài đặt nhà tuyển dụng',
         'skills' => 'Kỹ năng',
         'skill' => 'Kỹ năng',

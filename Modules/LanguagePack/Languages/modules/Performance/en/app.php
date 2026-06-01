@@ -7,7 +7,7 @@ return [
     'metrics' => 'Metrics',
     'checkIn' => 'Check-In',
     'checkIns' => 'Check-Ins',
-    'performanceSettings' => 'Performance Settings',
+    'performanceSettings' => 'Performance',
     'goalTypeSettings' => 'Goal Type Settings',
     'keyResult' => 'Key Result',
     'keyResults' => 'Key Results',

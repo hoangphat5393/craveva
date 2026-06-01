@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'recruit' => 'Recruit',
-        'recruitSetting' => 'Recruitment Settings',
+        'recruitSetting' => 'Recruitment',
         'recruitersSettings' => 'Recruiter Settings',
         'skills' => 'Skills',
         'skill' => 'Skill',

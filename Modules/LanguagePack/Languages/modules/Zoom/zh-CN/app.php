@@ -4,7 +4,7 @@ return [
     'menu' => [
         'zoom' => 'Zoom',
         'zoomMeeting' => 'Zoom 会议',
-        'zoomSetting' => 'Zoom 设置',
+        'zoomSetting' => 'Zoom',
         'emailSetting' => '邮件设置',
     ],
     'meetings' => [

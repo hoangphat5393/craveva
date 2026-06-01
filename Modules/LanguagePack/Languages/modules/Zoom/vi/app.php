@@ -4,7 +4,7 @@ return [
     'menu' => [
         'zoom' => 'Zoom',
         'zoomMeeting' => 'Zoom Meeting',
-        'zoomSetting' => 'Cài đặt Zoom',
+        'zoomSetting' => 'Zoom',
         'emailSetting' => 'Email Settings',
     ],
     'meetings' => [

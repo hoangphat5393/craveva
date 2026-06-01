@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'einvoice' => '电子发票',
-        'einvoiceSettings' => '电子发票设置',
+        'einvoiceSettings' => '电子发票',
     ],
     'settingForm' => [
         'electronicAddress' => '电子地址',

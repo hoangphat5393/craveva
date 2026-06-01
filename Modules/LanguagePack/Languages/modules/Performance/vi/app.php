@@ -7,7 +7,7 @@ return [
     'metrics' => 'Chỉ số',
     'checkIn' => 'Check-in',
     'checkIns' => 'Check-in',
-    'performanceSettings' => 'Cài đặt hiệu suất',
+    'performanceSettings' => 'Hiệu suất',
     'goalTypeSettings' => 'Cài đặt loại mục tiêu',
     'keyResult' => 'Kết quả then chốt',
     'keyResults' => 'Các kết quả then chốt',

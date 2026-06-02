@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Scopes\CompanyScope;
 use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -33,7 +34,7 @@ use Illuminate\Support\Collection;
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting whereCompanyId($value)
  *
- * @mixin \Eloquent
+ * @mixin Model
  */
 class ModuleSetting extends BaseModel
 {
@@ -117,9 +118,8 @@ class ModuleSetting extends BaseModel
             ->values();
     }
 
-    public static function checkModule($moduleName)
+    public static function checkModule(string $moduleName): bool
     {
-
         $module = ModuleSetting::where('module_name', $moduleName);
 
         if (in_array('admin', user_roles())) {
@@ -137,7 +137,10 @@ class ModuleSetting extends BaseModel
         return (bool) $module;
     }
 
-    public static function addCompanyIdToNullModule($company, $module)
+    /**
+     * @param  Company|array<string, mixed>  $company
+     */
+    public static function addCompanyIdToNullModule(Company|array $company, string $module): void
     {
         // This is done for existing module settings. This will update the company id with 1
         // for existing module rather creating new module setting
@@ -149,7 +152,11 @@ class ModuleSetting extends BaseModel
         }
     }
 
-    public static function createRoleSettingEntry($module, $roles, $company)
+    /**
+     * @param  list<string>  $roles
+     * @param  Company|array<string, mixed>  $company
+     */
+    public static function createRoleSettingEntry(string $module, array $roles, Company|array $company): void
     {
         self::addCompanyIdToNullModule($company, $module);
 

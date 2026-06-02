@@ -62,7 +62,6 @@ class ModuleSetting extends BaseModel
      */
     public const TENANT_FEATURE_MODULES = [
         'estimates_phase1_review',
-        'developertools',
     ];
 
     const OTHER_MODULES = [
@@ -86,7 +85,9 @@ class ModuleSetting extends BaseModel
 
     /**
      * Rows for the tenant Module Settings UI (admin / employee tabs).
-     * Includes developertools even when is_allowed = 0 so teams can see the toggle and fix package sync.
+     * Includes tenant feature toggles (e.g. estimates_phase1_review) even when not in package,
+     * so admins can enable rollout flags per company. Package modules (pricing, developertools, …)
+     * appear only when is_allowed = 1.
      *
      * @return Collection<int, ModuleSetting>
      */

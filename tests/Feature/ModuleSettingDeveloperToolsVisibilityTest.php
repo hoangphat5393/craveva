@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 uses(DatabaseTransactions::class);
 
-it('includes developertools in admin module settings when is_allowed is zero', function () {
+it('excludes developertools from admin module settings when is_allowed is zero', function () {
     $companyId = DB::table('companies')->value('id');
 
     if (! $companyId) {
@@ -30,5 +30,5 @@ it('includes developertools in admin module settings when is_allowed is zero', f
 
     $list = ModuleSetting::forTenantModuleSettingsIndex((int) $companyId, 'admin');
 
-    expect($list->where('module_name', 'developertools')->first())->not->toBeNull();
+    expect($list->where('module_name', 'developertools')->first())->toBeNull();
 });

@@ -1,9 +1,9 @@
-<!-- SETTINGS SIDEBAR START -->
+{{-- SETTINGS SIDEBAR START --}}
 <div class="mobile-close-overlay w-100 h-100" id="close-settings-overlay"></div>
 <div class="settings-sidebar bg-white py-3" id="mob-settings-sidebar">
     <a class="d-block d-lg-none close-it" id="close-settings"><i class="fa fa-times"></i></a>
 
-    <!-- SETTINGS SEARCH START -->
+    {{-- SETTINGS SEARCH START --}}
     <form class="border-bottom-grey px-4 pb-3 d-flex">
         <div class="input-group rounded py-1 border-grey">
             <div class="input-group-prepend">
@@ -14,9 +14,9 @@
             <input type="text" id="search-setting-menu" class="form-control border-0 f-14 pl-0" placeholder="@lang('app.search')">
         </div>
     </form>
-    <!-- SETTINGS SEARCH END -->
+    {{-- SETTINGS SEARCH END --}}
 
-    <!-- SETTINGS MENU START -->
+    {{-- SETTINGS MENU START --}}
     <ul class="settings-menu" id="settingsMenu">
         @if (user()->permission('manage_superadmin_app_settings') == 'all')
             <x-setting-menu-item :active="$activeMenu" menu="app_settings" :href="route('app-settings.index')" :text="__('app.menu.appSettings')" />
@@ -82,10 +82,10 @@
 
 
     </ul>
-    <!-- SETTINGS MENU END -->
+    {{-- SETTINGS MENU END --}}
 
 </div>
-<!-- SETTINGS SIDEBAR END -->
+{{-- SETTINGS SIDEBAR END --}}
 
 <script>
     $("body").on("click", ".ajax-tab", function(event) {

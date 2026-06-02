@@ -71,6 +71,7 @@ Secondary contributing cause: 3. **Resync/package operations** can revert this m
 
 ## Permanent code fix (local)
 
+- `TENANT_FEATURE_MODULES` = `estimates_phase1_review` only (`developertools` uses package flow like `pricing`).
 - Updated `CompanyObserver::updateModuleSettings()` so tenant feature modules
   (`ModuleSetting::TENANT_FEATURE_MODULES`) are no longer forced to
   `is_allowed=0` when not listed in `packages.module_in_package`.

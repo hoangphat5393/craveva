@@ -21,7 +21,7 @@
 - `developertools` trong `ModuleSetting::OTHER_MODULES` + migration backfill `2026_04_06_120000_*`
 - `ensureModuleSettingsRowsForPackageModules()`, `packageModuleNamesFromJson()`
 - `user_can_access_developertools_module()` — impersonate / `manage_module_setting`
-- UI Module Settings hiện dòng khi `is_allowed = 0` (toggle khóa)
+- UI Module Settings: `developertools` theo package (chỉ hiện khi `is_allowed = 1`, giống `pricing`). Không còn trong `TENANT_FEATURE_MODULES`.
 
 **Tests:** `CompanyObserverPackageModulesTest`, `ModuleSettingDeveloperToolsVisibilityTest`, `PackageModulesActivateResyncsModuleSettingsTest`
 

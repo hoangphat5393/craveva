@@ -15,19 +15,6 @@
         </div>
         <!-- DATE END -->
 
-        <!-- CLIENT START -->
-        <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
-            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.client')</p>
-            <div class="select-status">
-                <select class="form-control select-picker" name="client" id="client" data-live-search="true" data-size="8">
-                    <option value="all">@lang('app.all')</option>
-                    @foreach ($clients as $client)
-                        <x-user-option :user="$client" />
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.category')</p>
             <div class="select-status">
@@ -48,8 +35,6 @@
                 </select>
             </div>
         </div>
-
-        <!-- CLIENT END -->
 
         <!-- SEARCH BY TASK START -->
         <div class="task-search d-flex  py-1 px-lg-3 px-0 border-right-grey align-items-center">
@@ -233,7 +218,6 @@
             }
 
             const status = $('#status').val();
-            const client = $('#client').val();
             const category_id = $('#filter_category_id').val();
             const sub_category_id = $('#filter_sub_category_id').val();
             const project_id = $('#project_id').val();
@@ -244,7 +228,6 @@
             data['startDate'] = startDate;
             data['endDate'] = endDate;
             data['status'] = status;
-            data['client'] = client;
             data['category_id'] = category_id;
             data['sub_category_id'] = sub_category_id;
             data['project_id'] = project_id;
@@ -257,11 +240,9 @@
             window.LaravelDataTables["clients-table"].draw(true);
         }
 
-        $('#client, #status, #filter_category_id, #filter_sub_category_id, #project_id, #contract_type_id, #country_id, #verification')
+        $('#status, #filter_category_id, #filter_sub_category_id, #project_id, #contract_type_id, #country_id, #verification')
             .on('change keyup', function() {
                 if ($('#status').val() !== "all") {
-                    $('#reset-filters').removeClass('d-none');
-                } else if ($('#client').val() !== "all") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#filter_category_id').val() !== "all") {
                     $('#reset-filters').removeClass('d-none');

@@ -1,7 +1,9 @@
 @extends('layouts.app')
-@php($salesDoLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.saleDeliveryOrder')
-@php($salesDoRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do')
-@php($canCreateSalesDo = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.create'))
+@php
+    $salesDoLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.saleDeliveryOrder';
+    $salesDoRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do';
+    $canCreateSalesDo = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.create');
+@endphp
 
 @push('datatable-styles')
     @include('sections.datatable_css')

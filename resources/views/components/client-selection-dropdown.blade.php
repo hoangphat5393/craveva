@@ -2,7 +2,7 @@
     $addClientPermission = user()->permission('add_clients');
 @endphp
 
-<div class="form-group my-3">
+<div class="form-group mb-4">
     <x-forms.label class="{{ $labelClass }}" fieldId="client_id" :fieldLabel="__('app.client')" :fieldRequired="$fieldRequired">
     </x-forms.label>
 

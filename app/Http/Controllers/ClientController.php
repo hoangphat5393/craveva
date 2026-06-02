@@ -85,9 +85,7 @@ class ClientController extends AccountBaseController
         abort_403(! in_array($viewPermission, ['all', 'added', 'both']));
 
         if (! request()->ajax()) {
-            $clientsQuery = User::allClients(active: false, execute: false);
-            $this->totalClients = $clientsQuery->count();
-            $this->clients = $clientsQuery->get();
+            $this->totalClients = User::allClients(active: false, execute: false)->count();
             $this->subcategories = ClientSubCategory::all();
             $this->categories = ClientCategory::all();
             $this->projects = Project::all();

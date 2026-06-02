@@ -60,17 +60,14 @@
                                 </x-forms.select>
                             </div>
                             <div class="col-md-4">
-                                <x-forms.label class="my-3" fieldId="mobile" :fieldLabel="__('app.mobile')"></x-forms.label>
-                                <x-forms.input-group style="margin-top:-4px">
-
-
-                                    <x-forms.select fieldId="country_phonecode" fieldName="country_phonecode" search="true">
-
+                                <x-forms.label class="mt-3" fieldId="mobile" :fieldLabel="__('app.mobile')"></x-forms.label>
+                                <x-forms.input-group>
+                                    <select class="form-control select-picker" name="country_phonecode" id="country_phonecode" data-live-search="true" data-size="8">
                                         @foreach ($countries as $item)
                                             <option data-tokens="{{ $item->name }}" data-country-iso="{{ $item->iso }}" data-content="{{ $item->flagSpanCountryCode() }}" @selected(isset($lead) && $item->nicename == $lead->country) value="{{ $item->phonecode }}">{{ $item->phonecode }}
                                             </option>
                                         @endforeach
-                                    </x-forms.select>
+                                    </select>
                                     <input type="tel" class="form-control height-35 f-14" placeholder="@lang('placeholders.mobile')" name="mobile" id="mobile" value="{{ $lead->mobile ?? '' }}">
                                 </x-forms.input-group>
                             </div>

@@ -66,17 +66,17 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 ### Import / client / DB
 
-| File                                                                                 | Nội dung                                                                            |
-| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| [FLOW_ADD_CLIENT.md](FLOW_ADD_CLIENT.md)                                             | Thêm client + import (canonical)                                                    |
-| [09_ORDER_HISTORY_IMPROVE_PLAN.md](../FUNC_IMPROVE/09_ORDER_HISTORY_IMPROVE_PLAN.md) | Import Sales History — cải tiện / vận hành queue                                    |
-| (import log)                                                                         | Import log hiện đang mô tả trong `FLOW_ADD_CLIENT.md` + các view/progress liên quan |
-| [IMPORT_CHUNK_AND_BULK_INSERT.md](IMPORT_CHUNK_AND_BULK_INSERT.md)                   | Chunk & bulk insert                                                                 |
-| [PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md](PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md)           | Import chậm                                                                         |
-| (đã gộp)                                                                             | MAOLIN/Miaolin legacy + contract → xem `MAOLIN_MASTER_GUIDE.md`                     |
-| [SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md](SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md)       | Báo cáo tổng quan DB (MySQL, miền nghiệp vụ, SQL gợi ý)                             |
-| [FLOW_USERS_CLIENT.md](FLOW_USERS_CLIENT.md)                                         | Quan hệ users / client (gộp: mapping + sơ đồ + ghi chú schema)                      |
-| [SCHEMATIC_USERS_CLIENT_1_1_VI.md](SCHEMATIC_USERS_CLIENT_1_1_VI.md)                 | Layer users–client_details                                                          |
+| File                                                                           | Nội dung                                                                            |
+| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| [FLOW_ADD_CLIENT.md](FLOW_ADD_CLIENT.md)                                       | Thêm client + import (canonical)                                                    |
+| [IMPORT_POLL_TRACKERS_VI.md](../FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md) §7     | Import Sales History — cải tiện / vận hành queue                                    |
+| (import log)                                                                   | Import log hiện đang mô tả trong `FLOW_ADD_CLIENT.md` + các view/progress liên quan |
+| [IMPORT_CHUNK_AND_BULK_INSERT.md](IMPORT_CHUNK_AND_BULK_INSERT.md)             | Chunk & bulk insert                                                                 |
+| [PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md](PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md)     | Import chậm                                                                         |
+| (đã gộp)                                                                       | MAOLIN/Miaolin legacy + contract → xem `MAOLIN_MASTER_GUIDE.md`                     |
+| [SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md](SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md) | Báo cáo tổng quan DB (MySQL, miền nghiệp vụ, SQL gợi ý)                             |
+| [FLOW_USERS_CLIENT.md](FLOW_USERS_CLIENT.md)                                   | Quan hệ users / client (gộp: mapping + sơ đồ + ghi chú schema)                      |
+| [SCHEMATIC_USERS_CLIENT_1_1_VI.md](SCHEMATIC_USERS_CLIENT_1_1_VI.md)           | Layer users–client_details                                                          |
 
 ### Pricing / dev tools
 

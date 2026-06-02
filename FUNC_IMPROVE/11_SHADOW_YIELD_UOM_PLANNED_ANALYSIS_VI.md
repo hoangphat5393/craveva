@@ -78,3 +78,34 @@
 
 - File: `Modules/Production/Config/config.php`
 - Key: `production.phase2.yield_uom_shadow_enabled` — **mặc định repo: `false`** (chỉ bật `true` khi có xác nhận).
+
+---
+
+## 8) Governance rollup — sign-off P0-03 (pilot)
+
+**Cập nhật:** 2026-05-09 · **Hàng đợi P0:** `P0_BIOMIXING_NEXT_STEPS_VI.md` (mục P0-03).
+
+### 8.1 Mặc định kỹ thuật (baseline)
+
+| Khóa                                              | Giá trị mặc định (config) | Ý nghĩa vận hành                                                           |
+| ------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------- |
+| `production.phase2.yield_uom_shadow_enabled`      | `false`                   | Không tính `planned_quantity_shadow`; chỉ planned chuẩn BOM × FG           |
+| `production.phase2.enforce_variance_approval`     | `true`                    | Vượt tolerance có thể yêu cầu duyệt trước post FG (kết hợp policy company) |
+| `production.phase2.enforce_quality_lock_sales_do` | `true`                    | Khóa giao DO khi production order chưa xong (theo cấu hình rollout)        |
+
+**Rollback nhanh (pilot):** đặt `yield_uom_shadow_enabled` = `false`; `php artisan config:clear`. Không cần migration.
+
+### 8.2 Điều kiện bật shadow (cần PM + Tech Lead ký)
+
+1. BOM / đơn vị đã map đủ (hoặc chấp nhận sai số có kiểm soát).
+2. Có ít nhất một tenant pilot và cửa sổ UAT so sánh `planned` vs `planned_quantity_shadow`.
+3. Ghi log P0: ai approve, ngày, phạm vi tenant.
+
+### 8.3 Việc còn lại cho P0-03
+
+| Việc                                          | Owner          | Trạng thái |
+| --------------------------------------------- | -------------- | ---------- |
+| Sign-off bật shadow cho tenant pilot          | PM + Tech Lead | Pending    |
+| Cập nhật execution log + screenshot/tenant id | Tech Lead      | Pending    |
+
+**Lịch sử file rollup riêng:** `git log -- FUNC_IMPROVE/P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md` (đã gộp pass 10).

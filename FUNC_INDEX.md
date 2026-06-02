@@ -21,7 +21,7 @@ This file is the root navigation layer only. Detailed business flow and module l
 | `FUNC_TEST`    | Test strategy, test cases, UAT execution matrix                         | `FUNC_TEST/INDEX.md`    |
 | `FUNC_REPORT`  | Cleanup audit logs, infra snapshots                                     | `FUNC_REPORT/INDEX.md`  |
 
-**Báo cáo số dòng code (không thuộc nhóm FUNC\_\*):** `LOG_REPORT/README.md` — thư mục **`LOG_REPORT/`** (đổi tên từ `LOC_REPORT/`, 2026-05-12). Mục lục / audit gọn file: `LOG_REPORT/INDEX.md`, `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`.
+**Báo cáo số dòng code (không thuộc nhóm FUNC\_\*):** `LOG_REPORT/README.md` — thư mục **`LOG_REPORT/`** (đổi tên từ `LOC_REPORT/`, 2026-05-12). Mục lục: `LOG_REPORT/INDEX.md`.
 
 ## 2) Module Master Guides (Single source per module)
 
@@ -41,8 +41,8 @@ When a module needs deep details (product/client/production integrations), keep 
 - `FUNC_LOGIC/INDEX.md` — **retired snapshots:** `FUNC_LOGIC/LEGACY_ARCHIVE.md`
 - `FUNC_TEST/INDEX.md`
 - `FUNC_REPORT/INDEX.md` — cleanup log + Cloud SQL archive
-- `LOG_REPORT/INDEX.md` — snapshot LOC backend; **audit:** `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`
-- `SPECIFICATION/INDEX.md` — spec + snapshot infra; **audit:** `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`
+- `LOG_REPORT/INDEX.md` — snapshot LOC backend
+- `SPECIFICATION/INDEX.md` — spec + snapshot infra
 
 1. Keep this index updated when adding new major doc groups or new module master guides.
 2. Do not duplicate full content here; only route users to source documents.

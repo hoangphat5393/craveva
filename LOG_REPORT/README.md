@@ -50,11 +50,11 @@ restates the scope, totals, i18n rules, and what view it represents.
 | `backend_loc_per_file.txt` / `.csv`         | **Recommended.** Every backend PHP file individually, with i18n files merged per filename across all locales (`<locale>` placeholder). | 4,184 |
 | `backend_loc_per_file_no_i18n.txt` / `.csv` | All translation files excluded — best for ranking real code files / refactor targets.                                                  | 3,858 |
 | `backend_loc_per_module.txt` / `.csv`       | Rollup by top-level dir / each `Modules/*`.                                                                                            |    32 |
-| `_tinykeys.txt`                             | Auxiliary keys list (legacy tooling).                                                                                                  |   —   |
+| `_tinykeys.txt`                             | Auxiliary keys list (legacy tooling).                                                                                                  |     — |
 
 All files are sorted by line count descending.
 
-**Gọn thư mục (2026-05-12):** đã xóa các bản copy trùng dữ liệu (`backend_loc_per_file_full*`, `backend_loc_per_file_lp_by_filename*`, `backend_loc_per_file_no_languagepack*`). Chi tiết: `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md` · mục lục: `LOG_REPORT/INDEX.md`.
+**Gọn thư mục (2026-05-12):** đã xóa các bản copy trùng dữ liệu (`backend_loc_per_file_full*`, `backend_loc_per_file_lp_by_filename*`, `backend_loc_per_file_no_languagepack*`). Chi tiết retire file trùng: `git log -- LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md` · mục lục: `LOG_REPORT/INDEX.md`.
 
 ## Per-module rollup
 

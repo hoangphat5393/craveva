@@ -41,8 +41,8 @@
 - `FUNC_IMPROVE/**` — **living:** `BIOMIXING_GAP_STATUS_VI.md`, `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md`, `BIOMIXING_DOC_HUB_VI.md`; **retired:** `LEGACY_ARCHIVE.md`
 - `FUNC_REPORT/**` — báo cáo/tài liệu ảnh/chụp màn hình phục vụ PM/QA
 - `docs/**` — runbook staging/hub; **audit:** `docs/DOCUMENTATION_AUDIT_DOCS_2026_05_VI.md`
-- **`SPECIFICATION/`** — spec EN, audit luồng signup/menu, snapshot SSH + GCP/SQL gộp: `SPECIFICATION/INDEX.md`, `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`, **audit:** `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`
-- **`LOG_REPORT/`** — snapshot đếm dòng PHP backend: `LOG_REPORT/INDEX.md`, **audit:** `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`
+- **`SPECIFICATION/`** — spec EN, snapshot SSH + GCP/SQL: `SPECIFICATION/INDEX.md`, `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`
+- **`LOG_REPORT/`** — snapshot đếm dòng PHP backend: `LOG_REPORT/INDEX.md`, `LOG_REPORT/README.md`
 
 ## 5) Mapping sang ai-context (gợi ý)
 

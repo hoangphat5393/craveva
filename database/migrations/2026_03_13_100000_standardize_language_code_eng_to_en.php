@@ -23,7 +23,7 @@ return new class extends Migration
 
     /**
      * Chuẩn hóa locale: eng → en (ISO 639-1)
-     * Xem FUNC_BUG/ENG_TO_EN_STANDARDIZATION.md
+     * Xem FUNC_BUG/REGISTRY.md — Phụ lục I18N-ENG-001
      */
     public function up(): void
     {

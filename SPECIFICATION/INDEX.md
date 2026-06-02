@@ -2,8 +2,6 @@
 
 Tài liệu đặc tả, audit luồng, và snapshot hạ tầng (không thay cho `docs/` runbook).
 
-- **Audit (2026-05-12):** [`DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`](DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md)
-
 ## System & product
 
 | Nội dung                  | File                                                                       |

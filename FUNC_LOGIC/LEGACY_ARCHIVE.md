@@ -22,6 +22,12 @@ Các file dưới đây **đã xóa** — chức năng đã có trong living doc
 | `PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`  | `MAOLIN_MASTER_GUIDE.md`                                    |
 | `DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md`  | `DEVELOPER_TOOLS_EXT_PLAN.md`                               |
 
+## Pass 13 (2026-05-27) — rút gọn (giữ path)
+
+| File                                  | Thay đổi                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------- |
+| `PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md` | Rút gọn → `IMPORT_CHUNK_AND_BULK_INSERT.md`, `FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md` |
+
 ## FUNC_IMPROVE / FUNC_BUG retirements
 
 Xem [`../FUNC_IMPROVE/LEGACY_ARCHIVE.md`](../FUNC_IMPROVE/LEGACY_ARCHIVE.md).

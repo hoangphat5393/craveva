@@ -80,8 +80,7 @@ _Mục tiêu: tài liệu vận hành sống cho module Production, dùng để 
 
 ## 5) Danh sách flow/test vận hành (canonical)
 
-- Flow test run (VI): `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd`
-- Flow test run (EN): `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_EN.mmd`
+- Flow test run: `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd` (+ `.html`; EN diagram đã gộp — cùng flow)
 - Test case UAT: `FUNC_IMPROVE/19_PRODUCTION_RM_RESERVE_AT_RELEASE_TEST_CASES_VI.md`
 - Matrix test Biomixing: `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`
 

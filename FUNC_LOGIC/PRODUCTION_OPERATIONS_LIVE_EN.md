@@ -79,7 +79,7 @@ _Purpose: a live operations document for the Production module, so business ques
 ## 5) Canonical flow/test references
 
 - Flow test run (Vietnamese): `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd`
-- Flow test run (English): `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_EN.mmd`
+- Flow test run: `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd` (labels EN in `PRODUCTION_MODULE_SOP_EN.md`)
 - UAT test cases: `FUNC_IMPROVE/19_PRODUCTION_RM_RESERVE_AT_RELEASE_TEST_CASES_VI.md`
 - Biomixing test matrix: `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md`
 - Non-technical SOP (English): `PROJECT BIOMIXING/PRODUCTION_MODULE_SOP_EN.md`

@@ -28,7 +28,7 @@ Navigation index for improvement plans, refactor proposals, and optimization tas
 - [`BIOMIXING_FULL_DEMO_RUNBOOK_VI.md`](BIOMIXING_FULL_DEMO_RUNBOOK_VI.md)
 - [`P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md`](P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md)
 - [`P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md`](P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md)
-- [`P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md`](P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md)
+- Shadow / UOM governance (P0-03): [`11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md`](11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md) §8
 
 ## Phase PM
 
@@ -40,7 +40,7 @@ Navigation index for improvement plans, refactor proposals, and optimization tas
 - `04_WH_RUNBOOK_UPGRADE_VI.md` — WUP tracker (01–07 Done)
 - `05_SO_DO_PO_GRN_REFACTOR_VI.md` — SO/DO/GRN refactor tracker (Phase 4–5)
 - `07_PRICING_MODULE_DEV_TASKS.md`
-- `09_ORDER_HISTORY_IMPROVE_PLAN.md` — Sales History import còn tối ưu
+- Sales History import: [`../FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md`](../FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md) §7 (backlog parse-once)
 - `11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md`
 - `12_AI_THIRDPARTY_SO_OPTIONS_VI.md` — AI → SO (REST live)
 - `13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`

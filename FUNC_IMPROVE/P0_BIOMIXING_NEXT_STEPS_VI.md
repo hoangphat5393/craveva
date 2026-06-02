@@ -17,7 +17,7 @@
 | 2   | **P0-08** | Chạy mini UAT **3 luồng:** Estimate→SO, SO→DO→Invoice, PO→GRN→Bill                                                                      | QA + BA        | `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` (Pass/Fail); **Dev:** `P0BiomixingAutomatedEvidenceTest.php` (route names) |
 | 3   | **P0-02** | Gán role thật trên tenant pilot; xác nhận user **không** có `edit_production_orders` thì không duyệt variance; user có quyền thì được   | BA + PM        | Biên bản UAT + sign-off; cập nhật `P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md` nếu đổi mapping                         |
 | 4   | **P0-07** | Điền **cột UAT** cho WUP-01…07 theo mẫu §2.1.1 trong `04_WH_RUNBOOK_UPGRADE_VI.md`                                                      | QA lead        | Bảng có ngày / tester / link biên bản                                                                              |
-| 5   | **P0-03** | **Done (pilot OFF):** giữ `yield_uom_shadow_enabled=false`. **Nếu** PM quyết **bật** shadow: sign-off riêng + bật flag + ghi log tenant | PM + Tech lead | Log P0-03 (2026-05-09); bật ON = cần sign-off + deploy                                                             |
+| 5   | **P0-03** | **Done (pilot OFF):** giữ `yield_uom_shadow_enabled=false`. **Nếu** PM quyết **bật** shadow: sign-off riêng + bật flag + ghi log tenant | PM + Tech lead | `11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` §8; log P0-03 (2026-05-09)                                            |
 
 ---
 

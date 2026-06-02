@@ -31,8 +31,8 @@
 
 - Incident staging: `FUNC_BUG/STAGING_QUICK_REF_VI.md` → `docs/SERVER_RUNBOOK_VI.md`
 - Tra cứu bug: `FUNC_BUG/REGISTRY.md`
-- Snapshot đếm dòng backend: `LOG_REPORT/INDEX.md` + `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`
-- Đặc tả / snapshot infra app: `SPECIFICATION/INDEX.md` + `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md`
+- Snapshot đếm dòng backend: `LOG_REPORT/INDEX.md`, `LOG_REPORT/README.md`
+- Đặc tả / snapshot infra app: `SPECIFICATION/INDEX.md`, `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`
 
 ---
 

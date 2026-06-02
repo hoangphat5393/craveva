@@ -39,7 +39,7 @@
 @endif
 
 <div class="row">
-    <div class="col-lg-9">
+    <div class="col-lg-10">
         <form method="post" action="{{ route('production.orders.store') }}" id="save-production-order-form" class="bg-white rounded p-4" data-bom-first="{{ $bomFirstWorkflow ? '1' : '0' }}" data-bom-disable-fg="{{ ProductionBomFirstPolicy::bomFirstDisableFgSelect() ? '1' : '0' }}">
             @csrf
             @include('sections.password-autocomplete-hide')

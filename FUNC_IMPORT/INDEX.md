@@ -5,7 +5,7 @@ Navigation index for import-related specifications, runtime mechanics, and archi
 ## Canonical documents (đọc theo thứ tự này)
 
 1. **`FUNC_IMPORT/IMPORT_SPECS_VI.md`** — Map cột Maolin → Craveva: Product, Client, Inventory, Sale Order, Quotation.
-2. **`FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md`** — Chunk vs 1-dòng/job, poll + `config/app.php`, CF map, tracker SO/PO ↔ Inventory.
+2. **`FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md`** — Chunk vs 1-dòng/job, poll + `config/app.php`, **Sales History vận hành (§7)**, tracker SO/PO ↔ Inventory.
 
 ## Liên quan
 

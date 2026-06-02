@@ -55,7 +55,7 @@ Trạng thái module Production: `FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md` · v�
 | **3 luồng gốc + Production:** A–D (+ **E** FG→Inventory) | `FUNC_IMPROVE/P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` (**P0-08**)                               |
 | Trace **Warehouse ↔ Production**                         | `FUNC_IMPROVE/P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md` (**P0-05**, VI+EN)                   |
 | Duyệt lệch FG — ma trận quyền                            | `FUNC_IMPROVE/P0_VARIANCE_APPROVAL_ROLE_MATRIX_VI.md` (**P0-02**)                              |
-| Shadow Yield/UOM (governance, mặc định tắt pilot)        | `FUNC_IMPROVE/P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md` (**P0-03**)                         |
+| Shadow Yield/UOM (governance, mặc định tắt pilot)        | `FUNC_IMPROVE/11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` §8 (**P0-03**)                       |
 
 ---
 

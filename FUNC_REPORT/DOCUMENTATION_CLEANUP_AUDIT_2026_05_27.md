@@ -2,21 +2,25 @@
 
 ## Trạng thái kết thúc (báo PM / team)
 
-| Hạng mục                                                           | Trạng thái                                                                 |
-| ------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| **Pass 1** — plan Production đã triển khai (shortage, reserve)     | **Xong**                                                                   |
-| **Pass 2** — dọn `FUNC_IMPROVE` + `FUNC_REPORT` (17 file)          | **Xong**                                                                   |
-| Living doc + index canonical                                       | **Xong**                                                                   |
-| Link chéo tới file đã xóa (ngoài changelog lịch sử)                | **Xong** — không còn link `[...](PHASE2_PM_PLAN...)`                       |
-| Ma trận bảo tồn nghiệp vụ                                          | **Xong** — `FUNC_IMPROVE/LEGACY_ARCHIVE.md`                                |
-| **Pass 3** — `FUNC_LOGIC/LEGACY_ARCHIVE.md`, INDEX audit snapshots | **Xong**                                                                   |
-| **Doc ↔ code** — material shortage status scopes                   | **Xong** — UI filter + service; mặc định `active` (Released + In progress) |
-| **Pass 4–5** — gộp UX/import/Biomixing hub/staging quick ref       | **Xong** (2026-05-27)                                                      |
-| **Pass 6** — xóa legacy đã hoàn thiện (audit, gap, archive)        | **Xong** (2026-05-27)                                                      |
-| **Pass 7** — gộp/xóa backlog archive (UX, import, AI prompts)      | **Xong** (2026-05-27)                                                      |
-| **Pass 8** — rút gọn `05_SO_DO_PO` + dọn `PROJECT BIOMIXING`       | **Xong** (2026-05-27)                                                      |
+| Hạng mục                                                                   | Trạng thái                                                                 |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Pass 1** — plan Production đã triển khai (shortage, reserve)             | **Xong**                                                                   |
+| **Pass 2** — dọn `FUNC_IMPROVE` + `FUNC_REPORT` (17 file)                  | **Xong**                                                                   |
+| Living doc + index canonical                                               | **Xong**                                                                   |
+| Link chéo tới file đã xóa (ngoài changelog lịch sử)                        | **Xong** — không còn link `[...](PHASE2_PM_PLAN...)`                       |
+| Ma trận bảo tồn nghiệp vụ                                                  | **Xong** — `FUNC_IMPROVE/LEGACY_ARCHIVE.md`                                |
+| **Pass 3** — `FUNC_LOGIC/LEGACY_ARCHIVE.md`, INDEX audit snapshots         | **Xong**                                                                   |
+| **Doc ↔ code** — material shortage status scopes                           | **Xong** — UI filter + service; mặc định `active` (Released + In progress) |
+| **Pass 4–5** — gộp UX/import/Biomixing hub/staging quick ref               | **Xong** (2026-05-27)                                                      |
+| **Pass 6** — xóa legacy đã hoàn thiện (audit, gap, archive)                | **Xong** (2026-05-27)                                                      |
+| **Pass 7** — gộp/xóa backlog archive (UX, import, AI prompts)              | **Xong** (2026-05-27)                                                      |
+| **Pass 8** — rút gọn `05_SO_DO_PO` + dọn `PROJECT BIOMIXING`               | **Xong** (2026-05-27)                                                      |
+| **Pass 9** — pre-delete audit + xóa Tier 0 (duplicate/backup)              | **Xong** (2026-05-27) — xem `LEGACY_PRE_DELETE_AUDIT_2026_05_27.md`        |
+| **Pass 10** — gộp Tier 1 rồi xóa (rollup, I18N, diagram EN, CSV)           | **Xong** (2026-05-27) — `FUNC_IMPROVE/LEGACY_ARCHIVE.md` pass 10           |
+| **Pass 11–12** — playbook slim, Sales History §7, diagram copy, meta audit | **Xong** (2026-05-27) — `LEGACY_ARCHIVE.md` pass 11–12                     |
+| **Pass 13** — rút gọn `PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md`                | **Xong** (2026-05-27)                                                      |
 
-**Kết luận:** Pass 1–8 hoàn tất. Chi tiết: `FUNC_IMPROVE/LEGACY_ARCHIVE.md` · `PROJECT BIOMIXING/LEGACY_ARCHIVE.md`.
+**Kết luận:** Pass 1–13 hoàn tất (doc). Tier 2 backlog mở (04, 07, 14, 05 refactor…) + PHP: `LEGACY_PRE_DELETE_AUDIT_2026_05_27.md` · `LEGACY_PHP_AND_ASSET_CANDIDATES_2026_05_27.md`.
 
 ---
 
@@ -84,8 +88,7 @@ Refactor đã thực hiện:
 ### Production vận hành
 
 - `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` (SSOT nghiệp vụ vận hành Production hiện tại)
-- `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd`
-- `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_EN.mmd`
+- `PROJECT BIOMIXING/PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd` (EN diagram gộp pass 10)
 - `FUNC_IMPROVE/19_PRODUCTION_RM_RESERVE_AT_RELEASE_TEST_CASES_VI.md`
 
 ### Biomixing test & UAT

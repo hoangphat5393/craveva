@@ -28,3 +28,4 @@ Thư mục này lưu **triệu chứng → nguyên nhân → fix** (và archive 
 | 2026-05-27 | Pass 6: xóa `STAGING_INCIDENTS_ARCHIVE_VI.md` — incident → `docs/SERVER_RUNBOOK_VI.md` |
 | 2026-05-27 | Pass 4: import master+details → `CLIENT_IMPORT_VI.md`, `PRODUCT_IMPORT_VI.md`          |
 | 2026-05-27 | Pass 5: thêm `STAGING_QUICK_REF_VI.md` (entry staging một cửa)                         |
+| 2026-05-27 | Pass 10: gộp `ENG_TO_EN_STANDARDIZATION.md` → `REGISTRY.md` Phụ lục I18N-ENG-001       |

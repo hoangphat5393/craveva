@@ -121,3 +121,35 @@ Các file dưới đây **đã xóa** khỏi repo vì hết vòng đời (plan/a
 | -------------------------------- | ------------------------------------------------------ |
 | `05_SO_DO_PO_GRN_REFACTOR_VI.md` | Rút gọn ~780→120 dòng; giữ cutover, Artisan, Phase 4–5 |
 | `PROJECT BIOMIXING/` (8 file)    | `PROJECT BIOMIXING/LEGACY_ARCHIVE.md`                  |
+
+## Pass 9 (2026-05-27) — pre-delete audit, Tier 0 only
+
+| File / artifact đã xóa                                          | Lý do                              |
+| --------------------------------------------------------------- | ---------------------------------- |
+| `FUNC_LOGIC/DESIGN_BACKEND_UI_UX_VI copy.md`                    | Trùng `DESIGN_BACKEND_UI_UX_VI.md` |
+| `public/js/custom copy.js`                                      | Không Mix / không reference        |
+| `resources/views/sections/menu.blade.backup-20260116.php`       | Backup view                        |
+| `public/css/custom-css/theme-custom.backup-20260330-075832.css` | Backup CSS                         |
+
+## Pass 10 (2026-05-27) — gộp Tier 1 rồi xóa
+
+| File đã xóa                                                  | Gộp vào                                         |
+| ------------------------------------------------------------ | ----------------------------------------------- |
+| `P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP_VI.md`                | `11_SHADOW_YIELD_UOM_PLANNED_ANALYSIS_VI.md` §8 |
+| `FUNC_BUG/ENG_TO_EN_STANDARDIZATION.md`                      | `FUNC_BUG/REGISTRY.md` — Phụ lục I18N-ENG-001   |
+| `purchase_lang_audit_report.csv`                             | `scripts/audit_purchase_lang.php` + git history |
+| `PROJECT BIOMIXING/PHASE1_QUOTATION_FLOW_DIAGRAM_TABLE.html` | `PHASE1_QUOTATION_FLOW_DIAGRAM.mmd` / `.html`   |
+| `PRODUCTION_RELEASE_RESERVE_TEST_FLOW_EN.mmd` + `.html`      | `PRODUCTION_RELEASE_RESERVE_TEST_FLOW_VI.mmd`   |
+
+## Pass 11–12 (2026-05-27) — gộp / rút gọn
+
+| File                                                            | Thay đổi                                                          |
+| --------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `BIOMIXING_PLAYBOOK_P0P1_VI.md`                                 | Rút gọn ~515→~120 dòng; SSOT → living docs + `git log` bản đầy đủ |
+| `09_ORDER_HISTORY_IMPROVE_PLAN.md`                              | Gộp → `FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md` §7                 |
+| `DIAGRAM/pis_e2e_current_copy.mmd` + `.html`                    | Trùng bản đơn giản; giữ `pis_e2e_current.*`                       |
+| `SPECIFICATION/DOCUMENTATION_AUDIT_SPECIFICATION_2026_05_VI.md` | Meta audit; nội dung trong `GCP_AND_CLOUDSQL_SNAPSHOT` + INDEX    |
+| `LOG_REPORT/DOCUMENTATION_AUDIT_LOG_REPORT_2026_05_VI.md`       | Meta audit; ghi trong `LOG_REPORT/README.md`                      |
+| `FUNC_LOGIC/PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md`                | Rút gọn pass 13 → `IMPORT_CHUNK_AND_BULK_INSERT.md`               |
+
+**Audit SSOT:** [`../FUNC_REPORT/LEGACY_PRE_DELETE_AUDIT_2026_05_27.md`](../FUNC_REPORT/LEGACY_PRE_DELETE_AUDIT_2026_05_27.md) · [`../FUNC_REPORT/LEGACY_PHP_AND_ASSET_CANDIDATES_2026_05_27.md`](../FUNC_REPORT/LEGACY_PHP_AND_ASSET_CANDIDATES_2026_05_27.md)

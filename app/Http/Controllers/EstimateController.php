@@ -99,7 +99,7 @@ class EstimateController extends AccountBaseController
             $condition = $this->invoiceSetting->estimate_digit - strlen($this->lastEstimate);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0'.$this->zero;
+                $this->zero = '0' . $this->zero;
             }
         }
 
@@ -243,7 +243,7 @@ class EstimateController extends AccountBaseController
         return Reply::successWithData(__('messages.recordSaved'), ['estimateId' => $estimate->id, 'redirectUrl' => $redirectUrl]);
     }
 
-    public function show($id)
+    public function show(int $id)
     {
         $this->invoice = Estimate::with('sign', 'client', 'unit', 'clientdetails', 'bomLines.unit', 'bomLines.product', 'presidentReviewer', 'vpPricingReviewer', 'approvalEvents.actor')->findOrFail($id)->withCustomFields();
         $this->viewPermission = user()->permission('view_estimates');
@@ -258,7 +258,7 @@ class EstimateController extends AccountBaseController
 
         if ($this->invoice->discount_type == 'percent') {
             $discountAmount = $this->invoice->discount;
-            $this->discountType = $discountAmount.'%';
+            $this->discountType = $discountAmount . '%';
         } else {
             $discountAmount = $this->invoice->discount;
             $this->discountType = currency_format($discountAmount, $this->invoice->currency_id);
@@ -296,19 +296,19 @@ class EstimateController extends AccountBaseController
                 $this->tax = EstimateItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                    if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
                         if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
 
                         if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -336,7 +336,7 @@ class EstimateController extends AccountBaseController
         return view('estimates.show', $this->data);
     }
 
-    public function edit($id)
+    public function edit(int $id)
     {
         $this->estimate = Estimate::with(
             'items.estimateItemImage',
@@ -393,7 +393,7 @@ class EstimateController extends AccountBaseController
         return view('estimates.create', $this->data);
     }
 
-    public function update(StoreEstimate $request, $id)
+    public function update(StoreEstimate $request, int $id)
     {
         $buildResult = $this->buildLineItemsFromEstimateRequest($request);
         if ($buildResult['error'] !== null) {
@@ -464,15 +464,15 @@ class EstimateController extends AccountBaseController
 
             $persistedItemIds[] = $estimateItem->id;
 
-            if ((isset($invoiceItemImage[$formIndex]) && $request->hasFile('invoice_item_image.'.$formIndex)) || isset($invoiceItemImageUrl[$formIndex])) {
+            if ((isset($invoiceItemImage[$formIndex]) && $request->hasFile('invoice_item_image.' . $formIndex)) || isset($invoiceItemImageUrl[$formIndex])) {
                 if (! isset($invoiceItemImageUrl[$formIndex]) && $estimateItem->estimateItemImage) {
-                    Files::deleteFile($estimateItem->estimateItemImage->hashname, EstimateItemImage::FILE_PATH.'/'.$estimateItem->id.'/');
+                    Files::deleteFile($estimateItem->estimateItemImage->hashname, EstimateItemImage::FILE_PATH . '/' . $estimateItem->id . '/');
                 }
 
                 $filename = '';
 
                 if (isset($invoiceItemImage[$formIndex])) {
-                    $filename = Files::uploadLocalOrS3($invoiceItemImage[$formIndex], EstimateItemImage::FILE_PATH.'/'.$estimateItem->id.'/');
+                    $filename = Files::uploadLocalOrS3($invoiceItemImage[$formIndex], EstimateItemImage::FILE_PATH . '/' . $estimateItem->id . '/');
                 }
 
                 EstimateItemImage::updateOrCreate(
@@ -510,7 +510,7 @@ class EstimateController extends AccountBaseController
         return Reply::redirect(route('estimates.index'), __('messages.updateSuccess'));
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $estimate = Estimate::findOrFail($id);
 
@@ -528,7 +528,7 @@ class EstimateController extends AccountBaseController
         return Reply::success(__('messages.deleteSuccess'));
     }
 
-    public function download($id)
+    public function download(int $id)
     {
         $this->invoiceSetting = invoice_setting();
         $this->estimate = Estimate::with('unit')->findOrFail($id)->withCustomFields();
@@ -555,10 +555,10 @@ class EstimateController extends AccountBaseController
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename.'.pdf');
+        return $pdf->download($filename . '.pdf');
     }
 
-    public function domPdfObjectForDownload($id)
+    public function domPdfObjectForDownload(int $id)
     {
         $this->invoiceSetting = invoice_setting();
         App::setLocale($this->invoiceSetting->locale ?? 'en');
@@ -597,18 +597,18 @@ class EstimateController extends AccountBaseController
                 $this->tax = EstimateItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                    if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
                         if ($this->estimate->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->estimate->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -630,7 +630,7 @@ class EstimateController extends AccountBaseController
                 * { text-transform: none !important; }
             </style>';
 
-        $pdf->loadHTML($customCss.view('estimates.pdf.'.$this->invoiceSetting->template, $this->data)->render());
+        $pdf->loadHTML($customCss . view('estimates.pdf.' . $this->invoiceSetting->template, $this->data)->render());
 
         $filename = $this->estimate->estimate_number;
 
@@ -640,7 +640,7 @@ class EstimateController extends AccountBaseController
         ];
     }
 
-    public function sendEstimate($id)
+    public function sendEstimate(int $id)
     {
         $estimate = Estimate::findOrFail($id);
 
@@ -664,7 +664,7 @@ class EstimateController extends AccountBaseController
         return Reply::success(__('messages.updateSuccess'));
     }
 
-    public function changeStatus(Request $request, $id)
+    public function changeStatus(Request $request, int $id)
     {
         $estimate = Estimate::findOrFail($id);
         $estimate->status = 'canceled';
@@ -673,12 +673,12 @@ class EstimateController extends AccountBaseController
         return Reply::success(__('messages.updateSuccess'));
     }
 
-    public function acceptModal(Request $request, $id)
+    public function acceptModal(Request $request, int $id)
     {
         return view('estimates.ajax.accept-estimate', ['id' => $id]);
     }
 
-    public function accept(EstimateAcceptRequest $request, $id)
+    public function accept(EstimateAcceptRequest $request, int $id)
     {
         DB::beginTransaction();
 
@@ -694,7 +694,7 @@ class EstimateController extends AccountBaseController
         }
 
         $accept = new AcceptEstimate;
-        $accept->full_name = $request->first_name.' '.$request->last_name;
+        $accept->full_name = $request->first_name . ' ' . $request->last_name;
         $accept->estimate_id = $estimate->id;
         $accept->email = $request->email;
         $imageName = null;
@@ -703,11 +703,11 @@ class EstimateController extends AccountBaseController
             $image = $request->signature;  // your base64 encoded
             $image = str_replace('data:image/png;base64,', '', $image);
             $image = str_replace(' ', '+', $image);
-            $imageName = str_random(32).'.'.'jpg';
+            $imageName = str_random(32) . '.' . 'jpg';
 
             Files::createDirectoryIfNotExist('estimate/accept');
 
-            File::put(public_path().'/'.Files::UPLOAD_FOLDER.'/estimate/accept/'.$imageName, base64_decode($image));
+            File::put(public_path() . '/' . Files::UPLOAD_FOLDER . '/estimate/accept/' . $imageName, base64_decode($image));
             Files::uploadLocalFile($imageName, 'estimate/accept', $estimate->company_id);
         } else {
             if ($request->hasFile('image')) {
@@ -768,7 +768,7 @@ class EstimateController extends AccountBaseController
         return Reply::redirect(route('estimates.index'), __('messages.estimateSigned'));
     }
 
-    public function decline(Request $request, $id)
+    public function decline(Request $request, int $id)
     {
         $estimate = Estimate::findOrFail($id);
         $estimate->status = 'declined';
@@ -777,7 +777,7 @@ class EstimateController extends AccountBaseController
         return Reply::dataOnly(['status' => 'success']);
     }
 
-    public function convertToSalesOrder($id)
+    public function convertToSalesOrder(int $id)
     {
         $this->addOrderPermission = user()->permission('add_order');
         abort_403(! in_array($this->addOrderPermission, ['all', 'added', 'both']));
@@ -844,7 +844,7 @@ class EstimateController extends AccountBaseController
         return Reply::redirect(route('orders.show', $order->id), __('messages.recordSaved'));
     }
 
-    public function submitForReview($id)
+    public function submitForReview(int $id)
     {
         abort_403(! $this->isPhase1ReviewGateEnabled());
 
@@ -904,16 +904,16 @@ class EstimateController extends AccountBaseController
         );
 
         if ($result['error'] !== null) {
-            return Reply::error($result['error']);
+            return response()->json(Reply::error($result['error']));
         }
 
-        return Reply::dataOnly([
+        return response()->json([
             'status' => 'success',
             'lines' => $result['lines'],
         ]);
     }
 
-    public function presidentReview(Request $request, $id)
+    public function presidentReview(Request $request, int $id)
     {
         abort_403(! $this->isPhase1ReviewGateEnabled());
         abort_403(! user_can_approve_estimate_president());
@@ -956,7 +956,7 @@ class EstimateController extends AccountBaseController
         return Reply::success(__('messages.updateSuccess'));
     }
 
-    public function vpPricingReview(Request $request, $id)
+    public function vpPricingReview(Request $request, int $id)
     {
         abort_403(! $this->isPhase1ReviewGateEnabled());
         abort_403(! user_can_approve_estimate_vp_pricing());
@@ -1019,14 +1019,14 @@ class EstimateController extends AccountBaseController
         $item = EstimateItemImage::where('estimate_item_id', $request->invoice_item_id)->first();
 
         if ($item) {
-            Files::deleteFile($item->hashname, 'estimate-files/'.$item->id.'/');
+            Files::deleteFile($item->hashname, 'estimate-files/' . $item->id . '/');
             $item->delete();
         }
 
         return Reply::success(__('messages.deleteSuccess'));
     }
 
-    public function getclients($id)
+    public function getclients(int $id)
     {
         $client_data = Product::where('unit_id', $id)->get();
         $unitId = UnitType::where('id', $id)->first();
@@ -1065,7 +1065,7 @@ class EstimateController extends AccountBaseController
 
     public function importQuotation()
     {
-        $this->pageTitle = __('app.importExcel').' '.__('app.quotation_ui.singular');
+        $this->pageTitle = __('app.importExcel') . ' ' . __('app.quotation_ui.singular');
         $addPermission = user()->permission('add_estimates');
         abort_403(! in_array($addPermission, ['all', 'added']));
 
@@ -1109,7 +1109,7 @@ class EstimateController extends AccountBaseController
         );
         $batchId = data_get($batch, 'id');
         if ($batchId) {
-            Cache::put('import_metrics_'.$batchId, [
+            Cache::put('import_metrics_' . $batchId, [
                 'created' => 0,
                 'updated' => 0,
                 'skipped' => 0,

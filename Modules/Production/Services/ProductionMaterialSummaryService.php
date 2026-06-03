@@ -22,9 +22,9 @@ class ProductionMaterialSummaryService
     public const SCOPE_IN_PROGRESS = 'in_progress';
 
     /**
-     * Default scope for material shortage summary (committed production).
+     * Default scope for material shortage summary (draft + released + in progress).
      */
-    public const DEFAULT_STATUS_SCOPE = self::SCOPE_ACTIVE;
+    public const DEFAULT_STATUS_SCOPE = self::SCOPE_ALL;
 
     /**
      * Statuses included in at least one shortage scope (excludes completed/cancelled).
@@ -46,8 +46,8 @@ class ProductionMaterialSummaryService
     public static function allowedStatusScopes(): array
     {
         return [
-            self::SCOPE_ACTIVE,
             self::SCOPE_ALL,
+            self::SCOPE_ACTIVE,
             self::SCOPE_DRAFT,
             self::SCOPE_RELEASED,
             self::SCOPE_IN_PROGRESS,
@@ -105,7 +105,7 @@ class ProductionMaterialSummaryService
                     continue;
                 }
 
-                $aggregateKey = $componentProductId.':'.$warehouseId;
+                $aggregateKey = $componentProductId . ':' . $warehouseId;
 
                 if (! isset($aggregates[$aggregateKey])) {
                     $aggregates[$aggregateKey] = [
@@ -139,7 +139,7 @@ class ProductionMaterialSummaryService
             );
 
             foreach ($availableByProduct as $productId => $availableStock) {
-                $aggregateKey = (int) $productId.':'.(int) $warehouseId;
+                $aggregateKey = (int) $productId . ':' . (int) $warehouseId;
 
                 if (! isset($aggregates[$aggregateKey])) {
                     continue;
@@ -251,7 +251,7 @@ class ProductionMaterialSummaryService
                 $rows[] = [
                     'order_id' => (int) $order->id,
                     'order_status' => (string) $order->status,
-                    'order_status_label' => (string) __('production::app.statusLabels.'.(string) $order->status),
+                    'order_status_label' => (string) __('production::app.statusLabels.' . (string) $order->status),
                     'manufactured_product_name' => (string) ($order->outputProduct?->name ?? __('app.notSet')),
                     'planned_quantity' => (float) $order->planned_quantity,
                     'required_quantity' => (float) $row['total_required'],
@@ -287,7 +287,7 @@ class ProductionMaterialSummaryService
     {
         $normalized = $this->normalizeStatusScope($statusScope);
 
-        return (string) __('production::app.materialShortageStatusScopes.'.$normalized);
+        return (string) __('production::app.materialShortageStatusScopes.' . $normalized);
     }
 
     /**

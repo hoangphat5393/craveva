@@ -16,6 +16,12 @@ return [
         'show_bom_waste_percent_ui' => false,
 
         /*
+         * "Default for manufactured product" on BOM create/edit, list column, and detail.
+         * Hidden while prefill-from-SO is the only consumer; set true to restore UI.
+         */
+        'show_bom_default_for_manufactured_product_ui' => false,
+
+        /*
          * BOM-first workflow (Biomixing): required BOM on orders, FG derived from BOM, AJAX recipe preview on form,
          * manual "add raw material" on batch disabled. Set false to restore legacy FG-first + optional BOM + manual batch lines.
          */

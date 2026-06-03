@@ -109,7 +109,6 @@ it('returns datatable json for production order and bom ajax requests', function
             ['data' => 'version', 'name' => 'production_boms.version'],
             ['data' => 'code', 'name' => 'production_boms.code'],
             ['data' => 'items_count', 'name' => 'items_count', 'searchable' => false],
-            ['data' => 'is_default', 'name' => 'production_boms.is_default', 'searchable' => false],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
         ], [
             'unit_type_id' => 'all',
@@ -148,7 +147,7 @@ it('shows sufficient and insufficient material badges in the separate production
         $shortfallWarehouse = Warehouse::query()->create([
             'company_id' => (int) $fix['company']->id,
             'name' => 'RM shortfall test warehouse',
-            'code' => 'RM-SHORT-' . uniqid(),
+            'code' => 'RM-SHORT-'.uniqid(),
             'warehouse_type' => 'normal',
             'status' => 'active',
         ]);
@@ -157,7 +156,7 @@ it('shows sufficient and insufficient material badges in the separate production
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'rm-flag-' . uniqid(),
+        'version' => 'rm-flag-'.uniqid(),
         'code' => 'rm-flag-code',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -257,7 +256,7 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'modal-test-' . uniqid(),
+        'version' => 'modal-test-'.uniqid(),
         'code' => 'modal-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -267,7 +266,7 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $editableBom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'editable-modal-test-' . uniqid(),
+        'version' => 'editable-modal-test-'.uniqid(),
         'code' => 'editable-modal-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,

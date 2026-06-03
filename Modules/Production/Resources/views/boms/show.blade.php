@@ -63,10 +63,12 @@
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.bomCode')</span>
                     <span class="font-weight-normal">{{ $bom->code ?: '—' }}</span>
                 </div>
+                @if (config('production.ui.show_bom_default_for_manufactured_product_ui', false))
                 <div class="col-md-6 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.bomDefaultForManufacturedProduct')</span>
                     <span class="font-weight-normal">{{ $bom->is_default ? __('app.yes') : __('app.no') }}</span>
                 </div>
+                @endif
                 <div class="col-md-6 mb-3">
                     <span class="text-dark-grey d-block mb-1">@lang('production::app.bomEffectiveFrom')</span>
                     <span class="font-weight-normal">{{ $bom->effective_from?->format('Y-m-d') ?? '—' }}</span>

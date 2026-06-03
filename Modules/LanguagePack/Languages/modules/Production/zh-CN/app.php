@@ -257,7 +257,7 @@ return [
     'materialShortageOrdersPageTitle' => '受影响的生产订单',
     'materialShortageStatusScopes' => [
         'active' => '已下达 + 进行中',
-        'all' => '草稿 + 已下达 + 进行中',
+        'all' => '全部',
         'draft' => '草稿',
         'released' => '已下达',
         'in_progress' => '进行中',

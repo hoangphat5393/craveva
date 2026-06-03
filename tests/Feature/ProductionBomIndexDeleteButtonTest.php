@@ -42,7 +42,6 @@ it('shows delete control on BOM index for BOMs not linked to production orders',
             ['data' => 'version', 'name' => 'production_boms.version'],
             ['data' => 'code', 'name' => 'production_boms.code'],
             ['data' => 'items_count', 'name' => 'items_count', 'searchable' => false],
-            ['data' => 'is_default', 'name' => 'production_boms.is_default', 'searchable' => false],
             ['data' => 'action', 'searchable' => false, 'orderable' => false],
         ], [
             'unit_type_id' => 'all',

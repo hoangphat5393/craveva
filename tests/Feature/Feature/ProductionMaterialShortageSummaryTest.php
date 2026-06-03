@@ -39,14 +39,15 @@ it('renders the material shortage summary screen with status and warehouse filte
     expect($content)->toContain('production-material-shortages-table');
     expect($content)->toContain('id="production-material-shortages-status-filter"');
     expect($content)->toContain('id="production-material-shortages-warehouse-filter"');
-    expect($content)->toContain('value="'.ProductionMaterialSummaryService::SCOPE_ACTIVE.'"');
-    expect($content)->toContain(__('production::app.materialShortageStatusScopes.active'));
+    expect($content)->toContain('value="' . ProductionMaterialSummaryService::SCOPE_ALL . '"');
+    expect($content)->toContain(__('production::app.materialShortageStatusScopes.all'));
 });
 
 it('maps material shortage status scopes to production order statuses', function (): void {
     $service = app(ProductionMaterialSummaryService::class);
 
     expect($service->statusesForScope(null))->toEqual([
+        ProductionOrder::STATUS_DRAFT,
         ProductionOrder::STATUS_RELEASED,
         ProductionOrder::STATUS_IN_PROGRESS,
     ]);
@@ -83,7 +84,7 @@ it('aggregates shortages across draft production orders when scope is draft', fu
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'summary-'.uniqid(),
+        'version' => 'summary-' . uniqid(),
         'code' => 'summary-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -100,8 +101,8 @@ it('aggregates shortages across draft production orders when scope is draft', fu
 
     $summaryWarehouse = Warehouse::query()->create([
         'company_id' => (int) $fix['company']->id,
-        'name' => 'Summary RM Warehouse '.uniqid(),
-        'code' => 'SUM-RM-'.uniqid(),
+        'name' => 'Summary RM Warehouse ' . uniqid(),
+        'code' => 'SUM-RM-' . uniqid(),
         'warehouse_type' => 'normal',
         'status' => 'active',
     ]);
@@ -120,7 +121,7 @@ it('aggregates shortages across draft production orders when scope is draft', fu
         'company_id' => (int) $fix['company']->id,
         'warehouse_id' => (int) $summaryWarehouse->id,
         'product_id' => (int) $fix['rm']->id,
-        'batch_number' => 'RES-'.uniqid(),
+        'batch_number' => 'RES-' . uniqid(),
         'quantity' => 20,
         'reserved_quantity' => 5,
     ]);
@@ -188,7 +189,7 @@ it('excludes draft orders from default active scope aggregation', function (): v
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'active-'.uniqid(),
+        'version' => 'active-' . uniqid(),
         'code' => 'active-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -205,8 +206,8 @@ it('excludes draft orders from default active scope aggregation', function (): v
 
     $warehouse = Warehouse::query()->create([
         'company_id' => (int) $fix['company']->id,
-        'name' => 'Active scope WH '.uniqid(),
-        'code' => 'ACT-'.uniqid(),
+        'name' => 'Active scope WH ' . uniqid(),
+        'code' => 'ACT-' . uniqid(),
         'warehouse_type' => 'normal',
         'status' => 'active',
     ]);
@@ -215,7 +216,7 @@ it('excludes draft orders from default active scope aggregation', function (): v
         'company_id' => (int) $fix['company']->id,
         'warehouse_id' => (int) $warehouse->id,
         'product_id' => (int) $fix['rm']->id,
-        'batch_number' => 'B-'.uniqid(),
+        'batch_number' => 'B-' . uniqid(),
         'quantity' => 100,
         'reserved_quantity' => 0,
     ]);

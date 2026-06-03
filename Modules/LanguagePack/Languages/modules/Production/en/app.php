@@ -257,7 +257,7 @@ return [
     'materialShortageOrdersPageTitle' => 'Affected Production Orders',
     'materialShortageStatusScopes' => [
         'active' => 'Released + In Progress',
-        'all' => 'Draft + Released + In Progress',
+        'all' => 'All',
         'draft' => 'Draft',
         'released' => 'Released',
         'in_progress' => 'In Progress',

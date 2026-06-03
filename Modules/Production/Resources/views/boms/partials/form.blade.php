@@ -131,7 +131,9 @@
 
 <div class="form-group my-2">
     <input type="hidden" name="is_default" value="0" />
-    <x-forms.checkbox :checked="(bool) old('is_default', isset($bom) ? $bom->is_default : false)" :fieldLabel="__('production::app.bomDefaultForManufacturedProduct')" fieldName="is_default" fieldId="is_default" fieldValue="1" />
+    @if (config('production.ui.show_bom_default_for_manufactured_product_ui', false))
+        <x-forms.checkbox :checked="(bool) old('is_default', isset($bom) ? $bom->is_default : false)" :fieldLabel="__('production::app.bomDefaultForManufacturedProduct')" fieldName="is_default" fieldId="is_default" fieldValue="1" />
+    @endif
 </div>
 
 <div class="form-group my-3">

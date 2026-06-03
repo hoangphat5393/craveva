@@ -242,14 +242,6 @@
             ...datepickerConfig
         });
 
-        $('#downloadable').change(function() {
-            if ($(this).is(':checked')) {
-                $('.downloadable').removeClass('d-none');
-            } else {
-                $('.downloadable').addClass('d-none');
-            }
-        });
-
         init(RIGHT_MODAL);
     });
 </script>

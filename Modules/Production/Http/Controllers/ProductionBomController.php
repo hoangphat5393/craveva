@@ -6,6 +6,7 @@ use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
 use App\Models\UnitType;
+use App\Support\RequestRedirectUrl;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -106,7 +107,10 @@ class ProductionBomController extends AccountBaseController
 
         if ($request->ajax()) {
             return response()->json(Reply::successWithData(__('messages.recordSaved'), [
-                'redirectUrl' => $request->input('redirect_url') ?? $request->input('redirectUrl') ?? route('production.boms.index'),
+                'redirectUrl' => RequestRedirectUrl::resolve(
+                    $request->input('redirect_url') ?? $request->input('redirectUrl'),
+                    route('production.boms.index'),
+                ),
                 'bomId' => $bom->id,
             ]));
         }
@@ -196,7 +200,10 @@ class ProductionBomController extends AccountBaseController
 
         if ($request->ajax()) {
             return response()->json(Reply::successWithData(__('messages.updateSuccess'), [
-                'redirectUrl' => $request->input('redirect_url') ?? $request->input('redirectUrl') ?? route('production.boms.index'),
+                'redirectUrl' => RequestRedirectUrl::resolve(
+                    $request->input('redirect_url') ?? $request->input('redirectUrl'),
+                    route('production.boms.index'),
+                ),
                 'bomId' => $bom->id,
             ]));
         }

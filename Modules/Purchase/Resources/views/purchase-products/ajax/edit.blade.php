@@ -325,14 +325,6 @@
             $.ajaxModal(MODAL_LG, url);
         });
 
-        $('#downloadable').change(function() {
-            if ($(this).is(':checked')) {
-                $('.downloadable').removeClass('d-none');
-            } else {
-                $('.downloadable').addClass('d-none');
-            }
-        });
-
         $('#purchase_information').change(function() {
             if ($(this).prop('checked')) {
                 $('.purchase_information').removeClass('d-none');

@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="{{ asset('vendor/css/dropzone.min.css') }}">
-
 <div class="row">
     <div class="col-sm-12">
         <x-form id="save-inventory-form">
@@ -131,14 +129,6 @@
                         <div id="sortable">
                         </div>
 
-                        <div class="row mt-3">
-                            <div class="col-lg-12">
-                                <x-forms.file-multiple class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::app.menu.addFiles')" fieldName="file" fieldId="file-upload-dropzone" />
-
-                                <input type="hidden" name="inventory_id" id="inventory_id">
-                            </div>
-                        </div>
-
                     </div>
                 </div>
                 <x-form-actions>
@@ -165,66 +155,6 @@
         });
 
         $("#reason").selectpicker();
-
-        let defaultImage = '';
-        let lastIndex = 0;
-
-        Dropzone.autoDiscover = false;
-        // Dropzone class
-        inventoryDropzone = new Dropzone("div#file-upload-dropzone", {
-            dictDefaultMessage: "{{ __('app.dragDrop') }}",
-            url: "{{ route('inventory-files.store') }}",
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            paramName: "file",
-            maxFilesize: DROPZONE_MAX_FILESIZE,
-            maxFiles: 10,
-            autoProcessQueue: false,
-            uploadMultiple: true,
-            addRemoveLinks: true,
-            parallelUploads: 10,
-            acceptedFiles: DROPZONE_FILE_ALLOW,
-            init: function() {
-                inventoryDropzone = this;
-            }
-        });
-        inventoryDropzone.on('sending', function(file, xhr, formData) {
-            const inventoyID = $('#inventory_id').val();
-            formData.append('inventory_id', inventoyID);
-            formData.append('default_image', defaultImage);
-            $.easyBlockUI();
-        });
-        inventoryDropzone.on('uploadprogress', function() {
-            $.easyBlockUI();
-        });
-        inventoryDropzone.on('completemultiple', function() {
-            window.location.href = '{{ route('purchase-inventory.index') }}';
-        });
-        inventoryDropzone.on('addedfile', function(file) {
-            lastIndex++;
-
-            const div = document.createElement('div');
-            div.className = 'form-check-inline custom-control custom-radio mt-2 mr-3';
-            const input = document.createElement('input');
-            input.className = 'custom-control-input';
-            input.type = 'radio';
-            input.name = 'default_image';
-            input.id = 'default-image-' + lastIndex;
-            input.value = file.name;
-            if (lastIndex == 1) {
-                input.checked = true;
-            }
-            div.appendChild(input);
-
-            var label = document.createElement('label');
-            label.className = 'custom-control-label pt-1 cursor-pointer';
-            label.innerHTML = "@lang('modules.makeDefaultImage')";
-            label.htmlFor = 'default-image-' + lastIndex;
-            div.appendChild(label);
-
-            file.previewTemplate.appendChild(div);
-        });
 
         $('.toggle-product-category').click(function() {
             $('.product-category-filter').toggleClass('d-none');
@@ -281,14 +211,7 @@
             $.easyBlockUI('#save-inventory-form');
             window.apiHttp.postUrlEncoded(url, data).then(function(response) {
                 if (response.status === 'success') {
-                    if (inventoryDropzone.getQueuedFiles().length > 0) {
-                        inventoyID = response.inventoyID
-                        defaultImage = response.defaultImage;
-                        $('#inventory_id').val(inventoyID);
-                        inventoryDropzone.processQueue();
-                    } else {
-                        window.location.href = "{{ route('purchase-inventory.index') }}";
-                    }
+                    window.location.href = "{{ route('purchase-inventory.index') }}";
                 }
 
                 if (typeof showTable !== 'undefined' && typeof showTable === 'function') {

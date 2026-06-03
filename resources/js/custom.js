@@ -240,7 +240,7 @@ $('body').on('click', '.openRightModal', function (event) {
     var inModal = $(this).hasClass('inModal');
     var redirectUrl = '';
     if (typeof $(this).data('redirect-url') !== 'undefined') {
-        redirectUrl = encodeURIComponent($(this).data('redirect-url'));
+        redirectUrl = $(this).data('redirect-url');
     }
     if (typeof historyPush === 'function' && !inModal) {
         historyPush(requestUrl);

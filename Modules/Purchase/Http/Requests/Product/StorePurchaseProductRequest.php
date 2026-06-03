@@ -43,7 +43,6 @@ class StorePurchaseProductRequest extends CoreRequest
             'purchase_information' => 'sometimes',
             'opening_stock' => 'required_if:track_inventory,1',
             'purchase_price' => 'required_if:purchase_information,1,numeric',
-            'downloadable_file' => 'required_if:downloadable,true|file',
             'shelf_life_days' => 'nullable|integer|min:0',
         ];
 
@@ -61,7 +60,6 @@ class StorePurchaseProductRequest extends CoreRequest
             'rate_per_unit.required_if' => __('purchase::messages.ratePerUnitRequired'),
             'selling_price.required_if' => __('purchase::messages.sellingPriceRequired'),
             'purchase_price.required_if' => __('purchase::messages.purchasePriceRequired'),
-            'downloadable_file.required_if' => __('validation.required', ['attribute' => __('app.downloadableFile')]),
         ];
     }
 

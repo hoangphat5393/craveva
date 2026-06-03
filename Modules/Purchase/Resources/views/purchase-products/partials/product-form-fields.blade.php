@@ -191,14 +191,6 @@
                 <x-forms.checkbox class="mr-0" :fieldLabel="__('app.clientPurchase')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" :checked="$hasProduct && $product->allow_purchase == 1" />
             </div>
         </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="form-group my-3">
-                <x-forms.checkbox class="mr-0" :fieldLabel="__('app.downloadable')" fieldName="downloadable" fieldId="downloadable" fieldValue="true" fieldRequired="true" :popover="__('messages.downloadable')" :checked="$hasProduct && $product->downloadable == 1" />
-            </div>
-        </div>
-        <div class="col-12 downloadable {{ $hasProduct && $product->downloadable ? '' : 'd-none' }}">
-            <x-forms.file class="mr-0" :fieldLabel="__('app.downloadableFile')" fieldName="downloadable_file" fieldId="downloadable_file" fieldRequired="true" :fieldValue="$hasProduct ? $product->download_file_url ?? '' : ''" />
-        </div>
     </div>
 </div>
 

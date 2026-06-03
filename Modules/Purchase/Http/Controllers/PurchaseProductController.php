@@ -395,7 +395,9 @@ class PurchaseProductController extends AccountBaseController
         $product->brand = $request->brand;
         $product->product_grade = $request->product_grade;
         $product->allow_purchase = ($request->purchase_allow == 'no') ? true : false;
-        $product->downloadable = ($request->downloadable == 'true') ? true : false;
+        if ($request->has('downloadable')) {
+            $product->downloadable = $request->downloadable == 'true';
+        }
         $product->category_id = ($request->category_id) ? $request->category_id : null;
         $product->sub_category_id = ($request->sub_category_id) ? $request->sub_category_id : null;
         $product->sku = $request->sku;

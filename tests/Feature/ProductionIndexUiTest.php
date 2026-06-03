@@ -148,7 +148,7 @@ it('shows sufficient and insufficient material badges in the separate production
         $shortfallWarehouse = Warehouse::query()->create([
             'company_id' => (int) $fix['company']->id,
             'name' => 'RM shortfall test warehouse',
-            'code' => 'RM-SHORT-'.uniqid(),
+            'code' => 'RM-SHORT-' . uniqid(),
             'warehouse_type' => 'normal',
             'status' => 'active',
         ]);
@@ -157,7 +157,7 @@ it('shows sufficient and insufficient material badges in the separate production
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'rm-flag-'.uniqid(),
+        'version' => 'rm-flag-' . uniqid(),
         'code' => 'rm-flag-code',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -257,7 +257,7 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $bom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'modal-test-'.uniqid(),
+        'version' => 'modal-test-' . uniqid(),
         'code' => 'modal-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -267,7 +267,7 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $editableBom = ProductionBom::query()->create([
         'company_id' => (int) $fix['company']->id,
         'output_product_id' => (int) $fix['fg']->id,
-        'version' => 'editable-modal-test-'.uniqid(),
+        'version' => 'editable-modal-test-' . uniqid(),
         'code' => 'editable-modal-bom',
         'is_default' => false,
         'created_by' => $fix['user']->id,
@@ -326,6 +326,17 @@ it('returns ajax modal payloads for production order and bom create and edit scr
     $bomCreateResponse->assertSuccessful();
     expect((string) $bomCreateResponse->json('html'))->toContain('save-production-bom-form');
     expect((string) $bomCreateResponse->json('html'))->toContain('save-production-bom-button');
+
+    $doubleEncodedRedirect = urlencode(urlencode(route('production.boms.index')));
+    $bomCreateModalResponse = $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->withHeaders($headers)
+        ->get(route('production.boms.create', ['redirectUrl' => $doubleEncodedRedirect]));
+
+    $bomCreateModalResponse->assertSuccessful();
+    $bomCreateHtml = (string) $bomCreateModalResponse->json('html');
+    expect($bomCreateHtml)->toContain(route('production.boms.index'));
+    expect($bomCreateHtml)->not->toContain('%3A%2F%2F');
 
     $bomEditResponse = $this->actingAs($fix['userAuth'], 'web')
         ->withSession($session)

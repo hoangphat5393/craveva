@@ -34,7 +34,6 @@ class UpdatePurchaseProductRequest extends CoreRequest
             'type' => ['required', Rule::in(ProductType::values())],
             'selling_price' => 'required|numeric',
             'purchase_information' => 'sometimes',
-            'downloadable_file' => 'nullable|file',
             'opening_stock' => 'required_if:track_inventory,1',
             'purchase_price' => 'required_if:purchase_information,1,numeric',
             'wholesale_price' => 'nullable|numeric',
@@ -59,7 +58,6 @@ class UpdatePurchaseProductRequest extends CoreRequest
             'rate_per_unit.required_if' => __('purchase::messages.ratePerUnitRequired'),
             'selling_price.required_if' => __('purchase::messages.sellingPriceRequired'),
             'purchase_price.required_if' => __('purchase::messages.purchasePriceRequired'),
-            'downloadable_file.required_if' => __('validation.required', ['attribute' => __('app.downloadableFile')]),
         ];
     }
 

@@ -173,7 +173,7 @@ Form gồm các block trong `product-form-fields.blade.php` + create/edit (Media
 - [ok] **Packaging** — giống Raw Material (không UOM)?
 - [ok] **Service** — Wholesale/Employee **Ẩn**; **Ẩn** Unit type (lưu `unit_id` null); **Ẩn luôn** Inventory & shelf life, Specification/Source/Brand/Grade, Images (giữ Description)
 - [ok] **Manufactured product** — có ẩn Wholesale/Box/Employee trong pilot OEM? (đề xuất: **collapse**, không xóa)
-- [accordion] **Tax section** — ẩn hẳn vs accordion với NVL/Bao bì?
+- [ok] **Tax + Wholesale** — gom **một** accordion: _Giá bổ sung, thuế & bán hàng (tùy chọn)_
 - [ ] **Inventory metadata** (storage, certification, inventory type) — ẩn P1?
 - [ẩn luôn] **Images** — bắt buộc cho NVL không?
 - [ ] Có cần **config theo tenant** ngay không hay P1 cố định?

@@ -22,18 +22,41 @@
         margin-bottom: 1rem !important;
     }
 
-    .product-b2b-collapse-toggle {
-        margin-top: 0.35rem;
-        margin-bottom: 1.5rem;
+    .product-optional-pricing-tax-block {
+        margin-top: 1.25rem;
+        margin-bottom: 1.75rem;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
     }
 
-    .purchase-product-form-section.product-form-section-tax--accordion {
+    .product-optional-pricing-tax-toggle {
+        margin-bottom: 0;
+    }
+
+    .product-optional-pricing-tax-fields {
+        padding-top: 0.75rem;
+    }
+
+    .purchase-product-form-section.product-inventory-section {
         margin-top: 1.75rem !important;
-        padding-top: 0.35rem;
     }
 
-    .product-form-section-tax .product-tax-accordion-toggle {
-        margin-bottom: 0.75rem;
+    .product-description-section {
+        margin-top: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .product-description-fields {
+        padding-top: 0.75rem;
+    }
+
+    .purchase-product-form-section.product-media-section {
+        margin-top: 1.25rem;
+    }
+
+    .product-optional-pricing-tax-toggle a,
+    .product-description-accordion-toggle a {
+        text-transform: capitalize !important;
     }
 </style>
 
@@ -57,7 +80,10 @@
                             ])
 
                             <div class="col-12 purchase-product-form-section product-media-section">
-                                @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionMedia')])
+                                @include('purchase::purchase-products.partials.product-form-section-heading', [
+                                    'title' => __('purchase::app.productFormSectionMediaOptional'),
+                                    'class' => 'text-capitalize',
+                                ])
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <x-forms.file-multiple class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.product.addImages')" fieldName="file" fieldId="file-upload-dropzones" />
@@ -177,23 +203,11 @@
             window.togglePurchaseProductTypeFields($('#type').val());
         }
 
-        if (!$('#purchase_information').prop('checked')) {
-            $('.product-cost-price-column').addClass('d-none');
-        }
-
         $('#track_inventory').click(function() {
             if ($(this).prop('checked') == true) {
                 $('.track_inventory').removeClass('d-none');
             } else {
                 $('.track_inventory').addClass('d-none');
-            }
-        });
-
-        $('#purchase_information').change(function() {
-            if ($(this).prop('checked')) {
-                $('.product-cost-price-column').removeClass('d-none');
-            } else {
-                $('.product-cost-price-column').addClass('d-none');
             }
         });
 

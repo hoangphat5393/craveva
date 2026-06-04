@@ -155,16 +155,32 @@ enum ProductType: string
     }
 
     /**
-     * Raw material, semi-finished, packaging: always track cost; hide Purchase Information checkbox.
+     * Manufactured product may use BOM-driven standard cost (Custom checkbox).
      */
-    public static function forcesPurchaseInformationOnPurchaseForm(?string $type): bool
+    public static function supportsCostFromBomOnPurchaseForm(?string $type): bool
     {
-        return self::hidesSellingPriceOnPurchaseForm($type);
+        return $type === self::Goods->value;
     }
 
-    public static function hidesPurchaseInformationToggleOnPurchaseForm(?string $type): bool
+    public static function showsCostPriceOnPurchaseForm(?string $type): bool
     {
-        return self::forcesPurchaseInformationOnPurchaseForm($type);
+        return ! self::hidesCostPriceOnPurchaseForm($type);
+    }
+
+    /**
+     * Whether save validation requires a manual purchase_price on the product form.
+     */
+    public static function requiresPurchasePriceOnPurchaseForm(?string $type, bool $costFromBom = false): bool
+    {
+        if (self::hidesCostPriceOnPurchaseForm($type)) {
+            return false;
+        }
+
+        if (self::supportsCostFromBomOnPurchaseForm($type) && $costFromBom) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

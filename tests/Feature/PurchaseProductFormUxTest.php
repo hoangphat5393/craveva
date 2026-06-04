@@ -58,7 +58,7 @@ it('renders simplified raw material fields on purchase product create modal', fu
         ['user_id' => $user->id, 'permission_id' => (int) $permissionId],
         ['permission_type_id' => (int) $typeAllId],
     );
-    Cache::forget('permission-add_product-'.$user->id);
+    Cache::forget('permission-add_product-' . $user->id);
 
     $rawMaterial = Product::withoutGlobalScopes()
         ->where('company_id', $companyId)
@@ -86,10 +86,10 @@ it('renders simplified raw material fields on purchase product create modal', fu
     $content = $response->getContent();
 
     expect($content)
-        ->toContain('name="purchase_information"')
-        ->toContain('value="1"')
         ->toContain('id="purchase_price"')
         ->toContain(__('purchase::app.productFormCostOnlyHelp'))
         ->not->toContain('id="purchase_information"')
-        ->toMatch('/product-b2b-extra-pricing-block[^"]*d-none/');
+        ->not->toContain('id="cost_from_bom"')
+        ->toContain(__('purchase::app.productFormOptionalPricingTax'))
+        ->toMatch('/product-b2b-extra-pricing-fields[^"]*d-none/');
 });

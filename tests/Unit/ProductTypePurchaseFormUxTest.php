@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 use App\Enums\ProductType;
 
-it('forces purchase information for cost-only product types', function (): void {
+it('always shows cost price for cost-only product types', function (): void {
     foreach (ProductType::costOnlyPurchasePricingValues() as $type) {
-        expect(ProductType::forcesPurchaseInformationOnPurchaseForm($type))->toBeTrue()
-            ->and(ProductType::hidesPurchaseInformationToggleOnPurchaseForm($type))->toBeTrue()
+        expect(ProductType::showsCostPriceOnPurchaseForm($type))->toBeTrue()
+            ->and(ProductType::requiresPurchasePriceOnPurchaseForm($type))->toBeTrue()
+            ->and(ProductType::supportsCostFromBomOnPurchaseForm($type))->toBeFalse()
             ->and(ProductType::hidesB2bExtraPricingOnPurchaseForm($type))->toBeTrue()
             ->and(ProductType::usesTaxSectionAccordionOnPurchaseForm($type))->toBeTrue()
             ->and(ProductType::hidesProductMediaSectionOnPurchaseForm($type))->toBeTrue();
     }
+});
+
+it('supports cost from bom only on manufactured goods', function (): void {
+    expect(ProductType::supportsCostFromBomOnPurchaseForm(ProductType::Goods->value))->toBeTrue()
+        ->and(ProductType::supportsCostFromBomOnPurchaseForm(ProductType::RawMaterial->value))->toBeFalse()
+        ->and(ProductType::requiresPurchasePriceOnPurchaseForm(ProductType::Goods->value, true))->toBeFalse()
+        ->and(ProductType::requiresPurchasePriceOnPurchaseForm(ProductType::Goods->value, false))->toBeTrue();
 });
 
 it('uses collapsed b2b pricing only for manufactured goods', function (): void {

@@ -17,6 +17,7 @@ use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionBomItem;
 use Modules\Production\Http\Requests\StoreProductionBomRequest;
 use Modules\Production\Http\Requests\UpdateProductionBomRequest;
+use Modules\Production\Services\ProductionBomFgCostSyncService;
 use Modules\Production\Support\ProductionBomComponentUnitOptions;
 use Modules\Production\Support\ProductionBomLineCostCalculator;
 use Modules\Production\Support\ProductionProductUnitLabelMap;
@@ -104,6 +105,9 @@ class ProductionBomController extends AccountBaseController
 
             return $bom;
         });
+
+        $bom->load(['items.componentProduct']);
+        app(ProductionBomFgCostSyncService::class)->syncOutputProductFromBom($bom, $companyId);
 
         if ($request->ajax()) {
             return response()->json(Reply::successWithData(__('messages.recordSaved'), [
@@ -197,6 +201,9 @@ class ProductionBomController extends AccountBaseController
                 ]);
             }
         });
+
+        $bom->load(['items.componentProduct']);
+        app(ProductionBomFgCostSyncService::class)->syncOutputProductFromBom($bom, $companyId);
 
         if ($request->ajax()) {
             return response()->json(Reply::successWithData(__('messages.updateSuccess'), [

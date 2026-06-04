@@ -60,6 +60,14 @@ return [
         'yield_uom_shadow_enabled' => false,
     ],
 
+    /*
+     * When true, saving a Production BOM syncs standard cost to the output FG
+     * when products.cost_from_bom is enabled (Custom checkbox on product form).
+     */
+    'cost_sync' => [
+        'bom_drives_fg_purchase_price' => env('PRODUCTION_BOM_DRIVES_FG_PURCHASE_PRICE', false),
+    ],
+
     'fg_quantity_policy' => [
         'defaults' => [
             /*

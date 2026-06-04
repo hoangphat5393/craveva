@@ -1,261 +1,241 @@
 # Kế hoạch triển khai — BOM ↔ Giá vốn thành phẩm (FG)
 
 **Cập nhật:** 2026-05-27  
-**Trạng thái:** 📋 Planning — chờ PM chốt scope  
+**Trạng thái:** ✅ P1 code shipped (2026-05-27) — UAT + bật flag tenant còn lại  
 **Owner:** Dev + PM + Finance  
 **Liên quan:** Production BOM, Product `purchase_price`, Estimate Recipe BOM, B2B SO/Invoice
 
 **Doc liên quan**
 
-| File                                                                                               | Vai trò                                                  |
-| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md)                                       | Trạng thái code hiện tại                                 |
-| [`PHASE1_QUOTATION_PM_HUMAN_VI.md`](./PHASE1_QUOTATION_PM_HUMAN_VI.md)                             | Recipe BOM trên báo giá                                  |
-| [`BIOMIXING_FLOW_CONCEPTS_VI.md`](./BIOMIXING_FLOW_CONCEPTS_VI.md)                                 | Khái niệm BOM / RM / FG                                  |
-| [`BIOMIXING_MULTITENANT_RISKS_VI.md`](./BIOMIXING_MULTITENANT_RISKS_VI.md)                         | B2B vs Production tenant                                 |
-| [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) | Vận hành PO / posting                                    |
-| [`21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md`](./21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md)     | Hiện trạng checkbox Purchase Information & giá theo type |
-| [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md)   | Đề xuất ẩn field form theo Product Type (PM)           |
+| File                                                                                               | Vai trò                                                |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md)                                       | Trạng thái code hiện tại                               |
+| [`PHASE1_QUOTATION_PM_HUMAN_VI.md`](./PHASE1_QUOTATION_PM_HUMAN_VI.md)                             | Recipe BOM trên báo giá                                |
+| [`BIOMIXING_FLOW_CONCEPTS_VI.md`](./BIOMIXING_FLOW_CONCEPTS_VI.md)                                 | Khái niệm BOM / RM / FG                                |
+| [`BIOMIXING_MULTITENANT_RISKS_VI.md`](./BIOMIXING_MULTITENANT_RISKS_VI.md)                         | B2B vs Production tenant                               |
+| [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) | Vận hành PO / posting                                  |
+| [`21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md`](./21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md)     | Hiện trạng **trước P1** (sẽ lỗi thời sau khi drop cột) |
+| [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md)   | Ẩn field theo Product Type (đã phần lớn làm)           |
 
 ---
 
 ## 1. Tóm tắt cho PM (30 giây)
 
-| Câu hỏi                                        | Trả lời hiện tại                                                                                                  |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| BOM cost có **ghi đè** cost trên Product (FG)? | **Không**                                                                                                         |
-| SO / Invoice B2B có dùng cost BOM?             | **Không** — chỉ **giá bán**                                                                                       |
-| Cost BOM dùng để làm gì?                       | Tính **hiển thị** trên màn BOM; copy sang **Recipe BOM báo giá**; đầu vào tính từ **cost NVL** (`purchase_price`) |
-| Gap chính                                      | FG có thể **$10** (nhập tay) trong khi BOM **$3.70** → tồn kho / báo cáo nội bộ lệch                              |
+| Câu hỏi                                        | Trả lời hiện tại / sau P1                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| BOM cost có **ghi đè** cost trên Product (FG)? | **Không** (hiện tại) → **Có** khi tick **Custom** + lưu BOM (P1)                                       |
+| SO / Invoice B2B có dùng cost BOM?             | **Không** — chỉ **giá bán**                                                                            |
+| Checkbox **Purchase Information**?             | **Bỏ hẳn** (UI + **xóa cột DB**) — thay bằng **Custom** trên FG + **Cost price luôn hiện** (theo type) |
+| Gap chính                                      | FG cost tay **$10** vs BOM **$3.70** → P1 sync `purchase_price` khi lưu BOM                            |
 
-**Hướng đề xuất:** Phân loại SP trên Product + **BOM là nguồn cost FG** (sync khi lưu BOM) + B2B không đổi.
+**Hướng P1:** Bỏ `purchase_information` → **Custom** (`cost_from_bom`) trên **Manufactured product** → **disable** nhập cost → sync tổng NVL khi **lưu BOM**. B2B giá bán không đổi.
 
 ---
 
-## 2. Hiện trạng code (baseline)
+## 2. Hiện trạng code (baseline) → mục tiêu P1
 
 ### 2.1 Ba “cost” tách nhau
 
-| Khái niệm                    | Lưu ở đâu                         | Dùng cho                                                                |
-| ---------------------------- | --------------------------------- | ----------------------------------------------------------------------- |
-| **Product `purchase_price`** | `products.purchase_price`         | PO mua NVL, inventory valuation, **đầu vào** tính BOM                   |
-| **Production BOM cost**      | Không lưu trên BOM — tính runtime | UI BOM (`ProductionBomLineCostCalculator` → `ProductUnitPriceResolver`) |
-| **Estimate Recipe BOM**      | `estimate_bom_lines`              | Margin OEM / VP approval — **tách** khỏi Product FG                     |
+| Khái niệm                    | Lưu ở đâu                         | Dùng cho                                       |
+| ---------------------------- | --------------------------------- | ---------------------------------------------- |
+| **Product `purchase_price`** | `products.purchase_price`         | PO gợi ý cost, inventory, **đầu vào** tính BOM |
+| **Production BOM cost**      | Không lưu trên BOM — tính runtime | UI BOM (`ProductionBomLineCostCalculator`)     |
+| **Estimate Recipe BOM**      | `estimate_bom_lines`              | Margin OEM — tách khỏi Product FG              |
 
-### 2.3 ⚠️ Không nhầm: **Purchase Information** (có sẵn) vs **Cost from BOM** (đề xuất P1)
+### 2.2 Hiện tại vs mục tiêu form Product
 
-Trên form Product (`purchase-products/partials/product-form-fields.blade.php`) đã có checkbox **Purchase Information** — **không phải** tính năng BOM price PM mới đề xuất.
+|                        | **Hiện tại**                                         | **Sau P1 (đã chốt)**                                                  |
+| ---------------------- | ---------------------------------------------------- | --------------------------------------------------------------------- |
+| `purchase_information` | Checkbox ẩn/hiện cost; `0` → `purchase_price = null` | **Xóa cột DB** + gỡ toàn bộ code tham chiếu                           |
+| Cost price trên form   | Phụ thuộc checkbox                                   | **Luôn hiện** (trừ **Service**): NVL/FG bắt buộc có cost khi cần      |
+| FG sản xuất            | Nhập cost tay                                        | Checkbox **Custom** → ô cost **disabled**; giá = tổng BOM sau lưu BOM |
+| Cờ DB mới              | —                                                    | `cost_from_bom` (bool), chỉ meaningful cho `type = goods`             |
 
-|                                    | **Purchase Information** (hiện tại)                   | **Cost from BOM** (kế hoạch P1 — chưa code)            |
-| ---------------------------------- | ----------------------------------------------------- | ------------------------------------------------------ |
-| **Field DB**                       | `products.purchase_information` (0/1)                 | Đề xuất: `cost_from_bom` hoặc config tenant            |
-| **Khi bật**                        | Hiện **Cost price** — nhập giá vốn **tay**            | Ẩn nhập tay; hiện cost **read-only từ BOM**            |
-| **Khi tắt**                        | **Ẩn** Cost price; lưu `purchase_price = null`        | _(chưa có — không áp dụng)_                            |
-| **Mục đích gốc (Purchase module)** | SP **có** theo dõi mua hàng / giá vốn (NVL, hàng mua) | SP **FG sản xuất** — cost lấy từ BOM, sync khi lưu BOM |
-| **Liên quan BOM?**                 | **Không** — chỉ show/hide ô nhập                      | **Có** — gắn Production BOM                            |
+**Lưu ý:** Cột `purchase_information` **không** được dùng ở PO / Bill / GRN / SO / Invoice (chỉ form Product + validation). Xóa cột **an toàn** sau khi dọn code (~15 file PHP/Blade/JS).
 
-**Công dụng thực tế của Purchase Information hôm nay**
+### 2.3 File cần sửa khi drop `purchase_information`
 
-- **Tick:** sản phẩm cần **Cost price** (bắt buộc khi lưu) — dùng cho PO mua, tồn kho, và **đầu vào** tính tổng BOM (cost NVL).
-- **Bỏ tick:** sản phẩm **không** khai báo giá vốn trên catalog (ví dụ chỉ bán, không mua / không cần cost) → Cost price biến mất trên form.
+| Khu vực              | Path                                                                                                                                                                                                 |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Migration drop cột   | `database/migrations/YYYY_MM_DD_drop_purchase_information_from_products_table.php`                                                                                                                   |
+| Model                | `app/Models/Product.php`                                                                                                                                                                             |
+| Form + JS            | `product-form-fields.blade.php`, `product-type-dependent-fields.blade.php`, `create.blade.php`, `edit.blade.php`, `product-form-client-validation.blade.php`, `purchase-product-unit-conversions.js` |
+| Persist + validation | `PurchaseProductController.php`, `StorePurchaseProductRequest.php`, `UpdatePurchaseProductRequest.php`                                                                                               |
+| Tests                | `PurchaseProductFormUxTest.php`, `ProductUnitPriceResolverCostOnlyTest.php` (bỏ assert PI)                                                                                                           |
+| BOM sync (mới)       | `ProductionBomFgCostSyncService`, hook `ProductionBomController`                                                                                                                                     |
 
-**JS:** `purchase-products/ajax/edit.blade.php` — `#purchase_information` change → add/remove class `d-none` trên `.purchase_information`.
+### 2.4 File / class BOM (giữ nguyên vai trò)
 
-**Kết luận triển khai:** **Không** tái sử dụng checkbox Purchase Information cho BOM FG — logic ngược (tắt = ẩn cost, bật = nhập tay). P1 cần **checkbox/flag riêng** cho FG manufactured + service sync BOM → `purchase_price`.
-
----
-
-### 2.4 File / class chính
-
-| Khu vực                | Path                                                                                        |
-| ---------------------- | ------------------------------------------------------------------------------------------- |
-| Tính cost dòng BOM     | `Modules/Production/Support/ProductionBomLineCostCalculator.php`                            |
-| Resolve purchase price | `Modules/Warehouse/Services/ProductUnitPriceResolver.php`                                   |
-| Lưu BOM                | `Modules/Production/Http/Controllers/ProductionBomController.php`                           |
-| Copy BOM → báo giá     | `app/Services/Estimates/EstimateProductionBomCopier.php`                                    |
-| Margin báo giá         | `app/Services/Estimates/EstimateRecipeMarginSummary.php`                                    |
-| Convert Estimate → SO  | `app/Http/Controllers/EstimateController.php` (`convertToSalesOrder`)                       |
-| Form cost product      | `Modules/Purchase/Resources/views/purchase-products/partials/product-form-fields.blade.php` |
-
-### 2.5 Sau Production Order complete
-
-- Xuất/nhập kho: `Modules/Production/Services/ProductionPostingService.php`
-- **Không** cập nhật `purchase_price` FG sau complete (baseline)
+| Khu vực                | Path                                                              |
+| ---------------------- | ----------------------------------------------------------------- |
+| Tính cost dòng BOM     | `Modules/Production/Support/ProductionBomLineCostCalculator.php`  |
+| Resolve purchase price | `Modules/Warehouse/Services/ProductUnitPriceResolver.php`         |
+| Lưu BOM                | `Modules/Production/Http/Controllers/ProductionBomController.php` |
 
 ---
 
-## 3. Quyết định PM cần chốt
+## 3. Quyết định PM / Dev (đã chốt trong plan)
 
-Ghi kết quả vào bảng **Decision log** (mục 8).
-
-| #   | Quyết định                                  | Lựa chọn A (đề xuất)                                                  | Lựa chọn B                    |
-| --- | ------------------------------------------- | --------------------------------------------------------------------- | ----------------------------- |
-| D1  | FG sản xuất — cost lấy từ đâu?              | **BOM (standard)**                                                    | Nhập tay trên Product         |
-| D2  | UI Product — checkbox PM đề xuất            | **“Cost from BOM”** (field mới — **không** dùng Purchase Information) | Chỉ ẩn cost, không sync       |
-| D3  | **Khi nào** sync BOM → FG `purchase_price`? | **Khi lưu BOM** (P1)                                                  | Thêm **khi complete PO** (P2) |
-| D4  | SP không có BOM / mua sẵn                   | Luôn nhập cost tay                                                    | —                             |
-| D5  | Đổi cost NVL sau PO mua                     | Cập nhật `purchase_price` NVL → **re-save BOM** hoặc job recalc FG    | Manual                        |
-| D6  | Tenant chỉ B2B (không Production)           | Feature flag **tắt** — không đổi UX                                   | —                             |
+| #   | Quyết định                | Lựa chọn đã chốt                                                                                   |
+| --- | ------------------------- | -------------------------------------------------------------------------------------------------- |
+| D1  | FG sản xuất — cost        | **BOM** (sync khi lưu BOM)                                                                         |
+| D2  | UI Product                | **Bỏ** Purchase Information; **Custom** + `cost_from_bom`; cost **luôn hiện** (disable khi Custom) |
+| D3  | Khi sync                  | **Khi lưu BOM** (P1)                                                                               |
+| D4  | FG mua sẵn / không Custom | Nhập **cost tay** (ô enabled)                                                                      |
+| D5  | Đổi cost NVL              | Re-save BOM hoặc job (P3)                                                                          |
+| D6  | Tenant chỉ B2B            | Feature flag **tắt** — không Custom UX                                                             |
+| D7  | Custom trước BOM          | **Cho lưu** FG; `purchase_price` null đến khi lưu BOM (§5.1)                                       |
+| D8  | DB                        | **Drop** `products.purchase_information`; **không** default `purchase_price = 0` toàn bảng         |
 
 ---
 
 ## 4. Quy trình nghiệp vụ mục tiêu
 
-### 4.1 Phân loại sản phẩm
+### 4.1 Form Product theo loại (sau P1)
 
-| Loại                 | Cost                             | Form Product                                       |
-| -------------------- | -------------------------------- | -------------------------------------------------- |
-| NVL / packaging      | Nhập tay (bắt buộc nếu SX / OEM) | Cost price **hiện**                                |
-| FG mua sẵn           | Nhập tay                         | Cost price **hiện**                                |
-| FG sản xuất (có BOM) | **Từ BOM**                       | **Ẩn** nhập tay; hiện _Standard cost from BOM: $X_ |
+| Loại                            | Checkbox **Custom** | **Cost price** trên form                                             |
+| ------------------------------- | ------------------- | -------------------------------------------------------------------- |
+| Raw material / Semi / Packaging | Không               | Luôn hiện, **bắt buộc** nhập (> 0)                                   |
+| **Manufactured (`goods`)**      | Có                  | Custom **OFF** → nhập tay; **ON** → **disabled**, hiện số (sync BOM) |
+| Service                         | Không               | **Ẩn** (không cost)                                                  |
 
-### 4.2 Luồng end-to-end (chuẩn)
+### 4.2 Luồng end-to-end
 
 ```
-NVL purchase_price đủ
-  → Tạo BOM FG
-  → Lưu BOM → sync FG purchase_price = tổng BOM
-  → Quotation: Load BOM (recipe) + giá bán
-  → Duyệt margin (recipe vs giá bán)
+NVL có purchase_price
+  → Tạo FG + tick Custom (chưa BOM vẫn lưu được)
+  → Tạo BOM → Lưu BOM → purchase_price FG = tổng BOM
   → SO / Invoice: giá bán only
-  → Production Order → complete → tồn kho FG theo purchase_price đã sync
 ```
 
-### 4.3 Ví dụ số — Nasi Lemak
+### 4.3 Ví dụ — Nasi Lemak
 
-| Bước         | Document         | Số (mục tiêu sau triển khai)        |
-| ------------ | ---------------- | ----------------------------------- |
-| NVL + BOM    | BOM UI           | **S$3.70** / phần                   |
-| Product FG   | `purchase_price` | **S$3.70** (sync, không S$10 tay)   |
-| Estimate     | Bán 1.000 × S$12 | Doanh thu S$12.000; recipe ~S$3.700 |
-| SO / Invoice | Giá bán          | S$12.000 — **không đổi**            |
-| Tồn FG 1.000 | Inventory        | ~S$3.700 (không S$10.000)           |
+| Bước                        | Số mục tiêu                   |
+| --------------------------- | ----------------------------- |
+| BOM UI                      | S$3.70                        |
+| Product FG `purchase_price` | S$3.70 (sync; không S$10 tay) |
+| SO / Invoice                | Giá bán không đổi             |
 
 ---
 
 ## 5. Phased implementation
 
-### Phase 0 — Không dev (ngay)
+### Phase 0 — Không dev
 
-- [ ] PM + Finance ký **SOP tạm:** NVL bắt buộc cost; FG có BOM không tin cost tay trên product
-- [ ] Training sales: margin OEM = Recipe BOM; SO = giá bán
-- [ ] Pilot tenant: kiểm tra NVL thiếu `purchase_price` → BOM = 0
-
-**Effort:** 0 dev
+- [ ] SOP: NVL bắt buộc cost; FG Custom = cost từ BOM sau lưu BOM
+- [ ] Pilot: NVL thiếu cost → BOM total null → không sync FG
 
 ---
 
-### Phase 1 — MVP (đề xuất sprint 1, ~1 tuần)
+### Phase 1 — MVP (~1–1.5 tuần)
 
-**Mục tiêu:** Checkbox + sync standard cost khi lưu BOM. **Không** đổi B2B pricing.
+**Mục tiêu:** Bỏ `purchase_information` + Custom + sync BOM → `purchase_price`. **Không** đổi B2B pricing.
 
-| ID    | Task                     | Chi tiết kỹ thuật                                                                                   | Done |
-| ----- | ------------------------ | --------------------------------------------------------------------------------------------------- | ---- |
-| P1-01 | Migration / flag product | Cột `cost_from_bom` (bool) hoặc config + chỉ áp FG `forBomOutput()`                                 | ☐    |
-| P1-02 | Config tenant            | `production.cost_sync.bom_drives_fg_purchase_price` (default false)                                 | ☐    |
-| P1-03 | Service sync             | `ProductionBomFgCostSyncService`: `summarizeSavedLines()` → update `products.purchase_price` output | ☐    |
-| P1-04 | Hook save BOM            | Gọi sync sau `ProductionBomController` store/update (transaction)                                   | ☐    |
-| P1-05 | UI Product               | Checkbox **Cost from BOM**; ẩn `#purchase_price` khi bật; read-only label + link BOM                | ☐    |
-| P1-06 | Validation               | Không cho bật `cost_from_bom` nếu chưa có BOM active; cảnh báo NVL thiếu cost                       | ☐    |
-| P1-07 | Tests                    | Feature: save BOM → FG price; flag off → không đổi; B2B SO price unchanged                          | ☐    |
-| P1-08 | UAT checklist            | Mục 7 file này                                                                                      | ☐    |
+| ID    | Task                        | Chi tiết                                                                                                                                  | Done |
+| ----- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| P1-00 | Drop `purchase_information` | Migration `dropColumn('purchase_information')`; gỡ fillable, requests, controller, Blade, JS, tests; grep sạch repo                       | ☑    |
+| P1-01 | `cost_from_bom`             | Migration `boolean default false` trên `products`; chỉ UI/validation cho `goods`                                                          | ☑    |
+| P1-02 | Config tenant               | `production.cost_sync.bom_drives_fg_purchase_price` (default false)                                                                       | ☑    |
+| P1-03 | Service sync                | `ProductionBomFgCostSyncService` ← `summarizeSavedLines()` → `purchase_price` output FG                                                   | ☑    |
+| P1-04 | Hook BOM                    | Sau `ProductionBomController` store/update (transaction)                                                                                  | ☑    |
+| P1-05 | UI Product                  | Bỏ PI; **luôn** cột Cost (theo type); checkbox **Custom**; Custom ON → `#purchase_price` **disabled** + hint + link BOM                   | ☑    |
+| P1-06 | Validation                  | RM/Semi/Packaging: `purchase_price` required, min > 0; Custom ON: cho lưu FG, `purchase_price` nullable đến BOM; sync skip nếu total null | ☑    |
+| P1-07 | Data hygiene (optional)     | SP stockable cũ `purchase_price` null: để null hoặc Finance backfill — **không** mass-update `= 0`                                        | ☑    |
+| P1-08 | Tests                       | Drop PI regression; BOM sync; Custom bootstrap; SO price unchanged                                                                        | ☑    |
+| P1-09 | UAT                         | Mục 7                                                                                                                                     | ☐    |
 
-**Effort ước lượng:** 5–8 ngày dev (1 người quen codebase) + QA
+**`purchase_price` — không làm:** default `0` toàn bảng (làm BOM/tồn sai). FG Custom chưa BOM: **null** + UI _Pending BOM_.
 
-**Out of scope P1:** complete PO actual cost, labor/overhead, auto-sync khi đổi cost NVL
+**Out of scope P1:** labor/overhead BOM; sync khi complete PO (P2); auto-recalc khi đổi NVL (P3)
 
----
+### 5.1 Bootstrap FG trước BOM (D7)
 
-### Phase 2 — Actual cost on production complete (~2–3 tuần)
+| Bước                         | Hành vi                                                                                      |
+| ---------------------------- | -------------------------------------------------------------------------------------------- |
+| Lưu FG + Custom ON, chưa BOM | OK; `cost_from_bom = 1`; `purchase_price` **null**; cost field disabled, label _Pending BOM_ |
+| Lưu BOM                      | Sync `purchase_price` = tổng (nếu config + total hợp lệ)                                     |
 
-**Mục tiêu:** Sau complete PO, FG cost = cost NVL thực xuất (nếu Finance cần).
-
-| ID    | Task                                                                   | Done |
-| ----- | ---------------------------------------------------------------------- | ---- |
-| P2-01 | Phân tích posting / consumption — lưu unit cost tại thời điểm xuất     | ☐    |
-| P2-02 | Rollup actual → FG `purchase_price` (hoặc bảng `product_cost_history`) | ☐    |
-| P2-03 | Policy: standard (save BOM) vs actual (complete) — config              | ☐    |
-| P2-04 | Audit log khi cost FG đổi                                              | ☐    |
-| P2-05 | Finance UAT + regression inventory                                     | ☐    |
-
-**Blocker:** Hiện consumption **chưa** lưu unit cost riêng — cần design trước khi estimate chính xác.
+**Không:** validate “phải có BOM mới lưu Product”.
 
 ---
 
-### Phase 3 — Backlog (optional)
+### Phase 2 — Actual cost on PO complete
 
-- [ ] Job recalc FG khi `purchase_price` NVL đổi (GRN / adjust stock)
-- [ ] Đồng bộ logic cost Recipe BOM = Production BOM resolver (UOM conversion thống nhất)
-- [ ] Báo cáo COGS / margin SO vs BOM
-- [ ] Labor + overhead trên BOM
+(Như bản cũ — P2-01 … P2-05)
 
 ---
 
-## 6. Ảnh hưởng theo chứng từ (không đổi vs đổi)
+### Phase 3 — Backlog
 
-| Chứng từ                  | Sau P1                                    | Ghi chú                                      |
-| ------------------------- | ----------------------------------------- | -------------------------------------------- |
-| **PO mua NVL**            | Không đổi                                 | Vẫn gợi ý cost NVL                           |
-| **Estimate / Recipe BOM** | Không bắt buộc đổi                        | Vẫn copy NVL cost; có thể align resolver sau |
-| **SO / Invoice B2B**      | **Không đổi**                             | Giá bán + Pricing tier                       |
-| **Production BOM UI**     | Không đổi                                 | Đã tính cost                                 |
-| **Product FG cost**       | **Đổi** khi lưu BOM (nếu flag + checkbox) | Sync `purchase_price`                        |
-| **Inventory valuation**   | **Đổi** theo FG cost mới                  | Finance cần biết                             |
+- Job recalc FG khi NVL đổi cost
+- Labor + overhead trên BOM
+- Align Recipe BOM resolver với Production
+
+---
+
+## 6. Ảnh hưởng chứng từ
+
+| Chứng từ                       | Sau P1                                                |
+| ------------------------------ | ----------------------------------------------------- |
+| PO / Bill / GRN / SO / Invoice | **Không đổi** (không từng đọc `purchase_information`) |
+| Product form                   | **Đổi** — bỏ PI, Custom, cost luôn hiện               |
+| Product FG cost                | **Đổi** khi lưu BOM (Custom ON)                       |
+| Inventory valuation            | **Đổi** theo `purchase_price` FG sau sync             |
 
 ---
 
 ## 7. UAT checklist (Phase 1)
 
-**Setup:** FG Nasi Lemak; NVL có cost; BOM tổng ≈ S$3.70; FG cost tay cũ S$10.
+- [ ] Không còn checkbox / cột **Purchase Information** (DB + UI)
+- [ ] NVL: Cost price luôn hiện, bắt buộc > 0
+- [ ] FG mới + **Custom** trước BOM → lưu OK; cost disabled, _Pending_
+- [ ] Lưu BOM → FG `purchase_price` ≈ tổng BOM
+- [ ] FG **Custom OFF** → nhập cost tay
+- [ ] SO giá bán không đổi
+- [ ] Tenant flag off → không sync BOM (regression)
 
-- [ ] Bật flag tenant + tick **Cost from BOM** trên FG → ô cost ẩn, hiện BOM cost read-only
-- [ ] Lưu BOM → Product FG `purchase_price` = tổng BOM (~3.70)
-- [ ] Tạo SO B2B → giá bán **không** phụ thuộc cost FG
-- [ ] Convert Estimate → SO → giá bán giữ nguyên; recipe không copy sang SO
-- [ ] Complete PO → tồn FG × cost ≈ khớp BOM (không còn 10.000 nếu 1000 × 3.70)
-- [ ] SP mua sẵn (không tick) → vẫn nhập cost tay bình thường
-- [ ] Flag tenant **off** → hành vi như hiện tại (regression)
-
-**Tests gợi ý:** `tests/Feature/ProductionBomFgCostSyncTest.php` (tạo khi implement)
+**Tests:** `ProductionBomFgCostSyncTest.php`, cập nhật `PurchaseProductFormUxTest.php`
 
 ---
 
-## 8. Decision log (PM điền)
+## 8. Decision log
 
-| Ngày | Quyết định                       | Người chốt | Ghi chú |
-| ---- | -------------------------------- | ---------- | ------- |
-|      | D1–D6                            |            |         |
-|      | Phạm vi sprint (P1 only / P1+P2) |            |         |
-|      | Tên checkbox UI (EN/VI)          |            |         |
+| Ngày       | Quyết định                                              | Người chốt | Ghi chú                           |
+| ---------- | ------------------------------------------------------- | ---------- | --------------------------------- |
+| 2026-05-27 | D2: **Custom** thay PI trên UI                          | Gary       |                                   |
+| 2026-05-27 | **D8: Drop** `purchase_information` khỏi DB             | User + Dev | Gỡ ~15 file; PO/SO không dùng cột |
+| 2026-05-27 | D7: Custom trước BOM — cho lưu FG                       | User       |                                   |
+| 2026-05-27 | Cost luôn hiện; Custom ON → **disable** cost (không ẩn) | User       |                                   |
+| 2026-05-27 | **Không** default `purchase_price = 0` toàn DB          | Dev        | Null + validate RM; tránh BOM sai |
 
 ---
 
 ## 9. Rủi ro & giảm thiểu
 
-| Rủi ro                                            | Giảm thiểu                                             |
-| ------------------------------------------------- | ------------------------------------------------------ |
-| NVL thiếu cost → BOM = 0 → sync FG = 0            | Validate trước save BOM; block sync nếu tổng null      |
-| Sửa BOM → cost FG nhảy → valuation đổi            | Feature flag; thông báo Finance; optional audit log P2 |
-| User hiểu nhầm checkbox “Custom”                  | Đổi label → **Cost from BOM** / **Manufactured**       |
-| Tenant B2B thuần                                  | Flag off — zero UX change                              |
-| Estimate recipe vs production resolver khác (UOM) | Document; Phase 3 align                                |
+| Rủi ro                                           | Giảm thiểu                                                               |
+| ------------------------------------------------ | ------------------------------------------------------------------------ |
+| Migration drop cột trên tenant có custom SQL     | Chạy staging trước; backup                                               |
+| FG cũ từng `purchase_information = 0`, cost null | Sau drop: type goods + Custom OFF → user nhập cost hoặc bật Custom + BOM |
+| `purchase_price = 0` mass default                | **Không làm** (D8)                                                       |
+| Custom ON, chưa BOM                              | Banner _Pending BOM_; sync khi lưu BOM                                   |
+| NVL thiếu cost                                   | Block sync; cảnh báo BOM                                                 |
 
 ---
 
-## 10. Theo dõi tiến độ (cập nhật hàng sprint)
+## 10. Tiến độ sprint
 
-| Sprint | Mục tiêu       | Trạng thái | PR / branch |
-| ------ | -------------- | ---------- | ----------- |
-|        | P0 SOP         | ☐          |             |
-|        | P1 MVP         | ☐          |             |
-|        | P2 Actual cost | ☐          |             |
-
----
-
-## 11. Một câu trả lời stakeholder (EN)
-
-> BOM cost does **not** currently override finished-goods product cost. Planned fix: optional **Cost from BOM** on manufactured products, sync standard cost when BOM is saved — **B2B selling prices unchanged**.
+| Sprint | Mục tiêu                         | Trạng thái |
+| ------ | -------------------------------- | ---------- |
+|        | P0 SOP                           | ☐          |
+|        | P1 MVP (drop PI + Custom + sync) | ☑ code     |
+|        | P2 Actual cost                   | ☐          |
 
 ---
 
-_File living doc — cập nhật checkbox ☐ → ☑ khi hoàn thành task; đổi trạng thái header khi PM chốt / ship._
+## 11. Stakeholder (EN)
+
+> We will **remove** the legacy `purchase_information` flag, always show cost on product forms (by type), add a **Custom** option on manufactured products to **lock** cost to the BOM total on BOM save, and sync `purchase_price` — **B2B selling prices unchanged**.
+
+---
+
+_File living doc — cập nhật khi ship P1._

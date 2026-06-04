@@ -28,12 +28,11 @@ it('uses alternate uom cost_price for raw material bom costing not selling_price
 
     $product = Product::factory()->create([
         'company_id' => $company->id,
-        'name' => 'RM UOM cost test '.uniqid(),
+        'name' => 'RM UOM cost test ' . uniqid(),
         'type' => ProductType::RawMaterial->value,
         'unit_id' => $baseUnit->id,
         'purchase_price' => 10,
         'price' => 999,
-        'purchase_information' => 1,
     ]);
 
     ProductUnitConversion::query()->create([
@@ -71,12 +70,11 @@ it('does not fall back to selling price on uom row for cost-only product types',
 
     $product = Product::factory()->create([
         'company_id' => $company->id,
-        'name' => 'RM UOM factor cost test '.uniqid(),
+        'name' => 'RM UOM factor cost test ' . uniqid(),
         'type' => ProductType::RawMaterial->value,
         'unit_id' => $baseUnit->id,
         'purchase_price' => 10,
         'price' => 500,
-        'purchase_information' => 1,
     ]);
 
     ProductUnitConversion::query()->create([

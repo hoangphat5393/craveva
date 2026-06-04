@@ -107,10 +107,6 @@ module.exports = function initPurchaseProductUnitConversions($root) {
 
     function basePricingPrice() {
         if (isCostOnlyMode()) {
-            if (!$form.find('#purchase_information').prop('checked')) {
-                return 0;
-            }
-
             return parsePositivePrice($form.find('#purchase_price').first());
         }
 
@@ -300,7 +296,7 @@ module.exports = function initPurchaseProductUnitConversions($root) {
     });
 
     const pricingFieldSelector =
-        '#unit_type_id, #selling_price, #purchase_price, #purchase_information';
+        '#unit_type_id, #selling_price, #purchase_price, #cost_from_bom';
 
     $form
         .find(pricingFieldSelector)

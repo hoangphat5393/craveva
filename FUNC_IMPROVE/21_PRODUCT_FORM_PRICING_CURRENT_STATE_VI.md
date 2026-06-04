@@ -1,19 +1,19 @@
 # Hiện trạng form Product — Pricing, Purchase Information & Product Type
 
 **Cập nhật:** 2026-05-27  
-**Mục đích:** Tóm tắt **trước khi triển khai** các tính năng mới (BOM → FG cost, v.v.) — tránh nhầm checkbox **Purchase Information** với logic giá bán / giá vốn theo loại sản phẩm.  
+**Mục đích:** Tóm tắt **hiện trạng code trước P1**. Sau khi ship [`20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md`](./20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md): **xóa** cột `purchase_information`, checkbox **Custom**, cost luôn hiện (theo type).  
 **Đối tượng:** PM, Finance, Dev  
 **Màn hình:** Inventory → Products → Add / Edit Product  
 **Code chính:** `Modules/Purchase/Resources/views/purchase-products/partials/product-form-fields.blade.php`, `App\Enums\ProductType`
 
 **Doc liên quan**
 
-| File                                                                                               | Vai trò                                  |
-| -------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| [`20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md`](./20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md) | Kế hoạch sync cost FG từ BOM (chưa code) |
-| [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md)   | **Đề xuất ẩn field theo Product Type (PM)** |
-| [`../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md)     | Loại SP & BOM / Production               |
-| [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                       | UOM đa đơn vị                            |
+| File                                                                                               | Vai trò                                           |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| [`20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md`](./20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md) | P1: drop `purchase_information`, Custom, sync BOM |
+| [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md)   | **Đề xuất ẩn field theo Product Type (PM)**       |
+| [`../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md)     | Loại SP & BOM / Production                        |
+| [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                       | UOM đa đơn vị                                     |
 
 ---
 
@@ -23,8 +23,8 @@
 | ------------------------------------------------------ | ------------------------------------------------------------------ |
 | Checkbox **Purchase Information** điều khiển gì?       | Chỉ **hiện / ẩn ô Cost price** trên form — **không** liên quan BOM |
 | Loại nào **không có** Selling price trên form?         | **Raw Material**, **Semi Finished**                                |
-| Loại nào **có** Selling price?                         | **Manufactured Product (goods)**, **Service**                        |
-| Loại nào **không có** Cost price?                      | **Service** (ẩn Purchase Information + Cost price)                     |
+| Loại nào **có** Selling price?                         | **Manufactured Product (goods)**, **Service**                      |
+| Loại nào **không có** Cost price?                      | **Service** (ẩn Purchase Information + Cost price)                 |
 | BOM có ghi đè Cost price trên Product?                 | **Không** — cost BOM chỉ tính runtime / copy sang báo giá          |
 | Create product mặc định checkbox Purchase Information? | **Bật (tick)**                                                     |
 
@@ -84,8 +84,8 @@ Nhãn UI lấy từ form Products (`ProductType::label()`).
 | 1   | **Manufactured product** | `goods`         | **Có** — bắt buộc       | **Có** — bắt buộc nếu tick Purchase Information | Không                             | Thành phẩm / đầu ra BOM. Ảnh PM: type = Manufactured Product → thấy cả Selling + Cost |
 | 2   | **Raw Material**         | `raw_material`  | **Không** — ẩn          | **Có** — bắt buộc nếu tick Purchase Information | **Có** — cột giá = **Cost price** | NVL; `price` luôn `null` khi lưu                                                      |
 | 3   | **Semi Finished**        | `semi_finished` | **Không** — ẩn          | **Có** — bắt buộc nếu tick Purchase Information | **Có** — cột giá = **Cost price** | BTP / WIP; cùng UX cost-only như Raw Material (2026-05-27)                            |
-| 4   | **Packaging**            | `packaging`     | **Không** — ẩn          | **Có** — bắt buộc nếu tick Purchase Information | Không                             | Bao bì BOM; cost-only như NVL                                                           |
-| 5   | **Service**              | `service`       | **Có** — bắt buộc       | **Không** — ẩn checkbox + cost                  | Không                             | Chỉ giá bán; `purchase_price` luôn null khi lưu                                         |
+| 4   | **Packaging**            | `packaging`     | **Không** — ẩn          | **Có** — bắt buộc nếu tick Purchase Information | Không                             | Bao bì BOM; cost-only như NVL                                                         |
+| 5   | **Service**              | `service`       | **Có** — bắt buộc       | **Không** — ẩn checkbox + cost                  | Không                             | Chỉ giá bán; `purchase_price` luôn null khi lưu                                       |
 
 ### 3.1 Ma trận nhanh — có Selling price?
 
@@ -178,12 +178,12 @@ Khi chọn **Manufactured Product** (`goods`) như screenshot Add Products:
 
 ## 8. Gap / hướng triển khai tiếp (chưa làm)
 
-| Gap                                  | Ghi chú                                                                            |
-| ------------------------------------ | ---------------------------------------------------------------------------------- |
-| Form quá nhiều field (PM)            | Đề xuất ẩn theo type — xem [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md) |
-| FG cost ≠ BOM cost                   | `goods.purchase_price` nhập tay; BOM tính riêng — xem plan P1                      |
-| Checkbox Purchase Information vs BOM | **Không** tái sử dụng — cần flag riêng “Cost from BOM” cho FG                      |
+| Gap (sẽ xử lý P1)      | Ghi chú                                |
+| ---------------------- | -------------------------------------- |
+| `purchase_information` | Plan 20 **P1-00**: drop cột + gỡ UI/JS |
+| FG cost ≠ BOM          | **Custom** + sync khi lưu BOM          |
+| Form field (PM)        | Phần lớn đã làm — plan 22              |
 
 ---
 
-_Tài liệu mô tả **hiện trạng code** tại thời điểm cập nhật; khi merge tính năng BOM cost sync, cập nhật mục 2.4, 5 và 8._
+_Sau P1: doc này = **baseline cũ**; form mới xem plan 20 §4.1._

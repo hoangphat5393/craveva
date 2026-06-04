@@ -6,10 +6,9 @@
     window.purchaseProductTypesWithAlternateUom = @json(ProductType::alternateUnitConversionValues());
     window.purchaseProductTypesCostOnlyUom = @json(ProductType::costOnlyPurchasePricingValues());
     window.purchaseProductTypesSellOnlyPricing = @json(ProductType::sellOnlyPurchasePricingValues());
-    window.purchaseProductTypesForcePurchaseInfo = @json(ProductType::costOnlyPurchasePricingValues());
+    window.purchaseProductTypesSupportsCostFromBom = @json([ProductType::Goods->value]);
     window.purchaseProductTypesHideB2bExtraPricing = @json(array_values(array_unique(array_merge(ProductType::costOnlyPurchasePricingValues(), [ProductType::Service->value]))));
-    window.purchaseProductTypesCollapseB2bExtraPricing = @json([ProductType::Goods->value]);
-    window.purchaseProductTypesTaxAccordion = @json(ProductType::values());
+    window.purchaseProductTypesOptionalPricingTaxAccordion = @json(ProductType::values());
     window.purchaseProductTypesHideClientPurchase = @json(ProductType::costOnlyPurchasePricingValues());
     window.purchaseProductTypesHideInventoryMetadata = @json(ProductType::costOnlyPurchasePricingValues());
     window.purchaseProductTypesHideInventorySection = @json([ProductType::Service->value]);
@@ -33,8 +32,8 @@
         return window.purchaseProductTypeInList(type, window.purchaseProductTypesSellOnlyPricing);
     };
 
-    window.purchaseProductTypeForcesPurchaseInfo = function(type) {
-        return window.purchaseProductTypeInList(type, window.purchaseProductTypesForcePurchaseInfo);
+    window.purchaseProductTypeSupportsCostFromBom = function(type) {
+        return window.purchaseProductTypeInList(type, window.purchaseProductTypesSupportsCostFromBom);
     };
 
     window.togglePurchaseProductAlternateUomSection = function(type) {
@@ -50,30 +49,42 @@
         }
     };
 
-    window.syncPurchaseProductForcePurchaseInfo = function(type) {
-        const forces = window.purchaseProductTypeForcesPurchaseInfo(type);
-        const $form = $('#save-product-form');
-        $form.find('input[type="hidden"][name="purchase_information"]').remove();
+    window.syncPurchaseProductCostFromBomField = function(type) {
+        const supports = window.purchaseProductTypeSupportsCostFromBom(type);
+        const $toggle = $('.product-cost-from-bom-toggle');
+        const $costField = $('#purchase_price');
+        const $requiredStar = $('.product-cost-price-required');
+        const $pendingHint = $('.product-cost-from-bom-pending-hint');
 
-        if (forces) {
-            $('#purchase_information').prop('checked', true);
-            $('<input>', {
-                type: 'hidden',
-                name: 'purchase_information',
-                value: '1'
-            }).prependTo($form);
-            $('.product-cost-price-column').removeClass('d-none');
+        if (!supports) {
+            $toggle.addClass('d-none');
+            $('#cost_from_bom').prop('checked', false);
+            $costField.prop('disabled', false);
+            $requiredStar.removeClass('d-none');
+            $pendingHint.addClass('d-none');
+
+            return;
+        }
+
+        $toggle.removeClass('d-none');
+        const customOn = $('#cost_from_bom').prop('checked');
+
+        if (customOn) {
+            $costField.prop('disabled', true);
+            $requiredStar.addClass('d-none');
+            $pendingHint.removeClass('d-none');
+        } else {
+            $costField.prop('disabled', false);
+            $requiredStar.removeClass('d-none');
+            $pendingHint.addClass('d-none');
         }
     };
 
     window.togglePurchaseProductTypeFields = function(type) {
         const hideSellingPrice = window.purchaseProductTypeUsesCostUom(type);
-        const hideCostPrice = typeof window.purchaseProductTypeHidesCostPrice === 'function' &&
-            window.purchaseProductTypeHidesCostPrice(type);
-        const forcesPurchaseInfo = window.purchaseProductTypeForcesPurchaseInfo(type);
+        const hideCostPrice = window.purchaseProductTypeHidesCostPrice(type);
         const hideB2bExtra = window.purchaseProductTypeInList(type, window.purchaseProductTypesHideB2bExtraPricing);
-        const collapseB2bExtra = window.purchaseProductTypeInList(type, window.purchaseProductTypesCollapseB2bExtraPricing);
-        const useTaxAccordion = window.purchaseProductTypeInList(type, window.purchaseProductTypesTaxAccordion);
+        const useOptionalPricingTaxAccordion = window.purchaseProductTypeInList(type, window.purchaseProductTypesOptionalPricingTaxAccordion);
         const hideClientPurchase = window.purchaseProductTypeInList(type, window.purchaseProductTypesHideClientPurchase);
         const hideInventoryMetadata = window.purchaseProductTypeInList(type, window.purchaseProductTypesHideInventoryMetadata);
         const hideInventorySection = window.purchaseProductTypeInList(type, window.purchaseProductTypesHideInventorySection);
@@ -96,22 +107,10 @@
         }
 
         $('.product-selling-price-column').toggleClass('d-none', hideSellingPrice);
-        $('.product-purchase-information-toggle').toggleClass('d-none', hideCostPrice || forcesPurchaseInfo);
-        $('.product-cost-price-column').toggleClass(
-            'd-none',
-            hideCostPrice || (!forcesPurchaseInfo && !$('#purchase_information').prop('checked')),
-        );
-        $('.product-b2b-extra-pricing-block').toggleClass('d-none', hideB2bExtra);
-        $('.product-b2b-collapse-toggle').toggleClass('d-none', !collapseB2bExtra || hideB2bExtra);
-        const $b2bWrap = $('#productB2bPricingCollapse');
-        $b2bWrap.toggleClass('collapse', collapseB2bExtra && !hideB2bExtra);
-        $b2bWrap.toggleClass('show', !collapseB2bExtra && !hideB2bExtra);
-        $('.product-form-section-tax').toggleClass('product-form-section-tax--accordion', useTaxAccordion);
-        $('.product-tax-section-heading').toggleClass('d-none', useTaxAccordion);
-        $('.product-tax-accordion-toggle').toggleClass('d-none', !useTaxAccordion);
-        const $taxWrap = $('#productTaxCollapse');
-        $taxWrap.toggleClass('collapse', useTaxAccordion);
-        $taxWrap.toggleClass('show', !useTaxAccordion);
+        $('.product-cost-price-column').toggleClass('d-none', hideCostPrice);
+        $('.product-optional-pricing-tax-block').toggleClass('d-none', !useOptionalPricingTaxAccordion);
+        $('.product-b2b-extra-pricing-fields').toggleClass('d-none', hideB2bExtra);
+        $('.product-optional-pricing-tax-divider').toggleClass('d-none', hideB2bExtra);
         $('.product-client-purchase-toggle').toggleClass('d-none', hideClientPurchase);
         $('.product-inventory-section').toggleClass('d-none', hideInventorySection);
         $('.product-unit-type-field').toggleClass('d-none', hideUnitType);
@@ -120,15 +119,19 @@
         $('.product-description-attributes').toggleClass('d-none', hideDescriptionAttributes);
 
         if (hideCostPrice) {
-            $('#purchase_information').prop('checked', false);
-            $('#purchase_price').val('');
+            $('#cost_from_bom').prop('checked', false);
+            $('#purchase_price').val('').prop('disabled', false);
         }
 
-        window.syncPurchaseProductForcePurchaseInfo(type);
+        window.syncPurchaseProductCostFromBomField(type);
         window.togglePurchaseProductAlternateUomSection(type);
 
         if (typeof window.refreshPurchaseProductUomPricingMode === 'function') {
             window.refreshPurchaseProductUomPricingMode();
         }
     };
+
+    $(document).on('change', '#cost_from_bom', function() {
+        window.syncPurchaseProductCostFromBomField($('#type').val());
+    });
 </script>

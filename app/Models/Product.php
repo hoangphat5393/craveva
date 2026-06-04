@@ -90,7 +90,7 @@ use Modules\Purchase\Entities\PurchaseStockAdjustment;
  * @property-read Collection<int, Lead> $leads
  * @property-read Collection<int, OrderItems> $orderItem
  * @property string|null $purchase_price
- * @property string $purchase_information
+ * @property bool $cost_from_bom
  * @property string $track_inventory
  * @property string|null $sales_description
  * @property string|null $purchase_description
@@ -104,7 +104,7 @@ use Modules\Purchase\Entities\PurchaseStockAdjustment;
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereOpeningStock($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product wherePurchaseDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product wherePurchaseInformation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Product whereCostFromBom($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product wherePurchasePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereRatePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereSalesDescription($value)
@@ -153,7 +153,7 @@ class Product extends BaseModel
         'last_updated_by',
         'hsn_sac_code',
         'purchase_price',
-        'purchase_information',
+        'cost_from_bom',
         'track_inventory',
         'sales_description',
         'purchase_description',
@@ -168,9 +168,13 @@ class Product extends BaseModel
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Product';
 
-    protected $casts = [
-        'expiry_date' => 'date',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'expiry_date' => 'date',
+            'cost_from_bom' => 'boolean',
+        ];
+    }
 
     /**
      * Parse expiry date from date-picker (company date format) to Y-m-d for storage.
@@ -194,13 +198,13 @@ class Product extends BaseModel
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->default_image) : '';
     }
 
     public function getImageAttribute()
     {
         if ($this->default_image) {
-            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH.'/'.$this->default_image);
+            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH . '/' . $this->default_image);
         }
 
         return $this->default_image;
@@ -208,7 +212,7 @@ class Product extends BaseModel
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->downloadable_file) : null;
+        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->downloadable_file) : null;
     }
 
     public function tax(): BelongsTo
@@ -267,9 +271,9 @@ class Product extends BaseModel
             if (! is_null($productItem->taxes)) {
                 foreach (json_decode($productItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
+                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
                 }
             }
         }

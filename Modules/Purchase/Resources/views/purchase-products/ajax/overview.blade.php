@@ -30,7 +30,10 @@
                     <p class="f-w-500">{{ __('purchase::app.salesInformation') }}</p>
                     <x-cards.data-row :label="__('purchase::app.sellingPrice')" :value="$product->price ? currency_format($product->price) : '--'" />
 
-                    <p class="f-w-500">{{ __('purchase::app.purchaseInformation') }}</p>
+                    <p class="f-w-500">{{ __('purchase::app.costPrice') }}</p>
+                    @if ($product->type === 'goods' && $product->cost_from_bom)
+                        <x-cards.data-row :label="__('purchase::app.productCustomCostFromBom')" :value="'<span class=\'badge badge-info\'>' . __('app.yes') . '</span>'" />
+                    @endif
                     <x-cards.data-row :label="__('purchase::app.costPrice')" :value="$product->purchase_price ? currency_format($product->purchase_price) : '--'" />
 
                     <x-cards.data-row :label="__('Storage_Condition.Storage Condition')" :value="$product->storage_condition ?? '--'" />

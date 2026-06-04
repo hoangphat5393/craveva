@@ -161,18 +161,7 @@ class PurchaseProductController extends AccountBaseController
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;
 
-        if (ProductType::hidesCostPriceOnPurchaseForm((string) $request->type)) {
-            $product->purchase_information = '0';
-            $product->purchase_price = null;
-            $product->purchase_description = null;
-        } elseif (! is_null($request->purchase_information)) {
-            $product->purchase_information = $request->purchase_information;
-            $product->purchase_price = ($request->purchase_price) ?: null;
-        } else {
-            $product->purchase_information = '0';
-            $product->purchase_price = null;
-            $product->purchase_description = null;
-        }
+        $this->applyProductPurchasePricing($product, (string) $request->type, $request);
 
         if (! is_null($request->track_inventory)) {
             $product->track_inventory = $request->track_inventory;
@@ -421,18 +410,7 @@ class PurchaseProductController extends AccountBaseController
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;
 
-        if (ProductType::hidesCostPriceOnPurchaseForm((string) $request->type)) {
-            $product->purchase_information = 0;
-            $product->purchase_price = null;
-            $product->purchase_description = null;
-        } elseif (! is_null($request->purchase_information) || ! is_null($request->purchase_price)) {
-            $product->purchase_information = 1;
-            $product->purchase_price = ($request->purchase_price) ?: null;
-        } else {
-            $product->purchase_information = 0;
-            $product->purchase_price = null;
-            $product->purchase_description = null;
-        }
+        $this->applyProductPurchasePricing($product, (string) $request->type, $request);
 
         if (! is_null($request->track_inventory)) {
             $product->track_inventory = $request->track_inventory;
@@ -870,5 +848,33 @@ class PurchaseProductController extends AccountBaseController
         $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize, $options);
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
+    }
+
+    private function applyProductPurchasePricing(PurchaseProduct $product, string $type, Request $request): void
+    {
+        if (ProductType::hidesCostPriceOnPurchaseForm($type)) {
+            $product->cost_from_bom = false;
+            $product->purchase_price = null;
+            $product->purchase_description = null;
+
+            return;
+        }
+
+        $costFromBom = ProductType::supportsCostFromBomOnPurchaseForm($type)
+            && $request->boolean('cost_from_bom');
+
+        $product->cost_from_bom = $costFromBom;
+
+        if ($costFromBom) {
+            if (! $product->exists) {
+                $product->purchase_price = null;
+            }
+
+            return;
+        }
+
+        $product->purchase_price = $request->filled('purchase_price')
+            ? $request->purchase_price
+            : null;
     }
 }

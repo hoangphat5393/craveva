@@ -176,7 +176,7 @@ return [
     'bomComponentUnitCost' => 'Giá vốn / đơn vị',
     'bomComponentLineTotal' => 'Tổng',
     'bomTotalComponentCost' => 'Tổng giá vốn thành phần / 1 sản phẩm sản xuất',
-    'bomCostingHelp' => 'Giá vốn lấy từ Giá vốn (Cost Price) trên sản phẩm nguyên liệu (đơn vị gốc). Chỉ mang tính tham chiếu, không lưu vào định mức nguyên vật liệu.',
+    'bomCostingHelp' => 'Giá vốn lấy từ Cost Price trên sản phẩm nguyên liệu theo đơn vị tính đã chọn (đơn vị gốc và UOM phụ trên master). Chỉ mang tính tham chiếu, không lưu vào định mức nguyên vật liệu.',
     'bomUomSelectHelp' => 'Chọn đơn vị tính cho từng dòng. Số lượng tính cho 1 sản phẩm sản xuất theo đơn vị đó. Lệnh SX sẽ quy đổi về đơn vị gốc khi tính tổng tồn kho.',
     'bomComponentUnitInvalid' => 'Đơn vị đã chọn không hợp lệ với sản phẩm nguyên liệu này.',
     'quantityPerUnit' => 'SL / 1 đơn vị TP',

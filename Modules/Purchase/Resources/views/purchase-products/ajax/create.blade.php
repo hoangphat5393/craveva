@@ -21,6 +21,20 @@
     .purchase-product-form-section__title {
         margin-bottom: 1rem !important;
     }
+
+    .product-b2b-collapse-toggle {
+        margin-top: 0.35rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .purchase-product-form-section.product-form-section-tax--accordion {
+        margin-top: 1.75rem !important;
+        padding-top: 0.35rem;
+    }
+
+    .product-form-section-tax .product-tax-accordion-toggle {
+        margin-bottom: 0.75rem;
+    }
 </style>
 
 <div class="row">
@@ -42,7 +56,7 @@
                                 'product' => $product ?? null,
                             ])
 
-                            <div class="col-12 purchase-product-form-section">
+                            <div class="col-12 purchase-product-form-section product-media-section">
                                 @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionMedia')])
                                 <div class="row">
                                     <div class="col-lg-12">

@@ -8,9 +8,18 @@
     $selectedProductType = old('type', $hasProduct && filled($product?->type) ? $product->type : ProductType::Goods->value);
     $hideSellingPrice = ProductType::hidesSellingPriceOnPurchaseForm($selectedProductType);
     $hideCostPrice = ProductType::hidesCostPriceOnPurchaseForm($selectedProductType);
-    $purchaseInfoChecked = $hideCostPrice
-        ? false
-        : ($hasProduct ? (int) $product->purchase_information === 1 : true);
+    $forcePurchaseInformation = ProductType::forcesPurchaseInformationOnPurchaseForm($selectedProductType);
+    $hidePurchaseInfoToggle = ProductType::hidesPurchaseInformationToggleOnPurchaseForm($selectedProductType);
+    $hideB2bExtraPricing = ProductType::hidesB2bExtraPricingOnPurchaseForm($selectedProductType);
+    $collapseB2bExtraPricing = ProductType::usesCollapsedB2bExtraPricingOnPurchaseForm($selectedProductType);
+    $useTaxAccordion = ProductType::usesTaxSectionAccordionOnPurchaseForm($selectedProductType);
+    $hideClientPurchase = ProductType::hidesClientPurchaseToggleOnPurchaseForm($selectedProductType);
+    $hideInventoryMetadata = ProductType::hidesInventoryMetadataOnPurchaseForm($selectedProductType);
+    $hideInventorySection = ProductType::hidesInventorySectionOnPurchaseForm($selectedProductType);
+    $hideUnitType = ProductType::hidesUnitTypeOnPurchaseForm($selectedProductType);
+    $hideDescriptionAttributes = ProductType::hidesDescriptionAttributesOnPurchaseForm($selectedProductType);
+    $purchaseInfoChecked = $hideCostPrice ? false : $forcePurchaseInformation || ($hasProduct ? (int) $product->purchase_information === 1 : true);
+    $showCostPriceColumn = !$hideCostPrice && ($forcePurchaseInformation || $purchaseInfoChecked);
     $showTrackInventory = $hasProduct ? !$serviceType : true;
     $trackInventoryChecked = $hasProduct && (int) $product->track_inventory === 1;
     $showOpeningStock = $hasProduct ? !$serviceType && $trackInventoryChecked : false;
@@ -47,7 +56,7 @@
 <div class="col-12 purchase-product-form-section">
     @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionClassification')])
     <div class="row">
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-4 col-md-6 product-unit-type-field @if ($hideUnitType) d-none @endif">
             <div class="form-group my-3">
                 <x-forms.label fieldId="unit_type_id" :fieldLabel="__('modules.unitType.unitType')">
                 </x-forms.label>
@@ -120,11 +129,15 @@
 <div class="col-12 purchase-product-form-section">
     @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionPricing')])
     <div class="row">
-        <div class="col-12 product-purchase-information-toggle @if ($hideCostPrice) d-none @endif">
-            <div class="form-group my-3 mb-2">
-                <x-forms.checkbox :fieldLabel="__('purchase::app.purchaseInformation')" fieldName="purchase_information" fieldId="purchase_information" fieldValue="1" fieldRequired="true" :checked="$purchaseInfoChecked" />
+        @if ($forcePurchaseInformation)
+            <input type="hidden" name="purchase_information" value="1">
+        @else
+            <div class="col-12 product-purchase-information-toggle @if ($hideCostPrice) d-none @endif">
+                <div class="form-group my-3 mb-2">
+                    <x-forms.checkbox :fieldLabel="__('purchase::app.purchaseInformation')" fieldName="purchase_information" fieldId="purchase_information" fieldValue="1" fieldRequired="true" :checked="$purchaseInfoChecked" />
+                </div>
             </div>
-        </div>
+        @endif
         <div class="col-lg-3 col-md-6 product-selling-price-column @if ($hideSellingPrice) d-none @endif">
             <div class="form-group my-3">
                 <label class="f-14 text-dark-grey mb-12" for="selling_price">@lang('purchase::app.sellingPrice')<sup class="text-red f-14 mr-1 product-selling-price-required">*</sup></label>
@@ -136,7 +149,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6 product-cost-price-column @if ($hideCostPrice || ! $purchaseInfoChecked) d-none @endif">
+        <div class="col-lg-3 col-md-6 product-cost-price-column @if (!$showCostPriceColumn) d-none @endif">
             <div class="form-group my-3 purchase_information">
                 <label class="f-14 text-dark-grey mb-12" for="purchase_price">@lang('purchase::app.costPrice')<sup class="text-red f-14 mr-1">*</sup></label>
                 <div class="input-group">
@@ -145,19 +158,34 @@
                     </div>
                     <input type="number" name="purchase_price" id="purchase_price" class="form-control height-35 f-15 readonly-background" value="{{ $hasProduct && $product->purchase_price ? $product->purchase_price : '' }}" placeholder="0" min="0">
                 </div>
+                @if ($forcePurchaseInformation)
+                    <p class="text-dark-grey f-12 mb-0 mt-1">@lang('purchase::app.productFormCostOnlyHelp')</p>
+                @endif
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale_Price.Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')" :fieldValue="$hasProduct ? $product->wholesale_price : ''">
-            </x-forms.number>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price_Per_Box.Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')" :fieldValue="$hasProduct ? $product->price_per_box : ''">
-            </x-forms.number>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee_Price.Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')" :fieldValue="$hasProduct ? $product->employee_price : ''">
-            </x-forms.number>
+        <div class="col-12 product-b2b-extra-pricing-block @if ($hideB2bExtraPricing) d-none @endif">
+            <p class="product-b2b-collapse-toggle @if (!$collapseB2bExtraPricing) d-none @endif">
+                <a class="f-14 font-weight-bold text-dark-grey purchase-form-collapse-toggle collapsed" data-toggle="collapse" href="#productB2bPricingCollapse" role="button" aria-expanded="false" aria-controls="productB2bPricingCollapse">
+                    @lang('purchase::app.productFormB2bPricingOptional')
+                    <i class="fa fa-chevron-down ml-1"></i>
+                </a>
+            </p>
+            <div id="productB2bPricingCollapse" class="product-b2b-fields-wrap @if ($collapseB2bExtraPricing) collapse @else show @endif">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale_Price.Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')" :fieldValue="$hasProduct ? $product->wholesale_price : ''">
+                        </x-forms.number>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price_Per_Box.Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')" :fieldValue="$hasProduct ? $product->price_per_box : ''">
+                        </x-forms.number>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee_Price.Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')" :fieldValue="$hasProduct ? $product->employee_price : ''">
+                        </x-forms.number>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -166,43 +194,53 @@
 @include('purchase::purchase-products.partials.product-type-dependent-fields')
 
 {{-- 4. Tax & sales options --}}
-<div class="col-12 purchase-product-form-section">
-    @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionTax')])
-    <div class="row">
-        <div class="col-lg-4 col-md-6">
-            <div class="form-group my-3">
-                <x-forms.label fieldId="tax_id" :fieldLabel="__('modules.invoices.tax')">
-                </x-forms.label>
-                <x-forms.input-group>
-                    <select class="form-control tax select-picker" name="tax[]" id="tax_id" data-live-search="true" multiple="true">
-                        @foreach ($taxes as $tax)
-                            <option value="{{ $tax->id }}" @if ($hasProduct && isset($product->taxes) && array_search($tax->id, json_decode($product->taxes) ?: [], true) !== false) selected @endif>{{ strtoupper($tax->tax_name) }}:
-                                {{ $tax->rate_percent }}%
-                            </option>
-                        @endforeach
-                    </select>
-                    @if (user()->permission('manage_tax') == 'all')
-                        <x-slot name="append">
-                            <button id="add-tax" type="button" data-toggle="tooltip" data-original-title="{{ __('app.add') . ' ' . __('modules.invoices.tax') }}" class="btn btn-outline-secondary border-grey">@lang('app.add')</button>
-                        </x-slot>
-                    @endif
-                </x-forms.input-group>
+<div class="col-12 purchase-product-form-section product-form-section-tax @if ($useTaxAccordion) product-form-section-tax--accordion @endif">
+    <div class="product-tax-section-heading @if ($useTaxAccordion) d-none @endif">
+        @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionTax')])
+    </div>
+    <p class="product-tax-accordion-toggle @if (!$useTaxAccordion) d-none @endif">
+        <a class="f-15 font-weight-bold text-dark-grey purchase-form-collapse-toggle collapsed" data-toggle="collapse" href="#productTaxCollapse" role="button" aria-expanded="false" aria-controls="productTaxCollapse">
+            @lang('purchase::app.productFormTaxOptional')
+            <i class="fa fa-chevron-down ml-1"></i>
+        </a>
+    </p>
+    <div id="productTaxCollapse" class="product-tax-fields-wrap @if ($useTaxAccordion) collapse @else show @endif">
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="form-group my-3">
+                    <x-forms.label fieldId="tax_id" :fieldLabel="__('modules.invoices.tax')">
+                    </x-forms.label>
+                    <x-forms.input-group>
+                        <select class="form-control tax select-picker" name="tax[]" id="tax_id" data-live-search="true" multiple="true">
+                            @foreach ($taxes as $tax)
+                                <option value="{{ $tax->id }}" @if ($hasProduct && isset($product->taxes) && array_search($tax->id, json_decode($product->taxes) ?: [], true) !== false) selected @endif>{{ strtoupper($tax->tax_name) }}:
+                                    {{ $tax->rate_percent }}%
+                                </option>
+                            @endforeach
+                        </select>
+                        @if (user()->permission('manage_tax') == 'all')
+                            <x-slot name="append">
+                                <button id="add-tax" type="button" data-toggle="tooltip" data-original-title="{{ __('app.add') . ' ' . __('modules.invoices.tax') }}" class="btn btn-outline-secondary border-grey">@lang('app.add')</button>
+                            </x-slot>
+                        @endif
+                    </x-forms.input-group>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <x-forms.text fieldId="hsn_sac_code" :fieldLabel="__('app.hsnSac')" fieldName="hsn_sac_code" :fieldPlaceholder="__('placeholders.hsnSac')" :fieldValue="$hasProduct ? $product->hsn_sac_code : ''">
-            </x-forms.text>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="form-group my-3">
-                <x-forms.checkbox class="mr-0" :fieldLabel="__('app.clientPurchase')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" :checked="$hasProduct && $product->allow_purchase == 1" />
+            <div class="col-lg-4 col-md-6">
+                <x-forms.text fieldId="hsn_sac_code" :fieldLabel="__('app.hsnSac')" fieldName="hsn_sac_code" :fieldPlaceholder="__('placeholders.hsnSac')" :fieldValue="$hasProduct ? $product->hsn_sac_code : ''">
+                </x-forms.text>
+            </div>
+            <div class="col-lg-4 col-md-6 product-client-purchase-toggle @if ($hideClientPurchase) d-none @endif">
+                <div class="form-group my-3">
+                    <x-forms.checkbox class="mr-0" :fieldLabel="__('app.clientPurchase')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" :checked="$hasProduct && $product->allow_purchase == 1" />
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 {{-- 5. Inventory & shelf life --}}
-<div class="col-12 purchase-product-form-section">
+<div class="col-12 purchase-product-form-section product-inventory-section @if ($hideInventorySection) d-none @endif">
     @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionInventory')])
     <div class="row">
         <div class="col-12 {{ $showTrackInventory ? '' : 'd-none' }} track_inventory_div">
@@ -234,7 +272,7 @@
                         </x-forms.number>
                     @endif
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 product-inventory-metadata @if ($hideInventoryMetadata) d-none @endif">
                     <x-forms.select fieldId="storage_condition" :fieldLabel="__('Storage_Condition.Storage Condition')" fieldName="storage_condition" search="true">
                         <option value="">--</option>
                         <option value="Frozen" @if ($hasProduct && $product->storage_condition == 'Frozen') selected @endif>Frozen</option>
@@ -242,19 +280,19 @@
                         <option value="Ambient" @if ($hasProduct && $product->storage_condition == 'Ambient') selected @endif>Ambient</option>
                     </x-forms.select>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 product-inventory-metadata @if ($hideInventoryMetadata) d-none @endif">
                     <x-forms.text fieldId="certification" :fieldLabel="__('Certification.Certification')" fieldName="certification" :fieldPlaceholder="__('Certification.Certification')" :fieldValue="$hasProduct ? $product->certification : ''">
                     </x-forms.text>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 product-inventory-metadata @if ($hideInventoryMetadata) d-none @endif">
                     <x-forms.text fieldId="inventory_type" :fieldLabel="__('Inventory_Type.Inventory Type')" fieldName="inventory_type" :fieldPlaceholder="__('Inventory_Type.Inventory Type')" :fieldValue="$hasProduct ? $product->inventory_type : ''">
                     </x-forms.text>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 product-inventory-metadata @if ($hideInventoryMetadata) d-none @endif">
                     <x-forms.number fieldId="shelf_life_days" :fieldLabel="__('app.shelfLifeDays')" fieldName="shelf_life_days" :fieldPlaceholder="__('app.shelfLifeDays')" :fieldValue="$hasProduct ? $product->shelf_life_days ?? '' : ''" minValue="0">
                     </x-forms.number>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 product-inventory-metadata @if ($hideInventoryMetadata) d-none @endif">
                     <x-forms.datepicker fieldId="expiry_date" :fieldLabel="__('app.expiryDate')" fieldName="expiry_date" :fieldPlaceholder="__('placeholders.date')" :fieldValue="$hasProduct && $product->expiry_date ? $product->expiry_date->timezone(company()->timezone)->format(company()->date_format) : ''" />
                 </div>
             </div>
@@ -273,19 +311,19 @@
                 <textarea name="description" id="description-text" rows="4" class="form-control">{{ $hasProduct ? $product->description : '' }}</textarea>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-3 col-md-6 product-description-attributes @if ($hideDescriptionAttributes) d-none @endif">
             <x-forms.text fieldId="specification" :fieldLabel="__('app.specification')" fieldName="specification" :fieldPlaceholder="__('app.specification')" :fieldValue="$hasProduct ? $product->specification ?? '' : ''">
             </x-forms.text>
         </div>
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-3 col-md-6 product-description-attributes @if ($hideDescriptionAttributes) d-none @endif">
             <x-forms.text fieldId="product_source" :fieldLabel="__('app.productSource')" fieldName="product_source" :fieldPlaceholder="__('app.productSource')" :fieldValue="$hasProduct ? $product->product_source ?? '' : ''">
             </x-forms.text>
         </div>
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-3 col-md-6 product-description-attributes @if ($hideDescriptionAttributes) d-none @endif">
             <x-forms.text fieldId="brand" :fieldLabel="__('app.brand')" fieldName="brand" :fieldPlaceholder="__('app.brand')" :fieldValue="$hasProduct ? $product->brand ?? '' : ''">
             </x-forms.text>
         </div>
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-3 col-md-6 product-description-attributes @if ($hideDescriptionAttributes) d-none @endif">
             <x-forms.text fieldId="product_grade" :fieldLabel="__('app.productGrade')" fieldName="product_grade" :fieldPlaceholder="__('app.productGrade')" :fieldValue="$hasProduct ? $product->product_grade ?? '' : ''">
             </x-forms.text>
         </div>

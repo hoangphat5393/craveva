@@ -176,7 +176,7 @@ return [
     'bomComponentUnitCost' => '单位成本',
     'bomComponentLineTotal' => '合计',
     'bomTotalComponentCost' => '每 1 件制造品的组件成本合计',
-    'bomCostingHelp' => '单位成本来自各组件产品的成本价（基本单位）。金额仅供参考，不会保存在物料清单中。',
+    'bomCostingHelp' => '单位成本来自各组件在所选计量单位下的成本价（主数据及备用单位的成本价）。金额仅供参考，不会保存在物料清单中。',
     'bomUomSelectHelp' => '为每行选择计量单位。数量按该单位下每 1 件制造品计算。生产订单在汇总库存时会换算为基本单位。',
     'bomComponentUnitInvalid' => '所选单位对该组件产品无效。',
     'quantityPerUnit' => '每单位数量',

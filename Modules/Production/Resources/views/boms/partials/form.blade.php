@@ -253,17 +253,17 @@
                 }
             };
 
-            const extendedCostFromInputs = (quantity, wastePercent, unitPrice) => {
-                if (unitPrice === null || unitPrice === undefined || quantity <= 0) {
+            const extendedCostFromInputs = (quantity, wastePercent, unitCost) => {
+                if (unitCost === null || unitCost === undefined || quantity <= 0) {
                     return null;
                 }
 
                 const wasteMultiplier = 1 + (Math.max(0, wastePercent) / 100);
 
-                return Math.round(quantity * wasteMultiplier * unitPrice * 10000) / 10000;
+                return Math.round(quantity * wasteMultiplier * unitCost * 10000) / 10000;
             };
 
-            const resolveUnitPrice = (productId, unitId) => {
+            const resolveUnitCost = (productId, unitId) => {
                 if (productId === '' || unitId === '') {
                     return null;
                 }
@@ -276,9 +276,9 @@
                     return null;
                 }
 
-                const price = byProduct[unitKey] ?? byProduct[Number(unitId)];
+                const cost = byProduct[unitKey] ?? byProduct[Number(unitId)];
 
-                return price === null || price === undefined ? null : Number(price);
+                return cost === null || cost === undefined ? null : Number(cost);
             };
 
             const defaultUnitIdForProduct = (productId) => {
@@ -414,12 +414,12 @@
 
                 const productId = lineProductIdFromRow(row);
                 const unitId = effectiveLineUnitId(row, forcedUnitId);
-                const unitPrice = resolveUnitPrice(productId, unitId);
+                const unitCost = resolveUnitCost(productId, unitId);
                 const quantity = qtyInput ? parseFloat(qtyInput.value || '0') : 0;
                 const wastePercent = wasteInput ? parseFloat(wasteInput.value || '0') : 0;
-                const lineTotal = extendedCostFromInputs(quantity, wastePercent, unitPrice);
+                const lineTotal = extendedCostFromInputs(quantity, wastePercent, unitCost);
 
-                unitCostCell.textContent = formatBomMoney(unitPrice);
+                unitCostCell.textContent = formatBomMoney(unitCost);
                 lineTotalCell.textContent = formatBomMoney(lineTotal);
             };
 
@@ -432,10 +432,10 @@
                     const wasteInput = row.querySelector('.bom-line-waste');
                     const productId = lineProductIdFromRow(row);
                     const unitId = lineUnitId(row);
-                    const unitPrice = resolveUnitPrice(productId, unitId);
+                    const unitCost = resolveUnitCost(productId, unitId);
                     const quantity = qtyInput ? parseFloat(qtyInput.value || '0') : 0;
                     const wastePercent = wasteInput ? parseFloat(wasteInput.value || '0') : 0;
-                    const lineTotal = extendedCostFromInputs(quantity, wastePercent, unitPrice);
+                    const lineTotal = extendedCostFromInputs(quantity, wastePercent, unitCost);
                     if (lineTotal !== null) {
                         total += lineTotal;
                         hasAny = true;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Warehouse\Services;
 
+use App\Enums\ProductType;
 use App\Models\Product;
 use Illuminate\Support\Facades\Schema;
 use Modules\Warehouse\Entities\ProductUnitConversion;
@@ -74,23 +75,25 @@ class ProductUnitPriceResolver
         $product = Product::withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->where('id', $productId)
-            ->first(['id', 'price', 'purchase_price', 'unit_id']);
+            ->first(['id', 'type', 'price', 'purchase_price', 'unit_id']);
 
         if ($product === null) {
             return null;
         }
 
+        $costOnlyProduct = ProductType::hidesSellingPriceOnPurchaseForm($product->type);
+
         $basePrice = $product->purchase_price !== null && $product->purchase_price !== ''
             ? (float) $product->purchase_price
             : null;
 
-        if ($basePrice === null || $basePrice <= 0) {
+        if (! $costOnlyProduct && ($basePrice === null || $basePrice <= 0)) {
             $basePrice = $product->price !== null && $product->price !== ''
                 ? (float) $product->price
                 : null;
         }
 
-        if ($basePrice === null) {
+        if ($basePrice === null || $basePrice <= 0) {
             return null;
         }
 
@@ -120,7 +123,7 @@ class ProductUnitPriceResolver
             return $explicitCost;
         }
 
-        if ($row->selling_price !== null) {
+        if (! $costOnlyProduct && $row->selling_price !== null) {
             return (float) $row->selling_price;
         }
 

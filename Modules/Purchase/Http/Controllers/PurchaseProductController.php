@@ -137,7 +137,7 @@ class PurchaseProductController extends AccountBaseController
         $product->name = $request->name;
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->hsn_sac_code = $request->hsn_sac_code;
-        $product->unit_id = $request->unit_type;
+        $product->unit_id = ProductType::resolvePurchaseFormUnitId((string) $request->type, $request->unit_type);
         $product->description = trim_editor($request->description);
         $product->specification = $request->specification;
         $product->product_source = $request->product_source;
@@ -249,7 +249,7 @@ class PurchaseProductController extends AccountBaseController
 
         foreach ($this->taxes as $tax) {
             if ($this->product && isset($this->product->taxes) && json_decode($this->product->taxes) && array_search($tax->id, json_decode($this->product->taxes)) !== false) {
-                $taxes[] = $tax->tax_name.' : '.$tax->rate_percent.'%';
+                $taxes[] = $tax->tax_name . ' : ' . $tax->rate_percent . '%';
             }
         }
 
@@ -343,7 +343,7 @@ class PurchaseProductController extends AccountBaseController
         $this->unit_types = UnitType::all();
         $this->assignProductUnitConversionFormData($this->product);
         $this->subCategories = ! is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
-        $this->pageTitle = __('app.update').' '.__('app.menu.products');
+        $this->pageTitle = __('app.update') . ' ' . __('app.menu.products');
 
         $images = [];
 
@@ -395,7 +395,7 @@ class PurchaseProductController extends AccountBaseController
         $product->name = $request->name;
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->hsn_sac_code = $request->hsn_sac_code;
-        $product->unit_id = $request->unit_type;
+        $product->unit_id = ProductType::resolvePurchaseFormUnitId((string) $request->type, $request->unit_type);
         $product->description = trim_editor($request->description);
         $product->specification = $request->specification;
         $product->product_source = $request->product_source;
@@ -578,7 +578,7 @@ class PurchaseProductController extends AccountBaseController
         foreach ($inventoryIdsToCheck as $inventoryId) {
             $inventory = PurchaseInventory::find($inventoryId);
             if ($inventory && $inventory->stocks()->count() === 0) {
-                $inventory->files()->each(fn ($file) => $file->delete());
+                $inventory->files()->each(fn($file) => $file->delete());
                 $inventory->delete();
             }
         }
@@ -818,7 +818,7 @@ class PurchaseProductController extends AccountBaseController
         foreach ($products as $item) {
             if ((! empty($item->inventory) && count($item->inventory) > 0 && $item->inventory[0]) || ($item->type == 'service')) {
                 if (($item->track_inventory == 1 && $item->inventory[0]->net_quantity > 0) || ($item->type == 'service')) {
-                    $option .= '<option data-content="'.$item->name.'" value="'.$item->id.'"> '.$item->name.'</option>';
+                    $option .= '<option data-content="' . $item->name . '" value="' . $item->id . '"> ' . $item->name . '</option>';
                 }
             }
         }
@@ -828,7 +828,7 @@ class PurchaseProductController extends AccountBaseController
 
     public function importProduct()
     {
-        $this->pageTitle = __('app.importExcel').' '.__('app.menu.product');
+        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.product');
 
         $this->addPermission = user()->permission('add_product');
         abort_403(! in_array($this->addPermission, ['all', 'added']));

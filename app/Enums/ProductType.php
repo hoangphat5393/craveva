@@ -154,6 +154,99 @@ enum ProductType: string
         return self::hidesSellingPriceOnPurchaseForm($type);
     }
 
+    /**
+     * Raw material, semi-finished, packaging: always track cost; hide Purchase Information checkbox.
+     */
+    public static function forcesPurchaseInformationOnPurchaseForm(?string $type): bool
+    {
+        return self::hidesSellingPriceOnPurchaseForm($type);
+    }
+
+    public static function hidesPurchaseInformationToggleOnPurchaseForm(?string $type): bool
+    {
+        return self::forcesPurchaseInformationOnPurchaseForm($type);
+    }
+
+    /**
+     * Hide wholesale / price per box / employee price (not used on BOM inputs or service catalog).
+     */
+    public static function hidesB2bExtraPricingOnPurchaseForm(?string $type): bool
+    {
+        return $type !== null
+            && ($type === self::Service->value || self::hidesSellingPriceOnPurchaseForm($type));
+    }
+
+    /**
+     * Manufactured product: optional B2B list prices in a collapsed block.
+     */
+    public static function usesCollapsedB2bExtraPricingOnPurchaseForm(?string $type): bool
+    {
+        return $type === self::Goods->value;
+    }
+
+    /**
+     * Tax section as collapsed “optional” on the purchase product form (all types).
+     */
+    public static function usesTaxSectionAccordionOnPurchaseForm(?string $type): bool
+    {
+        return $type !== null;
+    }
+
+    public static function hidesClientPurchaseToggleOnPurchaseForm(?string $type): bool
+    {
+        return self::hidesSellingPriceOnPurchaseForm($type);
+    }
+
+    /**
+     * Hide extended inventory fields (storage, certification, …) for BOM component types.
+     */
+    public static function hidesInventoryMetadataOnPurchaseForm(?string $type): bool
+    {
+        return self::hidesSellingPriceOnPurchaseForm($type);
+    }
+
+    /**
+     * Services are not stock-tracked — hide the whole inventory & shelf life section.
+     */
+    public static function hidesInventorySectionOnPurchaseForm(?string $type): bool
+    {
+        return self::isService($type);
+    }
+
+    /**
+     * Services are not stocked or UOM-converted — hide base unit on the purchase product form.
+     */
+    public static function hidesUnitTypeOnPurchaseForm(?string $type): bool
+    {
+        return self::isService($type);
+    }
+
+    /**
+     * @param  int|string|null  $unitTypeId
+     */
+    public static function resolvePurchaseFormUnitId(?string $type, mixed $unitTypeId): ?int
+    {
+        if (self::isService($type)) {
+            return null;
+        }
+
+        if ($unitTypeId === null || $unitTypeId === '') {
+            return null;
+        }
+
+        return (int) $unitTypeId;
+    }
+
+    public static function hidesProductMediaSectionOnPurchaseForm(?string $type): bool
+    {
+        return self::hidesSellingPriceOnPurchaseForm($type) || self::isService($type);
+    }
+
+    public static function hidesDescriptionAttributesOnPurchaseForm(?string $type): bool
+    {
+        return self::hidesSellingPriceOnPurchaseForm($type) || self::isService($type);
+    }
+
     public static function isStockable(?string $type): bool
     {
         return $type !== null && $type !== self::Service->value;

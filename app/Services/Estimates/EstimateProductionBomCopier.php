@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Estimates;
 
-use App\Models\Product;
 use Illuminate\Support\Facades\Schema;
 use Modules\Production\Entities\ProductionBom;
+use Modules\Production\Support\ProductionBomLineCostCalculator;
 
 final class EstimateProductionBomCopier
 {
@@ -36,6 +36,7 @@ final class EstimateProductionBomCopier
         }
 
         $lines = [];
+        $costCalculator = app(ProductionBomLineCostCalculator::class);
 
         foreach ($bom->items as $item) {
             $product = $item->componentProduct;
@@ -45,14 +46,18 @@ final class EstimateProductionBomCopier
                 continue;
             }
 
-            $unitCost = 0.0;
+            $unitId = $item->unit_id !== null
+                ? (int) $item->unit_id
+                : ($product?->unit_id !== null ? (int) $product->unit_id : null);
 
-            if ($product instanceof Product) {
-                $purchase = $product->purchase_price;
-                if ($purchase !== null && $purchase !== '' && is_numeric($purchase)) {
-                    $unitCost = round((float) $purchase, 4);
-                }
-            }
+            $costs = $costCalculator->lineCostFromInput([
+                'component_product_id' => $item->component_product_id,
+                'unit_id' => $unitId,
+                'quantity' => $quantity,
+                'waste_percent' => $item->waste_percent ?? 0,
+            ], $companyId, $unitId);
+
+            $unitCost = $costs['unit_cost'] !== null ? round((float) $costs['unit_cost'], 4) : 0.0;
 
             $materialName = trim((string) ($product?->name ?? ''));
 
@@ -65,7 +70,7 @@ final class EstimateProductionBomCopier
                 'product_id' => $product?->id,
                 'material_name' => $materialName,
                 'quantity' => $quantity,
-                'unit_id' => $item->unit_id ?? $product?->unit_id,
+                'unit_id' => $unitId,
                 'unit_cost' => $unitCost,
                 'line_total' => round($quantity * $unitCost, 4),
                 'notes' => null,

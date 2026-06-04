@@ -15,6 +15,7 @@
 | [`BIOMIXING_MULTITENANT_RISKS_VI.md`](./BIOMIXING_MULTITENANT_RISKS_VI.md)                         | B2B vs Production tenant                                 |
 | [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) | Vận hành PO / posting                                    |
 | [`21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md`](./21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md)     | Hiện trạng checkbox Purchase Information & giá theo type |
+| [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md)   | Đề xuất ẩn field form theo Product Type (PM)           |
 
 ---
 

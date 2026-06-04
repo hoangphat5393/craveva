@@ -11,6 +11,7 @@
 | File                                                                                               | Vai trò                                  |
 | -------------------------------------------------------------------------------------------------- | ---------------------------------------- |
 | [`20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md`](./20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md) | Kế hoạch sync cost FG từ BOM (chưa code) |
+| [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md)   | **Đề xuất ẩn field theo Product Type (PM)** |
 | [`../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md`](../FUNC_LOGIC/PRODUCTION_PRODUCT_TYPES_VI.md)     | Loại SP & BOM / Production               |
 | [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                       | UOM đa đơn vị                            |
 
@@ -179,6 +180,7 @@ Khi chọn **Manufactured Product** (`goods`) như screenshot Add Products:
 
 | Gap                                  | Ghi chú                                                                            |
 | ------------------------------------ | ---------------------------------------------------------------------------------- |
+| Form quá nhiều field (PM)            | Đề xuất ẩn theo type — xem [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md) |
 | FG cost ≠ BOM cost                   | `goods.purchase_price` nhập tay; BOM tính riêng — xem plan P1                      |
 | Checkbox Purchase Information vs BOM | **Không** tái sử dụng — cần flag riêng “Cost from BOM” cho FG                      |
 

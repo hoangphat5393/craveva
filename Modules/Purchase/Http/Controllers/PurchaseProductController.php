@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
+use App\Enums\ProductType;
 use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
@@ -148,7 +149,9 @@ class PurchaseProductController extends AccountBaseController
         $product->sub_category_id = ($request->sub_category_id) ?: null;
         $product->sku = $request->sku;
         $product->type = $request->type;
-        $product->price = $request->selling_price ?? null;
+        $product->price = ProductType::hidesSellingPriceOnPurchaseForm((string) $request->type)
+            ? null
+            : ($request->selling_price ?? null);
         $product->wholesale_price = $request->wholesale_price ?? 0;
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
@@ -158,7 +161,11 @@ class PurchaseProductController extends AccountBaseController
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;
 
-        if (! is_null($request->purchase_information)) {
+        if (ProductType::hidesCostPriceOnPurchaseForm((string) $request->type)) {
+            $product->purchase_information = '0';
+            $product->purchase_price = null;
+            $product->purchase_description = null;
+        } elseif (! is_null($request->purchase_information)) {
             $product->purchase_information = $request->purchase_information;
             $product->purchase_price = ($request->purchase_price) ?: null;
         } else {
@@ -402,7 +409,9 @@ class PurchaseProductController extends AccountBaseController
         $product->sub_category_id = ($request->sub_category_id) ? $request->sub_category_id : null;
         $product->sku = $request->sku;
         $product->type = $request->type;
-        $product->price = ($request->selling_price) ?: null;
+        $product->price = ProductType::hidesSellingPriceOnPurchaseForm((string) $request->type)
+            ? null
+            : (($request->selling_price) ?: null);
         $product->wholesale_price = $request->wholesale_price ?? 0;
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
@@ -412,7 +421,11 @@ class PurchaseProductController extends AccountBaseController
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;
 
-        if (! is_null($request->purchase_information) || ! is_null($request->purchase_price)) {
+        if (ProductType::hidesCostPriceOnPurchaseForm((string) $request->type)) {
+            $product->purchase_information = 0;
+            $product->purchase_price = null;
+            $product->purchase_description = null;
+        } elseif (! is_null($request->purchase_information) || ! is_null($request->purchase_price)) {
             $product->purchase_information = 1;
             $product->purchase_price = ($request->purchase_price) ?: null;
         } else {

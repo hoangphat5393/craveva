@@ -1,6 +1,8 @@
 /**
  * Purchase product alternate UOM rows (create/edit).
  * Call after selectpicker init: initPurchaseProductUnitConversions($formOrModalRoot)
+ *
+ * Raw material / semi-finished: base pricing uses cost price; UOM column label = cost (stored in unit_conversion_selling_price).
  */
 module.exports = function initPurchaseProductUnitConversions($root) {
     const $rootEl = $root && $root.jquery ? $root : $($root || document);
@@ -21,6 +23,8 @@ module.exports = function initPurchaseProductUnitConversions($root) {
     const $body = $section.find('#product-unit-conversions-body');
     const $addBtn = $section.find('#add-product-unit-conversion');
     const $hint = $section.find('#product-unit-conversions-hint');
+    const $help = $section.find('#product-unit-conversions-help');
+    const $priceColumnLabel = $section.find('#product-uom-price-column-label');
     const $templateHost = $form.find('#product-unit-conversion-row-template').first();
     const rowTemplate = (
         $templateHost.find('tbody').first().html() || $templateHost.html() || ''
@@ -34,7 +38,29 @@ module.exports = function initPurchaseProductUnitConversions($root) {
         unitOptions = [];
     }
 
-    const addRowBlockedMsg = $section.attr('data-blocked-msg') || '';
+    function productType() {
+        const $type = $form.find('#type').first();
+        let v = $type.val();
+        if (Array.isArray(v)) {
+            v = v[0];
+        }
+        if ((!v || v === '') && typeof $type.selectpicker === 'function') {
+            v = $type.selectpicker('val');
+            if (Array.isArray(v)) {
+                v = v[0];
+            }
+        }
+
+        return (v || '').toString();
+    }
+
+    function isCostOnlyMode() {
+        if (typeof window.purchaseProductTypeUsesCostUom === 'function') {
+            return window.purchaseProductTypeUsesCostUom(productType());
+        }
+
+        return ['raw_material', 'semi_finished', 'packaging'].indexOf(productType()) !== -1;
+    }
 
     function readUnitFieldValue($unitField) {
         let v = $unitField.val();
@@ -69,24 +95,77 @@ module.exports = function initPurchaseProductUnitConversions($root) {
         return found ? found.label : '';
     }
 
-    function baseSellingPrice() {
-        const $price = $form.find('#selling_price').first();
-        if (!$price.length) {
+    function parsePositivePrice($field) {
+        if (!$field.length) {
             return 0;
         }
 
-        const v = parseFloat($price.val());
+        const v = parseFloat($field.val());
 
         return Number.isFinite(v) && v > 0 ? v : 0;
     }
 
+    function basePricingPrice() {
+        if (isCostOnlyMode()) {
+            if (!$form.find('#purchase_information').prop('checked')) {
+                return 0;
+            }
+
+            return parsePositivePrice($form.find('#purchase_price').first());
+        }
+
+        return parsePositivePrice($form.find('#selling_price').first());
+    }
+
+    function addRowBlockedMsg() {
+        return isCostOnlyMode()
+            ? $section.attr('data-blocked-msg-cost') || ''
+            : $section.attr('data-blocked-msg-sell') || '';
+    }
+
+    function updateUomPricingModeUi() {
+        const costMode = isCostOnlyMode();
+
+        $priceColumnLabel.text(
+            costMode
+                ? $section.attr('data-label-cost') || 'Cost'
+                : $section.attr('data-label-sell') || 'Selling price'
+        );
+
+        $help.text(
+            costMode
+                ? $section.attr('data-help-cost') || ''
+                : $section.attr('data-help-sell') || ''
+        );
+
+        $body.find('.unit-conversion-custom-price-badge').text(
+            costMode
+                ? $section.attr('data-custom-label-cost') || ''
+                : $section.attr('data-custom-label-sell') || ''
+        );
+
+        $section.find('.product-uom-for-sale-column').toggleClass('d-none', costMode);
+
+        if (costMode) {
+            $body.find('input[name^="unit_conversion_for_sale["]').prop('checked', false);
+        }
+    }
+
     function canAddConversionRow() {
-        return baseUnitId() > 0 && baseSellingPrice() > 0;
+        return baseUnitId() > 0 && basePricingPrice() > 0;
     }
 
     function refreshAddButton() {
+        updateUomPricingModeUi();
         const ok = canAddConversionRow();
         $addBtn.prop('disabled', !ok);
+        $hint.text(
+            ok
+                ? ''
+                : isCostOnlyMode()
+                    ? $section.attr('data-hint-cost') || ''
+                    : $section.attr('data-hint-sell') || ''
+        );
         $hint.toggleClass('d-none', ok);
     }
 
@@ -95,7 +174,7 @@ module.exports = function initPurchaseProductUnitConversions($root) {
             return parseFloat(overridePrice);
         }
 
-        return Math.round(baseSellingPrice() * factor * 10000) / 10000;
+        return Math.round(basePricingPrice() * factor * 10000) / 10000;
     }
 
     function refreshFactorLabels() {
@@ -175,10 +254,11 @@ module.exports = function initPurchaseProductUnitConversions($root) {
 
     $addBtn.off('click.purchaseUom').on('click.purchaseUom', function () {
         if (!canAddConversionRow()) {
-            if (typeof Swal !== 'undefined' && addRowBlockedMsg) {
+            const msg = addRowBlockedMsg();
+            if (typeof Swal !== 'undefined' && msg) {
                 Swal.fire({
                     icon: 'info',
-                    text: addRowBlockedMsg,
+                    text: msg,
                     toast: true,
                     position: 'top-end',
                     timer: 5000,
@@ -204,6 +284,9 @@ module.exports = function initPurchaseProductUnitConversions($root) {
         }
 
         $body.append($row);
+
+        $row.find('.product-uom-for-sale-column input[type="checkbox"]').prop('checked', false);
+
         initUnitSelect($row.find('.unit-conversion-unit-select'));
         refreshFactorLabels();
         bindRowEvents($row);
@@ -216,8 +299,11 @@ module.exports = function initPurchaseProductUnitConversions($root) {
         refreshAddButton();
     });
 
+    const pricingFieldSelector =
+        '#unit_type_id, #selling_price, #purchase_price, #purchase_information';
+
     $form
-        .find('#unit_type_id, #selling_price')
+        .find(pricingFieldSelector)
         .off('change.purchaseUom input.purchaseUom changed.bs.select.purchaseUom')
         .on('change.purchaseUom input.purchaseUom changed.bs.select.purchaseUom', function () {
             refreshAddButton();
@@ -234,6 +320,23 @@ module.exports = function initPurchaseProductUnitConversions($root) {
             });
         });
 
+    $form.find('#type').off('change.purchaseUomType changed.bs.select.purchaseUomType').on(
+        'change.purchaseUomType changed.bs.select.purchaseUomType',
+        function () {
+            refreshAddButton();
+            $body.find('tr').each(function () {
+                const $row = $(this);
+                const $price = $row.find('.unit-conversion-selling-price');
+                $price.data('custom-override', 0);
+                $row.find('.unit-conversion-custom-price-badge').addClass('d-none');
+                const factor = parseFloat($row.find('.unit-conversion-factor').val()) || 0;
+                if (factor > 0) {
+                    $price.val(derivedPrice(factor, null));
+                }
+            });
+        }
+    );
+
     $body.find('tr').each(function () {
         const $row = $(this);
         initUnitSelect($row.find('.unit-conversion-unit-select'));
@@ -242,6 +345,11 @@ module.exports = function initPurchaseProductUnitConversions($root) {
 
     refreshFactorLabels();
     refreshAddButton();
+
+    window.refreshPurchaseProductUomPricingMode = function () {
+        refreshAddButton();
+        refreshFactorLabels();
+    };
 
     $form.find('#unit_type_id').one('shown.bs.select', refreshAddButton);
     setTimeout(refreshAddButton, 0);

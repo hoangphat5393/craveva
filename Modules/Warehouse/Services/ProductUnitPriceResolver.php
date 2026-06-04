@@ -109,10 +109,19 @@ class ProductUnitPriceResolver
             ->where('company_id', $companyId)
             ->where('product_id', $productId)
             ->where('unit_id', $targetUnitId)
-            ->first(['factor_to_base']);
+            ->first($this->conversionPriceColumns());
 
         if ($row === null) {
             return $basePrice;
+        }
+
+        $explicitCost = $this->columnValue($row, 'cost_price');
+        if ($explicitCost !== null) {
+            return $explicitCost;
+        }
+
+        if ($row->selling_price !== null) {
+            return (float) $row->selling_price;
         }
 
         $factor = (float) $row->factor_to_base;
@@ -122,5 +131,30 @@ class ProductUnitPriceResolver
         }
 
         return round($basePrice * $factor, 4);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function conversionPriceColumns(): array
+    {
+        $columns = ['selling_price', 'factor_to_base'];
+
+        if (Schema::hasColumn('product_unit_conversions', 'cost_price')) {
+            $columns[] = 'cost_price';
+        }
+
+        return $columns;
+    }
+
+    private function columnValue(ProductUnitConversion $row, string $column): ?float
+    {
+        if (! Schema::hasColumn('product_unit_conversions', $column)) {
+            return null;
+        }
+
+        $value = $row->{$column};
+
+        return $value !== null && $value !== '' ? (float) $value : null;
     }
 }

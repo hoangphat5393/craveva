@@ -48,6 +48,7 @@ it('syncs alternate units with selling price and resolves price', function () {
             'unit_id' => (int) $altUnit->id,
             'factor_to_base' => 12,
             'selling_price' => null,
+            'cost_price' => null,
             'for_sale' => true,
             'sort_order' => 0,
         ],
@@ -96,7 +97,7 @@ it('rejects duplicate alternate unit ids from request', function () {
 
     $sync = app(ProductUnitConversionSyncService::class);
 
-    expect(fn () => $sync->parseRowsFromRequest($request, (int) $baseUnit->id))
+    expect(fn() => $sync->parseRowsFromRequest($request, (int) $baseUnit->id))
         ->toThrow(InvalidArgumentException::class);
 });
 
@@ -115,12 +116,14 @@ it('syncFromRequest accepts PurchaseProduct from purchase module', function () {
     $core = Product::factory()->create([
         'company_id' => $companyId,
         'unit_id' => $baseUnit->id,
+        'type' => 'raw_material',
         'price' => 20,
     ]);
 
     $purchaseProduct = PurchaseProduct::query()->findOrFail($core->id);
 
     $request = Request::create('/', 'POST', [
+        'type' => 'raw_material',
         'unit_type' => $baseUnit->id,
         'unit_conversion_unit_id' => [(int) $altUnit->id],
         'unit_conversion_factor' => [6],
@@ -130,8 +133,111 @@ it('syncFromRequest accepts PurchaseProduct from purchase module', function () {
 
     app(ProductUnitConversionSyncService::class)->syncFromRequest($purchaseProduct, $request);
 
+    $conversion = ProductUnitConversion::query()
+        ->where('company_id', $companyId)
+        ->where('product_id', $core->id)
+        ->first();
+
     expect(ProductUnitConversion::query()
         ->where('company_id', $companyId)
         ->where('product_id', $core->id)
         ->count())->toBe(1);
+
+    if (Schema::hasColumn('product_unit_conversions', 'cost_price')) {
+        expect($conversion?->cost_price)->toEqual(120.0);
+        expect($conversion?->selling_price)->toBeNull();
+    }
+});
+
+it('resolves alternate unit purchase price from explicit conversion row value', function () {
+    $companyId = (int) (company()->id ?? 1);
+
+    $baseUnit = UnitType::query()->firstOrFail();
+    $altUnit = UnitType::query()->where('id', '!=', $baseUnit->id)->firstOrFail();
+
+    $product = Product::factory()->create([
+        'company_id' => $companyId,
+        'unit_id' => $baseUnit->id,
+        'purchase_price' => 10,
+        'price' => 0,
+    ]);
+
+    app(ProductUnitConversionSyncService::class)->sync($product, [
+        [
+            'unit_id' => (int) $altUnit->id,
+            'factor_to_base' => 12,
+            'selling_price' => null,
+            'cost_price' => 99.5,
+            'for_sale' => false,
+            'sort_order' => 0,
+        ],
+    ]);
+
+    $resolved = app(ProductUnitPriceResolver::class)->resolvePurchasePrice(
+        $companyId,
+        (int) $product->id,
+        (int) $altUnit->id,
+    );
+
+    expect($resolved)->toEqual(99.5);
+});
+
+it('forces for_sale false when parsing cost-only product unit conversion rows', function (string $productType) {
+    $baseUnit = UnitType::query()->firstOrFail();
+    $altUnit = UnitType::query()->where('id', '!=', $baseUnit->id)->firstOrFail();
+
+    $request = Request::create('/', 'POST', [
+        'type' => $productType,
+        'unit_conversion_unit_id' => [(int) $altUnit->id],
+        'unit_conversion_factor' => [5],
+        'unit_conversion_selling_price' => [50],
+        'unit_conversion_for_sale' => ['1'],
+    ]);
+
+    $rows = app(ProductUnitConversionSyncService::class)->parseRowsFromRequest($request, (int) $baseUnit->id);
+
+    expect($rows)->toHaveCount(1);
+    expect($rows[0]['for_sale'])->toBeFalse();
+    expect($rows[0]['cost_price'])->toEqual(50.0);
+    expect($rows[0]['selling_price'])->toBeNull();
+})->with(['raw_material', 'semi_finished', 'packaging']);
+
+it('defaults for_sale to false for sellable product types when checkbox is unchecked', function () {
+    $baseUnit = UnitType::query()->firstOrFail();
+    $altUnit = UnitType::query()->where('id', '!=', $baseUnit->id)->firstOrFail();
+
+    $request = Request::create('/', 'POST', [
+        'type' => 'goods',
+        'unit_conversion_unit_id' => [(int) $altUnit->id],
+        'unit_conversion_factor' => [5],
+        'unit_conversion_selling_price' => [50],
+        'unit_conversion_for_sale' => ['0'],
+    ]);
+
+    $rows = app(ProductUnitConversionSyncService::class)->parseRowsFromRequest($request, (int) $baseUnit->id);
+
+    expect($rows)->toHaveCount(1);
+    expect($rows[0]['for_sale'])->toBeFalse();
+    expect($rows[0]['selling_price'])->toEqual(50.0);
+    expect($rows[0]['cost_price'])->toBeNull();
+});
+
+it('persists for_sale true when sellable checkbox is checked on goods', function () {
+    $baseUnit = UnitType::query()->firstOrFail();
+    $altUnit = UnitType::query()->where('id', '!=', $baseUnit->id)->firstOrFail();
+
+    $request = Request::create('/', 'POST', [
+        'type' => 'goods',
+        'unit_conversion_unit_id' => [(int) $altUnit->id],
+        'unit_conversion_factor' => [5],
+        'unit_conversion_selling_price' => [50],
+        'unit_conversion_for_sale' => ['1'],
+    ]);
+
+    $rows = app(ProductUnitConversionSyncService::class)->parseRowsFromRequest($request, (int) $baseUnit->id);
+
+    expect($rows)->toHaveCount(1);
+    expect($rows[0]['for_sale'])->toBeTrue();
+    expect($rows[0]['selling_price'])->toEqual(50.0);
+    expect($rows[0]['cost_price'])->toBeNull();
 });

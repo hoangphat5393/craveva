@@ -21,14 +21,16 @@
 
 ### Epic / debug nhanh
 
-| Chủ đề              | File                                                                                                                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Post RM UOM         | [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) §2 · [`../FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md`](../FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md) |
-| Post FG → Inventory | `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 · backfill `production:backfill-fg-inventory-ledger`                                                                                                             |
-| Opening stock       | [`13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`](./13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md)                                                                                                             |
-| UOM + giá (P2)      | [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                                                                                                                           |
-| Trace P↔W           | [`P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md`](./P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md)                                                                                                           |
-| Khái niệm RM/FG/BOM | [`BIOMIXING_FLOW_CONCEPTS_VI.md`](./BIOMIXING_FLOW_CONCEPTS_VI.md)                                                                                                                                     |
+| Chủ đề                            | File                                                                                                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Post RM UOM                       | [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) §2 · [`../FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md`](../FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md) |
+| Post FG → Inventory               | `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 · backfill `production:backfill-fg-inventory-ledger`                                                                                                             |
+| Opening stock                     | [`13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md`](./13_OPENING_STOCK_VS_WAREHOUSE_STOCK_VI.md)                                                                                                             |
+| UOM + giá (P2)                    | [`P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md`](./P2_PRODUCT_UOM_KIOTVIET_PLAN_VI.md)                                                                                                                           |
+| Trace P↔W                         | [`P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md`](./P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md)                                                                                                           |
+| Khái niệm RM/FG/BOM               | [`BIOMIXING_FLOW_CONCEPTS_VI.md`](./BIOMIXING_FLOW_CONCEPTS_VI.md)                                                                                                                                     |
+| BOM → FG cost (kế hoạch)          | [`20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md`](./20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md)                                                                                                     |
+| Form Product pricing (hiện trạng) | [`21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md`](./21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md)                                                                                                         |
 
 ---
 

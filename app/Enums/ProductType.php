@@ -102,6 +102,58 @@ enum ProductType: string
         return $type === self::Service->value;
     }
 
+    /**
+     * Product types that use cost-only pricing on the purchase product form (no selling price).
+     *
+     * @return list<string>
+     */
+    public static function costOnlyPurchasePricingValues(): array
+    {
+        return [
+            self::RawMaterial->value,
+            self::SemiFinished->value,
+            self::Packaging->value,
+        ];
+    }
+
+    /**
+     * Product types that do not show cost / purchase information on the product form.
+     *
+     * @return list<string>
+     */
+    public static function sellOnlyPurchasePricingValues(): array
+    {
+        return [
+            self::Service->value,
+        ];
+    }
+
+    /**
+     * Production inputs and packaging are not sold — hide selling price on the product form.
+     */
+    public static function hidesSellingPriceOnPurchaseForm(?string $type): bool
+    {
+        return $type !== null
+            && in_array($type, self::costOnlyPurchasePricingValues(), true);
+    }
+
+    /**
+     * Services are billed by selling price only — hide cost price and Purchase Information.
+     */
+    public static function hidesCostPriceOnPurchaseForm(?string $type): bool
+    {
+        return $type !== null
+            && in_array($type, self::sellOnlyPurchasePricingValues(), true);
+    }
+
+    /**
+     * Alternate UOM price column shows cost (not selling price) for cost-only product types.
+     */
+    public static function uomPriceColumnUsesCost(?string $type): bool
+    {
+        return self::hidesSellingPriceOnPurchaseForm($type);
+    }
+
     public static function isStockable(?string $type): bool
     {
         return $type !== null && $type !== self::Service->value;

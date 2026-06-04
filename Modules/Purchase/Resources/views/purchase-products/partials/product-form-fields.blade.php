@@ -1,9 +1,16 @@
 @php
+    use App\Enums\ProductType;
+
     $hasProduct = isset($product) && $product;
     $currencyCode = company()->currency->currency_code;
-    $purchaseInfoChecked = $hasProduct ? (int) $product->purchase_information === 1 : true;
     $trackInventoryDisabled = isset($trackInventory) && $trackInventory === 'disable';
     $serviceType = $hasProduct && $product->type === 'service';
+    $selectedProductType = old('type', $hasProduct && filled($product?->type) ? $product->type : ProductType::Goods->value);
+    $hideSellingPrice = ProductType::hidesSellingPriceOnPurchaseForm($selectedProductType);
+    $hideCostPrice = ProductType::hidesCostPriceOnPurchaseForm($selectedProductType);
+    $purchaseInfoChecked = $hideCostPrice
+        ? false
+        : ($hasProduct ? (int) $product->purchase_information === 1 : true);
     $showTrackInventory = $hasProduct ? !$serviceType : true;
     $trackInventoryChecked = $hasProduct && (int) $product->track_inventory === 1;
     $showOpeningStock = $hasProduct ? !$serviceType && $trackInventoryChecked : false;
@@ -113,14 +120,14 @@
 <div class="col-12 purchase-product-form-section">
     @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionPricing')])
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 product-purchase-information-toggle @if ($hideCostPrice) d-none @endif">
             <div class="form-group my-3 mb-2">
                 <x-forms.checkbox :fieldLabel="__('purchase::app.purchaseInformation')" fieldName="purchase_information" fieldId="purchase_information" fieldValue="1" fieldRequired="true" :checked="$purchaseInfoChecked" />
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-3 col-md-6 product-selling-price-column @if ($hideSellingPrice) d-none @endif">
             <div class="form-group my-3">
-                <label class="f-14 text-dark-grey mb-12" for="selling_price">@lang('purchase::app.sellingPrice')<sup class="text-red f-14 mr-1">*</sup></label>
+                <label class="f-14 text-dark-grey mb-12" for="selling_price">@lang('purchase::app.sellingPrice')<sup class="text-red f-14 mr-1 product-selling-price-required">*</sup></label>
                 <div class="input-group">
                     <div class="input-group-prepend height-35">
                         <span class="input-group-text border-grey f-15 bg-additional-grey px-3 text-dark">{{ $currencyCode }}</span>
@@ -129,7 +136,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-3 col-md-6 product-cost-price-column @if ($hideCostPrice || ! $purchaseInfoChecked) d-none @endif">
             <div class="form-group my-3 purchase_information">
                 <label class="f-14 text-dark-grey mb-12" for="purchase_price">@lang('purchase::app.costPrice')<sup class="text-red f-14 mr-1">*</sup></label>
                 <div class="input-group">

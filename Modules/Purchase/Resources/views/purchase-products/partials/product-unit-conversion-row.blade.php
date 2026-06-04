@@ -1,9 +1,14 @@
 @php
+    use App\Enums\ProductType;
+
     $rowIndex = $index;
     $unitId = $row['unit_id'] ?? null;
     $factor = isset($row['factor_to_base']) ? (float) $row['factor_to_base'] : 1;
+    $uomUsesCostColumn = $uomUsesCostColumn ?? ProductType::uomPriceColumnUsesCost(old('type', isset($product) && filled($product?->type) ? $product->type : null));
     $sellingPrice = $row['selling_price'] ?? null;
-    $forSale = $row === null ? true : (bool) ($row['for_sale'] ?? true);
+    $costPrice = $row['cost_price'] ?? null;
+    $displayPrice = $uomUsesCostColumn ? $costPrice ?? $sellingPrice : $sellingPrice ?? $costPrice;
+    $forSale = $row === null ? false : (bool) ($row['for_sale'] ?? false);
     $baseUnitId = isset($product) && $product ? (int) $product->unit_id : 0;
 @endphp
 <tr data-row-index="{{ $rowIndex }}">
@@ -29,10 +34,10 @@
         </div>
     </td>
     <td>
-        <input type="number" step="any" min="0" class="form-control unit-conversion-selling-price" name="unit_conversion_selling_price[{{ $rowIndex }}]" value="{{ $sellingPrice !== null ? $sellingPrice : '' }}" data-custom-override="{{ $sellingPrice !== null ? '1' : '0' }}">
-        <span class="badge badge-warning f-10 mt-1 unit-conversion-custom-price-badge @if ($sellingPrice === null) d-none @endif">@lang('purchase::app.productUnitCustomPrice')</span>
+        <input type="number" step="any" min="0" class="form-control unit-conversion-selling-price" name="unit_conversion_selling_price[{{ $rowIndex }}]" value="{{ $displayPrice !== null ? $displayPrice : '' }}" data-custom-override="{{ $displayPrice !== null ? '1' : '0' }}">
+        <span class="badge badge-warning f-10 mt-1 unit-conversion-custom-price-badge @if ($displayPrice === null) d-none @endif">@lang('purchase::app.productUnitCustomPrice')</span>
     </td>
-    <td class="text-center align-middle">
+    <td class="text-center align-middle product-uom-for-sale-column">
         <input type="hidden" name="unit_conversion_for_sale[{{ $rowIndex }}]" value="0">
         <input type="checkbox" name="unit_conversion_for_sale[{{ $rowIndex }}]" value="1" @checked($forSale)>
     </td>

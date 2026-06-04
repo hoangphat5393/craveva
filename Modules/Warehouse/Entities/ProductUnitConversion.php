@@ -16,6 +16,7 @@ class ProductUnitConversion extends BaseModel
         'unit_id',
         'factor_to_base',
         'selling_price',
+        'cost_price',
         'for_sale',
         'sort_order',
     ];
@@ -25,6 +26,7 @@ class ProductUnitConversion extends BaseModel
         return [
             'factor_to_base' => 'float',
             'selling_price' => 'float',
+            'cost_price' => 'float',
             'for_sale' => 'boolean',
             'sort_order' => 'integer',
         ];

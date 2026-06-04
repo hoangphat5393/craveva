@@ -246,7 +246,7 @@
         }
 
         if (!$('#purchase_information').prop('checked')) {
-            $('.purchase_information').addClass('d-none');
+            $('.product-cost-price-column').addClass('d-none');
         }
 
         @include('purchase::purchase-products.partials.product-form-client-validation')
@@ -327,9 +327,9 @@
 
         $('#purchase_information').change(function() {
             if ($(this).prop('checked')) {
-                $('.purchase_information').removeClass('d-none');
+                $('.product-cost-price-column').removeClass('d-none');
             } else {
-                $('.purchase_information').addClass('d-none');
+                $('.product-cost-price-column').addClass('d-none');
             }
         });
 

@@ -7,12 +7,15 @@
     $unitOptionsJson = isset($unit_types) ? $unit_types->map(fn($u) => ['id' => $u->id, 'label' => ucwords($u->unit_type)])->values() : collect();
     $selectedProductType = old('type', isset($product) && filled($product?->type) ? $product->type : ProductType::Goods->value);
     $showUomSection = ProductType::supportsAlternateUnitConversions($selectedProductType);
+    $uomUsesCostColumn = ProductType::uomPriceColumnUsesCost($selectedProductType);
 @endphp
 
 @if ($uomEnabled)
-    <div class="col-12 purchase-product-form-section @unless ($showUomSection) d-none @endunless" id="product-unit-conversions-section" data-unit-options="{{ $unitOptionsJson->toJson() }}" data-blocked-msg="{{ e(__('purchase::app.productUnitAddRowBlocked')) }}">
+    <div class="col-12 purchase-product-form-section @unless ($showUomSection) d-none @endunless" id="product-unit-conversions-section" data-unit-options="{{ $unitOptionsJson->toJson() }}" data-blocked-msg-sell="{{ e(__('purchase::app.productUnitAddRowBlocked')) }}" data-blocked-msg-cost="{{ e(__('purchase::app.productUnitAddRowBlockedCost')) }}"
+        data-hint-sell="{{ e(__('purchase::app.productUnitAddRowHint')) }}" data-hint-cost="{{ e(__('purchase::app.productUnitAddRowHintCost')) }}" data-help-sell="{{ e(__('purchase::app.productUnitConversionsHelp')) }}" data-help-cost="{{ e(__('purchase::app.productUnitConversionsHelpCost')) }}" data-label-sell="{{ e(__('purchase::app.sellingPrice')) }}"
+        data-label-cost="{{ e(__('purchase::app.costPrice')) }}" data-custom-label-sell="{{ e(__('purchase::app.productUnitCustomPrice')) }}" data-custom-label-cost="{{ e(__('purchase::app.productUnitCustomCost')) }}">
         @include('purchase::purchase-products.partials.product-form-section-heading', ['title' => __('purchase::app.productFormSectionUnits')])
-        <p class="text-muted f-12 mb-3">@lang('purchase::app.productUnitConversionsHelp')</p>
+        <p class="text-muted f-12 mb-3" id="product-unit-conversions-help">@lang($uomUsesCostColumn ? 'purchase::app.productUnitConversionsHelpCost' : 'purchase::app.productUnitConversionsHelp')</p>
 
         <div class="table-responsive">
             <table class="table table-bordered" id="product-unit-conversions-table">
@@ -20,8 +23,8 @@
                     <tr>
                         <th>@lang('purchase::app.productUnitColumnUnit')</th>
                         <th>@lang('purchase::app.productUnitColumnFactor')</th>
-                        <th>@lang('purchase::app.sellingPrice') ({{ $currencyCode }})</th>
-                        <th class="text-center">@lang('purchase::app.productUnitColumnForSale')</th>
+                        <th><span id="product-uom-price-column-label">@lang($uomUsesCostColumn ? 'purchase::app.costPrice' : 'purchase::app.sellingPrice')</span> ({{ $currencyCode }})</th>
+                        <th class="text-center product-uom-for-sale-column @if ($uomUsesCostColumn) d-none @endif">@lang('purchase::app.productUnitColumnForSale')</th>
                         <th width="50"></th>
                     </tr>
                 </thead>
@@ -33,6 +36,7 @@
                             'unitTypes' => $unit_types,
                             'currencyCode' => $currencyCode,
                             'product' => $product ?? null,
+                            'uomUsesCostColumn' => $uomUsesCostColumn,
                         ])
                     @endforeach
                 </tbody>
@@ -54,6 +58,7 @@
                         'unitTypes' => $unit_types,
                         'currencyCode' => $currencyCode,
                         'product' => $product ?? null,
+                        'uomUsesCostColumn' => $uomUsesCostColumn,
                     ])
                 </tbody>
             </table>

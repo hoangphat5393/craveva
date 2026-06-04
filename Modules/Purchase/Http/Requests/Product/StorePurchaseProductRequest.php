@@ -18,6 +18,13 @@ class StorePurchaseProductRequest extends CoreRequest
     protected function prepareForValidation(): void
     {
         $this->mergeResolvedSku();
+
+        if (ProductType::hidesCostPriceOnPurchaseForm((string) $this->input('type'))) {
+            $this->merge([
+                'purchase_information' => null,
+                'purchase_price' => null,
+            ]);
+        }
     }
 
     /**
@@ -39,7 +46,12 @@ class StorePurchaseProductRequest extends CoreRequest
             'sku' => $this->skuRulesForStore($companyId),
             'track_inventory' => 'sometimes',
             'type' => ['required', Rule::in(ProductType::values())],
-            'selling_price' => 'required|numeric',
+            'selling_price' => [
+                Rule::requiredIf(fn () => ! ProductType::hidesSellingPriceOnPurchaseForm((string) $this->input('type'))),
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
             'purchase_information' => 'sometimes',
             'opening_stock' => 'required_if:track_inventory,1',
             'purchase_price' => 'required_if:purchase_information,1,numeric',

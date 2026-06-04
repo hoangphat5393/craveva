@@ -16,10 +16,11 @@ use Modules\Warehouse\Entities\ProductUnitConversion;
 class ProductUnitConversionSyncService
 {
     /**
-     * @return list<array{unit_id:int, factor_to_base:float, selling_price:?float, for_sale:bool, sort_order:int}>
+     * @return list<array{unit_id:int, factor_to_base:float, selling_price:?float, cost_price:?float, for_sale:bool, sort_order:int}>
      */
     public function parseRowsFromRequest(Request $request, int $baseUnitId): array
     {
+        $type = (string) $request->input('type', '');
         $unitIds = $request->input('unit_conversion_unit_id', []);
         $factors = $request->input('unit_conversion_factor', []);
         $prices = $request->input('unit_conversion_selling_price', []);
@@ -29,6 +30,7 @@ class ProductUnitConversionSyncService
             return [];
         }
 
+        $usesCostColumn = ProductType::uomPriceColumnUsesCost($type);
         $rows = [];
         $seenUnitIds = [];
 
@@ -54,14 +56,18 @@ class ProductUnitConversionSyncService
             }
 
             $priceRaw = $prices[$index] ?? null;
-            $sellingPrice = ($priceRaw !== null && $priceRaw !== '') ? round((float) $priceRaw, 4) : null;
+            $unitPrice = ($priceRaw !== null && $priceRaw !== '') ? round((float) $priceRaw, 4) : null;
 
             $forSale = isset($forSales[$index]) && (string) $forSales[$index] === '1';
+            if ($usesCostColumn) {
+                $forSale = false;
+            }
 
             $rows[] = [
                 'unit_id' => $unitId,
                 'factor_to_base' => $factor,
-                'selling_price' => $sellingPrice,
+                'selling_price' => $usesCostColumn ? null : $unitPrice,
+                'cost_price' => $usesCostColumn ? $unitPrice : null,
                 'for_sale' => $forSale,
                 'sort_order' => count($rows),
             ];
@@ -71,7 +77,7 @@ class ProductUnitConversionSyncService
     }
 
     /**
-     * @param  list<array{unit_id:int, factor_to_base:float, selling_price:?float, for_sale:bool, sort_order:int}>  $rows
+     * @param  list<array{unit_id:int, factor_to_base:float, selling_price:?float, cost_price:?float, for_sale:bool, sort_order:int}>  $rows
      */
     /**
      * @param  Product|PurchaseProduct  $product  Same `products` row; Purchase module uses PurchaseProduct.
@@ -83,15 +89,16 @@ class ProductUnitConversionSyncService
         }
 
         [$companyId, $productId] = $this->productScopeIds($product);
+        $hasCostPriceColumn = Schema::hasColumn('product_unit_conversions', 'cost_price');
 
-        DB::transaction(function () use ($companyId, $productId, $rows): void {
+        DB::transaction(function () use ($companyId, $productId, $rows, $hasCostPriceColumn): void {
             ProductUnitConversion::query()
                 ->where('company_id', $companyId)
                 ->where('product_id', $productId)
                 ->delete();
 
             foreach ($rows as $row) {
-                ProductUnitConversion::query()->create([
+                $payload = [
                     'company_id' => $companyId,
                     'product_id' => $productId,
                     'unit_id' => $row['unit_id'],
@@ -99,7 +106,13 @@ class ProductUnitConversionSyncService
                     'selling_price' => $row['selling_price'],
                     'for_sale' => $row['for_sale'],
                     'sort_order' => $row['sort_order'],
-                ]);
+                ];
+
+                if ($hasCostPriceColumn) {
+                    $payload['cost_price'] = $row['cost_price'] ?? null;
+                }
+
+                ProductUnitConversion::query()->create($payload);
             }
         });
     }
@@ -140,6 +153,8 @@ class ProductUnitConversionSyncService
             return [];
         }
 
+        $hasCostPriceColumn = Schema::hasColumn('product_unit_conversions', 'cost_price');
+
         return ProductUnitConversion::query()
             ->where('company_id', $companyId)
             ->where('product_id', $productId)
@@ -147,14 +162,20 @@ class ProductUnitConversionSyncService
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get()
-            ->map(static function (ProductUnitConversion $row): array {
-                return [
+            ->map(static function (ProductUnitConversion $row) use ($hasCostPriceColumn): array {
+                $result = [
                     'unit_id' => (int) $row->unit_id,
                     'unit_label' => $row->unit?->unit_type ?? '',
                     'factor_to_base' => (float) $row->factor_to_base,
                     'selling_price' => $row->selling_price !== null ? (float) $row->selling_price : null,
                     'for_sale' => (bool) $row->for_sale,
                 ];
+
+                if ($hasCostPriceColumn) {
+                    $result['cost_price'] = $row->cost_price !== null ? (float) $row->cost_price : null;
+                }
+
+                return $result;
             })
             ->values()
             ->all();

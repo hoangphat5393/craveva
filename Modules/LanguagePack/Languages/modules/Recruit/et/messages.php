@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Olete antud meili ID-ga sellele tööle juba kandideerinud.',
     'interviewMessage' => 'Intervjuu on kokku lepitud.',
     'componentSelected' => 'valitud komponendid',
-    'rejectedMessage' => 'Täname teid huvi eest meie vastu.
-    Kahjuks ei sobi te praegu õigesse vormi.
-    Vabandan pettumust valmistava uudise pärast.',
+    'rejectedMessage' => 'Täname teid huvi eest meie vastu.'."\r\n"
+        .'    Kahjuks ei sobi te praegu õigesse vormi.'."\r\n"
+        .'    Vabandan pettumust valmistava uudise pärast.',
     'bestWishes' => 'Edu tööotsimisel.',
     'acceptanceConfirm' => 'Pärast vastuvõtmist osalete selles intervjuus.',
     'rejectConfirm' => 'Pärast kinnitamist ei osale te selles intervjuus.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Täname, et kaalusite karjääri koos meiega.',
     'greetingMessage' => 'Loodame, et see sõnum leiab teid hästi.',
     'predefinedSourceDelete' => 'Eelt määratletud allikaid ei saa kustutada.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

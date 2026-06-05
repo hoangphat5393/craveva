@@ -10,6 +10,7 @@ return [
         'electronicAddressScheme' => '電子地址方案',
         'companyID' => '公司 ID',
         'companyIDScheme' => '公司 ID 方案',
+        'companyTaxIdNote' => 'Companytaxidnote',
     ],
     'companyAddressNote' => '此模組使用營業地址中的國家/地區。如果您尚未選擇國家/地區，請從 :link 中選擇一個',
     'generateEInvoice' => '電子發票',

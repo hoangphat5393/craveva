@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'unterschriebenes Angebotsschreiben am',
         'description' => 'Beschreibung',
         'notDisclosed' => 'Nicht offengelegt',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Zurückziehen',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Im Gange',
         'scheduled' => 'Geplant',
         'offerReleased' => 'Angebot freigegeben',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Angewandt',

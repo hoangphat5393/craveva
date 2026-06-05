@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Zi liberă',
         'dayoff' => 'Zi liberă',
         'overtimeType' => 'Tipul orelor suplimentare',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

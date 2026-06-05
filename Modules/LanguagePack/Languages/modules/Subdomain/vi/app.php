@@ -16,6 +16,8 @@ return [
         'domainType' => 'Domain Type',
         'customDomain' => 'Custom Domain',
         'bannedSubdomains' => 'Banned Subdomains',
+        'signInTitleDescription' => 'Welcome to the login page! Please enter your credentials to access your account and start using the platform\'s features. If you don\'t have an account yet, you can easily sign up for one.',
+        'companyNotFound' => 'COMPANY DOES NOT EXISTS FOR THAT URL',
     ],
     'messages' => [
         'forgetMailFail' => 'Forget Mail Fail',
@@ -24,6 +26,8 @@ return [
         'notAllowedToUseThisSubdomain' => 'Not Allowed To Use This Subdomain',
         'forgotPageMessage' => 'Forgot Page Message',
         'findCompanyUrl' => 'Find Company Url',
+        'deleteSubdomain' => 'Are You Sure You Want To Delete',
+        'notifyAllAdmins' => 'This will notify all admins their domain urls',
     ],
     'companyNotFound' => 'Company Not Found',
     'email' => [
@@ -40,6 +44,7 @@ return [
         'subject' => 'Subject',
         'line3' => 'Line3',
         'noteLoginUrlChanged' => 'Note Login Url Changed',
+        'noteLoginUrl' => 'Please note your Superadmin Login URL ',
     ],
     'match' => [
         'title' => 'Title',

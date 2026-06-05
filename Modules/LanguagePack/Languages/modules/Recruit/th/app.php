@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'ลงนามในจดหมายข้อเสนอแล้ว',
         'description' => 'คำอธิบาย',
         'notDisclosed' => 'ไม่เปิดเผย',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'ถอน',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'กำลังดำเนินการ',
         'scheduled' => 'กำหนดเวลาแล้ว',
         'offerReleased' => 'ปล่อยข้อเสนอแล้ว',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'สมัครแล้ว',

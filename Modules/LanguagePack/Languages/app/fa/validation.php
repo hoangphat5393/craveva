@@ -343,4 +343,5 @@ return [
     ],
     'selectAtLeastOne' => 'حداقل یکی را انتخاب کنید',
     'notAllowed' => ' :attribute مجاز نیست',
+    'urlFormat' => 'Urlformat',
 ];

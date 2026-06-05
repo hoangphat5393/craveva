@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Złożyłeś już podanie o tę ofertę pracy, podając podany identyfikator e-mail.',
     'interviewMessage' => 'Wywiad został zaplanowany.',
     'componentSelected' => 'wybrane komponenty',
-    'rejectedMessage' => 'Dziękujemy za zainteresowanie nami.
-    Niestety, w tej chwili nie jesteś odpowiednią osobą.
-    Przykro mi z powodu rozczarowujących wiadomości.',
+    'rejectedMessage' => 'Dziękujemy za zainteresowanie nami.'."\r\n"
+        .'    Niestety, w tej chwili nie jesteś odpowiednią osobą.'."\r\n"
+        .'    Przykro mi z powodu rozczarowujących wiadomości.',
     'bestWishes' => 'Powodzenia w poszukiwaniu pracy.',
     'acceptanceConfirm' => 'Po zaakceptowaniu będziesz częścią tej rozmowy kwalifikacyjnej.',
     'rejectConfirm' => 'Po potwierdzeniu nie będziesz brał udziału w tej rozmowie kwalifikacyjnej.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Dziękujemy, że rozważasz karierę u nas.',
     'greetingMessage' => 'Mamy nadzieję, że ta wiadomość zastanie Cię w dobrym zdrowiu.',
     'predefinedSourceDelete' => 'Nie możesz usunąć wcześniej zdefiniowanych źródeł.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

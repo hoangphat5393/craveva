@@ -138,4 +138,10 @@ return [
     'allMeetings' => 'All Meetings',
     'checkInDay' => 'Check In Day',
     'meetingSettings' => 'Meeting Settings',
+    'oneOnOnemeeting' => '1:1 Meeting',
+    'meetings' => 'Meetings',
+    'meetingAdded' => 'A Meeting Was Added For You',
+    'deleteDiscussionPoint' => 'Delete Discussion Point',
+    'deleteActionPoint' => 'Delete Action Point',
+    'viewList' => 'View List',
 ];

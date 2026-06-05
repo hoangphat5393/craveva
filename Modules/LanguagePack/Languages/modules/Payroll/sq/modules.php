@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Pushoj',
         'dayoff' => 'Pushoj',
         'overtimeType' => 'Lloji jashtë orarit',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

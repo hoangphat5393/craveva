@@ -10,6 +10,7 @@ return [
         'electronicAddressScheme' => 'Schéma elektronických adres',
         'companyID' => 'ID společnosti',
         'companyIDScheme' => 'Schéma ID společnosti',
+        'companyTaxIdNote' => 'Companytaxidnote',
     ],
     'companyAddressNote' => 'Tento modul používá zemi z Obchodní adresy. Pokud jste nevybrali zemi, vyberte jednu z :link',
     'generateEInvoice' => 'Elektronická faktura',

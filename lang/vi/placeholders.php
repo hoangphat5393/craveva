@@ -194,4 +194,5 @@ return [
     'controlPanel' => 'Control Panel',
     'databaseLimit' => 'Database Limit',
     'emailLimit' => 'Email Limit',
+    'orderNumber' => 'e.g. Order Number',
 ];

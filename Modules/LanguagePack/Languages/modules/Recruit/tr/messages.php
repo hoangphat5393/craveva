@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Verilen e-posta kimliğiyle bu iş için zaten başvurdunuz.',
     'interviewMessage' => 'Röportaj planlandı.',
     'componentSelected' => 'seçilen bileşenler',
-    'rejectedMessage' => 'Bize gösterdiğiniz ilgi için teşekkür ederiz.
-    Ne yazık ki şu anda uygun kişi değilsiniz.
-    Hayal kırıklığı yaratan haber için üzgünüm.',
+    'rejectedMessage' => 'Bize gösterdiğiniz ilgi için teşekkür ederiz.'."\r\n"
+        .'    Ne yazık ki şu anda uygun kişi değilsiniz.'."\r\n"
+        .'    Hayal kırıklığı yaratan haber için üzgünüm.',
     'bestWishes' => 'İş arayışınızda iyi şanslar.',
     'acceptanceConfirm' => 'Kabul ettikten sonra bu röportajın bir parçası olacaksınız.',
     'rejectConfirm' => 'Onayladıktan sonra bu röportajın bir parçası olmayacaksınız.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Bizimle kariyer yapmayı düşündüğünüz için teşekkür ederiz.',
     'greetingMessage' => 'Bu mesajın sizi iyi bulacağını umuyoruz.',
     'predefinedSourceDelete' => 'Önceden tanımlanmış kaynakları silemezsiniz.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'podpisany list ofertowy dot',
         'description' => 'Opis',
         'notDisclosed' => 'Nie ujawniono',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Wycofać',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'W trakcie',
         'scheduled' => 'Zaplanowany',
         'offerReleased' => 'Oferta opublikowana',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Stosowany',

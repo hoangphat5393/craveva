@@ -343,4 +343,5 @@ return [
     ],
     'selectAtLeastOne' => '하나 이상 선택하세요.',
     'notAllowed' => ' :attribute은 허용되지 않습니다.',
+    'urlFormat' => 'Urlformat',
 ];

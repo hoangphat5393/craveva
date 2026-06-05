@@ -187,5 +187,8 @@ return [
         'dayOff' => 'დასვენების დღე',
         'dayoff' => 'დასვენების დღე',
         'overtimeType' => 'ზეგანაკვეთური ტიპი',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

@@ -27,4 +27,10 @@ return [
     'orderMarkAsSent' => 'შეკვეთა გაიგზავნა წარმატებით',
     'orderSentSuccessfully' => 'შეკვეთა წარმატებით გაგზავნილად მონიშვნა',
     'billSentSuccessfully' => 'ანგარიში წარმატებით გაიგზავნა.',
+    'openingStockNoDefaultWarehouse' => 'No default warehouse for this company. Run :command first, then save again.',
+    'productionFgInventoryLedgerDescription' => 'Production FG receipt (batch :batch)',
+    'costPriceMinRequired' => 'Cost price must be greater than zero.',
+    'unitConversionCannotMatchBase' => 'An alternate unit cannot be the same as the product base unit.',
+    'unitConversionDuplicateUnit' => 'Each alternate unit can only be added once.',
+    'unitConversionFactorInvalid' => 'Conversion factor must be greater than zero.',
 ];

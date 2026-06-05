@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'υπογεγραμμένη επιστολή προσφοράς στις',
         'description' => 'Περιγραφή',
         'notDisclosed' => 'Δεν αποκαλύπτεται',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Αποσύρω',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Σε εξέλιξη',
         'scheduled' => 'Προγραμματισμένος',
         'offerReleased' => 'Η προσφορά κυκλοφόρησε',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Εφαρμοσμένος',

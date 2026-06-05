@@ -27,4 +27,10 @@ return [
     'orderMarkAsSent' => '주문이 성공적으로 전송되었습니다',
     'orderSentSuccessfully' => '주문이 성공적으로 전송된 것으로 표시',
     'billSentSuccessfully' => '청구서가 성공적으로 전송되었습니다.',
+    'openingStockNoDefaultWarehouse' => 'No default warehouse for this company. Run :command first, then save again.',
+    'productionFgInventoryLedgerDescription' => 'Production FG receipt (batch :batch)',
+    'costPriceMinRequired' => 'Cost price must be greater than zero.',
+    'unitConversionCannotMatchBase' => 'An alternate unit cannot be the same as the product base unit.',
+    'unitConversionDuplicateUnit' => 'Each alternate unit can only be added once.',
+    'unitConversionFactorInvalid' => 'Conversion factor must be greater than zero.',
 ];

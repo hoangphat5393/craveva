@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Jour de congé',
         'dayoff' => 'Jour de congé',
         'overtimeType' => 'Type d\'heures supplémentaires',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

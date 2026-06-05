@@ -54,8 +54,6 @@ return [
     'offline' => '離線',
     'admsSettings' => 'ADMS 設置',
     'noMatchingRecordsFound' => '未找到匹配記錄',
-
-    // Create device form strings
     'howToFindDeviceSerialNumber' => '如何查找您的設備序號',
     'serialNumberLocationInfo' => '可以在設備中通過導航到 菜單 -> 系統信息 -> 設備信息 找到序號',
     'step1Menu' => '步驟 1：菜單',
@@ -66,8 +64,6 @@ return [
     'step3FindSerialNumber' => '步驟 3：在設備信息中查找序號',
     'deviceSerialNumberLocation' => '設備序號位置',
     'serialNumberLocation' => '序號位置',
-
-    // Employee edit form strings
     'configured' => '已配置',
     'notConfigured' => '未配置',
     'biometricConfigurationInstructions' => '生物識別配置說明',
@@ -91,8 +87,6 @@ return [
     'removeFromDevice' => '從生物識別設備中移除',
     'removeEmployeeFromDeviceWarning' => '您確定要從生物識別設備中移除此員工嗎？此操作無法撤銷。',
     'employeeRemovedFromDevice' => '員工已成功從生物識別設備中移除。',
-
-    // Sync Employees
     'syncAllEmployees' => '同步所有員工',
     'syncAllEmployeesConfirmation' => '這將把所有在職員工發送到所有在線生物識別設備。繼續嗎？',
     'employeesSyncInitiated' => '員工同步已啟動。設備將很快更新。您可以<a href=":pendingCommandsUrl">在此處</a>檢查待處理指令的狀態。',
@@ -100,7 +94,6 @@ return [
     'followingEmployeesWillBeSynced' => '以下員工將與所有活動生物識別設備同步。',
     'noEmployeesToSync' => '未找到要同步的員工。',
     'confirmSync' => '確認同步',
-
     'commandType' => '指令類型',
     'deleteUser' => '刪除用戶',
     'addUser' => '添加用戶',
@@ -116,12 +109,40 @@ return [
     'executedAt' => '執行時間',
     'failedAt' => '失敗時間',
     'employeesPushedToDevices' => '員工已推送到設備',
-
     'commandStatusDefinitions' => '指令狀態定義',
     'pendingDefinition' => '指令正等待發送到設備',
     'sentDefinition' => '指令已發送到設備，但尚未執行',
     'executedDefinition' => '指令已在設備上成功執行',
     'failedDefinition' => '指令在設備上執行失敗',
     'clickToExpand' => '點擊展開',
-
+    'status1' => 'Status1',
+    'haveFingerPrint' => 'Havefingerprint',
+    'fingerCount' => 'Fingercount',
+    'fetchAllBiometricDataSuccess' => 'Biometric data has been fetched successfully.',
+    'addBiometricIdFirstTooltip' => 'Set Biometric Id First',
+    'biometricOnly' => 'Biometric Only',
+    'allMethods' => 'All Methods',
+    'refreshEmployeeList' => 'Refresh Employees List',
+    'fetchAllBiometricData' => 'Fetch All Biometric Data',
+    'activeEmployees' => 'Active Employees',
+    'inactiveEmployees' => 'Inactive Employees',
+    'allEmployees' => 'All Employees',
+    'searchEmployees' => 'Search Employees',
+    'refreshing' => 'Refreshing',
+    'clockInMethod' => 'Clock In Method',
+    'copyToBiometricId' => 'Copy To Biometric Id',
+    'fingerprintRegistered' => 'Fingerprint Registered',
+    'cardRegistered' => 'Cardregistered',
+    'fetchBiometricData' => 'Fetchbiometricdata',
+    'addBiometricIdFirst' => 'Set Id First',
+    'fetchAllBiometricDataWarning' => 'This will fetch all biometric data from the device and update the employees. This process may take a while. Are you sure you want to proceed?',
+    'fetchAllBiometricDataError' => 'Failed to fetch biometric data. Please try again.',
+    'fetchAllBiometricDataTitle' => 'Fetch All Biometric Data',
+    'fetchAllBiometricDataButton' => 'Fetch All Biometric Data',
+    'fetchAllBiometricDataButtonText' => 'Fetch All Biometric Data',
+    'biometricAndEmployeeId' => 'Biometric And Employee Id',
+    'employeeIdOnly' => 'Employee Id Only',
+    'biometricId' => 'Biometric Id',
+    'biometricIdAndEmployeeId' => 'Biometric Id And Employee Id',
+    'biometricIdOnly' => 'Biometric Id Only',
 ];

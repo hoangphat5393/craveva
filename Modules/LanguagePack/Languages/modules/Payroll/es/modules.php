@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Día de descanso',
         'dayoff' => 'Día de descanso',
         'overtimeType' => 'Tipo de tiempo extra',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

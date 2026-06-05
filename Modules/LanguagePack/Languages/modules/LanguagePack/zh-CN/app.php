@@ -10,4 +10,6 @@ return [
     'publishAllButtonPopover' => '发布以下所有语言',
     'publishButtonPopover' => '发布 :language 语言',
     'republishButtonPopover' => '重新发布 :language 语言',
+    'syncKeysButtonPopover' => 'Scan code and add missing translation keys to the Language Pack',
+    'syncKeys' => 'Sync Keys',
 ];

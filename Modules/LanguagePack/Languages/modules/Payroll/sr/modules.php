@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Слободан дан',
         'dayoff' => 'Слободан дан',
         'overtimeType' => 'Прековремени тип',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

@@ -164,4 +164,5 @@ return [
     'reference_production_batch' => '生产批次',
     'reference_transfer' => '仓库调拨',
     'reference_unknown' => '参考单据',
+    'success_warehouse_flow_settings_updated' => 'Warehouse flow settings updated successfully.',
 ];

@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Giorno libero',
         'dayoff' => 'Giorno libero',
         'overtimeType' => 'Tipo di straordinario',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

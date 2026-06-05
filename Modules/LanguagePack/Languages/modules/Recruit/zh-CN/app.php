@@ -38,6 +38,7 @@ return [
         'signedOffer' => '签署的录用通知书于',
         'description' => '描述',
         'notDisclosed' => '未公开',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => '撤回',
@@ -79,6 +80,9 @@ return [
         'inProgress' => '进行中',
         'scheduled' => '已安排',
         'offerReleased' => '录用通知已发放',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => '已申请',

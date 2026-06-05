@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Anda telah melamar pekerjaan ini dengan id email yang diberikan.',
     'interviewMessage' => 'Wawancara telah dijadwalkan.',
     'componentSelected' => 'komponen yang dipilih',
-    'rejectedMessage' => 'Terima kasih atas ketertarikan Anda pada kami.
-    Sayangnya, kamu bukan orang yang tepat saat ini.
-    Saya minta maaf atas berita yang mengecewakan ini.',
+    'rejectedMessage' => 'Terima kasih atas ketertarikan Anda pada kami.'."\r\n"
+        .'    Sayangnya, kamu bukan orang yang tepat saat ini.'."\r\n"
+        .'    Saya minta maaf atas berita yang mengecewakan ini.',
     'bestWishes' => 'Semoga sukses dalam pencarian kerja Anda.',
     'acceptanceConfirm' => 'Setelah menerima, Anda akan menjadi bagian dari wawancara ini.',
     'rejectConfirm' => 'Setelah konfirmasi, Anda tidak akan menjadi bagian dari wawancara ini.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Terima kasih telah mempertimbangkan karir bersama kami.',
     'greetingMessage' => 'Kami berharap pesan ini sampai kepada Anda dengan baik.',
     'predefinedSourceDelete' => 'Anda tidak dapat menghapus sumber yang telah ditentukan sebelumnya.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

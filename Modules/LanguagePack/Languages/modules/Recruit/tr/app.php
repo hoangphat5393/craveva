@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'imzalı teklif mektubu',
         'description' => 'Tanım',
         'notDisclosed' => 'Açıklanmadı',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Geri çekilmek',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Devam etmekte',
         'scheduled' => 'planlanmış',
         'offerReleased' => 'Teklif Yayınlandı',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Uygulamalı',

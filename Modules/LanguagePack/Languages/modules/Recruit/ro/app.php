@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'scrisoare de ofertă semnată pe',
         'description' => 'Descriere',
         'notDisclosed' => 'Nu este dezvăluit',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Retrage',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'În curs',
         'scheduled' => 'Programat',
         'offerReleased' => 'Oferta lansată',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Aplicat',

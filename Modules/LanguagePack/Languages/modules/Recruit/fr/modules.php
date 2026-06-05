@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Lettre de rappel d\'offre au candidat (en jours)',
         'enableCareer' => '<p>Pour activer la page publique où vos emplois actifs seront répertoriés et où les candidats pourront postuler.</p>',
         'applicationRestri' => '<p>Pour <strong>empêcher</strong> un candidat de postuler plusieurs fois à partir du même e-mail.</p><p>Un candidat peut postuler à deux emplois différents à partir du même e-mail, mais pour le même emploi, l\'administrateur peut < strong>les restreindre</strong> en limitant les demandes d\'emploi en double.</p><p>En ajoutant <u>X</u> nombre de jours après lesquels vous souhaitez autoriser le candidat à <strong>postuler à nouveau< /strong> pour une tâche particulière avec le même e-mail.</p>',
-        'offerletterReminderMsg' => '<p>Pour <strong>Rappeler</strong> au candidat l\'expiration de sa lettre d\'offre.</p>
-        <p>Le système enverra un e-mail de rappel via une tâche cron avant le nombre <u>X</u> de jours.</p><p><u>Par exemple</u>, si vous entrez 4 jours, le système enverra email de rappel avant 4 jours après la date d\'expiration de la lettre d\'offre </p>',
-        'mailSetting' => '<p>Pour envoyer un e-mail au candidat concernant le changement de statut de sa candidature.</p><p>Le système enverra un e-mail au candidat uniquement lorsque le statut passe à un statut particulier qui est coché.</p>
-        <p><u>Par exemple</u>, si la case Entretien est cochée, le système enverra un e-mail uniquement lorsque le statut de la demande d\'emploi passe à entretien.</p>',
+        'offerletterReminderMsg' => '<p>Pour <strong>Rappeler</strong> au candidat l\'expiration de sa lettre d\'offre.</p>'."\r\n"
+            .'        <p>Le système enverra un e-mail de rappel via une tâche cron avant le nombre <u>X</u> de jours.</p><p><u>Par exemple</u>, si vous entrez 4 jours, le système enverra email de rappel avant 4 jours après la date d\'expiration de la lettre d\'offre </p>',
+        'mailSetting' => '<p>Pour envoyer un e-mail au candidat concernant le changement de statut de sa candidature.</p><p>Le système enverra un e-mail au candidat uniquement lorsque le statut passe à un statut particulier qui est coché.</p>'."\r\n"
+            .'        <p><u>Par exemple</u>, si la case Entretien est cochée, le système enverra un e-mail uniquement lorsque le statut de la demande d\'emploi passe à entretien.</p>',
         'jobAlert' => 'Alerte d\'emploi',
         'alertHelp' => 'Job Alert est une <strong>notification par e-mail</strong> concernant les emplois pertinents en fonction des compétences et des préférences sélectionnées par le candidat au moment de la création de l\'alerte emploi.',
         'customQuestionSettings' => 'Paramètres des questions personnalisées',
@@ -458,6 +458,7 @@ return [
         'text' => 'Vous êtes maintenant recruteur pour un emploi',
         'alertMsg' => 'Il y a de nouvelles offres d\'emploi pour',
         'lastDate' => 'dernière date pour postuler',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Supprimé du travail',

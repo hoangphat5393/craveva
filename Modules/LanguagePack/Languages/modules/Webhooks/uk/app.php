@@ -20,4 +20,5 @@ return [
     'runDebug' => 'Запустити в режимі налагодження',
     'requestDetails' => 'Деталі запиту',
     'response' => 'Відповідь',
+    'webhookLog' => 'Webhooklog',
 ];

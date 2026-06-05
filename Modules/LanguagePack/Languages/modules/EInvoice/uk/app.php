@@ -10,6 +10,7 @@ return [
         'electronicAddressScheme' => 'Схема електронної адреси',
         'companyID' => 'ID компанії',
         'companyIDScheme' => 'Схема ідентифікації компанії',
+        'companyTaxIdNote' => 'Companytaxidnote',
     ],
     'companyAddressNote' => 'Цей модуль використовує країну з адреси підприємства. Якщо ви не вибрали країну, виберіть одну з :link',
     'generateEInvoice' => 'Електронний рахунок',

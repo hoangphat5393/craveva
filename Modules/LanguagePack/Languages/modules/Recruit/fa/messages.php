@@ -62,9 +62,9 @@ return [
     'emailExist' => 'شما قبلاً با شناسه ایمیل ارائه شده برای این شغل درخواست داده اید.',
     'interviewMessage' => 'زمان مصاحبه تعیین شده است.',
     'componentSelected' => 'اجزای انتخاب شده',
-    'rejectedMessage' => 'از علاقه شما به ما متشکریم
-    متأسفانه، شما در حال حاضر مناسب نیستید.
-    بابت خبر ناامید کننده متاسفم.',
+    'rejectedMessage' => 'از علاقه شما به ما متشکریم'."\r\n"
+        .'    متأسفانه، شما در حال حاضر مناسب نیستید.'."\r\n"
+        .'    بابت خبر ناامید کننده متاسفم.',
     'bestWishes' => 'با آرزوی موفقیت در جستجوی کار',
     'acceptanceConfirm' => 'پس از پذیرش، شما بخشی از این مصاحبه خواهید بود.',
     'rejectConfirm' => 'پس از تایید، شما بخشی از این مصاحبه نخواهید بود.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'با تشکر از شما برای در نظر گرفتن شغلی با ما.',
     'greetingMessage' => 'امیدواریم این پیام شما را خوب بیابد.',
     'predefinedSourceDelete' => 'شما نمی توانید منابع از پیش تعریف شده را حذف کنید.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

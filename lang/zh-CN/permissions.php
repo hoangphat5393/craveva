@@ -473,4 +473,7 @@ return [
     'edit_payouts' => '编辑支出',
     'delete_payouts' => '删除支出',
     'manage_payout_status' => '管理付款状态',
+    'approve_estimate_president' => 'Approve quotation (President)',
+    'approve_estimate_vp_pricing' => 'Approve quotation (VP pricing)',
+    'view_audit_report' => 'View Audit Report',
 ];

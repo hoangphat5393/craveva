@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Připomenutí nabídky dopisu kandidátovi (ve dnech)',
         'enableCareer' => '<p>Pro aktivaci veřejné stránky, kde budou uvedeny vaše aktivní pracovní pozice a kandidát se o ně může ucházet.</p>',
         'applicationRestri' => '<p>Chcete-li <strong>omezit</strong> kandidáta, aby se přihlásil vícekrát ze stejného e-mailu.</p><p>Kandidát se může ucházet o dvě různé pracovní pozice ze stejného e-mailu, ale pro stejnou práci může administrátor < strong>omezit</strong> je omezením duplicitních žádostí o zaměstnání.</p><p>Přidáním <u>X</u> počtu dní, po kterých chcete kandidátovi umožnit <strong>znovu se přihlásit< /strong> pro konkrétní úlohu se stejným e-mailem.</p>',
-        'offerletterReminderMsg' => '<p>Pro <strong>Připomenutí</strong> kandidátovi vypršení platnosti jeho nabídkového dopisu.</p>
-        <p>Systém odešle upomínkový e-mail prostřednictvím úlohy cron před <u>X</u> počtem dnů.</p><p><u>např.</u> pokud zadáte 4 dny, systém odešle e-mail s upomínkou do 4 dnů od data vypršení platnosti nabídkového dopisu </p>',
-        'mailSetting' => '<p>Zaslání e-mailu kandidátovi o změně stavu jeho žádosti o zaměstnání.</p><p>Systém odešle e-mail kandidátovi pouze tehdy, když se stav změní na konkrétní stav, který je zaškrtnut.</p>
-        <p><u>např.</u> pokud je zaškrtnuto políčko Pohovor, systém odešle e-mail pouze tehdy, když se stav žádosti o zaměstnání změní na pohovor.</p>',
+        'offerletterReminderMsg' => '<p>Pro <strong>Připomenutí</strong> kandidátovi vypršení platnosti jeho nabídkového dopisu.</p>'."\r\n"
+            .'        <p>Systém odešle upomínkový e-mail prostřednictvím úlohy cron před <u>X</u> počtem dnů.</p><p><u>např.</u> pokud zadáte 4 dny, systém odešle e-mail s upomínkou do 4 dnů od data vypršení platnosti nabídkového dopisu </p>',
+        'mailSetting' => '<p>Zaslání e-mailu kandidátovi o změně stavu jeho žádosti o zaměstnání.</p><p>Systém odešle e-mail kandidátovi pouze tehdy, když se stav změní na konkrétní stav, který je zaškrtnut.</p>'."\r\n"
+            .'        <p><u>např.</u> pokud je zaškrtnuto políčko Pohovor, systém odešle e-mail pouze tehdy, když se stav žádosti o zaměstnání změní na pohovor.</p>',
         'jobAlert' => 'Job Alert',
         'alertHelp' => 'Job Alert je <strong>e-mailové upozornění</strong> o relevantních pracovních pozicích na základě sady dovedností a preferencí, které si kandidát vybral při vytváření upozornění na pracovní místo.',
         'customQuestionSettings' => 'Vlastní nastavení otázek',
@@ -458,6 +458,7 @@ return [
         'text' => 'Nyní jste náborář pro práci',
         'alertMsg' => 'Je zde nová volná pracovní místa pro',
         'lastDate' => 'poslední termín pro podání žádosti',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Odebráno z práce',

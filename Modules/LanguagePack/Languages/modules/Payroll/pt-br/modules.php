@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Folga',
         'dayoff' => 'Folga',
         'overtimeType' => 'Tipo de prorrogação',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

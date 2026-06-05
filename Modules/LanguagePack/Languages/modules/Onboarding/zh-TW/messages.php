@@ -20,4 +20,10 @@ return [
     'offboardingStartMailText' => '隨著您在 :companyName 的時間接近尾聲，我們希望確保您和團隊都能順利過渡。請完成以下離職任務。',
     'markAllAsComplete' => '全部標記為完成',
     'markAllAsCompleteConfirm' => '您確定要全部標記為完成嗎？',
+    'employeeNotFound' => 'Employee Not Found',
+    'onboardingAlreadyInProgress' => 'Onboarding Already In Progress',
+    'noOnboardingTasksConfigured' => 'No Onboarding Tasks Configured',
+    'completeOnboardingFirst' => 'Complete Onboarding First',
+    'offboardingAlreadyInProgress' => 'Offboarding Already In Progress',
+    'noOffboardingTasksConfigured' => 'No Offboarding Tasks Configured',
 ];

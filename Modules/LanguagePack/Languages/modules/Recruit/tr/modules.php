@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Adaya Teklif Mektubu Hatırlatma(Gün olarak)',
         'enableCareer' => '<p>Aktif işlerinizin listeleneceği ve adayın başvurabileceği genel sayfayı etkinleştirmek için.</p>',
         'applicationRestri' => '<p>Adayın aynı e-postayla birden fazla kez başvurmasını <strong>kısıtlamak</strong> için.</p><p>Bir aday aynı e-postadan iki farklı işe başvurabilir ancak aynı iş için yönetici < mükerrer iş başvurusu kısıtlamasıyla bunları güçlü>kısıtlayın</strong>.</p><p>Adanın <strong>yeniden başvurmasına< izin vermek istediğiniz <u>X</u> gün sayısını ekleyerek</strong> /strong> aynı e-posta adresiyle belirli bir iş için.</p>',
-        'offerletterReminderMsg' => '<p>Adaylara teklif mektubunun süresinin dolduğunu <strong>hatırlatmak</strong>.</p>
-        <p>Sistem <u>X</u> gün sayısı öncesinde cron job aracılığıyla hatırlatma postası gönderecektir.</p><p><u>örn.</u> 4 gün girerseniz sistem hatırlatma postası gönderecektir Teklif mektubunun geçerlilik tarihinden 4 gün önce hatırlatma e-postası </p>',
-        'mailSetting' => '<p>Adaylara, iş başvurusunun durum değişikliği hakkında e-posta göndermek için.</p><p>Sistem, yalnızca durum, işaretlenen belirli bir duruma değiştiğinde adaya e-posta gönderecektir.</p>
-        <p><u>örn.</u> Mülakat kutucuğu seçilirse sistem yalnızca iş başvurusunun durumu mülakat olarak değiştiğinde e-posta gönderecektir.</p>',
+        'offerletterReminderMsg' => '<p>Adaylara teklif mektubunun süresinin dolduğunu <strong>hatırlatmak</strong>.</p>'."\r\n"
+            .'        <p>Sistem <u>X</u> gün sayısı öncesinde cron job aracılığıyla hatırlatma postası gönderecektir.</p><p><u>örn.</u> 4 gün girerseniz sistem hatırlatma postası gönderecektir Teklif mektubunun geçerlilik tarihinden 4 gün önce hatırlatma e-postası </p>',
+        'mailSetting' => '<p>Adaylara, iş başvurusunun durum değişikliği hakkında e-posta göndermek için.</p><p>Sistem, yalnızca durum, işaretlenen belirli bir duruma değiştiğinde adaya e-posta gönderecektir.</p>'."\r\n"
+            .'        <p><u>örn.</u> Mülakat kutucuğu seçilirse sistem yalnızca iş başvurusunun durumu mülakat olarak değiştiğinde e-posta gönderecektir.</p>',
         'jobAlert' => 'İş Uyarısı',
         'alertHelp' => 'İş Uyarısı, iş uyarısı oluşturulurken aday tarafından seçilen beceri seti ve tercihlere dayalı olarak ilgili işlerle ilgili bir <strong>e-posta bildirimidir</strong>.',
         'customQuestionSettings' => 'Özel Soru Ayarları',
@@ -458,6 +458,7 @@ return [
         'text' => 'Artık iş için işe alım uzmanısınız',
         'alertMsg' => 'için yeni bir iş olanağı var',
         'lastDate' => 'başvuru için son tarih',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'İşten kaldırıldı',

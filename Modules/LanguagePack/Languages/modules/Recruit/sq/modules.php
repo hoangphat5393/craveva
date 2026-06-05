@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Kujtesa e letrës së ofertës për kandidatin (në ditë)',
         'enableCareer' => '<p>Për të aktivizuar faqen publike ku do të listohen punët tuaja aktive dhe kandidati mund të aplikojë për të njëjtën gjë.</p>',
         'applicationRestri' => '<p>Për të <strong>kufizuar</strong> kandidatin që të mos aplikojë disa herë nga i njëjti email.</p><p>Një kandidat mund të aplikojë për dy punë të ndryshme nga i njëjti email, por për të njëjtën punë, administratori mund të < fortë>kufizoji</strong> ato me kufizim të dyfishtë të aplikimit për punë.</p><p>Duke shtuar <u>X</u> numrin e ditëve pas të cilave dëshironi të lejoni kandidatin të <strong>aplikojë përsëri< /strong> për një punë të caktuar me të njëjtin email.</p>',
-        'offerletterReminderMsg' => '<p>Për <strong>Kujtoj</strong> kandidatin për skadimin e letrës së ofertës së tij.</p>
-        <p>Sistemi do të dërgojë postë rikujtuese përmes cron job përpara numrit <u>X</u> të ditëve.</p><p><u>p.sh.</u> nëse vendosni 4 ditë, atëherë sistemi do të dërgojë. email rikujtues përpara 4 ditëve nga data e skadimit të letrës së ofertës </p>',
-        'mailSetting' => '<p>Për t\'i dërguar email kandidatit në lidhje me ndryshimin e statusit të aplikimit të tij për punë.</p><p>Sistemi do t\'i dërgojë email kandidatit vetëm kur statusi të ndryshojë në status të caktuar i cili kontrollohet.</p>
-        <p><u>p.sh.</u> nëse zgjidhet kutia e zgjedhur Intervista, atëherë sistemi do të dërgojë email vetëm kur statusi i aplikimit për punë të ndryshojë në intervistë.</p>',
+        'offerletterReminderMsg' => '<p>Për <strong>Kujtoj</strong> kandidatin për skadimin e letrës së ofertës së tij.</p>'."\r\n"
+            .'        <p>Sistemi do të dërgojë postë rikujtuese përmes cron job përpara numrit <u>X</u> të ditëve.</p><p><u>p.sh.</u> nëse vendosni 4 ditë, atëherë sistemi do të dërgojë. email rikujtues përpara 4 ditëve nga data e skadimit të letrës së ofertës </p>',
+        'mailSetting' => '<p>Për t\'i dërguar email kandidatit në lidhje me ndryshimin e statusit të aplikimit të tij për punë.</p><p>Sistemi do t\'i dërgojë email kandidatit vetëm kur statusi të ndryshojë në status të caktuar i cili kontrollohet.</p>'."\r\n"
+            .'        <p><u>p.sh.</u> nëse zgjidhet kutia e zgjedhur Intervista, atëherë sistemi do të dërgojë email vetëm kur statusi i aplikimit për punë të ndryshojë në intervistë.</p>',
         'jobAlert' => 'Sinjalizim pune',
         'alertHelp' => 'Job Alert është një <strong>njoftim me email</strong> në lidhje me punët përkatëse bazuar në grupin e aftësive dhe preferencat që zgjidhen nga kandidati në momentin e krijimit të alarmit të punës.',
         'customQuestionSettings' => 'Cilësimet e personalizuara të pyetjeve',
@@ -458,6 +458,7 @@ return [
         'text' => 'Tani ju jeni një rekrutues për punë',
         'alertMsg' => 'Ka vende të reja pune për',
         'lastDate' => 'data e fundit për të aplikuar',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'U hoq nga Job',

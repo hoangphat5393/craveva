@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'подписано писмо за оферта на',
         'description' => 'Описание',
         'notDisclosed' => 'Не се разкрива',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Оттегляне',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'В ход',
         'scheduled' => 'Планиран',
         'offerReleased' => 'Офертата е пусната',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Приложено',

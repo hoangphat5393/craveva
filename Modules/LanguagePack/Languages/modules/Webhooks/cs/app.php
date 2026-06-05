@@ -20,4 +20,5 @@ return [
     'runDebug' => 'Spustit v režimu ladění',
     'requestDetails' => 'Požadovat detaily',
     'response' => 'Odezva',
+    'webhookLog' => 'Webhooklog',
 ];

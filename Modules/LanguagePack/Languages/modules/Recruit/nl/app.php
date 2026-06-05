@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'ondertekende aanbiedingsbrief op',
         'description' => 'Beschrijving',
         'notDisclosed' => 'Niet bekendgemaakt',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Terugtrekken',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Bezig',
         'scheduled' => 'Gepland',
         'offerReleased' => 'Aanbieding vrijgegeven',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Toegepast',

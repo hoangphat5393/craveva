@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Ruhetag',
         'dayoff' => 'Ruhetag',
         'overtimeType' => 'Überstundentyp',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

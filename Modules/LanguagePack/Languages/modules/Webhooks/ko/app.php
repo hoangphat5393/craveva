@@ -20,4 +20,5 @@ return [
     'runDebug' => '디버그 모드에서 실행',
     'requestDetails' => '요청 세부정보',
     'response' => '응답',
+    'webhookLog' => 'Webhooklog',
 ];

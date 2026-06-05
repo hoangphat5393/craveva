@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Puhkepäev',
         'dayoff' => 'Puhkepäev',
         'overtimeType' => 'Ületunnitöö tüüp',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

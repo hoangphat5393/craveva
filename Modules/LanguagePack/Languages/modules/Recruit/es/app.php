@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'carta de oferta firmada en',
         'description' => 'Descripción',
         'notDisclosed' => 'No revelado',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Retirar',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'En curso',
         'scheduled' => 'Programado',
         'offerReleased' => 'Oferta lanzada',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Aplicado',

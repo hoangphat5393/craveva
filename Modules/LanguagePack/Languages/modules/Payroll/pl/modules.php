@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Dzień wolny od pracy',
         'dayoff' => 'Dzień wolny od pracy',
         'overtimeType' => 'Typ nadgodzin',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

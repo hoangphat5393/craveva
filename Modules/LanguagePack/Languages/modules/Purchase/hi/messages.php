@@ -27,4 +27,10 @@ return [
     'orderMarkAsSent' => 'ऑर्डर सफलतापूर्वक भेजा गया',
     'orderSentSuccessfully' => 'ऑर्डर को सफलतापूर्वक भेजा गया के रूप में चिह्नित करें',
     'billSentSuccessfully' => 'बिल सफलतापूर्वक भेजा गया.',
+    'openingStockNoDefaultWarehouse' => 'No default warehouse for this company. Run :command first, then save again.',
+    'productionFgInventoryLedgerDescription' => 'Production FG receipt (batch :batch)',
+    'costPriceMinRequired' => 'Cost price must be greater than zero.',
+    'unitConversionCannotMatchBase' => 'An alternate unit cannot be the same as the product base unit.',
+    'unitConversionDuplicateUnit' => 'Each alternate unit can only be added once.',
+    'unitConversionFactorInvalid' => 'Conversion factor must be greater than zero.',
 ];

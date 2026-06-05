@@ -62,9 +62,9 @@ return [
     'emailExist' => 'U heeft al op deze functie gesolliciteerd met het opgegeven e-mailadres.',
     'interviewMessage' => 'Het interview is gepland.',
     'componentSelected' => 'componenten geselecteerd',
-    'rejectedMessage' => 'Bedankt voor uw interesse bij ons.
-    Helaas ben jij op dit moment niet de juiste match.
-    Het spijt me voor het teleurstellende nieuws.',
+    'rejectedMessage' => 'Bedankt voor uw interesse bij ons.'."\r\n"
+        .'    Helaas ben jij op dit moment niet de juiste match.'."\r\n"
+        .'    Het spijt me voor het teleurstellende nieuws.',
     'bestWishes' => 'Veel succes bij het zoeken naar een baan.',
     'acceptanceConfirm' => 'Na acceptatie maak je deel uit van dit interview.',
     'rejectConfirm' => 'Na bevestiging maakt u geen deel uit van dit interview.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Bedankt dat u een carrière bij ons overweegt.',
     'greetingMessage' => 'Wij hopen dat dit bericht u goed treft.',
     'predefinedSourceDelete' => 'U kunt geen vooraf gedefinieerde bronnen verwijderen.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

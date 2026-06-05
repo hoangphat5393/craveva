@@ -10,6 +10,7 @@ return [
         'electronicAddressScheme' => '전자 주소 체계',
         'companyID' => '회사 아이디',
         'companyIDScheme' => '회사 ID 체계',
+        'companyTaxIdNote' => 'Companytaxidnote',
     ],
     'companyAddressNote' => '이 모듈은 사업장 주소의 국가를 사용합니다. 국가를 선택하지 않은 경우 :link에서 하나를 선택하십시오.',
     'generateEInvoice' => '전자송장',

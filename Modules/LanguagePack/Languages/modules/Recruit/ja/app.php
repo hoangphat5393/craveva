@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'に署名されたオファーレター',
         'description' => '説明',
         'notDisclosed' => '開示されていません',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => '撤回する',
@@ -79,6 +80,9 @@ return [
         'inProgress' => '進行中',
         'scheduled' => '予定されている',
         'offerReleased' => 'オファーがリリースされました',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => '適用済み',

@@ -47,8 +47,9 @@ return [
     ],
     'match' => [
         'title' => '您甚至可以遵循以下模式',
-        'pattern' => '<p>1. <b>test</b> (完全匹配)</p>
-                            <p>2. <b>%test%</b> (匹配字符串中的任何位置)</p>
-                            <p>3. <b>%test</b> (匹配任何位置但必须以 \'test\' 结尾)</p>',
+        'pattern' => '<p>1. <b>test</b> (完全匹配)</p>'."\r\n"
+            .'                            <p>2. <b>%test%</b> (匹配字符串中的任何位置)</p>'."\r\n"
+            .'                            <p>3. <b>%test</b> (匹配任何位置但必须以 \'test\' 结尾)</p>',
     ],
+    'companyNotFound' => 'Company Not Found',
 ];

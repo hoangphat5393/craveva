@@ -29,4 +29,13 @@ return [
     'downloadMessage' => 'Download Message',
     'noGoalTypeSettingsAdded' => 'No Goal Type Settings Added',
     'noKeyResultsMetrics' => 'No Key Results Metrics',
+    'defaultAdminMsg' => 'Admin can view or mange by default',
+    'keyResultNotFound' => 'No key result found',
+    'current_value_between' => 'The :attribute must be between or equal to min. :min and max. :max key result values.',
+    'addDiscussionPoint' => 'Add Discussion',
+    'markAsActioned' => 'Mark As Actioned!',
+    'addActionPoint' => 'Add Action',
+    'actioned' => 'Actioned',
+    'viewPastMeeting' => 'There is a meeting pending from the past year',
+    'viewPastMeetings' => 'There are :count meetings pending from the past years',
 ];

@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Scrisoarea de reamintire a ofertei către candidat (în zile)',
         'enableCareer' => '<p>Pentru a activa pagina publică în care vor fi listate locurile dvs. de muncă active și candidatul poate aplica pentru acestea.</p>',
         'applicationRestri' => '<p>Pentru a <strong>restrânge</strong> candidatul să aplice de mai multe ori din același e-mail.</p><p>Un candidat poate aplica pentru două joburi diferite din același e-mail, dar pentru același job, administratorul poate < strong>restricționați-le</strong> prin restricție de cerere de locuri de muncă duplicat.</p><p>Adăugând <u>X</u> număr de zile după care doriți să permiteți candidatului să <strong>aplice din nou< /strong> pentru un anumit loc de muncă cu același e-mail.</p>',
-        'offerletterReminderMsg' => '<p>Pentru a <strong>aminti</strong> candidatului despre expirarea scrisorii de ofertă.</p>
-        <p>Sistemul va trimite e-mailuri de memento prin job cron înainte de numărul <u>X</u> de zile.</p><p><u>de ex.</u> dacă introduceți 4 zile, atunci sistemul va trimite e-mail de memento înainte de 4 zile de la data expirării scrisorii de ofertă </p>',
-        'mailSetting' => '<p>Pentru a trimite e-mail candidatului cu privire la schimbarea statutului cererii de angajare.</p><p>Sistemul va trimite e-mail candidatului numai atunci când starea se schimbă la o anumită stare care este verificată.</p>
-        <p><u>de ex.</u> dacă este bifată caseta Interviu, atunci sistemul va trimite e-mail numai atunci când starea cererii de angajare se schimbă în interviu.</p>',
+        'offerletterReminderMsg' => '<p>Pentru a <strong>aminti</strong> candidatului despre expirarea scrisorii de ofertă.</p>'."\r\n"
+            .'        <p>Sistemul va trimite e-mailuri de memento prin job cron înainte de numărul <u>X</u> de zile.</p><p><u>de ex.</u> dacă introduceți 4 zile, atunci sistemul va trimite e-mail de memento înainte de 4 zile de la data expirării scrisorii de ofertă </p>',
+        'mailSetting' => '<p>Pentru a trimite e-mail candidatului cu privire la schimbarea statutului cererii de angajare.</p><p>Sistemul va trimite e-mail candidatului numai atunci când starea se schimbă la o anumită stare care este verificată.</p>'."\r\n"
+            .'        <p><u>de ex.</u> dacă este bifată caseta Interviu, atunci sistemul va trimite e-mail numai atunci când starea cererii de angajare se schimbă în interviu.</p>',
         'jobAlert' => 'Alertă de locuri de muncă',
         'alertHelp' => 'Alerta de locuri de muncă este o <strong>notificare prin e-mail</strong> despre locurile de muncă relevante, bazate pe setul de abilități și preferințele care sunt selectate de candidat la momentul creării alertei de locuri de muncă.',
         'customQuestionSettings' => 'Setări personalizate pentru întrebări',
@@ -458,6 +458,7 @@ return [
         'text' => 'Acum ești un recrutor pentru job',
         'alertMsg' => 'Există noi locuri de muncă pentru',
         'lastDate' => 'ultima dată pentru a aplica',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Înlăturat din Iov',

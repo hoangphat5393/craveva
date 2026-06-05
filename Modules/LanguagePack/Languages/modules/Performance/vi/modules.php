@@ -21,4 +21,7 @@ return [
     'objectiveNotificationSettings' => 'Objective Notification Settings',
     '1:1MeetingNotificationSettings' => '1:1Meeting Notification Settings',
     'orChooseRoles' => 'Or Choose Roles',
+    'owner' => 'Owner',
+    'defaultAdminMsg' => 'Admin Can View Or Mange By Default',
+    'keyResults' => 'Key Metrics Results',
 ];

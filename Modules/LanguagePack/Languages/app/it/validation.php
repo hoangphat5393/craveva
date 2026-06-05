@@ -343,4 +343,5 @@ return [
     ],
     'selectAtLeastOne' => 'Selezionane almeno uno',
     'notAllowed' => 'L\' :attribute non è consentito',
+    'urlFormat' => 'Urlformat',
 ];

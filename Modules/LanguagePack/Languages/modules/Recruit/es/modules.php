@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Recordatorio de carta de oferta al candidato (en días)',
         'enableCareer' => '<p>Para activar la página pública donde se enumerarán sus trabajos activos y el candidato podrá postularse para los mismos.</p>',
         'applicationRestri' => '<p>Para <strong>restringir</strong> que el candidato presente su solicitud varias veces desde el mismo correo electrónico.</p><p>Un candidato puede postularse para dos trabajos diferentes desde el mismo correo electrónico pero para el mismo trabajo, el administrador puede < strong>restringirlos</strong> mediante la restricción de solicitudes de empleo duplicadas.</p><p>Agregando <u>X</u> número de días después de los cuales desea permitir que el candidato <strong>vuelva a postularse< /strong> para un trabajo en particular con el mismo correo electrónico.</p>',
-        'offerletterReminderMsg' => '<p>Para <strong>recordar</strong> al candidato el vencimiento de su carta de oferta.</p>
-        <p>El sistema enviará un correo recordatorio a través de una tarea cron antes del <u>X</u> número de días.</p><p><u>por ejemplo,</u> si ingresa 4 días, el sistema enviará correo electrónico de recordatorio antes de 4 días de la fecha de vencimiento de la carta de oferta </p>',
-        'mailSetting' => '<p>Para enviar un correo electrónico al candidato sobre el cambio de estado de su solicitud de empleo.</p><p>El sistema enviará un correo electrónico al candidato solo cuando el estado cambie a un estado particular que esté marcado.</p>
-        <p><u>por ejemplo,</u> si se selecciona la casilla Entrevista, el sistema enviará un correo electrónico solo cuando el estado de la solicitud de empleo cambie a entrevista.</p>',
+        'offerletterReminderMsg' => '<p>Para <strong>recordar</strong> al candidato el vencimiento de su carta de oferta.</p>'."\r\n"
+            .'        <p>El sistema enviará un correo recordatorio a través de una tarea cron antes del <u>X</u> número de días.</p><p><u>por ejemplo,</u> si ingresa 4 días, el sistema enviará correo electrónico de recordatorio antes de 4 días de la fecha de vencimiento de la carta de oferta </p>',
+        'mailSetting' => '<p>Para enviar un correo electrónico al candidato sobre el cambio de estado de su solicitud de empleo.</p><p>El sistema enviará un correo electrónico al candidato solo cuando el estado cambie a un estado particular que esté marcado.</p>'."\r\n"
+            .'        <p><u>por ejemplo,</u> si se selecciona la casilla Entrevista, el sistema enviará un correo electrónico solo cuando el estado de la solicitud de empleo cambie a entrevista.</p>',
         'jobAlert' => 'Alerta de Trabajo',
         'alertHelp' => 'La alerta de empleo es una <strong>notificación por correo electrónico</strong> sobre los trabajos relevantes según el conjunto de habilidades y preferencias seleccionadas por el candidato en el momento de la creación de la alerta de empleo.',
         'customQuestionSettings' => 'Configuración de preguntas personalizadas',
@@ -458,6 +458,7 @@ return [
         'text' => 'Ahora eres un reclutador para el trabajo.',
         'alertMsg' => 'Hay nuevas ofertas de trabajo para',
         'lastDate' => 'última fecha para aplicar',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Eliminado del trabajo',

@@ -187,5 +187,8 @@ return [
         'dayOff' => 'روز مرخصی',
         'dayoff' => 'روز مرخصی',
         'overtimeType' => 'نوع اضافه کاری',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

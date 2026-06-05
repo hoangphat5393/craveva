@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Promemoria con lettera di offerta al candidato (in giorni)',
         'enableCareer' => '<p>Per attivare la pagina pubblica in cui verranno elencati i tuoi lavori attivi e il candidato potrà candidarsi per gli stessi.</p>',
         'applicationRestri' => '<p>Per <strong>impedire</strong> al candidato di candidarsi più volte dalla stessa email.</p><p>Un candidato può candidarsi per due lavori diversi dalla stessa email ma per lo stesso lavoro, l\'amministratore può < strong>limitali</strong> limitando le domande di lavoro duplicate.</p><p>Aggiungendo <u>X</u> numero di giorni dopo i quali desideri consentire al candidato di <strong>riapplicare< /strong> per un lavoro particolare con la stessa email.</p>',
-        'offerletterReminderMsg' => '<p>Per <strong>ricordare</strong> al candidato la scadenza della lettera di offerta.</p>
-        <p>Il sistema invierà un\'e-mail di promemoria tramite cron job prima del <u>X</u> numero di giorni.</p><p><u>ad esempio</u> se inserisci 4 giorni, il sistema invierà email di promemoria prima di 4 giorni dalla data di scadenza della lettera di offerta </p>',
-        'mailSetting' => '<p>Per inviare un\'e-mail al candidato in merito al cambiamento di stato della sua domanda di lavoro.</p><p>Il sistema invierà un\'e-mail al candidato solo quando lo stato cambia in uno stato particolare selezionato.</p>
-        <p><u>es.</u> se è selezionata la casella Colloquio, il sistema invierà e-mail solo quando lo stato della domanda di lavoro cambia in colloquio.</p>',
+        'offerletterReminderMsg' => '<p>Per <strong>ricordare</strong> al candidato la scadenza della lettera di offerta.</p>'."\r\n"
+            .'        <p>Il sistema invierà un\'e-mail di promemoria tramite cron job prima del <u>X</u> numero di giorni.</p><p><u>ad esempio</u> se inserisci 4 giorni, il sistema invierà email di promemoria prima di 4 giorni dalla data di scadenza della lettera di offerta </p>',
+        'mailSetting' => '<p>Per inviare un\'e-mail al candidato in merito al cambiamento di stato della sua domanda di lavoro.</p><p>Il sistema invierà un\'e-mail al candidato solo quando lo stato cambia in uno stato particolare selezionato.</p>'."\r\n"
+            .'        <p><u>es.</u> se è selezionata la casella Colloquio, il sistema invierà e-mail solo quando lo stato della domanda di lavoro cambia in colloquio.</p>',
         'jobAlert' => 'Avviso di lavoro',
         'alertHelp' => 'Job Alert è una <strong>notifica via email</strong> sui lavori rilevanti in base alle competenze e alle preferenze selezionate dal candidato al momento della creazione dell\'avviso di lavoro.',
         'customQuestionSettings' => 'Impostazioni delle domande personalizzate',
@@ -458,6 +458,7 @@ return [
         'text' => 'Ora sei un reclutatore di lavoro',
         'alertMsg' => 'C\'è una nuova apertura di lavoro per',
         'lastDate' => 'ultima data per presentare domanda',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Rimosso dal lavoro',

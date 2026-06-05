@@ -62,9 +62,9 @@ return [
     'emailExist' => '指定されたメール ID を使用してこの求人にすでに応募しています。',
     'interviewMessage' => '面接が予定されています。',
     'componentSelected' => '選択されたコンポーネント',
-    'rejectedMessage' => 'ご興味をお持ちいただきありがとうございます。
-    残念ながら、現時点ではあなたは適任ではありません。
-    残念なお知らせで申し訳ございません。',
+    'rejectedMessage' => 'ご興味をお持ちいただきありがとうございます。'."\r\n"
+        .'    残念ながら、現時点ではあなたは適任ではありません。'."\r\n"
+        .'    残念なお知らせで申し訳ございません。',
     'bestWishes' => '就職活動がうまくいきますように。',
     'acceptanceConfirm' => '承諾後、あなたはこの面接に参加することになります。',
     'rejectConfirm' => '確認後、あなたはこの面接には参加しません。',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => '当社でのキャリアをご検討いただきありがとうございます。',
     'greetingMessage' => 'このメッセージがあなたのお役に立てば幸いです。',
     'predefinedSourceDelete' => '事前に定義されたソースを削除することはできません。',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

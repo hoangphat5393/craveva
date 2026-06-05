@@ -20,4 +20,5 @@ return [
     'runDebug' => 'Run in debug mode',
     'requestDetails' => 'Request Details',
     'response' => 'Response',
+    'webhookLog' => 'Webhooklog',
 ];

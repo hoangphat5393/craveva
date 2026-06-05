@@ -36,5 +36,9 @@ return [
         'viewMeeting' => 'View Meeting',
         'reminderMessage' => 'Reminder Message',
         'reminderSubject' => 'Reminder Subject',
+        'agendas' => 'Agendas',
+        'viewAllAgendas' => 'View all :count agendas',
+        'noAgendasAdded' => 'No agendas have been added yet.',
+        'meetingName' => 'Meeting Name',
     ],
 ];

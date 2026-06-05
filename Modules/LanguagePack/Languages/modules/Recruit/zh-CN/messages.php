@@ -62,9 +62,9 @@ return [
     'emailExist' => '您已经使用提供的电子邮件 ID 申请了此职位。',
     'interviewMessage' => '面试已经安排好了。',
     'componentSelected' => '选定的组件',
-    'rejectedMessage' => '感谢您对我们的关注。
-    不幸的是，您目前不适合。
-    我对这个令人失望的消息感到抱歉。',
+    'rejectedMessage' => '感谢您对我们的关注。'."\r\n"
+        .'    不幸的是，您目前不适合。'."\r\n"
+        .'    我对这个令人失望的消息感到抱歉。',
     'bestWishes' => '祝您求职顺利。',
     'acceptanceConfirm' => '接受后，您将参加本次面试。',
     'rejectConfirm' => '确认后，您将不会参加本次面试。',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => '感谢您考虑加入我们。',
     'greetingMessage' => '我们希望您能顺利收到此消息。',
     'predefinedSourceDelete' => '您无法删除预定义的来源。',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

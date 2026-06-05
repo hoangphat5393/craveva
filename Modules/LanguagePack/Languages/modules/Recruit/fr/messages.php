@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Vous avez déjà postulé pour cet emploi avec l\'identifiant de messagerie fourni.',
     'interviewMessage' => 'L\'entretien est programmé.',
     'componentSelected' => 'composants sélectionnés',
-    'rejectedMessage' => 'Merci de votre intérêt pour nous.
-    Malheureusement, vous n’êtes pas la bonne personne en ce moment.
-    Je suis désolé pour la nouvelle décevante.',
+    'rejectedMessage' => 'Merci de votre intérêt pour nous.'."\r\n"
+        .'    Malheureusement, vous n’êtes pas la bonne personne en ce moment.'."\r\n"
+        .'    Je suis désolé pour la nouvelle décevante.',
     'bestWishes' => 'Bonne chance dans votre recherche d\'emploi.',
     'acceptanceConfirm' => 'Après avoir accepté, vous ferez partie de cet entretien.',
     'rejectConfirm' => 'Après confirmation, vous ne ferez pas partie de cet entretien.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Merci d\'avoir envisagé une carrière chez nous.',
     'greetingMessage' => 'Nous espérons que ce message vous trouvera bien.',
     'predefinedSourceDelete' => 'Vous ne pouvez pas supprimer des sources prédéfinies.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

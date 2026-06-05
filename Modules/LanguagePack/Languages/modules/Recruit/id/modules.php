@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Surat Penawaran Pengingat Kepada Kandidat (Dalam hari)',
         'enableCareer' => '<p>Untuk mengaktifkan halaman publik tempat pekerjaan aktif Anda akan dicantumkan dan kandidat dapat melamar pekerjaan tersebut.</p>',
         'applicationRestri' => '<p>Untuk <strong>membatasi</strong> kandidat melamar beberapa kali dari email yang sama.</p><p>Kandidat dapat melamar dua pekerjaan berbeda dari email yang sama namun untuk pekerjaan yang sama, admin dapat < strong>batasi</strong> mereka dengan pembatasan lamaran kerja ganda.</p><p>Dengan menambahkan <u>X</u> hari setelah itu Anda ingin mengizinkan kandidat untuk <strong>melamar kembali< /strong> untuk pekerjaan tertentu dengan email yang sama.</p>',
-        'offerletterReminderMsg' => '<p>Untuk <strong>Mengingatkan</strong> kandidat tentang berakhirnya surat penawaran mereka.</p>
-        <p>Sistem akan mengirimkan email pengingat melalui cron job sebelum <u>X</u> jumlah hari.</p><p><u>misalnya</u> jika Anda memasukkan 4 hari maka sistem akan mengirimkan email pengingat sebelum 4 hari sejak tanggal berakhirnya surat penawaran </p>',
-        'mailSetting' => '<p>Untuk mengirim email kepada kandidat tentang perubahan status lamaran pekerjaannya.</p><p>Sistem akan mengirim email ke kandidat hanya ketika status berubah ke status tertentu yang dicentang.</p>
-        <p><u>Misalnya</u> jika kotak Wawancara dipilih maka sistem akan mengirim email hanya ketika status lamaran pekerjaan berubah menjadi wawancara.</p>',
+        'offerletterReminderMsg' => '<p>Untuk <strong>Mengingatkan</strong> kandidat tentang berakhirnya surat penawaran mereka.</p>'."\r\n"
+            .'        <p>Sistem akan mengirimkan email pengingat melalui cron job sebelum <u>X</u> jumlah hari.</p><p><u>misalnya</u> jika Anda memasukkan 4 hari maka sistem akan mengirimkan email pengingat sebelum 4 hari sejak tanggal berakhirnya surat penawaran </p>',
+        'mailSetting' => '<p>Untuk mengirim email kepada kandidat tentang perubahan status lamaran pekerjaannya.</p><p>Sistem akan mengirim email ke kandidat hanya ketika status berubah ke status tertentu yang dicentang.</p>'."\r\n"
+            .'        <p><u>Misalnya</u> jika kotak Wawancara dipilih maka sistem akan mengirim email hanya ketika status lamaran pekerjaan berubah menjadi wawancara.</p>',
         'jobAlert' => 'Pemberitahuan Pekerjaan',
         'alertHelp' => 'Pemberitahuan Pekerjaan adalah <strong>pemberitahuan email</strong> tentang pekerjaan yang relevan berdasarkan keahlian dan preferensi yang dipilih oleh kandidat pada saat pemberitahuan pekerjaan dibuat.',
         'customQuestionSettings' => 'Pengaturan Pertanyaan Kustom',
@@ -458,6 +458,7 @@ return [
         'text' => 'Sekarang Anda adalah perekrut untuk pekerjaan',
         'alertMsg' => 'Ada lowongan pekerjaan baru untuk',
         'lastDate' => 'tanggal terakhir untuk melamar',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Dihapus dari Pekerjaan',

@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'podepsaný nabídkový dopis dne',
         'description' => 'Popis',
         'notDisclosed' => 'Nezveřejněno',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Ustoupit',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Probíhá',
         'scheduled' => 'Naplánováno',
         'offerReleased' => 'Nabídka uvolněna',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Aplikovaný',

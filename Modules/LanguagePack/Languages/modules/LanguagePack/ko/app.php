@@ -10,4 +10,6 @@ return [
     'publishAllButtonPopover' => '아래의 모든 언어 게시',
     'publishButtonPopover' => ' :language 언어 게시',
     'republishButtonPopover' => ' :language 언어 다시 게시',
+    'syncKeysButtonPopover' => 'Scan code and add missing translation keys to the Language Pack',
+    'syncKeys' => 'Sync Keys',
 ];

@@ -161,4 +161,8 @@ return [
     'reference_production_batch' => '生產批次',
     'reference_transfer' => '倉庫調撥',
     'reference_unknown' => '參考單據',
+    'success_warehouse_order_updated' => 'Warehouse display order updated successfully.',
+    'success_warehouse_flow_settings_updated' => 'Warehouse flow settings updated successfully.',
+    'statusLabel' => 'Status',
+    'changeWarehouseStatus' => 'Change Status',
 ];

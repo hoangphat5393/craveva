@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Již jste se ucházeli o tuto práci pomocí zadaného e-mailového ID.',
     'interviewMessage' => 'Rozhovor byl naplánován.',
     'componentSelected' => 'vybrané komponenty',
-    'rejectedMessage' => 'Děkujeme za váš zájem o nás.
-    Bohužel v tuto chvíli nejste ten pravý fit.
-    Omlouvám se za zklamanou zprávu.',
+    'rejectedMessage' => 'Děkujeme za váš zájem o nás.'."\r\n"
+        .'    Bohužel v tuto chvíli nejste ten pravý fit.'."\r\n"
+        .'    Omlouvám se za zklamanou zprávu.',
     'bestWishes' => 'Hodně štěstí při hledání práce.',
     'acceptanceConfirm' => 'Po přijetí budete součástí tohoto rozhovoru.',
     'rejectConfirm' => 'Po potvrzení nebudete součástí tohoto rozhovoru.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Děkujeme, že uvažujete o kariéře u nás.',
     'greetingMessage' => 'Doufáme, že vás tato zpráva najde dobře.',
     'predefinedSourceDelete' => 'Nemůžete odstranit předdefinované zdroje.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

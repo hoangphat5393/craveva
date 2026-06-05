@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Você já se inscreveu para esta vaga com o ID de e-mail fornecido.',
     'interviewMessage' => 'A entrevista foi agendada.',
     'componentSelected' => 'componentes selecionados',
-    'rejectedMessage' => 'Obrigado pelo seu interesse conosco.
-    Infelizmente, você não é a pessoa certa neste momento.
-    Lamento pelas notícias decepcionantes.',
+    'rejectedMessage' => 'Obrigado pelo seu interesse conosco.'."\r\n"
+        .'    Infelizmente, você não é a pessoa certa neste momento.'."\r\n"
+        .'    Lamento pelas notícias decepcionantes.',
     'bestWishes' => 'Boa sorte em sua procura de emprego.',
     'acceptanceConfirm' => 'Após aceitar, você fará parte desta entrevista.',
     'rejectConfirm' => 'Após a confirmação, você não fará parte desta entrevista.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Obrigado por considerar uma carreira conosco.',
     'greetingMessage' => 'Esperamos que esta mensagem o encontre bem.',
     'predefinedSourceDelete' => 'Você não pode excluir fontes predefinidas.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

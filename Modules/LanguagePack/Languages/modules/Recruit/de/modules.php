@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Angebotsschreiben-Erinnerung an den Kandidaten (in Tagen)',
         'enableCareer' => '<p>Um die öffentliche Seite zu aktivieren, auf der Ihre aktiven Stellen aufgelistet werden und Kandidaten sich darauf bewerben können.</p>',
         'applicationRestri' => '<p>Um zu verhindern, dass sich ein Kandidat mehrmals über dieselbe E-Mail-Adresse bewirbt.</p><p>Ein Kandidat kann sich über dieselbe E-Mail-Adresse für zwei verschiedene Stellen bewerben, aber für dieselbe Stelle kann der Administrator < Sie können sie stark>einschränken</strong>, indem Sie doppelte Stellenbewerbungen einschränken.</p><p>Indem Sie <u>X</u> die Anzahl der Tage hinzufügen, nach denen Sie dem Kandidaten die Möglichkeit geben möchten, sich <strong>erneut zu bewerben< /strong> für einen bestimmten Job mit derselben E-Mail-Adresse.</p>',
-        'offerletterReminderMsg' => '<p>Um den Kandidaten an den Ablauf seines Angebotsschreibens zu <strong>erinnern</strong>.</p>
-        <p>Das System sendet vor der <u>X</u> Anzahl von Tagen eine Erinnerungsmail per Cronjob.</p><p><u>z. B.</u> Wenn Sie 4 Tage eingeben, sendet das System eine E-Mail Erinnerungs-E-Mail vor Ablauf von 4 Tagen nach Ablaufdatum des Angebotsschreibens </p>',
-        'mailSetting' => '<p>Um dem Kandidaten eine E-Mail über die Statusänderung seiner Bewerbung zu senden.</p><p>Das System sendet dem Kandidaten nur dann eine E-Mail, wenn sich der Status in einen bestimmten Status ändert, der überprüft wird.</p>
-        <p><u>z. B.</u> Wenn das Kontrollkästchen „Interview“ aktiviert ist, sendet das System nur dann eine E-Mail, wenn sich der Status der Bewerbung in „Interview“ ändert.</p>',
+        'offerletterReminderMsg' => '<p>Um den Kandidaten an den Ablauf seines Angebotsschreibens zu <strong>erinnern</strong>.</p>'."\r\n"
+            .'        <p>Das System sendet vor der <u>X</u> Anzahl von Tagen eine Erinnerungsmail per Cronjob.</p><p><u>z. B.</u> Wenn Sie 4 Tage eingeben, sendet das System eine E-Mail Erinnerungs-E-Mail vor Ablauf von 4 Tagen nach Ablaufdatum des Angebotsschreibens </p>',
+        'mailSetting' => '<p>Um dem Kandidaten eine E-Mail über die Statusänderung seiner Bewerbung zu senden.</p><p>Das System sendet dem Kandidaten nur dann eine E-Mail, wenn sich der Status in einen bestimmten Status ändert, der überprüft wird.</p>'."\r\n"
+            .'        <p><u>z. B.</u> Wenn das Kontrollkästchen „Interview“ aktiviert ist, sendet das System nur dann eine E-Mail, wenn sich der Status der Bewerbung in „Interview“ ändert.</p>',
         'jobAlert' => 'Jobalarm',
         'alertHelp' => 'Bei der Jobbenachrichtigung handelt es sich um eine <strong>E-Mail-Benachrichtigung</strong> über die relevanten Stellen, basierend auf den Fähigkeiten und Präferenzen, die der Kandidat zum Zeitpunkt der Erstellung der Jobbenachrichtigung ausgewählt hat.',
         'customQuestionSettings' => 'Benutzerdefinierte Frageneinstellungen',
@@ -458,6 +458,7 @@ return [
         'text' => 'Jetzt sind Sie ein Personalvermittler für einen Job',
         'alertMsg' => 'Es gibt neue Stellenangebote für',
         'lastDate' => 'letzter Bewerbungstermin',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Aus Job entfernt',

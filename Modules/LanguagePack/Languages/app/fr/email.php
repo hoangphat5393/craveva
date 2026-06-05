@@ -59,6 +59,8 @@ return [
         'text' => 'Nouvelle note ajoutée pour',
         'action' => 'Afficher la remarque',
         'subject' => 'Nouvelle note ajoutée pour le projet',
+        'updateSubject' => 'Updatesubject',
+        'updateContent' => 'Updatecontent',
     ],
     'newProject' => [
         'subject' => 'Nouveau projet ajouté',
@@ -431,6 +433,7 @@ return [
         'nextFollowUpTime' => 'Prochaine heure de suivi',
         'followUpLead' => 'Nom du responsable de suivi',
         'followUpLeadText' => 'Vous avez un nouveau suivi',
+        'remark' => 'Remark',
     ],
     'shiftScheduled' => [
         'subject' => 'Mise à jour du calendrier : vos quarts de travail ont été attribués',
@@ -546,5 +549,49 @@ return [
         'text2' => 'Raison: :reason',
         'action' => 'Afficher la feuille de temps',
         'thankYou' => 'Merci d\'utiliser notre application!',
+    ],
+    'estimatePhase1Review' => [
+        'subject' => 'Quotation :number — :event',
+        'text' => 'Quotation :number requires your attention: :event',
+        'action' => 'Open quotation',
+        'events' => [
+            'submitted' => 'submitted for review',
+            'president_approved' => 'approved by Managing Director (awaiting VP pricing)',
+            'president_rejected' => 'returned for revision by Managing Director',
+            'vp_approved' => 'approved by VP pricing',
+            'vp_rejected' => 'returned for revision by VP pricing',
+        ],
+    ],
+    'approveProjectTimeLog' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
+        'action' => 'Action',
+    ],
+    'createProjectTimeLog' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
+        'action' => 'Action',
+    ],
+    'createdProjectTimeLog' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
+        'action' => 'Action',
+    ],
+    'projectTimeLog' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
+        'action' => 'Action',
+    ],
+    'decrementPromotion' => [
+        'subject' => 'Subject',
+        'same' => 'Same',
+        'updateText' => 'Updatetext',
+        'in' => 'In',
+        'text2' => 'Text2',
+        'text3' => 'Text3',
+    ],
+    'emailVerify' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
     ],
 ];

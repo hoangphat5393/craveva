@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Herinneringsbrief aanbieden aan kandidaat (in dagen)',
         'enableCareer' => '<p>Om de openbare pagina te activeren waar uw actieve vacatures worden vermeld en kandidaten hierop kunnen solliciteren.</p>',
         'applicationRestri' => '<p>Om te <strong>voorkomen</strong> dat kandidaten meerdere keren via hetzelfde e-mailadres kunnen solliciteren.</p><p>Een kandidaat kan vanuit hetzelfde e-mailadres op twee verschillende vacatures solliciteren, maar voor dezelfde functie kan de beheerder < strong>beperk</strong> ze door dubbele sollicitatiebeperking.</p><p>Door <u>X</u> aantal dagen toe te voegen waarna u de kandidaat wilt toestaan ​​<strong>opnieuw te solliciteren< /strong> voor een bepaalde vacature met hetzelfde e-mailadres.</p>',
-        'offerletterReminderMsg' => '<p>Om kandidaten <strong>herinneren</strong> aan het verlopen van hun aanbiedingsbrief.</p>
-        <p>Het systeem verzendt een herinneringsmail via cronjob vóór het <u>X</u> aantal dagen.</p><p><u>Als u bijvoorbeeld 4 dagen invoert, verzendt het systeem een herinneringsmail vóór 4 dagen na de vervaldatum van de aanbiedingsbrief </p>',
-        'mailSetting' => '<p>Om e-mail naar kandidaten te sturen over de statuswijziging van hun sollicitatie.</p><p>Het systeem verzendt alleen e-mail naar kandidaten wanneer de status verandert naar een bepaalde status die is gecontroleerd.</p>
-        <p><u>Bijv.</u> als Interview aangevinkt is, verzendt het systeem alleen e-mail wanneer de status van de sollicitatie verandert naar sollicitatiegesprek.</p>',
+        'offerletterReminderMsg' => '<p>Om kandidaten <strong>herinneren</strong> aan het verlopen van hun aanbiedingsbrief.</p>'."\r\n"
+            .'        <p>Het systeem verzendt een herinneringsmail via cronjob vóór het <u>X</u> aantal dagen.</p><p><u>Als u bijvoorbeeld 4 dagen invoert, verzendt het systeem een herinneringsmail vóór 4 dagen na de vervaldatum van de aanbiedingsbrief </p>',
+        'mailSetting' => '<p>Om e-mail naar kandidaten te sturen over de statuswijziging van hun sollicitatie.</p><p>Het systeem verzendt alleen e-mail naar kandidaten wanneer de status verandert naar een bepaalde status die is gecontroleerd.</p>'."\r\n"
+            .'        <p><u>Bijv.</u> als Interview aangevinkt is, verzendt het systeem alleen e-mail wanneer de status van de sollicitatie verandert naar sollicitatiegesprek.</p>',
         'jobAlert' => 'Werk waarschuwing',
         'alertHelp' => 'Job Alert is een <strong>e-mailmelding</strong> over de relevante vacatures op basis van de vaardigheden en voorkeuren die door de kandidaat zijn geselecteerd op het moment dat de vacature-alert wordt gemaakt.',
         'customQuestionSettings' => 'Aangepaste vraaginstellingen',
@@ -458,6 +458,7 @@ return [
         'text' => 'Nu ben je een recruiter voor een baan',
         'alertMsg' => 'Er is een nieuwe vacature voor',
         'lastDate' => 'laatste datum om te solliciteren',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Verwijderd uit baan',

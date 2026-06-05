@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Sie haben sich bereits mit der angegebenen E-Mail-ID auf diese Stelle beworben.',
     'interviewMessage' => 'Das Vorstellungsgespräch ist vereinbart.',
     'componentSelected' => 'Komponenten ausgewählt',
-    'rejectedMessage' => 'Vielen Dank für Ihr Interesse an uns.
-    Leider sind Sie derzeit nicht die richtige Person.
-    Es tut mir leid für die enttäuschende Nachricht.',
+    'rejectedMessage' => 'Vielen Dank für Ihr Interesse an uns.'."\r\n"
+        .'    Leider sind Sie derzeit nicht die richtige Person.'."\r\n"
+        .'    Es tut mir leid für die enttäuschende Nachricht.',
     'bestWishes' => 'Viel Glück bei Ihrer Jobsuche.',
     'acceptanceConfirm' => 'Nach Ihrer Annahme nehmen Sie an diesem Interview teil.',
     'rejectConfirm' => 'Nach der Bestätigung werden Sie nicht an diesem Interview teilnehmen.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Vielen Dank, dass Sie über eine Karriere bei uns nachdenken.',
     'greetingMessage' => 'Wir hoffen, dass diese Nachricht Sie gut findet.',
     'predefinedSourceDelete' => 'Sie können vordefinierte Quellen nicht löschen.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

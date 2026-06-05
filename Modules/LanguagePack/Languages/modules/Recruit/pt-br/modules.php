@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Oferecer lembrete de carta ao candidato (em dias)',
         'enableCareer' => '<p>Para ativar a página pública onde suas vagas ativas serão listadas e o candidato poderá se candidatar às mesmas.</p>',
         'applicationRestri' => '<p>Para <strong>restringir</strong> o candidato de se inscrever várias vezes pelo mesmo e-mail.</p><p>Um candidato pode se candidatar a duas vagas diferentes pelo mesmo e-mail, mas para a mesma vaga, o administrador pode <p> strong>restringi-los</strong> através da restrição de solicitações de emprego duplicadas.</p><p>Adicionando <u>X</u> número de dias após os quais você deseja permitir que o candidato <strong>se candidate novamente< /strong> para um trabalho específico com o mesmo e-mail.</p>',
-        'offerletterReminderMsg' => '<p>Para <strong>lembrar</strong> o candidato sobre o vencimento de sua carta de oferta.</p>
-        <p>O sistema enviará um e-mail de lembrete via cron job antes do <u>X</u> número de dias.</p><p><u>por exemplo,</u> se você inserir 4 dias, o sistema enviará e-mail de lembrete antes de quatro dias após a data de vencimento da carta de oferta </p>',
-        'mailSetting' => '<p>Para enviar um e-mail ao candidato sobre a mudança de status de sua candidatura.</p><p>O sistema enviará um e-mail ao candidato somente quando o status mudar para um status específico que é verificado.</p>
-        <p><u>por exemplo,</u> se a caixa Entrevista estiver marcada, o sistema enviará um e-mail somente quando o status da candidatura de emprego mudar para entrevista.</p>',
+        'offerletterReminderMsg' => '<p>Para <strong>lembrar</strong> o candidato sobre o vencimento de sua carta de oferta.</p>'."\r\n"
+            .'        <p>O sistema enviará um e-mail de lembrete via cron job antes do <u>X</u> número de dias.</p><p><u>por exemplo,</u> se você inserir 4 dias, o sistema enviará e-mail de lembrete antes de quatro dias após a data de vencimento da carta de oferta </p>',
+        'mailSetting' => '<p>Para enviar um e-mail ao candidato sobre a mudança de status de sua candidatura.</p><p>O sistema enviará um e-mail ao candidato somente quando o status mudar para um status específico que é verificado.</p>'."\r\n"
+            .'        <p><u>por exemplo,</u> se a caixa Entrevista estiver marcada, o sistema enviará um e-mail somente quando o status da candidatura de emprego mudar para entrevista.</p>',
         'jobAlert' => 'Alerta de emprego',
         'alertHelp' => 'Alerta de vaga é uma <strong>notificação por e-mail</strong> sobre vagas relevantes com base no conjunto de habilidades e preferências selecionadas pelo candidato no momento da criação do alerta de vaga.',
         'customQuestionSettings' => 'Configurações de perguntas personalizadas',
@@ -458,6 +458,7 @@ return [
         'text' => 'Agora você é um recrutador de emprego',
         'alertMsg' => 'Há novas vagas de emprego para',
         'lastDate' => 'última data para aplicar',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Removido do trabalho',

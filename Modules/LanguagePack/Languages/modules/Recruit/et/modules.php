@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Pakkumise kirja meeldetuletus kandidaadile (päevade pärast)',
         'enableCareer' => '<p>Avaliku lehe aktiveerimiseks, kus on loetletud teie aktiivsed töökohad ja kandidaat saab samale kandideerida.</p>',
         'applicationRestri' => '<p>Et <strong>piirata</strong> kandidaadi kandideerimist mitu korda sama e-posti aadressi kaudu.</p><p>Kandidaadil on sama e-posti aadress võimalik kandideerida kahele erinevale töökohale, kuid samale töökohale saab administraator < strong>piirake</strong> neid topelttöötaotluse piiranguga.</p><p>Lisates <u>X</u> päevade arvu, mille möödumisel soovite lubada kandidaadil <strong>uuesti kandideerida< /strong> konkreetse töö jaoks sama e-postiga.</p>',
-        'offerletterReminderMsg' => '<p>Kandidaadile <strong>meeldetuletamine</strong> pakkumiskirja aegumise kohta.</p>
-        <p>Süsteem saadab meeldetuletuskirja cron töö kaudu enne <u>X</u> päevade arvu möödumist.</p><p><u>nt</u> kui sisestate 4 päeva, siis süsteem saadab meeldetuletusmeil enne 4 päeva möödumist pakkumiskirja aegumiskuupäevast </p>',
-        'mailSetting' => '<p>Kandidaadile meili saatmiseks tema töötaotluse olekumuutuse kohta.</p><p>Süsteem saadab kandidaadile meili ainult siis, kui olek muutub teatud olekuks, mis on märgitud.</p>
-        <p><u>nt</u> kui on märgitud ruut Intervjuu, saadab süsteem meili ainult siis, kui töötaotluse olek muutub intervjuuks.</p>',
+        'offerletterReminderMsg' => '<p>Kandidaadile <strong>meeldetuletamine</strong> pakkumiskirja aegumise kohta.</p>'."\r\n"
+            .'        <p>Süsteem saadab meeldetuletuskirja cron töö kaudu enne <u>X</u> päevade arvu möödumist.</p><p><u>nt</u> kui sisestate 4 päeva, siis süsteem saadab meeldetuletusmeil enne 4 päeva möödumist pakkumiskirja aegumiskuupäevast </p>',
+        'mailSetting' => '<p>Kandidaadile meili saatmiseks tema töötaotluse olekumuutuse kohta.</p><p>Süsteem saadab kandidaadile meili ainult siis, kui olek muutub teatud olekuks, mis on märgitud.</p>'."\r\n"
+            .'        <p><u>nt</u> kui on märgitud ruut Intervjuu, saadab süsteem meili ainult siis, kui töötaotluse olek muutub intervjuuks.</p>',
         'jobAlert' => 'Tööhoiatus',
         'alertHelp' => 'Tööhoiatus on <strong>meiliteavitus</strong> asjakohaste töökohtade kohta, mis põhineb oskuste kogumil ja eelistustel, mille kandidaat valib tööhoiatuse loomise ajal.',
         'customQuestionSettings' => 'Kohandatud küsimuse seaded',
@@ -458,6 +458,7 @@ return [
         'text' => 'Nüüd olete tööle värbaja',
         'alertMsg' => 'Saadaval on uus töökoht',
         'lastDate' => 'viimane taotlemise kuupäev',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Töölt eemaldatud',

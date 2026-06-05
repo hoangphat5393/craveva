@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'خطاب العرض الموقع على',
         'description' => 'وصف',
         'notDisclosed' => 'لم يتم الكشف عنها',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'ينسحب',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'في تَقَدم',
         'scheduled' => 'المقرر',
         'offerReleased' => 'تم إصدار العرض',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'مُطبَّق',

@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'پیشنهاد نامه امضا شده در',
         'description' => 'توضیحات',
         'notDisclosed' => 'فاش نشده',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'کنار کشیدن',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'در حال پیش رفت',
         'scheduled' => 'برنامه ریزی شده است',
         'offerReleased' => 'پیشنهاد منتشر شد',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'کاربردی',

@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Ju keni aplikuar tashmë për këtë punë me ID-në e emailit të dhënë.',
     'interviewMessage' => 'Intervista është caktuar.',
     'componentSelected' => 'komponentët e zgjedhur',
-    'rejectedMessage' => 'Faleminderit për interesimin tuaj me ne.
-    Për fat të keq, ju nuk jeni i përshtatshëm në këtë moment.
-    Më vjen keq për lajmin zhgënjyes.',
+    'rejectedMessage' => 'Faleminderit për interesimin tuaj me ne.'."\r\n"
+        .'    Për fat të keq, ju nuk jeni i përshtatshëm në këtë moment.'."\r\n"
+        .'    Më vjen keq për lajmin zhgënjyes.',
     'bestWishes' => 'Suksese në kërkimin tuaj të punës.',
     'acceptanceConfirm' => 'Pas pranimit, do të jeni pjesë e kësaj interviste.',
     'rejectConfirm' => 'Pas konfirmimit, Ju nuk do të jeni pjesë e kësaj interviste.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Faleminderit që keni menduar për një karrierë me ne.',
     'greetingMessage' => 'Shpresojmë që ky mesazh t\'ju gjejë mirë.',
     'predefinedSourceDelete' => 'Ju nuk mund të fshini burimet e paracaktuara.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

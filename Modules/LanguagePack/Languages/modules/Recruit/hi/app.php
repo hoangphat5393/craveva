@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'पर हस्ताक्षरित प्रस्ताव पत्र',
         'description' => 'विवरण',
         'notDisclosed' => 'खुलासा नहीं किया',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'निकालना',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'प्रगति पर है',
         'scheduled' => 'अनुसूचित',
         'offerReleased' => 'ऑफर जारी',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'लागू',

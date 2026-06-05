@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Volno',
         'dayoff' => 'Volno',
         'overtimeType' => 'Typ přesčas',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

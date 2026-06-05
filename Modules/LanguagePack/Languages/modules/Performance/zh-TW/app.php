@@ -142,5 +142,6 @@ return [
     'objectiveCheckIns' => '簽入',
     'pendingCheckIns' => '待處理簽入',
     'upcomingCheckIns' => '即將到來的簽入',
-
+    'addActionPoints' => 'Addactionpoints',
+    'loadMore' => 'Load More',
 ];

@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'allkirjastatud pakkumiskiri',
         'description' => 'Kirjeldus',
         'notDisclosed' => 'Ei teatata',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Tõmba tagasi',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Käimas',
         'scheduled' => 'Planeeritud',
         'offerReleased' => 'Pakkumine avaldatud',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Rakendatud',

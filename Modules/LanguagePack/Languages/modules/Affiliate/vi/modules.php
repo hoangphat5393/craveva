@@ -6,5 +6,6 @@ return [
         'commissionType' => 'Commission Type',
         'commissionCap' => 'Commission Cap',
         'minimumPayout' => 'Minimum Payout',
+        'payoutMethods' => 'Minimum Methods',
     ],
 ];

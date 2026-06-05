@@ -187,5 +187,8 @@ return [
         'dayOff' => 'İzin günü',
         'dayoff' => 'İzin günü',
         'overtimeType' => 'Fazla mesai türü',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

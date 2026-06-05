@@ -38,6 +38,7 @@ return [
         'signedOffer' => '서명된 제안서',
         'description' => '설명',
         'notDisclosed' => '공개되지 않았습니다',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => '철회하다',
@@ -79,6 +80,9 @@ return [
         'inProgress' => '진행 중',
         'scheduled' => '예정됨',
         'offerReleased' => '제안이 출시되었습니다',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => '적용된',

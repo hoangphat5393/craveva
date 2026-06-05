@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'подписал письмо с предложением о',
         'description' => 'Описание',
         'notDisclosed' => 'Не раскрыта',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Отзывать',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'В ходе выполнения',
         'scheduled' => 'Запланированное',
         'offerReleased' => 'Предложение выпущено',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Применяемый',

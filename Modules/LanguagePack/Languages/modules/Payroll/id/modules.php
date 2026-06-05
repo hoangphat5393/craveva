@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Hari libur',
         'dayoff' => 'Hari libur',
         'overtimeType' => 'Jenis lembur',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

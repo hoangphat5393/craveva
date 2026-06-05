@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'ხელმოწერილი შეთავაზების წერილი',
         'description' => 'აღწერა',
         'notDisclosed' => 'არ არის გამჟღავნებული',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'გაყვანა',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Პროგრესირებს',
         'scheduled' => 'დაგეგმილი',
         'offerReleased' => 'შეთავაზება გამოქვეყნებულია',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Გამოყენებითი',

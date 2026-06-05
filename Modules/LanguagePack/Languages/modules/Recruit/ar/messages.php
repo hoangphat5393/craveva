@@ -62,9 +62,9 @@ return [
     'emailExist' => 'لقد تقدمت بالفعل لهذه الوظيفة باستخدام معرف البريد الإلكتروني المقدم.',
     'interviewMessage' => 'لقد تم تحديد موعد المقابلة.',
     'componentSelected' => 'المكونات المختارة',
-    'rejectedMessage' => 'شكرا لاهتمامك معنا.
-    لسوء الحظ، أنت لست الشخص المناسب في هذا الوقت.
-    أنا آسف لهذه الأخبار المخيبة للآمال.',
+    'rejectedMessage' => 'شكرا لاهتمامك معنا.'."\r\n"
+        .'    لسوء الحظ، أنت لست الشخص المناسب في هذا الوقت.'."\r\n"
+        .'    أنا آسف لهذه الأخبار المخيبة للآمال.',
     'bestWishes' => 'حظا سعيدا في البحث عن وظيفة.',
     'acceptanceConfirm' => 'بعد القبول، ستكون جزءًا من هذه المقابلة.',
     'rejectConfirm' => 'بعد التأكيد، لن تكون جزءًا من هذه المقابلة.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'شكرا لك على التفكير في مهنة معنا.',
     'greetingMessage' => 'نأمل أن تجدك هذه الرسالة بخير.',
     'predefinedSourceDelete' => 'لا يمكنك حذف مصادر محددة مسبقًا.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

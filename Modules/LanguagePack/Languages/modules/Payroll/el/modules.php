@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Ημέρα μακριά',
         'dayoff' => 'Ημέρα μακριά',
         'overtimeType' => 'Τύπος υπερωριών',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

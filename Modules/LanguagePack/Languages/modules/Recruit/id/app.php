@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'surat penawaran yang ditandatangani pada',
         'description' => 'Keterangan',
         'notDisclosed' => 'Tidak diungkapkan',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Menarik',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Sedang berlangsung',
         'scheduled' => 'Dijadwalkan',
         'offerReleased' => 'Penawaran Dirilis',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Terapan',

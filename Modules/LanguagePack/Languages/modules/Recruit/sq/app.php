@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'letër oferte e nënshkruar më',
         'description' => 'Përshkrimi',
         'notDisclosed' => 'I pa zbuluar',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Të tërheqë',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Në progres',
         'scheduled' => 'I planifikuar',
         'offerReleased' => 'Oferta u publikua',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Aplikuar',

@@ -343,4 +343,5 @@ return [
     ],
     'selectAtLeastOne' => 'Изаберите најмање један',
     'notAllowed' => 'к1 није дозвољено',
+    'urlFormat' => 'Urlformat',
 ];

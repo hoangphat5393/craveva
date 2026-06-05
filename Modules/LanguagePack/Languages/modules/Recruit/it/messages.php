@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Hai già fatto domanda per questo lavoro con l\'ID e-mail fornito.',
     'interviewMessage' => 'Il colloquio è stato programmato.',
     'componentSelected' => 'componenti selezionati',
-    'rejectedMessage' => 'Grazie per il tuo interesse per noi.
-    Sfortunatamente non sei la persona giusta in questo momento.
-    Mi dispiace per la notizia deludente.',
+    'rejectedMessage' => 'Grazie per il tuo interesse per noi.'."\r\n"
+        .'    Sfortunatamente non sei la persona giusta in questo momento.'."\r\n"
+        .'    Mi dispiace per la notizia deludente.',
     'bestWishes' => 'Buona fortuna per la tua ricerca di lavoro.',
     'acceptanceConfirm' => 'Dopo aver accettato, farai parte di questa intervista.',
     'rejectConfirm' => 'Dopo la conferma, non farai parte di questa intervista.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Grazie per aver considerato una carriera con noi.',
     'greetingMessage' => 'Ci auguriamo che questo messaggio ti trovi bene.',
     'predefinedSourceDelete' => 'Non puoi eliminare le fonti predefinite.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

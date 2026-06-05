@@ -187,5 +187,8 @@ return [
         'dayOff' => '休日',
         'dayoff' => '休日',
         'overtimeType' => '残業タイプ',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

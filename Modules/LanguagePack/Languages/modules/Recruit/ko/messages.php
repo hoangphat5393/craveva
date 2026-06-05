@@ -62,9 +62,9 @@ return [
     'emailExist' => '귀하는 제공된 이메일 ID로 이미 이 채용 공고에 지원했습니다.',
     'interviewMessage' => '인터뷰 일정이 잡혔습니다.',
     'componentSelected' => '선택한 구성 요소',
-    'rejectedMessage' => '우리에게 관심을 가져주셔서 감사합니다.
-    안타깝게도 현재 귀하는 적합하지 않습니다.
-    실망스러운 소식을 전해드려 죄송합니다.',
+    'rejectedMessage' => '우리에게 관심을 가져주셔서 감사합니다.'."\r\n"
+        .'    안타깝게도 현재 귀하는 적합하지 않습니다.'."\r\n"
+        .'    실망스러운 소식을 전해드려 죄송합니다.',
     'bestWishes' => '귀하의 구직에 행운이 있기를 바랍니다.',
     'acceptanceConfirm' => '수락한 후 귀하는 이 인터뷰에 참여하게 됩니다.',
     'rejectConfirm' => '확인 후, 귀하는 본 인터뷰에 참여하지 않게 됩니다.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => '우리와 함께 경력을 고려해 주셔서 감사합니다.',
     'greetingMessage' => '이 메시지가 귀하에게 잘 전달되기를 바랍니다.',
     'predefinedSourceDelete' => '사전 정의 된 소스를 삭제할 수 없습니다.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

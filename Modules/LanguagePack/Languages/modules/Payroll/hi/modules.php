@@ -187,5 +187,8 @@ return [
         'dayOff' => 'दिन में',
         'dayoff' => 'दिन में',
         'overtimeType' => 'ओवरटाइम प्रकार',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

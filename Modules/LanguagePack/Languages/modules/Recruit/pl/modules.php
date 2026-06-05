@@ -413,10 +413,10 @@ return [
         'offerLetterRem' => 'Przypomnienie o liście ofertowym dla kandydata (w dniach)',
         'enableCareer' => '<p>Aby aktywować stronę publiczną, na której będą wyświetlane Twoje aktywne oferty pracy, a kandydat będzie mógł się o nie ubiegać.</p>',
         'applicationRestri' => '<p>Aby <strong>ograniczyć</strong> możliwość wielokrotnego aplikowania przez kandydata z tego samego e-maila.</p><p>Kandydat może aplikować na dwa różne stanowiska z tego samego e-maila, ale na to samo stanowisko administrator może <p> strong>ogranicz</strong> poprzez ograniczenie powielania aplikacji.</p><p>Dodając <u>X</u> liczbę dni, po upływie których chcesz umożliwić kandydatowi <strong>ponowne aplikowanie< /strong> dla konkretnego zadania z tym samym adresem e-mail.</p>',
-        'offerletterReminderMsg' => '<p>Aby <strong>Przypomnieć</strong> kandydatowi o wygaśnięciu jego listu ofertowego.</p>
-        <p>System wyśle ​​wiadomość z przypomnieniem za pośrednictwem zadania cron przed upływem <u>X</u> liczby dni.</p><p><u>np.</u> jeśli wpiszesz 4 dni, system wyśle e-mail z przypomnieniem przed upływem 4 dni od daty ważności listu ofertowego </p>',
-        'mailSetting' => '<p>Aby wysłać e-mail do kandydata z informacją o zmianie statusu jego podania o pracę.</p><p>System wyśle ​​e-mail do kandydata tylko wtedy, gdy status zmieni się na określony, który zostanie sprawdzony.</p>
-        <p><u>np.</u> jeśli zaznaczone jest pole Rozmowa kwalifikacyjna, system wyśle ​​wiadomość e-mail tylko wtedy, gdy status podania o pracę zmieni się na rozmowę kwalifikacyjną.</p>',
+        'offerletterReminderMsg' => '<p>Aby <strong>Przypomnieć</strong> kandydatowi o wygaśnięciu jego listu ofertowego.</p>'."\r\n"
+            .'        <p>System wyśle ​​wiadomość z przypomnieniem za pośrednictwem zadania cron przed upływem <u>X</u> liczby dni.</p><p><u>np.</u> jeśli wpiszesz 4 dni, system wyśle e-mail z przypomnieniem przed upływem 4 dni od daty ważności listu ofertowego </p>',
+        'mailSetting' => '<p>Aby wysłać e-mail do kandydata z informacją o zmianie statusu jego podania o pracę.</p><p>System wyśle ​​e-mail do kandydata tylko wtedy, gdy status zmieni się na określony, który zostanie sprawdzony.</p>'."\r\n"
+            .'        <p><u>np.</u> jeśli zaznaczone jest pole Rozmowa kwalifikacyjna, system wyśle ​​wiadomość e-mail tylko wtedy, gdy status podania o pracę zmieni się na rozmowę kwalifikacyjną.</p>',
         'jobAlert' => 'Powiadomienie o pracy',
         'alertHelp' => 'Powiadomienie o ofertach pracy to <strong>powiadomienie e-mail</strong> o odpowiednich ofertach pracy na podstawie zestawu umiejętności i preferencji wybranych przez kandydata w momencie tworzenia powiadomienia o ofertach pracy.',
         'customQuestionSettings' => 'Niestandardowe ustawienia pytań',
@@ -458,6 +458,7 @@ return [
         'text' => 'Teraz jesteś rekruterem do pracy',
         'alertMsg' => 'Pojawiły się nowe oferty pracy dla',
         'lastDate' => 'ostatni dzień na złożenie wniosku',
+        'viewJob' => 'Viewjob',
     ],
     'updateJob' => [
         'subject' => 'Usunięty z Hioba',

@@ -48,6 +48,7 @@ return [
         'dataTableAllowClientPurchase' => 'KH được mua',
         'manufacturingDate' => 'Ngày sản xuất',
         'expirationDate' => 'Ngày hết hạn',
+        'commitedStock' => 'Commited Stock',
     ],
     'inventory' => [
         'adjustmentReason' => 'Lý do điều chỉnh tồn',
@@ -99,6 +100,7 @@ return [
         'endingInventory' => 'Tồn kho cuối kỳ',
         'importCustomFieldBadge' => ' (trường tùy chỉnh)',
         'warehouse' => 'Kho',
+        'locationCode' => 'Location Code',
     ],
     'vendor' => [
         'primaryContactName' => 'Tên liên hệ chính',
@@ -264,6 +266,7 @@ return [
         'committedStock' => 'Tồn đã cam kết',
         'availableForSale' => 'Có sẵn để bán',
         'committed_Stock' => 'Tồn đã cam kết',
+        'commitedStock' => 'Committed Stock',
     ],
     'deliveryOrder' => [
         'draft' => 'Nháp',
@@ -288,5 +291,11 @@ return [
         'delivered' => 'Đã giao khách',
         'cancelled' => 'Đã hủy',
         'reverse' => 'Hoàn tác xuất kho (Sales DO)',
+    ],
+    'order' => [
+        'orderNumber' => 'Order Number',
+        'purchaseDate' => 'Purchase Date',
+        'expectedDate' => 'Expected Date',
+        'exchangeRate' => 'Exchange Rate',
     ],
 ];

@@ -62,9 +62,9 @@ return [
     'emailExist' => 'Ați aplicat deja pentru acest job cu ID-ul de e-mail furnizat.',
     'interviewMessage' => 'Interviul a fost programat.',
     'componentSelected' => 'componentele selectate',
-    'rejectedMessage' => 'Vă mulțumim pentru interesul manifestat față de noi.
-    Din păcate, nu ești potrivit în acest moment.
-    Îmi pare rău pentru vestea dezamăgitoare.',
+    'rejectedMessage' => 'Vă mulțumim pentru interesul manifestat față de noi.'."\r\n"
+        .'    Din păcate, nu ești potrivit în acest moment.'."\r\n"
+        .'    Îmi pare rău pentru vestea dezamăgitoare.',
     'bestWishes' => 'Mult succes în căutarea unui loc de muncă.',
     'acceptanceConfirm' => 'După acceptare, vei face parte din acest interviu.',
     'rejectConfirm' => 'După confirmare, nu vei participa la acest interviu.',
@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Vă mulțumim că vă gândiți la o carieră cu noi.',
     'greetingMessage' => 'Sperăm că acest mesaj vă va găsi bine.',
     'predefinedSourceDelete' => 'Nu puteți șterge surse predefinite.',
+    'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
 ];

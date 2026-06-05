@@ -471,4 +471,9 @@ return [
     'edit_payouts' => '支払いの編集',
     'delete_payouts' => '支払いの削除',
     'manage_payout_status' => '支払いステータスの管理',
+    'approve_estimate_president' => 'Approve quotation (President)',
+    'approve_estimate_vp_pricing' => 'Approve quotation (VP pricing)',
+    'view_sales_history' => 'View Sales History',
+    'add_sales_history_import' => 'Import Sales History',
+    'view_audit_report' => 'View Audit Report',
 ];

@@ -343,4 +343,5 @@ return [
     ],
     'selectAtLeastOne' => '至少選擇一項',
     'notAllowed' => ' :attribute 是不允許的',
+    'urlFormat' => 'Urlformat',
 ];

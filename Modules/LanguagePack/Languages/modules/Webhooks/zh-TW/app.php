@@ -20,4 +20,5 @@ return [
     'runDebug' => '以調試模式運行',
     'requestDetails' => '請求詳情',
     'response' => '響應',
+    'webhookLog' => 'Webhooklog',
 ];

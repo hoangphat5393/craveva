@@ -343,4 +343,5 @@ return [
     ],
     'selectAtLeastOne' => 'Valige vähemalt üks',
     'notAllowed' => ' :attribute pole lubatud',
+    'urlFormat' => 'Urlformat',
 ];

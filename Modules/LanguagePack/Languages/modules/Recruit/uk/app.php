@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'підписаний лист-пропозиція на',
         'description' => 'опис',
         'notDisclosed' => 'Не розкрито',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Вилучити',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'В процесі',
         'scheduled' => 'За розкладом',
         'offerReleased' => 'Пропозицію випущено',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Прикладний',

@@ -23,4 +23,5 @@ return [
     'sendReminderMeeting' => '發送待處理會議的提醒。',
     'sendReminderObjective' => '發送此目標待處理簽入的提醒。',
     'hideCompletedObjectives' => '隱藏已完成的目標',
+    'actionPoints' => 'Actionpoints',
 ];

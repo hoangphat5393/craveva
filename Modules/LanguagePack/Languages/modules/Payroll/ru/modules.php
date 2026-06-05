@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Выходной',
         'dayoff' => 'Выходной',
         'overtimeType' => 'Сверхурочный тип',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense (No Month)',
+        'OvertimeType' => 'Overtimetype',
+        'Holiday' => 'Holiday',
     ],
 ];

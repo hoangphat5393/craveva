@@ -69,8 +69,8 @@ it('persists sub_total and total from line items instead of incorrect request to
         ['permission_type_id' => (int) $typeAllId]
     );
 
-    Cache::forget('permission-add_estimates-'.$user->id);
-    Cache::forget('user_modules_'.$user->id);
+    Cache::forget('permission-add_estimates-' . $user->id);
+    Cache::forget('user_modules_' . $user->id);
 
     $clientId = User::withoutGlobalScopes()
         ->where('users.company_id', $companyId)
@@ -102,7 +102,7 @@ it('persists sub_total and total from line items instead of incorrect request to
         ])
         ->post(route('estimates.store', ['type' => 'draft']), [
             '_token' => csrf_token(),
-            'estimate_number' => 'EST-TOTALS-'.now()->format('YmdHis'),
+            'estimate_number' => 'EST-TOTALS-' . now()->format('YmdHis'),
             'client_id' => $clientId,
             'valid_till' => now()->addDays(7)->format($company->date_format),
             'sub_total' => 100,
@@ -119,9 +119,6 @@ it('persists sub_total and total from line items instead of incorrect request to
             'unit_id' => ['', ''],
             'product_id' => ['', ''],
             'taxes' => [[], []],
-            'item_free_quantity' => ['', ''],
-            'item_line_effective_date' => ['', ''],
-            'item_line_expiry_date' => ['', ''],
             'redirect_url' => route('estimates.index'),
         ]);
 

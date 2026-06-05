@@ -19,16 +19,6 @@
         <p class="f-12 text-dark-grey mb-0">@lang('modules.estimates.recipeOemSku')</p>
         <p class="f-14 text-dark mb-0">{{ $e?->recipe_oem_sku ?: '—' }}</p>
     </div>
-    <div class="col-md-3 col-sm-6 mb-3">
-        <p class="f-12 text-dark-grey mb-0">@lang('modules.estimates.recipeTargetUnitPrice')</p>
-        <p class="f-14 text-dark mb-0">
-            @if ($e && $e->recipe_target_unit_price !== null)
-                {{ currency_format($e->recipe_target_unit_price, $e->currency_id, false) }}
-            @else
-                —
-            @endif
-        </p>
-    </div>
 @else
     <div class="col-md-6 col-lg-3">
         <div class="form-group mb-4">
@@ -46,12 +36,6 @@
         <div class="form-group mb-4">
             <x-forms.label fieldId="recipe_oem_sku" :fieldLabel="__('modules.estimates.recipeOemSku')" />
             <input type="text" name="recipe_oem_sku" id="recipe_oem_sku" class="form-control height-35 f-15" maxlength="128" value="{{ $e?->recipe_oem_sku ?? '' }}">
-        </div>
-    </div>
-    <div class="col-md-6 col-lg-3">
-        <div class="form-group mb-4">
-            <x-forms.label fieldId="recipe_target_unit_price" :fieldLabel="__('modules.estimates.recipeTargetUnitPrice')" />
-            <input type="text" name="recipe_target_unit_price" id="recipe_target_unit_price" class="form-control height-35 f-15" value="{{ $e && $e->recipe_target_unit_price !== null ? $e->recipe_target_unit_price : '' }}">
         </div>
     </div>
 @endif

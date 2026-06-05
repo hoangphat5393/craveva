@@ -10,13 +10,16 @@ use App\Services\Estimates\EstimateRecipeMarginSummary;
 it('calculates extended bom cost and gross margin from bom lines and commercial subtotal', function (): void {
     $estimate = new Estimate;
     $estimate->sub_total = 1000.0;
-    $estimate->header_total_quantity = 100;
 
     $bomLine = new EstimateBomLine;
     $bomLine->line_total = 2.5;
 
+    $item = new EstimateItem;
+    $item->type = 'item';
+    $item->quantity = 100;
+
     $estimate->setRelation('bomLines', collect([$bomLine]));
-    $estimate->setRelation('items', collect());
+    $estimate->setRelation('items', collect([$item]));
 
     $summary = (new EstimateRecipeMarginSummary)->summarize($estimate);
 

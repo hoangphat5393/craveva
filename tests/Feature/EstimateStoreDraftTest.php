@@ -122,9 +122,6 @@ it('stores estimate draft when first item row is blank but another row is valid'
             'unit_id' => ['', ''],
             'product_id' => ['', ''],
             'taxes' => [[], []],
-            'item_free_quantity' => ['', ''],
-            'item_line_effective_date' => ['', ''],
-            'item_line_expiry_date' => ['', ''],
             'redirect_url' => route('estimates.index'),
         ]);
 

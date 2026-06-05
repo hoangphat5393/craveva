@@ -49,10 +49,6 @@ final class EstimateRecipeMarginSummary
 
     private function resolveOrderQuantity(Estimate $estimate): float
     {
-        if ($estimate->header_total_quantity !== null && (float) $estimate->header_total_quantity > 0) {
-            return (float) $estimate->header_total_quantity;
-        }
-
         $sum = (float) $estimate->items->where('type', 'item')->sum('quantity');
 
         return max(0.0, $sum);

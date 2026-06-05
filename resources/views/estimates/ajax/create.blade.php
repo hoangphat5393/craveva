@@ -151,8 +151,6 @@
                     </div>
                 </div>
 
-                @include('estimates.partials.quotation-extra-fields', ['estimate' => $estimate ?? null])
-
                 @if (estimates_phase1_review_enabled())
                     @include('estimates.partials.recipe-header-fields', ['estimate' => $estimate ?? null])
                     @include('estimates.partials.bom-lines', [
@@ -288,7 +286,7 @@
                                                     </select>
                                                 </div>
                                             </td>
-                                            <td rowspan="3" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
+                                            <td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
                                                 <span class="amount-html">{{ number_format((float) $item->amount, 2, '.', '') }}</span>
                                                 <input type="hidden" class="amount" name="amount[]" value="{{ $item->amount }}">
                                             </td>
@@ -305,12 +303,6 @@
                                                 <input type="hidden" name="invoice_item_image_url[]">
                                             </td>
                                         </tr>
-                                        @include('estimates.partials.item-line-meta-row', [
-                                            'invoiceSetting' => $invoiceSetting,
-                                            'freeQty' => $item->free_quantity,
-                                            'effDate' => $item->line_effective_date ? $item->line_effective_date->format(company()->date_format) : '',
-                                            'expDate' => $item->line_expiry_date ? $item->line_expiry_date->format(company()->date_format) : '',
-                                        ])
                                     </tbody>
                                 </table>
                                 <a href="javascript:;" class="d-flex align-items-center justify-content-center ml-3 remove-item"><i class="fa fa-times-circle f-20 text-lightest"></i></a>
@@ -385,7 +377,7 @@
                                                     </select>
                                                 </div>
                                             </td>
-                                            <td rowspan="3" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
+                                            <td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
                                                 <span class="amount-html">{{ number_format((float) $item->amount, 2, '.', '') }}</span>
                                                 <input type="hidden" class="amount" name="amount[]" value="{{ $item->amount }}">
                                             </td>
@@ -402,12 +394,6 @@
                                                 <input type="hidden" name="invoice_item_image_url[]" value="{{ $item->estimateTemplateItemImage ? $item->estimateTemplateItemImage->file : '' }}">
                                             </td>
                                         </tr>
-                                        @include('estimates.partials.item-line-meta-row', [
-                                            'invoiceSetting' => $invoiceSetting,
-                                            'freeQty' => '',
-                                            'effDate' => '',
-                                            'expDate' => '',
-                                        ])
                                     </tbody>
                                 </table>
 
@@ -478,7 +464,7 @@
                                                 </select>
                                             </div>
                                         </td>
-                                        <td rowspan="3" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
+                                        <td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
                                             <span class="amount-html">0.00</span>
                                             <input type="hidden" class="amount" name="amount[]" value="0">
                                         </td>
@@ -492,12 +478,6 @@
                                             <input type="hidden" name="invoice_item_image_url[]">
                                         </td>
                                     </tr>
-                                    @include('estimates.partials.item-line-meta-row', [
-                                        'invoiceSetting' => $invoiceSetting,
-                                        'freeQty' => '',
-                                        'effDate' => '',
-                                        'expDate' => '',
-                                    ])
                                 </tbody>
                             </table>
 
@@ -762,12 +742,6 @@
 
             const hsn_status = "{{ $invoiceSetting->hsn_sac_code_show }}";
             const defaultClient = "{{ request('default_client') }}";
-            const lineMetaColspan = {{ $invoiceSetting->hsn_sac_code_show ? 5 : 4 }};
-            const lblLineFree = {!! json_encode(__('modules.estimates.lineFreeQuantity')) !!};
-            const lblLineEff = {!! json_encode(__('modules.estimates.lineEffectiveDate')) !!};
-            const lblLineExp = {!! json_encode(__('modules.estimates.lineExpiryDate')) !!};
-            const phDatePlaceholder = {!! json_encode(__('placeholders.date')) !!};
-
             quillMention(null, '#description');
 
             $('.custom-date-picker').each(function(ind, el) {
@@ -844,12 +818,6 @@
                     $(document).find('#dropify' + i).dropify({
                         messages: dropifyMessages
                     });
-                    $('#sortable .item-row:last .item-line-meta .custom-date-picker').each(function(ind, el) {
-                        datepicker(el, {
-                            position: 'bl',
-                            ...datepickerConfig
-                        });
-                    });
                 }).catch(function(err) {
                     $.handleApiFormError(err);
                 }).finally(function() {
@@ -921,7 +889,7 @@
                 '</select>' +
                 '</div>' +
                 '</td>' +
-                '<td rowspan="3" align="right" valign="top" class="bg-amt-grey btrr-bbrr">' +
+                '<td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">' +
                 '<span class="amount-html">0.00</span>' +
                 '<input type="hidden" class="amount" name="amount[]" value="0">' +
                 '</td>' +
@@ -935,16 +903,6 @@
                     '" name="invoice_item_image[]" data-allowed-file-extensions="png jpg jpeg bmp" data-messages-default="test" data-height="70" /><input type="hidden" name="invoice_item_image_url[]">' +
                     '</td>' +
                     '</tr>' +
-                    '<tr class="d-none d-md-table-row d-lg-table-row item-line-meta">' +
-                    '<td colspan="' + lineMetaColspan + '" class="border-top-0 bg-additional-grey">' +
-                    '<div class="row f-12 px-2 py-2 m-0">' +
-                    '<div class="col-md-4 mb-2 mb-md-0"><label class="f-11 text-lightest d-block mb-1">' + lblLineFree + '</label>' +
-                    '<input type="text" name="item_free_quantity[]" class="form-control form-control-sm"></div>' +
-                    '<div class="col-md-4 mb-2 mb-md-0"><label class="f-11 text-lightest d-block mb-1">' + lblLineEff + '</label>' +
-                    '<input type="text" name="item_line_effective_date[]" class="form-control form-control-sm custom-date-picker item-line-effective-date" placeholder="' + phDatePlaceholder + '"></div>' +
-                    '<div class="col-md-4"><label class="f-11 text-lightest d-block mb-1">' + lblLineExp + '</label>' +
-                    '<input type="text" name="item_line_expiry_date[]" class="form-control form-control-sm custom-date-picker item-line-expiry-date" placeholder="' + phDatePlaceholder + '"></div>' +
-                    '</div></td></tr>' +
                     '</tbody>' +
                     '</table>' +
                     '</div>' +
@@ -955,12 +913,6 @@
 
                 $('#dropify' + i).dropify({
                     messages: dropifyMessages
-                });
-                $('#sortable .item-row:last .item-line-meta .custom-date-picker').each(function(ind, el) {
-                    datepicker(el, {
-                        position: 'bl',
-                        ...datepickerConfig
-                    });
                 });
             });
 

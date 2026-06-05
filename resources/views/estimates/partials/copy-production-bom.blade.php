@@ -3,24 +3,22 @@
     $productionBoms = $productionBoms ?? collect();
 @endphp
 @if (estimates_phase1_review_enabled() && \App\Services\Estimates\EstimateProductionBomCopier::moduleAvailable() && $productionBoms->isNotEmpty())
-    <div class="col-md-12 mb-3 estimate-copy-production-bom">
-        <p class="f-14 text-dark-grey mb-2 font-weight-bold">@lang('modules.estimates.copyProductionBomHeading')</p>
+    <div class="mb-3 estimate-copy-production-bom">
+        <x-forms.label fieldId="estimate_production_bom_id" :fieldLabel="__('modules.estimates.copyProductionBomHeading')" />
         <p class="f-12 text-lightest mb-2">@lang('modules.estimates.copyProductionBomHelp')</p>
-        <div class="d-flex flex-wrap align-items-end">
-            <div class="form-group mb-0 mr-2 flex-grow-1" style="min-width: 220px;">
-                <select id="estimate_production_bom_id" name="production_bom_id" class="form-control select-picker" data-live-search="true" data-size="8">
-                    <option value="">@lang('modules.estimates.copyProductionBomSelect')</option>
-                    @foreach ($productionBoms as $bom)
-                        <option value="{{ $bom->id }}" @selected((string) old('production_bom_id', $estimate->production_bom_id ?? '') === (string) $bom->id)>
-                            {{ $bom->labelForSelect() }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <button type="button" id="estimate-copy-production-bom-btn" class="btn btn-secondary height-35 f-14 mb-0">
-                <i class="fa fa-download mr-1"></i>@lang('modules.estimates.copyProductionBomButton')
-            </button>
-        </div>
+        <x-forms.input-group>
+            <select id="estimate_production_bom_id" class="form-control select-picker" data-live-search="true" data-size="8">
+                <option value="">@lang('modules.estimates.copyProductionBomSelect')</option>
+                @foreach ($productionBoms as $bom)
+                    <option value="{{ $bom->id }}">{{ $bom->labelForSelect() }}</option>
+                @endforeach
+            </select>
+            <x-slot name="append">
+                <button type="button" id="estimate-copy-production-bom-btn" class="btn btn-outline-secondary border-grey height-35 f-14">
+                    <i class="fa fa-download mr-1"></i>@lang('modules.estimates.copyProductionBomButton')
+                </button>
+            </x-slot>
+        </x-forms.input-group>
     </div>
 
     <script>

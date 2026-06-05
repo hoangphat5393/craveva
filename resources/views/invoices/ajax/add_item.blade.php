@@ -1,6 +1,3 @@
-@php
-    $estimateLineMeta = $showEstimateLineMeta ?? false;
-@endphp
 <!-- DESKTOP DESCRIPTION TABLE START -->
 <div class="d-flex px-4 py-3 c-inv-desc item-row">
     <div class="d-flex align-items-center">
@@ -57,7 +54,7 @@
                             </select>
                         </div>
                     </td>
-                    <td rowspan="{{ $estimateLineMeta ? 3 : 2 }}" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
+                    <td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
                         <span class="amount-html" data-item-id="{{ $items->id }}">0.00</span>
                         <input type="hidden" class="amount" name="amount[]" data-item-id="{{ $items->id }}" value="0">
                     </td>
@@ -72,14 +69,6 @@
                         <input type="hidden" name="invoice_item_image_url[]" value="{{ $items->image }}">
                     </td>
                 </tr>
-                @if ($estimateLineMeta)
-                    @include('estimates.partials.item-line-meta-row', [
-                        'invoiceSetting' => $invoiceSetting,
-                        'freeQty' => '',
-                        'effDate' => '',
-                        'expDate' => '',
-                    ])
-                @endif
             </tbody>
         </table>
 

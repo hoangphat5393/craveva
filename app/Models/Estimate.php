@@ -114,18 +114,9 @@ class Estimate extends BaseModel
     protected $casts = [
         'valid_till' => 'datetime',
         'last_viewed' => 'datetime',
-        'quotation_date' => 'date',
-        'document_date' => 'date',
-        'exchange_rate' => 'decimal:6',
-        'header_quotation_amount' => 'decimal:2',
-        'header_tax_amount' => 'decimal:2',
-        'header_total_quantity' => 'decimal:4',
-        'total_gross_weight_kg' => 'decimal:4',
-        'total_volume' => 'decimal:4',
         'president_reviewed_at' => 'datetime',
         'vp_pricing_reviewed_at' => 'datetime',
         'recipe_moq' => 'integer',
-        'recipe_target_unit_price' => 'decimal:4',
     ];
 
     protected $appends = ['total_amount', 'valid_date'];
@@ -196,7 +187,7 @@ class Estimate extends BaseModel
 
     public function getTotalAmountAttribute()
     {
-        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol.$this->total : '';
+        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol . $this->total : '';
     }
 
     public function getValidDateAttribute()
@@ -291,7 +282,7 @@ class Estimate extends BaseModel
                 : $this->approvalEvents()->with('actor')->get();
 
             return $events
-                ->map(static fn (EstimateApprovalEvent $event): array => $event->toTimelineEntry())
+                ->map(static fn(EstimateApprovalEvent $event): array => $event->toTimelineEntry())
                 ->values()
                 ->all();
         }
@@ -299,7 +290,7 @@ class Estimate extends BaseModel
         $entries = [];
 
         if ($this->president_reviewed_at !== null) {
-            $presidentKey = 'modules.estimates.timelinePresident_'.(in_array((string) $this->president_review_status, ['approved', 'rejected'], true)
+            $presidentKey = 'modules.estimates.timelinePresident_' . (in_array((string) $this->president_review_status, ['approved', 'rejected'], true)
                 ? $this->president_review_status
                 : 'pending');
             $entries[] = [
@@ -311,7 +302,7 @@ class Estimate extends BaseModel
         }
 
         if ($this->vp_pricing_reviewed_at !== null) {
-            $vpKey = 'modules.estimates.timelineVp_'.(in_array((string) $this->vp_pricing_review_status, ['approved', 'rejected'], true)
+            $vpKey = 'modules.estimates.timelineVp_' . (in_array((string) $this->vp_pricing_review_status, ['approved', 'rejected'], true)
                 ? $this->vp_pricing_review_status
                 : 'pending');
             $entries[] = [
@@ -322,7 +313,7 @@ class Estimate extends BaseModel
             ];
         }
 
-        usort($entries, fn (array $a, array $b): int => $a['at']->getTimestamp() <=> $b['at']->getTimestamp());
+        usort($entries, fn(array $a, array $b): int => $a['at']->getTimestamp() <=> $b['at']->getTimestamp());
 
         return $entries;
     }

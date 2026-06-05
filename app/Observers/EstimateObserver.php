@@ -14,7 +14,6 @@ use App\Models\Notification;
 use App\Models\UniversalSearch;
 use App\Traits\EmployeeActivityTrait;
 use App\Traits\UnitTypeSaveTrait;
-use Carbon\Carbon;
 
 use function user;
 
@@ -105,9 +104,6 @@ class EstimateObserver
                                 'amount' => round($amount[$key], 2),
                                 'taxes' => ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null),
                                 'field_order' => $key + 1,
-                                'free_quantity' => self::optionalRequestItemDecimal('item_free_quantity', $key),
-                                'line_effective_date' => self::optionalRequestItemDateYmd('item_line_effective_date', $key),
-                                'line_expiry_date' => self::optionalRequestItemDateYmd('item_line_expiry_date', $key),
                             ]
                         );
 
@@ -230,33 +226,6 @@ class EstimateObserver
             $file->hashname = $fileName;
             $file->size = $estimateTemplateImg->size;
             $file->save();
-        }
-    }
-
-    private static function optionalRequestItemDecimal(string $field, int $key): ?float
-    {
-        $raw = request()->input($field . '.' . $key);
-        if ($raw === null || $raw === '') {
-            return null;
-        }
-        if (is_numeric($raw)) {
-            return (float) $raw;
-        }
-        $s = preg_replace('/[^0-9.\-]/', '', str_replace(',', '', (string) $raw));
-
-        return is_numeric($s) ? (float) $s : null;
-    }
-
-    private static function optionalRequestItemDateYmd(string $field, int $key): ?string
-    {
-        $raw = request()->input($field . '.' . $key);
-        if ($raw === null || trim((string) $raw) === '') {
-            return null;
-        }
-        try {
-            return Carbon::createFromFormat(company()->date_format, trim((string) $raw))->format('Y-m-d');
-        } catch (\Throwable) {
-            return null;
         }
     }
 }

@@ -95,13 +95,8 @@ class EstimateImportProcessor
         }
 
         $quotationDate = self::parseRocOrIsoDate(self::getValue($row, $columns, 'quotation_date'));
-        $documentDate = self::parseRocOrIsoDate(self::getValue($row, $columns, 'document_date'));
-        $lineEffectiveCarbon = self::parseRocOrIsoDate(self::getValue($row, $columns, 'line_effective_date'));
-        $lineExpiryCarbon = self::parseRocOrIsoDate(self::getValue($row, $columns, 'line_expiry_date'));
-        $lineFreeQty = self::parseDecimal(self::getValue($row, $columns, 'line_free_qty'));
 
-        $validTill = $lineEffectiveCarbon
-            ?? $quotationDate?->copy()->addDays(30)
+        $validTill = $quotationDate?->copy()->addDays(30)
             ?? now()->addDays(30);
 
         $lineName = trim((string) (self::getValue($row, $columns, 'line_name') ?? ''));
@@ -127,12 +122,6 @@ class EstimateImportProcessor
             $clientId,
             $currencyId,
             $validTill,
-            $quotationDate,
-            $documentDate,
-            $lineEffectiveCarbon,
-            $lineExpiryCarbon,
-            $lineFreeQty,
-            $sku,
             $lineName,
             $itemSummary,
             $qty,
@@ -171,7 +160,6 @@ class EstimateImportProcessor
                     $estimate->added_by = $importUserId;
                     $estimate->last_updated_by = $importUserId;
                 }
-                self::applyQuotationHeaderFromImportRow($estimate, $row, $columns, $quotationDate, $documentDate);
                 $estimate->save();
 
                 $processor = new self;
@@ -206,68 +194,12 @@ class EstimateImportProcessor
             if ($unitId) {
                 $item->unit_id = $unitId;
             }
-            if ($lineFreeQty !== null) {
-                $item->free_quantity = $lineFreeQty;
-            }
-            if ($lineEffectiveCarbon) {
-                $item->line_effective_date = $lineEffectiveCarbon->toDateString();
-            }
-            if ($lineExpiryCarbon) {
-                $item->line_expiry_date = $lineExpiryCarbon->toDateString();
-            }
             $item->save();
 
             self::saveEstimateCustomFieldsFromRow($estimate, $row, $columns, $companyId);
 
             return $created ? 'created' : 'updated';
         });
-    }
-
-    private static function applyQuotationHeaderFromImportRow(
-        Estimate $estimate,
-        array $row,
-        array $columns,
-        ?Carbon $quotationDate,
-        ?Carbon $documentDate
-    ): void {
-        if ($quotationDate) {
-            $estimate->quotation_date = $quotationDate->toDateString();
-        }
-        if ($documentDate) {
-            $estimate->document_date = $documentDate->toDateString();
-        }
-        $estimate->exchange_rate = self::parseDecimal(self::getValue($row, $columns, 'exchange_rate'));
-        $estimate->header_quotation_amount = self::parseDecimal(self::getValue($row, $columns, 'header_total'));
-        $estimate->header_tax_amount = self::parseDecimal(self::getValue($row, $columns, 'header_tax'));
-        $estimate->header_total_quantity = self::parseDecimal(self::getValue($row, $columns, 'header_total_qty'));
-
-        $estimate->delivery_note = self::nullableTrimmedString(self::getValue($row, $columns, 'delivery_note'));
-        $estimate->salesperson_name = self::nullableTrimmedString(self::getValue($row, $columns, 'salesperson'));
-        $estimate->tax_type_label = self::nullableTrimmedString(self::getValue($row, $columns, 'tax_type'));
-        $estimate->payment_terms_code = self::nullableTrimmedString(self::getValue($row, $columns, 'payment_code'));
-        $estimate->payment_terms_name = self::nullableTrimmedString(self::getValue($row, $columns, 'payment_name'));
-        $estimate->confirm_internal = self::nullableTrimmedString(self::getValue($row, $columns, 'confirm_internal'), 16);
-        $estimate->confirm_customer = self::nullableTrimmedString(self::getValue($row, $columns, 'confirm_customer'), 16);
-        $estimate->price_terms = self::nullableTrimmedString(self::getValue($row, $columns, 'price_terms'));
-        $estimate->volume_unit = self::nullableTrimmedString(self::getValue($row, $columns, 'volume_unit'), 64);
-        $estimate->total_gross_weight_kg = self::parseDecimal(self::getValue($row, $columns, 'total_gross_kg'));
-        $estimate->total_volume = self::parseDecimal(self::getValue($row, $columns, 'total_volume'));
-    }
-
-    private static function nullableTrimmedString(mixed $value, ?int $maxLen = null): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-        $s = trim((string) $value);
-        if ($s === '') {
-            return null;
-        }
-        if ($maxLen !== null && strlen($s) > $maxLen) {
-            return substr($s, 0, $maxLen);
-        }
-
-        return $s;
     }
 
     private static function saveEstimateCustomFieldsFromRow(Estimate $estimate, array $row, array $columns, int $companyId): void

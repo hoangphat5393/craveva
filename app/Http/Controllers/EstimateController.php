@@ -192,7 +192,6 @@ class EstimateController extends AccountBaseController
         $estimate->estimate_number = $request->estimate_number;
         $estimate->estimate_request_id = $request->estimate_request_id ?? null;
         $estimate->status = request('type') === 'draft' ? 'draft' : 'waiting';
-        $this->applyQuotationSourceFields($request, $estimate);
         if ($this->isPhase1ReviewGateEnabled()) {
             $this->applyRecipeHeaderFields($request, $estimate);
         }
@@ -212,9 +211,6 @@ class EstimateController extends AccountBaseController
                 'amount' => $lineItem['amount'],
                 'taxes' => $lineItem['taxes'],
                 'field_order' => $index + 1,
-                'free_quantity' => $lineItem['free_quantity'],
-                'line_effective_date' => $lineItem['line_effective_date'],
-                'line_expiry_date' => $lineItem['line_expiry_date'],
             ]);
         }
 
@@ -427,7 +423,6 @@ class EstimateController extends AccountBaseController
         $estimate->note = trim_editor($request->note);
         $estimate->description = trim_editor($request->description);
         $estimate->estimate_number = $request->estimate_number;
-        $this->applyQuotationSourceFields($request, $estimate);
         if ($this->isPhase1ReviewGateEnabled()) {
             $this->applyRecipeHeaderFields($request, $estimate);
         }
@@ -457,9 +452,6 @@ class EstimateController extends AccountBaseController
             $estimateItem->amount = $lineItem['amount'];
             $estimateItem->taxes = $lineItem['taxes'];
             $estimateItem->field_order = $order + 1;
-            $estimateItem->free_quantity = $lineItem['free_quantity'];
-            $estimateItem->line_effective_date = $lineItem['line_effective_date'];
-            $estimateItem->line_expiry_date = $lineItem['line_expiry_date'];
             $estimateItem->save();
 
             $persistedItemIds[] = $estimateItem->id;
@@ -1057,7 +1049,6 @@ class EstimateController extends AccountBaseController
 
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
-        $this->showEstimateLineMeta = true;
         $view = view('invoices.ajax.add_item', $this->data)->render();
 
         return Reply::dataOnly(['status' => 'success', 'view' => $view]);
@@ -1134,9 +1125,6 @@ class EstimateController extends AccountBaseController
         $unitIds = (array) $request->input('unit_id', []);
         $productIds = (array) $request->input('product_id', []);
         $taxes = (array) $request->input('taxes', []);
-        $freeQuantities = (array) $request->input('item_free_quantity', []);
-        $lineEffectiveDates = (array) $request->input('item_line_effective_date', []);
-        $lineExpiryDates = (array) $request->input('item_line_expiry_date', []);
 
         $lineItems = [];
         $calculationLines = [];
@@ -1178,9 +1166,6 @@ class EstimateController extends AccountBaseController
                 'unit_price' => $unitPrice,
                 'amount' => $amount,
                 'taxes' => $taxIds !== [] ? json_encode($taxIds) : null,
-                'free_quantity' => $this->parseOptionalDecimalInput($freeQuantities[$index] ?? null),
-                'line_effective_date' => $this->parseOptionalDateInput($lineEffectiveDates[$index] ?? null),
-                'line_expiry_date' => $this->parseOptionalDateInput($lineExpiryDates[$index] ?? null),
             ];
 
             $calculationLines[] = [
@@ -1213,65 +1198,12 @@ class EstimateController extends AccountBaseController
         $estimate->calculate_tax = (string) $request->input('calculate_tax', 'after_discount');
     }
 
-    protected function applyQuotationSourceFields(StoreEstimate $request, Estimate $estimate): void
-    {
-        $estimate->quotation_date = $this->parseOptionalDateInput($request->input('quotation_date'));
-        $estimate->document_date = $this->parseOptionalDateInput($request->input('document_date'));
-        $estimate->exchange_rate = $this->parseOptionalDecimalInput($request->input('exchange_rate'));
-        $estimate->header_quotation_amount = $this->parseOptionalDecimalInput($request->input('header_quotation_amount'));
-        $estimate->header_tax_amount = $this->parseOptionalDecimalInput($request->input('header_tax_amount'));
-        $estimate->header_total_quantity = $this->parseOptionalDecimalInput($request->input('header_total_quantity'));
-        $estimate->delivery_note = $request->filled('delivery_note') ? trim((string) $request->delivery_note) : null;
-        $estimate->salesperson_name = $request->filled('salesperson_name') ? trim((string) $request->salesperson_name) : null;
-        $estimate->tax_type_label = $request->filled('tax_type_label') ? trim((string) $request->tax_type_label) : null;
-        $estimate->payment_terms_code = $request->filled('payment_terms_code') ? trim((string) $request->payment_terms_code) : null;
-        $estimate->payment_terms_name = $request->filled('payment_terms_name') ? trim((string) $request->payment_terms_name) : null;
-        $estimate->confirm_internal = $request->filled('confirm_internal') ? trim((string) $request->confirm_internal) : null;
-        $estimate->confirm_customer = $request->filled('confirm_customer') ? trim((string) $request->confirm_customer) : null;
-        $estimate->price_terms = $request->filled('price_terms') ? trim((string) $request->price_terms) : null;
-        $estimate->volume_unit = $request->filled('volume_unit') ? trim((string) $request->volume_unit) : null;
-        $estimate->total_gross_weight_kg = $this->parseOptionalDecimalInput($request->input('total_gross_weight_kg'));
-        $estimate->total_volume = $this->parseOptionalDecimalInput($request->input('total_volume'));
-    }
-
     protected function applyRecipeHeaderFields(StoreEstimate $request, Estimate $estimate): void
     {
         $moq = $request->input('recipe_moq');
         $estimate->recipe_moq = ($moq !== null && $moq !== '') ? max(0, (int) $moq) : null;
         $estimate->recipe_packaging = $request->filled('recipe_packaging') ? trim((string) $request->recipe_packaging) : null;
         $estimate->recipe_oem_sku = $request->filled('recipe_oem_sku') ? trim((string) $request->recipe_oem_sku) : null;
-        $estimate->recipe_target_unit_price = $this->parseOptionalDecimalInput($request->input('recipe_target_unit_price'));
-
-        $productionBomId = $request->input('production_bom_id');
-        $estimate->production_bom_id = ($productionBomId !== null && $productionBomId !== '')
-            ? (int) $productionBomId
-            : null;
-    }
-
-    protected function parseOptionalDateInput(mixed $value): ?string
-    {
-        $value = $value !== null ? trim((string) $value) : '';
-        if ($value === '') {
-            return null;
-        }
-        try {
-            return Carbon::createFromFormat(company()->date_format, $value)->format('Y-m-d');
-        } catch (\Throwable) {
-            return null;
-        }
-    }
-
-    protected function parseOptionalDecimalInput(mixed $value): ?float
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-        if (is_numeric($value)) {
-            return (float) $value;
-        }
-        $s = preg_replace('/[^0-9.\-]/', '', str_replace(',', '', (string) $value));
-
-        return is_numeric($s) ? (float) $s : null;
     }
 
     /**

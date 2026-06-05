@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\EstimateItem
@@ -17,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property float $unit_price
  * @property float $amount
  * @property string|null $taxes
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $hsn_sac_code
  * @property-read mixed $icon
  *
@@ -38,11 +39,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereUpdatedAt($value)
  *
- * @property-read \App\Models\EstimateItemImage|null $estimateItemImage
+ * @property-read EstimateItemImage|null $estimateItemImage
  * @property-read mixed $tax_list
  * @property int|null $product_id
  * @property int|null $unit_id
- * @property-read \App\Models\UnitType|null $unit
+ * @property-read UnitType|null $unit
  *
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereUnitId($value)
@@ -52,12 +53,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class EstimateItem extends BaseModel
 {
     protected $guarded = ['id'];
-
-    protected $casts = [
-        'line_effective_date' => 'date',
-        'line_expiry_date' => 'date',
-        'free_quantity' => 'decimal:4',
-    ];
 
     protected $with = ['estimateItemImage'];
 

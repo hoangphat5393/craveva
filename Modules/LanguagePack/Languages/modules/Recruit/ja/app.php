@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'recruit' => 'リクルート',
-        'recruitSetting' => '採用設定',
+        'recruitSetting' => '採用',
         'recruitersSettings' => 'リクルーター設定',
         'skills' => 'スキル',
         'skill' => 'スキル',

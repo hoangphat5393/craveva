@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'einvoice' => 'E-Invoice',
-        'einvoiceSettings' => 'E-Invoice Settings',
+        'einvoiceSettings' => '電子請求書',
     ],
     'settingForm' => [
         'electronicAddress' => 'Electronic Address',

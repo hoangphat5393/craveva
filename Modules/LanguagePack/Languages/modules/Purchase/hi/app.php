@@ -41,7 +41,7 @@ return [
     'defaultImage' => 'डिफ़ॉल्ट छवि',
     'menu' => [
         'purchase' => 'खरीदना',
-        'purchaseSettings' => 'खरीद सेटिंग्स',
+        'purchaseSettings' => 'खरीद',
         'purchaseNotificationSettings' => 'खरीदारी अधिसूचना सेटिंग्स',
         'new-purchase-bill' => 'नया खरीद बिल',
         'new-purchase-inventory' => 'नई खरीद सूची',
@@ -89,9 +89,9 @@ return [
         'deliveryOrders' => 'Delivery Orders',
         'salesShipments' => 'Sales Shipments',
         'salesDo' => 'Sales DO',
-        'saleDeliveryOrder' => 'Sales Delivery Order',
+        'saleDeliveryOrder' => 'बिक्री डिलीवरी ऑर्डर',
         'grn' => 'GRN',
-        'goodsReceivedNote' => 'Goods Received Note',
+        'goodsReceivedNote' => 'माल प्राप्ति नोट (GRN)',
     ],
     'purchaseOrder' => [
         'vendorPayments' => 'विक्रेता भुगतान',

@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'einvoice' => '전자송장',
-        'einvoiceSettings' => '전자송장 설정',
+        'einvoiceSettings' => '전자세금계산서',
     ],
     'settingForm' => [
         'electronicAddress' => '전자 주소',

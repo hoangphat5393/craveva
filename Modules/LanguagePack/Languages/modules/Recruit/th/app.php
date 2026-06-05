@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'recruit' => 'สรรหาคน',
-        'recruitSetting' => 'การตั้งค่าการรับสมัคร',
+        'recruitSetting' => 'การสรรหา',
         'recruitersSettings' => 'การตั้งค่าผู้สรรหา',
         'skills' => 'ทักษะ',
         'skill' => 'ทักษะ',

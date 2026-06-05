@@ -3,12 +3,12 @@
 return [
     'menu' => [
         'pricing' => '定價',
-        'tiers' => '定價層級',
+        'tiers' => '定價層級規則',
         'clientPricing' => '客戶定價',
-        'clientTiers' => '客戶層級',
-        'companyPricing' => 'Client Contract Pricing',
-        'volumeDiscounts' => 'Volume Discount Rules',
-        'contractPricing' => 'Contract Pricing',
+        'clientTiers' => '客戶層級分配',
+        'companyPricing' => '客戶合約定價',
+        'volumeDiscounts' => '批量折扣規則',
+        'contractPricing' => '合約定價',
     ],
     'assignPricingTier' => '分配定價層級',
     'customerCode' => '客戶代碼',

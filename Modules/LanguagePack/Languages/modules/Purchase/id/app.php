@@ -41,7 +41,7 @@ return [
     'defaultImage' => 'Gambar Bawaan',
     'menu' => [
         'purchase' => 'Pembelian',
-        'purchaseSettings' => 'Pengaturan Pembelian',
+        'purchaseSettings' => 'Pembelian',
         'purchaseNotificationSettings' => 'Pengaturan Pemberitahuan Pembelian',
         'new-purchase-bill' => 'Tagihan Pembelian Baru',
         'new-purchase-inventory' => 'Persediaan Pembelian Baru',
@@ -89,9 +89,9 @@ return [
         'deliveryOrders' => 'Delivery Orders',
         'salesShipments' => 'Sales Shipments',
         'salesDo' => 'Sales DO',
-        'saleDeliveryOrder' => 'Sales Delivery Order',
+        'saleDeliveryOrder' => 'Order Pengiriman Penjualan',
         'grn' => 'GRN',
-        'goodsReceivedNote' => 'Goods Received Note',
+        'goodsReceivedNote' => 'Nota Penerimaan Barang (GRN)',
     ],
     'purchaseOrder' => [
         'vendorPayments' => 'Pembayaran Vendor',

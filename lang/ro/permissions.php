@@ -471,4 +471,9 @@ return [
     'edit_payouts' => 'Editați plățile',
     'delete_payouts' => 'Ștergeți plățile',
     'manage_payout_status' => 'Gestionați starea plății',
+    'approve_estimate_president' => 'Approve quotation (President)',
+    'approve_estimate_vp_pricing' => 'Approve quotation (VP pricing)',
+    'view_sales_history' => 'View Sales History',
+    'add_sales_history_import' => 'Import Sales History',
+    'view_audit_report' => 'View Audit Report',
 ];

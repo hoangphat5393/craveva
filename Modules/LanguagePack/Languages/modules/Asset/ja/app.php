@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'asset' => 'Assets',
-        'assetSettings' => 'Asset Settings',
+        'assetSettings' => '資産',
     ],
     'addNewAsset' => 'Add New Asset',
     'lentToEmployee' => 'Lent To Employee',

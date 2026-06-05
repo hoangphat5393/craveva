@@ -41,7 +41,7 @@ return [
     'defaultImage' => '默認圖片',
     'menu' => [
         'purchase' => '採購',
-        'purchaseSettings' => '採購設置',
+        'purchaseSettings' => '採購',
         'purchaseNotificationSettings' => '採購通知設置',
         'new-purchase-bill' => '新採購賬單',
         'new-purchase-inventory' => '新採購庫存',
@@ -66,7 +66,7 @@ return [
         'deliveryOrders' => '送貨單',
         'salesShipments' => '銷售出貨',
         'salesDo' => '銷售交貨單',
-        'saleDeliveryOrder' => '銷售交貨單',
+        'saleDeliveryOrder' => '銷售出庫單',
         'receipt' => '收據',
         'report' => '報告',
         'paymentDate' => '付款日期',
@@ -91,7 +91,7 @@ return [
         'deliveryOrderSettings' => 'Goods Received Note Settings',
         'stockAdjustments' => 'Stock Adjustments',
         'grn' => 'GRN',
-        'goodsReceivedNote' => 'Goods Received Note',
+        'goodsReceivedNote' => '收貨單',
     ],
     'purchaseOrder' => [
         'vendorPayments' => '供應商付款',

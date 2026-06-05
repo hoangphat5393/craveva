@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'recruit' => '모집',
-        'recruitSetting' => '모집 설정',
+        'recruitSetting' => '채용',
         'recruitersSettings' => '채용 담당자 설정',
         'skills' => '기술',
         'skill' => '기술',

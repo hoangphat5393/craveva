@@ -20,11 +20,14 @@ Thư mục **collateral sản phẩm** (diagram, proposal, PM gốc, UI runbook)
 
 ## PM & bối cảnh nghiệp vụ
 
-| File                                                                         | Vai trò                                 |
-| ---------------------------------------------------------------------------- | --------------------------------------- |
-| [`PM_YEU_CAU_TONG_HOP_VI.md`](./PM_YEU_CAU_TONG_HOP_VI.md)                   | Yêu cầu PM gốc (gộp Gary + Phase 1 OEM) |
-| [`BIOMIXING_PHASES_1_4_SUMMARY_VI.md`](./BIOMIXING_PHASES_1_4_SUMMARY_VI.md) | Bản đồ Phase 1→4 một trang              |
-| [`PHASE_BUSINESS_CONTEXT_EXAMPLE.md`](./PHASE_BUSINESS_CONTEXT_EXAMPLE.md)   | President / VP / approval context       |
+| File                                                                                         | Vai trò                                                             |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| [`BIOMIXING_COMPANY_PROFILE_VI.md`](./BIOMIXING_COMPANY_PROFILE_VI.md)                       | **Hồ sơ công ty** (deck + Shennong/NetSuite + mô hình B2B/gia công) |
+| [`BIOMIXING_QUOTATION_EXAMPLE_OLDTOWN_VI.md`](./BIOMIXING_QUOTATION_EXAMPLE_OLDTOWN_VI.md)   | **Ví dụ báo giá gia công** (Oldtown 3.000 gói)                      |
+| [`BIOMIXING_QUOTATION_EXAMPLE_FRESHTEA_VI.md`](./BIOMIXING_QUOTATION_EXAMPLE_FRESHTEA_VI.md) | **Ví dụ báo giá gia công** (FreshTea 2.000 chai, COA, nhãn lô)      |
+| [`PM_YEU_CAU_TONG_HOP_VI.md`](./PM_YEU_CAU_TONG_HOP_VI.md)                                   | Yêu cầu PM gốc (gộp Gary + Phase 1 OEM)                             |
+| [`BIOMIXING_PHASES_1_4_SUMMARY_VI.md`](./BIOMIXING_PHASES_1_4_SUMMARY_VI.md)                 | Bản đồ Phase 1→4 một trang                                          |
+| [`PHASE_BUSINESS_CONTEXT_EXAMPLE.md`](./PHASE_BUSINESS_CONTEXT_EXAMPLE.md)                   | President / VP / approval context                                   |
 
 ---
 

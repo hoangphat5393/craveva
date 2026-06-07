@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom BOM → Giá vốn FG — Flow</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            line-height: 1.5;
+            color: #202124;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: #5f6368;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.15rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid #dadce0;
+            padding-bottom: 0.35rem;
+        }
+
+        .callout {
+            background: #fef7e0;
+            border-left: 4px solid #f9ab00;
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .callout strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            border: 1px solid #dadce0;
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8f9fa;
+        }
+
+        .mermaid {
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        code {
+            background: #f1f3f4;
+            padding: 0.1rem 0.35rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        ul {
+            padding-left: 1.25rem;
+        }
+    </style>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+
+<body>
+    <h1>Custom BOM → Giá vốn thành phẩm (FG)</h1>
+    <p class="subtitle">Doc chi tiết: <code>FUNC_IMPROVE/20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md</code> · Source:
+        <code>DIAGRAM/bom_fg_cost_sync_flow.mmd</code></p>
+
+    <div class="callout">
+        <strong>Trả lời nhanh</strong>
+        Custom BOM <em>không</em> xuất hiện trên Sales Order, Sales DO hay Invoice.
+        Nó chỉ ghi <strong>giá vốn chuẩn</strong> (<code>purchase_price</code>) vào catalog FG sau khi <strong>lưu
+            Production BOM</strong>.
+        SO → DO → Invoice vẫn chạy bằng <strong>giá bán</strong> như trước.
+    </div>
+
+    <h2>1. Flow đơn giản: SO → DO → Invoice (bán hàng)</h2>
+    <div class="mermaid">
+        flowchart LR
+        Q["Quotation<br />(tuỳ chọn)"] --> SO["Sales Order<br />💰 Giá BÁN"]
+        SO --> DO["Sales DO<br />📦 Xuất kho"]
+        DO --> INV["Invoice<br />💰 Giá BÁN + AR"]
+
+        style SO fill:#e6f4ea,stroke:#34a853
+        style DO fill:#e6f4ea,stroke:#34a853
+        style INV fill:#e6f4ea,stroke:#34a853
+    </div>
+    <p>Luồng này <strong>không bật</strong> Custom BOM. Giá trên từng dòng = <code>selling price</code> (catalog,
+        pricing tier, v.v.).</p>
+
+    <h2>2. Khi nào dùng Custom BOM? (thiết lập master data — trước khi bán)</h2>
+    <div class="mermaid">
+        flowchart TB
+        RM["① NVL: nhập Cost price"] --> FG["② FG Manufactured: tick Custom"]
+        FG --> BOM["③ Tạo Production BOM"]
+        BOM --> SAVE["④ Lưu BOM"]
+        SAVE --> SYNC["⑤ purchase_price FG = tổng BOM"]
+        SYNC --> CAT["⑥ FG sẵn sàng trong catalog"]
+        CAT --> SO2["⑦ Sales Order dùng GIÁ BÁN"]
+
+        style RM fill:#e8f4fc,stroke:#1a73e8
+        style FG fill:#e8f4fc,stroke:#1a73e8
+        style BOM fill:#e8f4fc,stroke:#1a73e8
+        style SAVE fill:#e8f4fc,stroke:#1a73e8
+        style SYNC fill:#fef7e0,stroke:#f9ab00
+        style CAT fill:#fef7e0,stroke:#f9ab00
+        style SO2 fill:#e6f4ea,stroke:#34a853
+    </div>
+
+    <h2>3. Giá vốn BOM hiển thị ở đâu?</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Màn hình</th>
+                <th>Menu / route</th>
+                <th>Hiển thị gì</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Form sản phẩm FG</td>
+                <td>Operations → Inventory → Products → Edit</td>
+                <td>Checkbox <strong>Custom</strong>; ô <strong>Cost price</strong> (khóa khi Custom ON; hint Pending
+                    BOM)</td>
+            </tr>
+            <tr>
+                <td>Chi tiết sản phẩm</td>
+                <td>Product Overview</td>
+                <td>Badge Custom + <strong>Cost price</strong> đã sync</td>
+            </tr>
+            <tr>
+                <td>Production BOM</td>
+                <td>Production → Bill Of Materials → Show/Edit</td>
+                <td>Unit cost từng dòng + <strong>Total component cost per 1 FG</strong> (chỉ xem, không lưu trên BOM)
+                </td>
+            </tr>
+            <tr>
+                <td>Tồn kho / valuation</td>
+                <td>Warehouse stock (ngầm)</td>
+                <td>Dùng <code>purchase_price</code> FG — không có label “BOM cost” riêng</td>
+            </tr>
+            <tr>
+                <td>SO / Sales DO / Invoice</td>
+                <td>Sales fulfillment</td>
+                <td><strong>Không</strong> hiện giá vốn BOM — chỉ giá bán</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>4. Sơ đồ đầy đủ (setup + UI + bán hàng)</h2>
+    <div class="mermaid">
+        flowchart TB
+        subgraph WHEN["KHI NÀO dùng Custom BOM?"]
+        direction TB
+        RM2["NVL: Cost price &gt; 0"] --> FG2["FG: tick Custom"]
+        FG2 --> BOM2["Production BOM"]
+        BOM2 --> SAVE2["Lưu BOM"]
+        SAVE2 --> SYNC2["Sync purchase_price FG"]
+        end
+
+        subgraph UI["HIỂN THỊ"]
+        U1["Product form / overview"]
+        U2["BOM total cost"]
+        U3["Inventory valuation"]
+        SYNC2 --> U1
+        SAVE2 --> U2
+        SYNC2 --> U3
+        end
+
+        subgraph SALES["SO → DO → Invoice"]
+        SO3["Sales Order"] --> DO3["Sales DO"] --> INV3["Invoice"]
+        end
+
+        SYNC2 --> CAT2["FG catalog"]
+        CAT2 --> SO3
+        SO3 -.->|giá bán only| INV3
+
+        style WHEN fill:#e8f4fc,stroke:#1a73e8
+        style UI fill:#fef7e0,stroke:#f9ab00
+        style SALES fill:#e6f4ea,stroke:#34a853
+    </div>
+
+    <h2>5. Sequence — thiết lập vs bán hàng</h2>
+    <div class="mermaid">
+        sequenceDiagram
+        autonumber
+        participant User as User
+        participant BOM as Production BOM
+        participant FG as FG Product
+        participant SO as Sales Order
+
+        Note over User,FG: Một lần (hoặc khi sửa BOM)
+        User->>BOM: Lưu BOM (Custom ON + flag tenant)
+        BOM->>FG: purchase_price = tổng NVL
+
+        Note over User,SO: Hàng ngày
+        User->>SO: Tạo SO → DO → Invoice
+        SO->>SO: Giá dòng = selling price
+    </div>
+
+    <h2>6. Điều kiện sync</h2>
+    <ul>
+        <li><code>PRODUCTION_BOM_DRIVES_FG_PURCHASE_PRICE=true</code> trong <code>.env</code></li>
+        <li>FG có <code>cost_from_bom = 1</code> (tick Custom)</li>
+        <li>Mọi NVL trong BOM resolve được unit cost (NVL phải có cost price)</li>
+    </ul>
+    <p>Nếu thiếu một điều kiện → không ghi đè <code>purchase_price</code>.</p>
+</body>
+
+</html>

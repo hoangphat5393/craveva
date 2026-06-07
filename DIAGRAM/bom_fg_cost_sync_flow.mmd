@@ -1,0 +1,81 @@
+%% Custom BOM → Giá vốn FG (cost_from_bom)
+%% Doc: FUNC_IMPROVE/20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md
+%% Cập nhật: 2026-05-29
+
+flowchart TB
+  subgraph WHEN["KHI NÀO dùng Custom BOM? (trước khi bán)"]
+    direction TB
+    RM["① NVL / Semi / Packaging<br/>Operations → Products<br/>Nhập Cost price &gt; 0"]
+    FG["② FG Manufactured<br/>Tick Custom (cost_from_bom)<br/>Cost price khóa — chờ BOM"]
+    BOM["③ Production → Bill Of Materials<br/>Thêm dòng NVL + qty + waste%"]
+    SAVE["④ Lưu BOM"]
+    SYNC["⑤ Sync (nếu flag tenant bật)<br/>products.purchase_price = tổng BOM"]
+    RM --> FG --> BOM --> SAVE --> SYNC
+  end
+
+  subgraph UI["GIÁ VỐN HIỆN Ở ĐÂU? (không nằm trên SO/DO/Invoice)"]
+    direction TB
+    U1["Product Create/Edit<br/>Cost price (disabled khi Custom ON)"]
+    U2["Product Overview<br/>Badge Custom + Cost price"]
+    U3["BOM Show / Edit<br/>Unit cost + Total per 1 FG"]
+    U4["Inventory / valuation<br/>Dùng purchase_price ngầm"]
+    SYNC --> U1
+    SYNC --> U2
+    SAVE --> U3
+    SYNC --> U4
+  end
+
+  subgraph SALES["FLOW BÁN HÀNG (giống SO → DO → Invoice)"]
+    direction LR
+    Q["Quotation<br/>(optional)"] --> SO["Sales Order<br/>GIÁ BÁN"]
+    SO --> DO["Sales DO<br/>Xuất kho"]
+    DO --> INV["Invoice<br/>GIÁ BÁN + công nợ"]
+  end
+
+  subgraph NOTE["Tách biệt quan trọng"]
+    direction TB
+    N1["SO / DO / Invoice:<br/>chỉ dùng selling price<br/>(pricing tier, giá catalog)"]
+    N2["Custom BOM cost:<br/>chuẩn cost nội bộ FG<br/>không in lên chứng từ bán"]
+    N3["Estimate Recipe BOM:<br/>luồng báo giá OEM riêng"]
+  end
+
+  CAT["FG trong catalog<br/>cost + selling price"] --> SO
+  SYNC --> CAT
+
+  SO -.->|không đọc BOM cost| N1
+  SYNC -.->|không đổi giá bán| N1
+
+  style WHEN fill:#e8f4fc,stroke:#1a73e8
+  style UI fill:#fef7e0,stroke:#f9ab00
+  style SALES fill:#e6f4ea,stroke:#34a853
+  style NOTE fill:#fce8e6,stroke:#ea4335
+
+---
+
+sequenceDiagram
+  autonumber
+  participant User as User / Finance
+  participant NVL as NVL Product
+  participant FG as FG Product
+  participant BOM as Production BOM
+  participant Svc as ProductionBomFgCostSyncService
+  participant SO as Sales Order
+
+  Note over User,NVL: Thiết lập (1 lần / khi đổi BOM)
+  User->>NVL: Nhập cost price
+  User->>FG: Tạo FG + tick Custom
+  User->>BOM: Tạo BOM (output = FG)
+  User->>BOM: Lưu
+  BOM->>Svc: syncOutputProductFromBom()
+  alt flag ON + Custom ON + NVL đủ cost
+    Svc->>FG: purchase_price = tổng BOM
+  else thiếu điều kiện
+    Svc-->>FG: giữ cost cũ / null
+  end
+
+  Note over User,SO: Bán hàng hàng ngày
+  User->>SO: Tạo SO (chọn FG, qty)
+  SO->>SO: Dòng = selling price
+  User->>SO: Sales DO → Ship
+  User->>SO: Invoice (AR)
+  Note right of SO: Không gọi BOM cost sync

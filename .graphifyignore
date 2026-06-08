@@ -3,12 +3,15 @@
 # =========================
 vendor/
 node_modules/
+/packages/*/vendor/
 
 # =========================
 # 🔴 Storage & cache
 # =========================
 storage/
 bootstrap/cache/
+.phpunit.cache/
+.composer-cache/
 
 # =========================
 # 🔴 Logs
@@ -28,12 +31,18 @@ bootstrap/cache/
 public/build/
 public/hot
 public/storage
+public/vendor/
+public/front/plugin/
+public/js/lang/
+public/user-uploads/
 
 # =========================
 # 🔴 Test / debug (tuỳ bạn)
 # =========================
 tests/
 *.feature
+.playwright-mcp/
+debug-*.log
 
 # =========================
 # 🔴 Database dump / backup
@@ -68,8 +77,11 @@ tests/
 # =========================
 # 🔴 IDE / system
 # =========================
+.git/
 .vscode/
 .idea/
+.cursor/
+.trae/
 .DS_Store
 
 
@@ -87,11 +99,11 @@ tests/
 
 # Local backups (e.g. hub .env); do not commit
 /backup/
+/graphify-out/
 
 composer.lock
 package-lock.json
 pnpm-lock.yaml
-/.composer-cache
 
 /lang/*
 /resources/lang/*

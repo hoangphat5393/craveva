@@ -1,0 +1,47 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - img "Logo" [ref=e3]
+    - heading "Staging Craveva" [level=3] [ref=e4]
+  - generic [ref=e8]:
+    - generic [ref=e10]:
+      - heading "Log In" [level=3] [ref=e11]
+      - generic [ref=e12] [cursor=pointer]:
+        - img "Google" [ref=e14]
+        - text: Sign in with Google
+      - paragraph [ref=e15]: or, use email address
+      - generic [ref=e16]:
+        - generic [ref=e17]: Email Address
+        - textbox "Email Address" [active] [ref=e18]
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: Password
+          - generic [ref=e22]:
+            - textbox "Password" [ref=e23]:
+              - /placeholder: Must have at least 8 characters
+            - button [ref=e25] [cursor=pointer]:
+              - img [ref=e26]: 
+        - link "Forgot Your Password?" [ref=e29] [cursor=pointer]:
+          - /url: https://craveva-staging.test/forgot-password
+        - generic [ref=e30]:
+          - checkbox "Stay Logged In" [ref=e31] [cursor=pointer]
+          - generic [ref=e32] [cursor=pointer]: Stay Logged In
+        - button "Log In" [ref=e33] [cursor=pointer]:
+          - text: Log In
+          - img [ref=e34]: 
+    - paragraph [ref=e36]:
+      - link "Go to Home" [ref=e37] [cursor=pointer]:
+        - /url: https://craveva-staging.test
+    - paragraph [ref=e38]:
+      - text: Don't have an account yet?
+      - link "Sign Up" [ref=e39] [cursor=pointer]:
+        - /url: https://craveva-staging.test/signup
+    - generic [ref=e41]:
+      - link "English" [ref=e43] [cursor=pointer]:
+        - /url: javascript:;
+      - link "Thai" [ref=e45] [cursor=pointer]:
+        - /url: javascript:;
+      - link "日本語" [ref=e47] [cursor=pointer]:
+        - /url: javascript:;
+      - link "Indonesian" [ref=e49] [cursor=pointer]:
+        - /url: javascript:;
+      - img [ref=e52] [cursor=pointer]: 

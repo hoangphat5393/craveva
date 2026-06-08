@@ -1,0 +1,528 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - heading "Dashboard Home • Dashboard" [level=2] [ref=e6]:
+      - generic [ref=e7]: Dashboard
+      - generic [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/dashboard
+        - text: • Dashboard
+    - generic [ref=e10]:
+      - generic [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: 
+        - text: English
+      - list [ref=e14]:
+        - listitem "Search" [ref=e15]:
+          - link "" [ref=e17] [cursor=pointer]:
+            - /url: javascript:;
+            - generic [ref=e18]: 
+        - listitem "Sticky Notes" [ref=e19]:
+          - link "" [ref=e21] [cursor=pointer]:
+            - /url: https://craveva-staging.test/account/sticky-notes
+            - generic [ref=e22]: 
+        - listitem "Start Timer" [ref=e23]:
+          - generic [ref=e24]:
+            - generic [ref=e26] [cursor=pointer]: 
+            - text: 
+        - listitem "Create New" [ref=e27]:
+          - generic [ref=e28]:
+            - generic [ref=e30] [cursor=pointer]: 
+            - text:      
+        - listitem "New Notifications" [ref=e31]:
+          - generic [ref=e33] [cursor=pointer]:
+            - generic [ref=e34]: 
+            - generic [ref=e35]: "4"
+        - listitem "Logout" [ref=e36]:
+          - link "" [ref=e38] [cursor=pointer]:
+            - /url: javascript:;
+            - generic [ref=e39]: 
+  - complementary:
+    - generic [ref=e40]:
+      - generic [ref=e41] [cursor=pointer]:
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - heading "Demo Company " [level=1] [ref=e44]:
+              - text: Demo Company
+              - generic [ref=e45]: 
+            - paragraph [ref=e48]: Admin
+          - img [ref=e50]
+        - text:    
+      - list [ref=e52]:
+        - listitem [ref=e53]:
+          - link "Craveva AI " [ref=e54] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e55]: 
+            - text: Craveva AI 
+          - generic:
+            - link "Workspace":
+              - /url: https://craveva-staging.test/account/ai-workspace
+            - link "Assistant":
+              - /url: javascript:void(0);
+        - listitem [ref=e57]:
+          - link "Home " [ref=e58] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e59]: 
+            - text: Home 
+          - generic [ref=e62]:
+            - link "Private Dashboard" [ref=e63] [cursor=pointer]:
+              - /url: https://craveva-staging.test/account/dashboard
+            - link "Advanced Dashboard" [ref=e64] [cursor=pointer]:
+              - /url: https://craveva-staging.test/account/dashboard-advanced
+        - listitem [ref=e65]:
+          - link "Work Management " [ref=e66] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e67]: 
+            - text: Work Management 
+          - generic:
+            - link "Contracts":
+              - /url: https://craveva-staging.test/account/contracts
+            - link "Projects":
+              - /url: https://craveva-staging.test/account/projects
+            - link "Tasks":
+              - /url: https://craveva-staging.test/account/tasks
+            - link "Timesheet":
+              - /url: https://craveva-staging.test/account/timelogs
+            - link "My Calendar":
+              - /url: https://craveva-staging.test/account/my-calendar
+            - link "Events":
+              - /url: https://craveva-staging.test/account/events
+            - link "Messages":
+              - /url: https://craveva-staging.test/account/messages
+            - link "Project Roadmap":
+              - /url: https://craveva-staging.test/account/projectroadmap
+        - listitem [ref=e69]:
+          - link "Purchasing " [ref=e70] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e71]: 
+            - text: Purchasing 
+          - generic:
+            - link "Vendor":
+              - /url: https://craveva-staging.test/account/vendors
+            - link "Purchase Order":
+              - /url: https://craveva-staging.test/account/purchase-order
+            - link "Goods Received Note":
+              - /url: https://craveva-staging.test/account/grn
+            - link "Bills":
+              - /url: https://craveva-staging.test/account/bills
+            - link "Vendor Payments":
+              - /url: https://craveva-staging.test/account/vendor-payments
+            - link "Vendor Credits":
+              - /url: https://craveva-staging.test/account/vendor-credits
+        - listitem [ref=e73]:
+          - link "Sales " [ref=e74] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e75]: 
+            - text: Sales 
+          - generic:
+            - link "Sales Orders":
+              - /url: https://craveva-staging.test/account/orders
+            - link "Sales Delivery Order":
+              - /url: https://craveva-staging.test/account/sales-do
+            - link "Sales History":
+              - /url: https://craveva-staging.test/account/sales-history
+        - listitem [ref=e77]:
+          - link "Inventory " [ref=e78] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e79]: 
+            - text: Inventory 
+          - generic:
+            - link "Products":
+              - /url: https://craveva-staging.test/account/purchase-products
+            - link "Opening Stock":
+              - /url: https://craveva-staging.test/account/purchase-inventory
+            - link "Warehouses":
+              - /url: https://craveva-staging.test/account/warehouse
+            - link "Stock Overview":
+              - /url: https://craveva-staging.test/account/warehouse-stock
+            - link "Stock Movements":
+              - /url: https://craveva-staging.test/account/warehouse-movements
+        - listitem [ref=e81]:
+          - link "Production " [ref=e82] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e83]: 
+            - text: Production 
+          - generic:
+            - link "Production Orders":
+              - /url: https://craveva-staging.test/account/production/orders
+            - link "Bill Of Materials":
+              - /url: https://craveva-staging.test/account/production/boms
+        - listitem [ref=e86]:
+          - link "Customer " [ref=e87] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e88]
+            - text: Customer 
+          - generic:
+            - link "Lead Contact":
+              - /url: https://craveva-staging.test/account/lead-contact
+            - link "Deals":
+              - /url: https://craveva-staging.test/account/deals
+            - link "Clients":
+              - /url: https://craveva-staging.test/account/clients
+            - link "Proposal":
+              - /url: https://craveva-staging.test/account/proposals
+            - link "Quotation":
+              - /url: https://craveva-staging.test/account/estimates
+        - listitem [ref=e91]:
+          - link "Pricing " [ref=e92] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e93]: 
+            - text: Pricing 
+          - generic:
+            - link "Client Tier Assignment":
+              - /url: https://craveva-staging.test/account/pricing/client-tiers
+            - link "Pricing Tier Rules":
+              - /url: https://craveva-staging.test/account/pricing/tiers
+            - link "Volume Discount Rules":
+              - /url: https://craveva-staging.test/account/pricing/volume-rules
+            - link "Contract Pricing":
+              - /url: https://craveva-staging.test/account/pricing/client-pricing
+        - listitem [ref=e96]:
+          - link "Finance " [ref=e97] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e98]: 
+            - text: Finance 
+          - generic:
+            - link "Invoices":
+              - /url: https://craveva-staging.test/account/invoices
+            - link "Payments":
+              - /url: https://craveva-staging.test/account/payments
+            - link "Credit Note":
+              - /url: https://craveva-staging.test/account/creditnotes
+            - link "Expenses":
+              - /url: https://craveva-staging.test/account/expenses
+            - link "Bank Account":
+              - /url: https://craveva-staging.test/account/bankaccounts
+            - link "E-Invoice":
+              - /url: https://craveva-staging.test/account/einvoice
+        - listitem [ref=e100]:
+          - link "Human Resources " [ref=e101] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e102]: 
+            - text: Human Resources 
+          - generic:
+            - link "Employees":
+              - /url: https://craveva-staging.test/account/employees
+            - link "Leaves":
+              - /url: https://craveva-staging.test/account/leaves
+            - link "Shift Roster":
+              - /url: https://craveva-staging.test/account/shifts
+            - link "Attendance":
+              - /url: https://craveva-staging.test/account/attendances
+            - link "Holiday":
+              - /url: https://craveva-staging.test/account/holidays
+            - link "Designation":
+              - /url: https://craveva-staging.test/account/designations
+            - link "Department":
+              - /url: https://craveva-staging.test/account/departments
+            - link "Appreciation":
+              - /url: https://craveva-staging.test/account/appreciations
+        - listitem [ref=e104]:
+          - link "Payroll " [ref=e105] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e106]: 
+            - text: Payroll 
+          - generic:
+            - link "Payroll":
+              - /url: https://craveva-staging.test/account/payroll
+            - link "Employee Salary":
+              - /url: https://craveva-staging.test/account/employee-salary
+            - link "Payroll Expenses":
+              - /url: https://craveva-staging.test/account/payroll-expenses
+            - link "Overtime Request":
+              - /url: https://craveva-staging.test/account/overtime-requests
+            - link "Reports":
+              - /url: https://craveva-staging.test/account/payroll-reports
+        - listitem [ref=e108]:
+          - link "Reports " [ref=e109] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e110]: 
+            - text: Reports 
+          - generic:
+            - link "Task Report":
+              - /url: https://craveva-staging.test/account/task-report
+            - link "Time Log Report":
+              - /url: https://craveva-staging.test/account/time-log-report
+            - link "Weekly Timesheet":
+              - /url: https://craveva-staging.test/account/time-log-weekly-report
+            - link "Finance Report":
+              - /url: https://craveva-staging.test/account/finance-report
+            - link "Income Vs Expense":
+              - /url: https://craveva-staging.test/account/income-expense-report
+            - link "Leave Report":
+              - /url: https://craveva-staging.test/account/leave-report/leave-quota
+            - link "Attendance Report":
+              - /url: https://craveva-staging.test/account/attendance-report
+            - link "Expense Report":
+              - /url: https://craveva-staging.test/account/expense-report
+            - link "Deal Report":
+              - /url: https://craveva-staging.test/account/lead-report
+            - link "Sales Report":
+              - /url: https://craveva-staging.test/account/sales-report
+            - link "Audit Report":
+              - /url: https://craveva-staging.test/account/audit-report
+        - listitem [ref=e112]:
+          - link "Letters Templates " [ref=e113] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e114]:
+              - text: 
+              - img [ref=e115]
+            - text: Letters Templates 
+          - generic:
+            - link "Generate":
+              - /url: https://craveva-staging.test/account/letter/generate
+            - link "Template":
+              - /url: https://craveva-staging.test/account/letter/template
+        - listitem [ref=e117]:
+          - link "Recruit " [ref=e118] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e119]: 
+            - text: Recruit 
+          - generic:
+            - link "Dashboard":
+              - /url: https://craveva-staging.test/account/recruit-dashboard
+            - link "Jobs":
+              - /url: https://craveva-staging.test/account/jobs
+            - link "Job Applications":
+              - /url: https://craveva-staging.test/account/job-applications
+            - link "Interview Schedule":
+              - /url: https://craveva-staging.test/account/interview-schedule
+            - link "Offer Letters":
+              - /url: https://craveva-staging.test/account/job-offer-letter
+            - link "Skills":
+              - /url: https://craveva-staging.test/account/job-skills
+            - link "Candidate Database":
+              - /url: https://craveva-staging.test/account/candidate-database
+            - link "Reports":
+              - /url: https://craveva-staging.test/account/recruit-job-report
+            - link "Career Site":
+              - /url: https://craveva-staging.test/careers/4f3d147bf518e576ad876e500ba912fc
+        - listitem [ref=e122]:
+          - link "Notice Board" [ref=e123] [cursor=pointer]:
+            - /url: https://craveva-staging.test/account/notices
+            - img [ref=e124]: 
+            - text: Notice Board
+        - listitem [ref=e127]:
+          - link "Admin & It " [ref=e128] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e129]: 
+            - text: Admin & It 
+          - generic:
+            - link "Webhooks":
+              - /url: https://craveva-staging.test/account/webhooks
+            - link "Log":
+              - /url: https://craveva-staging.test/account/webhooks-log
+            - link "Zoom Meeting":
+              - /url: https://craveva-staging.test/account/zoom-meetings
+            - link "Biometric":
+              - /url: https://craveva-staging.test/account/biometric-devices
+            - link "Assets":
+              - /url: https://craveva-staging.test/account/assets
+            - link "Policy Center":
+              - /url: https://craveva-staging.test/account/policy
+            - link "Qr Code":
+              - /url: https://craveva-staging.test/account/qrcode
+            - link "Biolinks":
+              - /url: https://craveva-staging.test/account/biolinks
+        - listitem [ref=e132]:
+          - link "Help & Support " [ref=e133] [cursor=pointer]:
+            - /url: javascript:;
+            - img [ref=e134]: 
+            - text: Help & Support 
+          - generic:
+            - link "Knowledge Base":
+              - /url: https://craveva-staging.test/account/knowledgebase
+            - link "Tickets":
+              - /url: https://craveva-staging.test/account/tickets
+            - link "Help":
+              - /url: https://craveva-staging.test/account/faqs
+      - generic [ref=e137]:
+        - button "" [ref=e138] [cursor=pointer]
+        - generic [ref=e139]:
+          - paragraph [ref=e140]:
+            - link "" [ref=e141] [cursor=pointer]:
+              - /url: https://craveva-staging.test/account/company-settings
+              - generic [ref=e142]: 
+          - paragraph [ref=e143]:
+            - link "" [ref=e144] [cursor=pointer]:
+              - /url: https://craveva-staging.test/account/faqs
+              - generic [ref=e145]: 
+  - generic [ref=e147]:
+    - status [ref=e149]
+    - generic [ref=e150]:
+      - generic [ref=e151]:
+        - text: 
+        - link "Overview" [ref=e152] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/dashboard-advanced?tab=overview
+          - generic [ref=e153]: Overview
+        - link "Project" [ref=e154] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/dashboard-advanced?tab=project
+          - generic [ref=e155]: Project
+        - link "Client" [ref=e156] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/dashboard-advanced?tab=client
+          - generic [ref=e157]: Client
+        - link "HR" [ref=e158] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/dashboard-advanced?tab=hr
+          - generic [ref=e159]: HR
+        - link "Ticket" [ref=e160] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/dashboard-advanced?tab=ticket
+          - generic [ref=e161]: Ticket
+        - link "Finance" [ref=e162] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/dashboard-advanced?tab=finance
+          - generic [ref=e163]: Finance
+      - generic [ref=e164]:
+        - text: 
+        - generic [ref=e167]:
+          - generic [ref=e169] [cursor=pointer]: 
+          - text: 
+      - text: 
+    - generic [ref=e170]:
+      - generic [ref=e171]:
+        - link "Total Clients 1 " [ref=e173] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/clients
+          - generic [ref=e174]:
+            - generic [ref=e175]:
+              - heading "Total Clients" [level=5] [ref=e176]
+              - paragraph [ref=e178]:
+                - generic [ref=e179]: "1"
+            - generic [ref=e181]: 
+        - link "Total Employees 1 " [ref=e183] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/employees
+          - generic [ref=e184]:
+            - generic [ref=e185]:
+              - heading "Total Employees" [level=5] [ref=e186]
+              - paragraph [ref=e188]:
+                - generic [ref=e189]: "1"
+            - generic [ref=e191]: 
+        - link "Total Projects 0 " [ref=e193] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/projects?projects=all
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - heading "Total Projects" [level=5] [ref=e196]
+              - paragraph [ref=e198]:
+                - generic [ref=e199]: "0"
+            - generic [ref=e201]: 
+        - link "Due Invoices 1 " [ref=e203] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/invoices?status=pending
+          - generic [ref=e204]:
+            - generic [ref=e205]:
+              - heading "Due Invoices" [level=5] [ref=e206]
+              - paragraph [ref=e208]:
+                - generic [ref=e209]: "1"
+            - generic [ref=e211]: 
+        - link "Hours Logged 0 Hrs " [ref=e213] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/timelogs
+          - generic [ref=e214]:
+            - generic [ref=e215]:
+              - heading "Hours Logged" [level=5] [ref=e216]
+              - paragraph [ref=e218]:
+                - generic [ref=e219]: 0 Hrs
+            - generic [ref=e221]: 
+        - link "Pending Tasks  0 " [ref=e223] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/tasks?status=pending_task&type=public
+          - generic [ref=e224]:
+            - generic [ref=e225]:
+              - heading "Pending Tasks " [level=5] [ref=e226]:
+                - text: Pending Tasks
+                - generic [ref=e227]: 
+              - paragraph [ref=e229]:
+                - generic [ref=e230]: "0"
+            - generic [ref=e232]: 
+        - link "Today Attendance 0/1 " [ref=e234] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/attendances
+          - generic [ref=e235]:
+            - generic [ref=e236]:
+              - heading "Today Attendance" [level=5] [ref=e237]
+              - paragraph [ref=e239]:
+                - generic [ref=e240]: 0/1
+            - generic [ref=e242]: 
+        - link "Unresolved Tickets 0 " [ref=e244] [cursor=pointer]:
+          - /url: https://craveva-staging.test/account/tickets?status=open
+          - generic [ref=e245]:
+            - generic [ref=e246]:
+              - heading "Unresolved Tickets" [level=5] [ref=e247]
+              - paragraph [ref=e249]:
+                - generic [ref=e250]: "0"
+            - generic [ref=e252]: 
+      - generic [ref=e253]:
+        - generic [ref=e255]:
+          - heading "Income " [level=4] [ref=e257]:
+            - text: Income
+            - generic [ref=e258]: 
+          - generic [ref=e260]:
+            - generic [ref=e261]: 
+            - generic [ref=e262]: "- Not enough data -"
+        - generic [ref=e264]:
+          - heading "Timesheet " [level=4] [ref=e266]:
+            - text: Timesheet
+            - generic [ref=e267]: 
+          - generic [ref=e269]:
+            - generic [ref=e270]: 
+            - generic [ref=e271]: "- Not enough data -"
+        - generic [ref=e273]:
+          - heading "Pending Leaves " [level=4] [ref=e275]:
+            - text: Pending Leaves
+            - generic [ref=e276]: 
+          - table [ref=e278]:
+            - rowgroup [ref=e279]:
+              - row " - No record found. -" [ref=e280]:
+                - cell " - No record found. -" [ref=e281]:
+                  - generic [ref=e282]:
+                    - generic [ref=e283]: 
+                    - generic [ref=e284]: "- No record found. -"
+        - generic [ref=e286]:
+          - heading "Open Tickets " [level=4] [ref=e288]:
+            - text: Open Tickets
+            - generic [ref=e289]: 
+          - table [ref=e291]:
+            - rowgroup [ref=e292]:
+              - row " - No record found. -" [ref=e293]:
+                - cell " - No record found. -" [ref=e294]:
+                  - generic [ref=e295]:
+                    - generic [ref=e296]: 
+                    - generic [ref=e297]: "- No record found. -"
+        - generic [ref=e299]:
+          - heading "Pending Tasks " [level=4] [ref=e301]:
+            - text: Pending Tasks
+            - generic [ref=e302]: 
+          - table [ref=e304]:
+            - rowgroup [ref=e305]:
+              - row " - No record found. -" [ref=e306]:
+                - cell " - No record found. -" [ref=e307]:
+                  - generic [ref=e308]:
+                    - generic [ref=e309]: 
+                    - generic [ref=e310]: "- No record found. -"
+        - generic [ref=e312]:
+          - heading "Pending FollowUp " [level=4] [ref=e314]:
+            - text: Pending FollowUp
+            - generic [ref=e315]: 
+          - table [ref=e317]:
+            - rowgroup [ref=e318]:
+              - row " - No record found. -" [ref=e319]:
+                - cell " - No record found. -" [ref=e320]:
+                  - generic [ref=e321]:
+                    - generic [ref=e322]: 
+                    - generic [ref=e323]: "- No record found. -"
+        - generic [ref=e325]:
+          - heading "Documents " [level=4] [ref=e327]:
+            - text: Documents
+            - generic [ref=e328]: 
+          - generic [ref=e331]:
+            - generic [ref=e332]: 
+            - paragraph [ref=e333]: Nodocumentexpiries
+        - generic [ref=e335]:
+          - heading "Project Activity Timeline " [level=4] [ref=e337]:
+            - text: Project Activity Timeline
+            - generic [ref=e338]: 
+          - generic [ref=e341]:
+            - generic [ref=e342]: 
+            - generic [ref=e343]: "- No record found. -"
+        - generic [ref=e345]:
+          - heading "User Activity Timeline " [level=4] [ref=e347]:
+            - text: User Activity Timeline
+            - generic [ref=e348]: 
+          - generic [ref=e351]:
+            - generic [ref=e352]: 
+            - generic [ref=e353]: "- No record found. -"
+  - generic [ref=e354]:
+    - text: 
+    - generic [ref=e355]:
+      - heading [level=3]

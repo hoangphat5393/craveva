@@ -92,7 +92,7 @@ AND view_production_orders != none
 1. **Module Settings** (admin): bật `production` chỉ tenant gia công; **không** bật trên tenant B2B thuần.
 2. **Duyệt báo giá gia công:** chỉ tenant OEM (Biomixing).
 3. Xác nhận tenant B2B: mở SO → **không** có «Tạo lệnh sản xuất»; ship DO **không** bị message production.
-4. Tenant gia công: SO → lệnh SX → lô 5 bước; thiếu tồn → PO (nếu có Purchase).
+4. Tenant gia công: SO → lệnh SX → batch 4 bước hiện tại; thiếu tồn → PO (nếu có Purchase).
 5. Chạy `php artisan migrate` + `.\scripts\test.ps1` (hoặc filter Production + phase1).
 
 ---

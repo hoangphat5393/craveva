@@ -264,11 +264,11 @@ Thêm SP với **Opening stock** trên form Purchase ≠ tự có trên kho cho 
 | ---------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
 | 2026-05-27 | Ghi **reserve tại Release**, gán lô không reserve, cancel release reservation (đồng bộ plan đã retire) | `PRODUCTION_OPERATIONS_LIVE_VI.md`, `LEGACY_ARCHIVE.md` |
 | 2026-05-25 | Pilot warehouse: `.env` inbound PO-only; kho UAT **LOCK-UAT** / **SCRAP-UAT**; WUP-01/04 Pass mini-UAT | `P0_MINI_UAT_CHECKLIST`, `04_WH_RUNBOOK` §2.1.1         |
-| 2026-05-24 | **Tạo LIVE DOC** — E2E, Phase 1, batch 5 bước, P1c, variance UI states                                 | File này                                                |
+| 2026-05-24 | **Tạo LIVE DOC** — E2E, Phase 1, batch 4 bước hiện tại, P1c, variance UI states                        | File này                                                |
 | 2026-05-24 | UX-008: cột approval hiển thị «Không yêu cầu» thay vì «Chờ» khi không cần approve                      | `ProductionFgQuantityPolicyService`, batch show         |
 | 2026-05-23 | P1c: Post FG → Purchase Inventory ledger + backfill                                                    | `16_*`                                                  |
 | 2026-05-20 | Post RM UOM `convertToBase`                                                                            | `15_*`                                                  |
-| 2026-05-20 | P0-3…P1-4 Production UX (tổng NL, SO→lệnh, checklist 5 bước)                                           | GAP_STATUS                                              |
+| 2026-05-20 | P0-3…P1-4 Production UX (tổng NL, SO→lệnh; planned-lines step cũ nay tự sinh, checklist hiện tại 4 bước) | GAP_STATUS                                              |
 
 ---
 

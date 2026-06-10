@@ -13,7 +13,7 @@
 | 1        | Trạng thái code vs PM                                        | [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md)                                                                                   |
 | 2        | Test & UAT một cửa                                           | [`BIOMIXING_UAT_AND_TEST_GUIDE_VI.md`](./BIOMIXING_UAT_AND_TEST_GUIDE_VI.md)                                                                   |
 | 3        | Production vận hành                                          | [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)                                             |
-| 4        | Phase 1 PM                                                   | [`PHASE1_PM_STATUS_LIVE_VI.md`](./PHASE1_PM_STATUS_LIVE_VI.md)                                                                                 |
+| 4        | Phase 1 PM                                                   | [`BIOMIXING_GAP_STATUS_VI.md`](./BIOMIXING_GAP_STATUS_VI.md) § Phase 1                                                                         |
 | 5        | Playbook / demo                                              | [`BIOMIXING_PLAYBOOK_P0P1_VI.md`](./BIOMIXING_PLAYBOOK_P0P1_VI.md), [`BIOMIXING_FULL_DEMO_RUNBOOK_VI.md`](./BIOMIXING_FULL_DEMO_RUNBOOK_VI.md) |
 | 6        | P0 hàng đợi                                                  | [`P0_BIOMIXING_NEXT_STEPS_VI.md`](./P0_BIOMIXING_NEXT_STEPS_VI.md)                                                                             |
 | 7        | PM / diagram                                                 | [`../PROJECT BIOMIXING/README.md`](../PROJECT%20BIOMIXING/README.md)                                                                           |
@@ -30,7 +30,7 @@
 | Trace P↔W                         | [`P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md`](./P0_05_TRACE_BIDIRECTIONAL_UAT_CHECKLIST.md)                                                                                                           |
 | Khái niệm RM/FG/BOM               | [`BIOMIXING_FLOW_CONCEPTS_VI.md`](./BIOMIXING_FLOW_CONCEPTS_VI.md)                                                                                                                                     |
 | BOM → FG cost (kế hoạch)          | [`20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md`](./20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md)                                                                                                     |
-| Form Product pricing (hiện trạng) | [`21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md`](./21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md)                                                                                                         |
+| Form Product pricing / cost from BOM | [`20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md`](./20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md)                                                                                                  |
 
 ---
 

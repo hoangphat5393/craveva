@@ -32,7 +32,7 @@ Navigation index for improvement plans, refactor proposals, and optimization tas
 
 ## Phase PM
 
-- Phase 1: [`PHASE1_PM_STATUS_LIVE_VI.md`](PHASE1_PM_STATUS_LIVE_VI.md), [`PHASE1_QUOTATION_PM_HUMAN_VI.md`](PHASE1_QUOTATION_PM_HUMAN_VI.md)
+- Phase 1: [`BIOMIXING_GAP_STATUS_VI.md`](BIOMIXING_GAP_STATUS_VI.md) § Phase 1, [`PHASE1_QUOTATION_PM_HUMAN_VI.md`](PHASE1_QUOTATION_PM_HUMAN_VI.md)
 - Phase 2: `PRODUCTION_OPERATIONS_LIVE_VI.md` + `PROJECT BIOMIXING/UI_RUNBOOK_PHASE2_*`
 
 ## Improvement backlog (active)

@@ -6,6 +6,8 @@
 
 **Rehearsal note (2026 Hub):** When demoing **Delivery Order → Ship**, align with live behaviour: **confirm** reserves stock; **ship** consumes by **warehouse + product line + batch + expiry** where applicable. See `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md` and `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`.
 
+**Documentation sync note (2026-06):** This file is a stakeholder storytelling script for ERP + AI. The live Biomixing system flow starts at **Estimate / Quotation**, converts to **Sales Order** after approval, then uses the **Production** module for BOM/order/batch. Use `FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` and `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` as the operational source of truth.
+
 ---
 
 ## **Phase 1: Order Intake & Recipe Approval**
@@ -86,8 +88,8 @@
 
 - **Platform: ERP System (hub.craveva.com)**
     - **Module:** Projects
-    - **Action:** Move Project Status to **In Progress**.
-    - **Action:** Mark tasks as **Completed** (Ingredient Weighing, Mixing/Processing, Packaging).
+    - **Action:** Storytelling overlay: move Project Status to **In Progress** and mark tasks as **Completed** (Ingredient Weighing, Mixing/Processing, Packaging).
+    - **Operational Hub flow:** create/release Production Order, open batch, assign RM batch, post RM, add/post FG.
 
 ### **Step 2: Output & Quality Check**
 

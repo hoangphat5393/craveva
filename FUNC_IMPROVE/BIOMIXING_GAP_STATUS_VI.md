@@ -25,6 +25,30 @@
 
 **Phạm vi:** Module Estimate hiện có + cờ tenant `estimates_phase1_review`.
 
+### Tóm tắt PM / vận hành
+
+Với tenant gia công như Biomixing, Sales làm báo giá trên Estimate, nhập dòng bán + công thức/BOM báo giá, gửi duyệt nội bộ, rồi chỉ convert Sales Order khi đủ điều kiện.
+
+```text
+Estimate / Quotation
+  -> BOM báo giá + dòng bán
+  -> President approve
+  -> VP Pricing approve
+  -> Convert Sales Order
+  -> Production sau SO
+```
+
+| Phần việc | Mức độ hiện tại | Ghi chú |
+| --------- | --------------- | ------- |
+| Báo giá thường (tạo, gửi, SO) | ~95% | Đủ cho tenant chỉ bán hàng |
+| Duyệt President + VP Pricing | ~85% | Có submit/reject/approve, chặn SO, notification, quyền riêng |
+| Công thức / nguyên liệu trên báo giá | ~85% | BOM lines, copy Production BOM, similar recipe, margin |
+| Workspace 4 vùng | ~75% | Detail page đã có workspace OEM; list/badge còn polish |
+
+**Không làm trong Phase 1:** AI tự duyệt công thức, đổi tên menu Quotation toàn hệ thống, hoặc bỏ qua SO để sang Production.
+
+**Cấu hình nhanh:** bật module setting `estimates_phase1_review` cho tenant gia công; cấu hình margin tại Finance / Invoice settings; gán quyền President / VP trong Roles & Permissions.
+
 ### Đã xong (~95% — đủ đóng phase)
 
 | Hạng mục                              | Ghi chú                                        |
@@ -77,7 +101,7 @@
 
 | ID   | Hạng mục                                                                   |
 | ---- | -------------------------------------------------------------------------- |
-| P0-4 | Checklist 5 bước hoàn thành lô (sinh NL → gán lô → trừ NL → TP → nhập kho) |
+| P0-4 | Checklist lô hiện tại **4 bước** vì planned RM tự sinh từ BOM snapshot khi Release / mở batch |
 | P0-5 | Nhãn VI mới (workflow, hao hụt, gợi ý mua)                                 |
 | P1-2 | Link **Tạo đơn đặt hàng** khi thiếu tồn (module Purchase)                  |
 | P1-3 | Cột **% hao hụt** trên BOM + vào công thức tổng NL                         |

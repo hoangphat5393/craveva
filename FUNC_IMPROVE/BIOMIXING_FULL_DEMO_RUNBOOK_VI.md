@@ -59,7 +59,7 @@ Chi tiết policy FG (controlled / variance): **`/account/production/fg-quantity
 2. **`/account/production/orders/create`** — tạo **Production Order**: chọn BOM, FG, **kho RM / kho FG**, `planned_quantity` > 0, tạo **ít nhất một batch** (mã lô).
 3. **Release order** (`production.orders.release`) — có **snapshot BOM** + qty TP đông băng.
 4. Mở **batch** (`production.batches.show`):
-    - **Create planned RM lines from BOM snapshot** (chia đều theo số batch nếu nhiều lô — xem playbook §1.3).
+    - Planned RM lines được **tự sinh từ BOM snapshot** khi Release / mở batch theo config hiện tại; nút sinh tay là legacy và chỉ hiện nếu bật lại config Step 1.
     - **Gán lô RM** từng dòng (**Assign batch**).
     - **Post consumptions** (trừ tồn RM).
     - **Thêm FG output** và (nếu bật) **Approve variance** rồi **Post FG receipt** (nhập TP + lô FG).

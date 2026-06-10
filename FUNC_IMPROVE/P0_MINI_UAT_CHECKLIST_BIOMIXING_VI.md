@@ -65,7 +65,7 @@ Hướng dẫn: đánh dấu **Pass / Fail / N/A**; ghi **ISS-xxx** nếu lỗi;
 
 | Bước | Mô tả ngắn                                   | Kết quả        | Ghi chú                                                                                                                                                                                                                  |
 | ---- | -------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| D1   | Lệnh SX + lô; planned RM có ĐVT khác base SP | Pass (dữ liệu) | Nhiều lệnh completed/in_progress; checklist 5 bước trên batch — `/account/production/orders`                                                                                                                             |
+| D1   | Lệnh SX + lô; planned RM có ĐVT khác base SP | Pass (dữ liệu) | Nhiều lệnh completed/in_progress; batch checklist hiện tại 4 bước (planned RM tự sinh) — `/account/production/orders`                                                                                                      |
 | D2   | Post RM; đối chiếu Inventory (đơn vị gốc)    | Pass           | **Batch #14** (đã post): **Test RM** planned **200 g** → movement trừ **0,2** (kg base), không 200. **Hôm nay:** batch **#5** — «Deduct raw materials» live. Inventory: `/account/purchase-inventory` search **Test RM** |
 | D3   | Tổng NL trên lệnh SX khớp số trừ thực tế     | Pass           | Lệnh **#32** / batch **#14**: Test RM 200g→**0,2**; Test RM 2 **4**→**4**; TEST RM 3 **8 pack**→**0,8** (factor 0,1) — khớp `stock_movements` ref batch 14                                                               |
 
@@ -79,7 +79,7 @@ Hướng dẫn: đánh dấu **Pass / Fail / N/A**; ghi **ISS-xxx** nếu lỗi;
 
 | Bước | Mô tả ngắn                                          | Kết quả | Ghi chú                                                                                                                                               |
 | ---- | --------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| E1   | Post FG trên batch (đúng kho FG, mã lô bắt buộc)    | Pass    | Browser: `/account/production/batches/14` — 5 bước ✓; RM deducted **15:43:03**, FG posted **15:43:50**; lô **BATCH-0004** qty **2** @ kho **39** (DB) |
+| E1   | Post FG trên batch (đúng kho FG, mã lô bắt buộc)    | Pass    | Browser: `/account/production/batches/14` — batch hoàn tất theo checklist hiện tại 4 bước; RM deducted **15:43:03**, FG posted **15:43:50**; lô **BATCH-0004** qty **2** @ kho **39** (DB) |
 | E2   | Mở Inventory — lọc SP + kho                         | Pass    | Browser: `/account/purchase-inventory` search **Bánh kem** → **SP-FG-000011**, Available/Ending **12** @ **DEFAULT WAREHOUSE (DFWH)**                 |
 | E3   | (Tuỳ chọn) So sánh với Products `withSum inventory` | Partial | Browser Products: cột **Total net qty** hiển thị `--`; DB `SUM(net_quantity)=12` khớp Inventory — ghi nhận lệch hiển thị list vs ledger               |
 

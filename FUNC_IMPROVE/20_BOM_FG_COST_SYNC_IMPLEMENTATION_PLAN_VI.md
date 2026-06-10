@@ -14,8 +14,6 @@
 | [`BIOMIXING_FLOW_CONCEPTS_VI.md`](./BIOMIXING_FLOW_CONCEPTS_VI.md)                                 | Khái niệm BOM / RM / FG                                |
 | [`BIOMIXING_MULTITENANT_RISKS_VI.md`](./BIOMIXING_MULTITENANT_RISKS_VI.md)                         | B2B vs Production tenant                               |
 | [`../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md) | Vận hành PO / posting                                  |
-| [`21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md`](./21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md)     | Hiện trạng **trước P1** (sẽ lỗi thời sau khi drop cột) |
-| [`22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md`](./22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md)   | Ẩn field theo Product Type (đã phần lớn làm)           |
 
 ---
 
@@ -98,6 +96,45 @@
 | Raw material / Semi / Packaging | Không               | Luôn hiện, **bắt buộc** nhập (> 0)                                   |
 | **Manufactured (`goods`)**      | Có                  | Custom **OFF** → nhập tay; **ON** → **disabled**, hiện số (sync BOM) |
 | Service                         | Không               | **Ẩn** (không cost)                                                  |
+
+### 4.1.1 Product type pricing matrix sau P1
+
+Nội dung này được giữ lại từ baseline cũ `21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md` trước khi retire file đó.
+
+| Product type UI          | `products.type`   | Selling price | Cost price | UOM phụ | Ghi chú |
+| ------------------------ | ----------------- | ------------- | ---------- | ------- | ------- |
+| Manufactured product     | `goods`           | Có            | Có         | Không   | Thành phẩm / output BOM; có thể bật **Custom** để cost lấy từ BOM. |
+| Raw Material             | `raw_material`    | Không         | Có         | Có      | Nguyên liệu; cost-only, dùng cho BOM / PO. |
+| Semi Finished            | `semi_finished`   | Không         | Có         | Có      | Bán thành phẩm; cost-only như nguyên liệu. |
+| Packaging                | `packaging`       | Không         | Có         | Không   | Bao bì dùng trong BOM. |
+| Service                  | `service`         | Có            | Không      | Không   | Không tồn kho, không dùng Production BOM. |
+
+Quyết định bảo tồn:
+
+- `purchase_information` là legacy flag chỉ điều khiển show/hide cost trên form; không dùng cho PO / Bill / GRN / SO / Invoice.
+- P1 đã thay legacy flag bằng rule theo `ProductType` + `cost_from_bom` cho Manufactured product.
+- Không default `purchase_price = 0` toàn bảng; null vẫn có nghĩa là chưa có cost hợp lệ.
+
+### 4.1.2 Product form visibility sau P1
+
+Nội dung này được giữ lại từ `22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md` trước khi retire file đó.
+
+| Field / section | Raw Material | Semi Finished | Packaging | Manufactured (`goods`) | Service |
+| --------------- | ------------ | ------------- | --------- | ---------------------- | ------- |
+| Selling price | Ẩn | Ẩn | Ẩn | Hiện | Hiện |
+| Cost price | Hiện, bắt buộc | Hiện, bắt buộc | Hiện, bắt buộc | Hiện; disabled khi Custom ON | Ẩn |
+| Cost from BOM / Custom | Không | Không | Không | Có | Không |
+| Wholesale / box / employee price | Ẩn | Ẩn | Ẩn | Giữ hoặc collapse cho B2B | Ẩn |
+| UOM phụ | Hiện | Hiện | Ẩn | Ẩn | Ẩn |
+| Inventory fields | Giữ nếu track inventory | Giữ nếu track inventory | Giữ nếu track inventory | Giữ | Ẩn |
+| Images / advanced metadata | Có thể ẩn hoặc collapse | Có thể ẩn hoặc collapse | Có thể ẩn hoặc collapse | Có thể collapse | Ẩn mặc định |
+
+Quyết định UX đã chốt:
+
+- Raw Material / Semi Finished / Packaging là cost-only trên catalog.
+- Service là sell-only, không tồn kho và không cost.
+- Manufactured product giữ selling price cho B2B; cost có thể nhập tay hoặc khóa theo BOM khi Custom ON.
+- Các field ít dùng nên collapse / ẩn theo type thay vì để form Product thành một form quá dài cho mọi loại.
 
 ### 4.2 Luồng end-to-end
 

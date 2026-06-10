@@ -2,8 +2,8 @@
 
 _Tóm tắt ngắn. **Bản yêu cầu gộp đầy đủ (Gary + Phase 1 chat, tiếng Việt có dấu, không AI):** [`PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`](../PROJECT%20BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md)._
 
-**Tiến độ live (đánh dấu ✅/🟡/⬜):** `PHASE1_PM_STATUS_LIVE_VI.md`  
-_Technical gap + trạng thái: `PHASE1_PM_STATUS_LIVE_VI.md`._
+**Tiến độ live / trạng thái code:** `BIOMIXING_GAP_STATUS_VI.md` § Phase 1.
+_Technical gap + trạng thái đã gộp về `BIOMIXING_GAP_STATUS_VI.md`._
 
 ---
 
@@ -102,7 +102,7 @@ Thêm có thể có: MOQ, quy cách đóng gói, SKU OEM, ghi chú.
 | Duyệt             | Ít hoặc không     | President + VP           |
 | Sau khi chốt      | Giao hàng         | SO → Lệnh SX → Batch     |
 
-**Task nào xung đột nếu ép cho mọi công ty?** Bảng đầy đủ (Production + Phase 1): **`PHASE1_PM_STATUS_LIVE_VI.md` → mục F**. Tóm lại: BOM, duyệt 2 cấp, chặn SO, copy BOM Production **chỉ** cho tenant bật Phase 1; Miaolin-style **tắt** module → giữ Quotation thường.
+**Task nào xung đột nếu ép cho mọi công ty?** Bảng trạng thái Phase 1 nằm trong **`BIOMIXING_GAP_STATUS_VI.md`**. Tóm lại: BOM, duyệt 2 cấp, chặn SO, copy BOM Production **chỉ** cho tenant bật Phase 1; Miaolin-style **tắt** module → giữ Quotation thường.
 
 ---
 
@@ -170,10 +170,10 @@ Màn hình trọng tâm: **`/account/estimates/{id}`** (chi tiết báo giá).
 | File                                                  | Dùng khi                         |
 | ----------------------------------------------------- | -------------------------------- |
 | `PROJECT BIOMIXING/PM_YEU_CAU_TONG_HOP_VI.md`         | **Spec PM gộp** (Gary + Phase 1) |
-| `PHASE1_PM_STATUS_LIVE_VI.md`                         | Bảng gap / trạng thái Phase 1    |
-| `PHASE1_PM_STATUS_LIVE_VI.md`                         | % tiến độ cho PM                 |
+| `BIOMIXING_GAP_STATUS_VI.md`                          | Bảng gap / trạng thái Phase 1    |
+| `BIOMIXING_GAP_STATUS_VI.md`                          | % tiến độ cho PM                 |
 | `PROJECT BIOMIXING/PHASE_BUSINESS_CONTEXT_EXAMPLE.md` | President vs VP nghĩa nghiệp vụ  |
 
 ---
 
-_Cuối: ~**65%** Phase 1 — BOM + duyệt + chặn SO đã chạy; còn layout 4 vùng, search công thức, Settings % lãi, polish workflow. Chi tiết: `PHASE1_PM_STATUS_LIVE_VI.md`._
+_Cuối: trạng thái Phase 1 hiện theo `BIOMIXING_GAP_STATUS_VI.md`; file này giữ phần giải thích PM dễ đọc._

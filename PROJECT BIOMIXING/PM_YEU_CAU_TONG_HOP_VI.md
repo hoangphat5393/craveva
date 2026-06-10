@@ -4,7 +4,7 @@ _Tài liệu chính thức gộp từ spec Gary + Phase 1 báo giá OEM. **Đã 
 
 | Tài liệu liên quan                                                                                | Mục đích                                              |
 | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| [`FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md)         | Tiến độ triển khai (~95% Phase 1, cập nhật theo code) |
+| [`FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`](../FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md)           | Tiến độ triển khai Phase 1/2, cập nhật theo code      |
 | [`FUNC_IMPROVE/PHASE1_QUOTATION_PM_HUMAN_VI.md`](../FUNC_IMPROVE/PHASE1_QUOTATION_PM_HUMAN_VI.md) | Tóm tắt ngắn cho dev nội bộ                           |
 
 **Ngày gộp:** 20/05/2026 · **Nguồn Gary:** 15/05/2026
@@ -165,13 +165,13 @@ Phase 3: Lệnh giao hàng → Hóa đơn → Thanh toán.
 
 **Loại sản phẩm đề xuất:**
 
-| Loại             | Mục đích              |
-| ---------------- | --------------------- |
-| `raw_material`   | Nguyên liệu thô       |
-| `finished_goods` | Thành phẩm bán được   |
-| `semi_finished`  | Bán thành phẩm        |
-| `packaging`      | Bao bì                |
-| `service`        | Dịch vụ không tồn kho |
+| Loại UI / hệ thống                 | Giá trị code hiện tại | Mục đích              |
+| ---------------------------------- | --------------------- | --------------------- |
+| Manufactured product               | `goods`               | Thành phẩm bán được   |
+| Raw Material                       | `raw_material`        | Nguyên liệu thô       |
+| Semi Finished                      | `semi_finished`       | Bán thành phẩm        |
+| Packaging                          | `packaging`           | Bao bì                |
+| Service                            | `service`             | Dịch vụ không tồn kho |
 
 ### B.3. Khái niệm BOM
 
@@ -181,7 +181,7 @@ BOM = công thức: **cần gì để sản xuất 1 đơn vị** thành phẩm.
 
 **Lọc dropdown (bắt buộc):**
 
-- Chọn **thành phẩm** (FG): chỉ `product_type = finished_goods`.
+- Chọn **thành phẩm** (FG): chỉ **Manufactured product** (`products.type = goods`) theo hệ thống hiện tại.
 - Chọn **thành phần BOM**: chỉ `raw_material`, `semi_finished`, `packaging`.
 
 ### B.4. Tính NVL theo đơn hàng
@@ -264,7 +264,7 @@ Sales Order → Thương mại
 
 | Phase PM    | Nội dung                                           | Ghi chú triển khai                                                                                     |
 | ----------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Phase 1** | Báo giá + BOM trên báo giá + duyệt 2 cấp + chặn SO | **~90% — chốt go-live** · [`PHASE1_PM_STATUS_LIVE_VI.md`](../FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md) |
+| **Phase 1** | Báo giá + BOM trên báo giá + duyệt 2 cấp + chặn SO | **~90% — chốt go-live** · [`BIOMIXING_GAP_STATUS_VI.md`](../FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md) |
 | **Phase 2** | SO → SX → batch → tồn                              | Vận hành: [`PRODUCTION_OPERATIONS_LIVE_VI.md`](../FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md)         |
 | **Phase 3** | Giao hàng → Hóa đơn                                | Đã có phần lớn trong ERP                                                                               |
 
@@ -278,4 +278,4 @@ Sales Order → Thương mại
 
 ---
 
-_Cập nhật tiến độ: chỉ sửa `FUNC_IMPROVE/PHASE1_PM_STATUS_LIVE_VI.md`, không nhân bản % trong file này._
+_Cập nhật tiến độ: sửa `FUNC_IMPROVE/BIOMIXING_GAP_STATUS_VI.md`, không nhân bản % trong file này._

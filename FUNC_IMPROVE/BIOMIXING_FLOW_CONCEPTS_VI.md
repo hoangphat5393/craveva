@@ -86,7 +86,7 @@ Vật lý: RM “biến thành” FG — trong sổ kho là **xuất RM + nhập
 
 **Không cần tách module PO riêng cho Production** — cùng luồng mua; Production chỉ **tiêu** RM đã có trong kho khi **Consume RM**.
 
-**Reserved:** **Sales DO confirm** (đã code) + **Production Release** (kế hoạch, chưa code). PO/GRN thường **không** reserve outbound như DO bán hàng.
+**Reserved:** **Sales DO confirm** + **Production Release** đều đã có trong luồng hiện tại. PO/GRN thường **không** reserve outbound như DO bán hàng.
 
 ---
 

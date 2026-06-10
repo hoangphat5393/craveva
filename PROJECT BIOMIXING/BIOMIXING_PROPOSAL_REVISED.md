@@ -76,7 +76,7 @@ As a multinational organisation, Biomixing’s sales teams and distributors oper
 
 ## 3. Addressing Biomixing's Specific Workflow
 
-We have analyzed your current process flow (Order → Recipe Review → Production → Delivery) and designed Craveva to eliminate bottlenecks at each step:
+We have analyzed your current process flow (commercial request / Estimate → Recipe Review → Sales Order → Production → Delivery) and designed Craveva to eliminate bottlenecks at each step:
 
 ![Biomixing Process Flow Diagram](biomixing_process_flow.png)
 
@@ -98,7 +98,7 @@ We have analyzed your current process flow (Order → Recipe Review → Producti
 
 - **Current Process:** Manual checks for "Labeling", "Mixing", and "Quality Certs" before shipping. Risk of human error or temperature deviations.
 - **Craveva Solution:**
-    - **Projects Module:** The system _locks_ the "Create Delivery Note" button until the "Quality Check" task is complete.
+    - **Production / Sales DO controls:** the live Hub implementation should use Production completion / quality-lock controls before Sales DO shipping. Project tasks may remain a planning overlay, not the operational source of stock truth.
     - **Logistics AI Agent:** Automatically verifies storage conditions (e.g., "Keep < 25°C") and suggests the best Cold Chain carrier.
     - **Result:** 100% compliance. No product leaves the factory without a digital quality stamp and safe routing.
 

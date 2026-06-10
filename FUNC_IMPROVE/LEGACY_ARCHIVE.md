@@ -13,9 +13,9 @@ Các file dưới đây **đã xóa** khỏi repo vì hết vòng đời (plan/a
 | Material shortage (cross-order, công thức available)                          | `PRODUCTION_OPERATIONS_LIVE` §3 + filter UI (mặc định `active`)                                                                   | **Đủ** (2026-05-27)                                             |
 | Vá UOM post RM (`convertToBase`)                                              | `PRODUCTION_OPERATIONS_LIVE_VI.md` §2 + `FUNC_BUG/PRODUCTION_RM_OUTBOUND_UOM_VI.md`                                               | **Đủ**                                                          |
 | Post FG → Inventory ledger P1c                                                | `PRODUCTION_OPERATIONS_LIVE_VI.md` §2                                                                                             | **Đủ**                                                          |
-| Checklist 5 bước lô, variance, trace                                          | `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` §3                                                                                           | **Đủ**                                                          |
+| Checklist batch hiện tại 4 bước, variance, trace                              | `BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` §3                                                                                           | **Đủ**                                                          |
 | P0–P2 backlog Gary (P0-3, P1-2, waste %, …)                                   | `BIOMIXING_GAP_STATUS_VI.md` (bảng ID)                                                                                            | **Đủ** (không cần `PHASE2_PM_PLAN`)                             |
-| Phase 1 báo giá gap chi tiết                                                  | `PHASE1_PM_STATUS_LIVE_VI.md`, `PHASE1_QUOTATION_PM_HUMAN_VI.md`                                                                  | Đủ cho go-live P1                                               |
+| Phase 1 báo giá gap chi tiết                                                  | `BIOMIXING_GAP_STATUS_VI.md`, `PHASE1_QUOTATION_PM_HUMAN_VI.md`                                                                   | Đủ cho go-live P1                                               |
 | Nền kho SO/DO/GRN vs gap Production                                           | `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md`, `QUY_TRINH_*` — **không** còn bảng «đọc baseline 2026» trong `BIOMIXING_BASELINE_PREP` | Thiếu nhẹ — dùng `BIOMIXING_PREP_INDEX_EN` + FUNC_LOGIC         |
 | Roadmap CCP / Phase 3–4 kỹ thuật                                              | `BIOMIXING_GAP_STATUS` (P2+), `BIOMIXING_BUSINESS_FLOW` § backlog                                                                 | Tóm tắt; chi tiết phase cũ → `git show` `BIOMIXING_DEV_PLAN.md` |
 | PM report kho / Miaolin gap                                                   | `WAREHOUSE_MASTER_GUIDE`, `MAOLIN_MASTER_GUIDE`                                                                                   | Đủ nếu đã maintain guide                                        |
@@ -57,7 +57,7 @@ Các file dưới đây **đã xóa** khỏi repo vì hết vòng đời (plan/a
 | `BIOMIXING_DEV_PLAN.md`                          | Roadmap → `BIOMIXING_GAP_STATUS_VI.md` + playbook                              |
 | `PHASE2_PM_PLAN_VI.md`                           | Phase 2 SX → `PRODUCTION_OPERATIONS_LIVE_VI.md` + `UI_RUNBOOK_PHASE2_*`        |
 | `03_PRODUCTION_PREUPLOAD_AUDIT_2026_05_05_VI.md` | Pre-upload audit một lần                                                       |
-| `PHASE1_QUOTATION_PM_GAP_ANALYSIS_VI.md`         | → `PHASE1_PM_STATUS_LIVE_VI.md`                                                |
+| `PHASE1_QUOTATION_PM_GAP_ANALYSIS_VI.md`         | → `BIOMIXING_GAP_STATUS_VI.md`                                                 |
 | `P0_NEXT_ACTION_BIOMIXING_VI.md`                 | Trùng `P0_BIOMIXING_NEXT_STEPS_VI.md`                                          |
 
 ## FUNC_REPORT (pass 2)
@@ -153,3 +153,11 @@ Các file dưới đây **đã xóa** khỏi repo vì hết vòng đời (plan/a
 | `FUNC_LOGIC/PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md`                | Rút gọn pass 13 → `IMPORT_CHUNK_AND_BULK_INSERT.md`               |
 
 **Audit SSOT:** [`../FUNC_REPORT/LEGACY_PRE_DELETE_AUDIT_2026_05_27.md`](../FUNC_REPORT/LEGACY_PRE_DELETE_AUDIT_2026_05_27.md) · [`../FUNC_REPORT/LEGACY_PHP_AND_ASSET_CANDIDATES_2026_05_27.md`](../FUNC_REPORT/LEGACY_PHP_AND_ASSET_CANDIDATES_2026_05_27.md)
+
+## Pass 14 (2026-06-10) — product form baseline retire
+
+| File đã xóa | Lý do / đọc thay |
+| ----------- | ---------------- |
+| `21_PRODUCT_FORM_PRICING_CURRENT_STATE_VI.md` | Baseline trước P1 đã lỗi thời sau khi drop `purchase_information`; matrix Product Type pricing đã gộp vào `20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md` §4.1.1 |
+| `22_PRODUCT_FORM_UX_SIMPLIFICATION_PLAN_VI.md` | P1 product form visibility đã triển khai phần lớn; matrix visibility và lý do UX đã gộp vào `20_BOM_FG_COST_SYNC_IMPLEMENTATION_PLAN_VI.md` §4.1.2 |
+| `PHASE1_PM_STATUS_LIVE_VI.md` | Status snapshot Phase 1 đã gộp vào `BIOMIXING_GAP_STATUS_VI.md` § Phase 1; giải thích PM giữ ở `PHASE1_QUOTATION_PM_HUMAN_VI.md` |

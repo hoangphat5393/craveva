@@ -50,10 +50,15 @@
 
 | Field       | Value |
 | ----------- | ----- |
-| Date / Ngày |       |
-| Tester      |       |
-| Environment |       |
-| Pass / Fail |       |
-| Issues      |       |
+| Date / Ngày | 2026-05-24 |
+| Tester      | Dev/QA smoke; BA/PM sign-off pending |
+| Environment | local — https://craveva-staging.test |
+| Pass / Fail | Pass (dev/QA evidence) |
+| Issues      | 0 blocking issues recorded |
+
+**Evidence:** `P0_MINI_UAT_CHECKLIST_BIOMIXING_VI.md` § P0-05 ghi nhận:
+
+- Production → Warehouse: batch **#14** trace tại `/account/production/batches/14/trace`, có **7** link "Open warehouse batch".
+- Warehouse → Production: warehouse product batch **#17** có **Open Production Trace** + **Open Production Batch** trỏ về batch **#14**.
 
 Sau Pass: cập nhật `P0_BIOMIXING_NEXT_STEPS_VI.md` (P0-05) + bằng chứng screenshot/URL.

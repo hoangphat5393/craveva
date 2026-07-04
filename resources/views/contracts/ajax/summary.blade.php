@@ -316,24 +316,28 @@
             return false;
         }
 
-        $.easyAjax({
-            url: "{{ route('contracts.sign', $contract->id) }}",
-            container: '#acceptEstimate',
-            type: "POST",
-            blockUI: true,
-            file: true,
-            disableButton: true,
-            buttonSelector: '#save-signature',
-            data: {
-                first_name: first_name,
-                last_name: last_name,
-                email: email,
-                signature: signature,
-                image: image,
-                signature_type: signature_type,
-                _token: '{{ csrf_token() }}'
-            },
-        })
+        const $btn = $('#save-signature');
+        const previousHtml = $btn.html();
+        const formData = new FormData();
+        formData.append('first_name', first_name);
+        formData.append('last_name', last_name);
+        formData.append('email', email);
+        formData.append('signature', signature);
+        formData.append('image', image);
+        formData.append('signature_type', signature_type);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        $.easyBlockUI('#acceptEstimate');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postForm("{{ route('contracts.sign', $contract->id) }}", formData)
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#acceptEstimate');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 
     $('body').on('click', '.delete-table-row', function () {
@@ -362,19 +366,19 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                $.easyBlockUI('.content-wrapper');
+                window.apiHttp.delete(url, token)
+                    .then(function (response) {
                         if (response.status == "success") {
                             window.location.href = "{{ route('contracts.index') }}"
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
+                    });
             }
         });
     });

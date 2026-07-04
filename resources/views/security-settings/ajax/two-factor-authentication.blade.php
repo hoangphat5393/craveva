@@ -150,17 +150,18 @@
         let token = "{{ csrf_token() }}";
         let method = 'POST';
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            data: {
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token,
                 '_method': method
-            },
-            success: function(response) {
+            })
+            .then(() => {
                 window.location.reload();
-            }
-        });
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            });
     });
 
     $('.change-2fa-status').click(function() {

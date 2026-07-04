@@ -8,8 +8,10 @@ use Tests\TestCase;
 
 class PurchaseProductsDataTableTest extends TestCase
 {
-    public function test_query_includes_stock_on_hand_alias_for_sorting(): void
+    protected function setUp(): void
     {
+        parent::setUp();
+
         $fakeUser = new class
         {
             public int $id = 1;
@@ -26,34 +28,28 @@ class PurchaseProductsDataTableTest extends TestCase
             'user' => $fakeUser,
             'user_roles' => ['admin'],
         ]);
+    }
 
+    public function test_query_includes_stock_on_hand_alias_for_sorting(): void
+    {
         $dataTable = new PurchaseProductsDataTable;
         $query = $dataTable->query(new PurchaseProduct);
+        $sql = str_replace('"', '`', $query->toSql());
 
-        $this->assertStringContainsString('as `stock_on_hand`', $query->toSql());
-        $this->assertStringContainsString('`products`.`type`', $query->toSql());
+        $this->assertStringContainsString('as `stock_on_hand`', $sql);
+        $this->assertStringContainsString('`products`.`type`', $sql);
     }
 
     public function test_columns_include_product_type(): void
     {
-        $fakeUser = new class
+        $dataTable = new class extends PurchaseProductsDataTable
         {
-            public int $id = 1;
-
-            public ?int $company_id = null;
-
-            public function permission(string $permission): string
+            protected function customFieldColumns(): array
             {
-                return 'all';
+                return [];
             }
         };
 
-        session([
-            'user' => $fakeUser,
-            'user_roles' => ['admin'],
-        ]);
-
-        $dataTable = new PurchaseProductsDataTable;
         $method = new \ReflectionMethod(PurchaseProductsDataTable::class, 'getColumns');
         $columns = $method->invoke($dataTable);
 
@@ -64,5 +60,47 @@ class PurchaseProductsDataTableTest extends TestCase
         $this->assertSame('Image', $columns[__('purchase::modules.product.dataTableImage')]['title']);
         $this->assertSame('Price (Inclusive Tax)', $columns[__('purchase::modules.product.dataTablePriceInclusiveTax')]['title']);
         $this->assertSame('Client Purchase', $columns[__('purchase::modules.product.dataTableAllowClientPurchase')]['title']);
+    }
+
+    public function test_stock_on_hand_formatter_shows_ledger_quantity_even_when_track_inventory_is_off(): void
+    {
+        $dataTable = new PurchaseProductsDataTable;
+        $method = new \ReflectionMethod(PurchaseProductsDataTable::class, 'formatStockOnHand');
+        $method->setAccessible(true);
+
+        $row = (object) [
+            'track_inventory' => 0,
+            'stock_on_hand' => '12.0000',
+        ];
+
+        $this->assertSame(12.0, $method->invoke($dataTable, $row));
+    }
+
+    public function test_stock_on_hand_formatter_shows_zero_for_tracked_products_without_ledger(): void
+    {
+        $dataTable = new PurchaseProductsDataTable;
+        $method = new \ReflectionMethod(PurchaseProductsDataTable::class, 'formatStockOnHand');
+        $method->setAccessible(true);
+
+        $row = (object) [
+            'track_inventory' => 1,
+            'stock_on_hand' => null,
+        ];
+
+        $this->assertSame(0.0, $method->invoke($dataTable, $row));
+    }
+
+    public function test_stock_on_hand_formatter_keeps_non_tracked_products_without_ledger_as_blank(): void
+    {
+        $dataTable = new PurchaseProductsDataTable;
+        $method = new \ReflectionMethod(PurchaseProductsDataTable::class, 'formatStockOnHand');
+        $method->setAccessible(true);
+
+        $row = (object) [
+            'track_inventory' => 0,
+            'stock_on_hand' => null,
+        ];
+
+        $this->assertSame('--', $method->invoke($dataTable, $row));
     }
 }

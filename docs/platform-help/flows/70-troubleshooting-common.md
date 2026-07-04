@@ -11,7 +11,7 @@
 
 ## AJAX validation
 
-- Red toast but field not highlighted: see [REFERENCE/UI-CONVENTIONS.md](REFERENCE/UI-CONVENTIONS.md) — need `handleApiFormError` and `.is-invalid`.
+- Red toast but field not highlighted: see [REFERENCE/UI-CONVENTIONS.md](../REFERENCE/UI-CONVENTIONS.md) — need `handleApiFormError` and `.is-invalid`.
 - Orphan server errors: toast only, no field mapping.
 
 ## Right modal

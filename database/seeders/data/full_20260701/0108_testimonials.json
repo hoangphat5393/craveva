@@ -1,0 +1,95 @@
+{
+    "table": "testimonials",
+    "columns": [
+        "id",
+        "name",
+        "comment",
+        "rating",
+        "language_setting_id",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "name": "theon salvatore",
+            "comment": "The application is user-friendly and has made my work easier.",
+            "rating": 5,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "name": "jenna gilbert",
+            "comment": "The application is efficient and has improved my productivity.",
+            "rating": 4,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "name": "Redh gilbert",
+            "comment": "The application has a good design and is easy to navigate.",
+            "rating": 3,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "name": "whatson angela",
+            "comment": "The application has made my life much easier by automating my tasks.",
+            "rating": 2,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "name": "Megan Lee",
+            "comment": "I was skeptical at first, but after using the application for a few weeks, I'm sold! It's incredibly intuitive and user-friendly.",
+            "rating": 5,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 6,
+            "name": "Jacob Thompson",
+            "comment": "I've tried a lot of productivity tools, but this one stands out. It has all the features I need and none of the clutter.",
+            "rating": 4,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 7,
+            "name": "Maria Rodriguez",
+            "comment": "As a small business owner, this application has been a game-changer. It saves me so much time and keeps me organized.",
+            "rating": 5,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 8,
+            "name": "Samantha Patel",
+            "comment": "I appreciate the attention to detail in the design of this application. It's clear that the developers put a lot of thought into the user experience.",
+            "rating": 4,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 9,
+            "name": "Ethan Kim",
+            "comment": "Overall, I'm happy with the application. It's not perfect, but it gets the job done.",
+            "rating": 3,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

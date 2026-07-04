@@ -262,6 +262,7 @@ class SalesDoService
         $itemModelClass::query()->where($itemForeignKey, $shipment->id)->delete();
 
         foreach ($payload['order_item_id'] as $idx => $orderItemId) {
+            $warehouseBatchId = $payload['warehouse_batch_id'][$idx] ?? null;
             $itemModelClass::create([
                 $itemForeignKey => $shipment->id,
                 'order_item_id' => (int) $orderItemId,
@@ -269,7 +270,7 @@ class SalesDoService
                 'quantity_ordered' => (float) ($payload['quantity_ordered'][$idx] ?? 0),
                 'quantity_shipped' => (float) ($payload['quantity_shipped'][$idx] ?? 0),
                 'unit_id' => isset($payload['unit_id'][$idx]) ? (int) $payload['unit_id'][$idx] : null,
-                'warehouse_batch_id' => isset($payload['warehouse_batch_id'][$idx]) ? (int) $payload['warehouse_batch_id'][$idx] : null,
+                'warehouse_batch_id' => ! empty($warehouseBatchId) ? (int) $warehouseBatchId : null,
                 'batch_number' => $payload['batch_number'][$idx] ?? null,
                 'expiration_date' => $payload['expiration_date'][$idx] ?? null,
             ]);

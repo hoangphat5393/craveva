@@ -1,0 +1,21 @@
+{
+    "table": "file_storage_settings",
+    "columns": [
+        "id",
+        "filesystem",
+        "auth_keys",
+        "status",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "filesystem": "local",
+            "auth_keys": null,
+            "status": "enabled",
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03"
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "table": "google_calendar_modules",
+    "columns": [
+        "id",
+        "company_id",
+        "lead_status",
+        "leave_status",
+        "invoice_status",
+        "contract_status",
+        "task_status",
+        "event_status",
+        "holiday_status",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "lead_status": 0,
+            "leave_status": 0,
+            "invoice_status": 0,
+            "contract_status": 0,
+            "task_status": 0,
+            "event_status": 0,
+            "holiday_status": 0,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

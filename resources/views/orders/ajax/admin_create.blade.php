@@ -194,8 +194,8 @@
                         <x-forms.input-group>
                             <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-products" title="{{ __('app.menu.selectProduct') }}">
                                 @foreach ($products as $item)
-                                    <option data-content="{{ $item->name }}@if ($item->sku) ({{ $item->sku }}) @endif" value="{{ $item->id }}">
-                                        {{ $item->name }}</option>
+                                    <option data-content="{{ e($item->documentDropdownLabel()) }}" value="{{ $item->id }}">
+                                        {{ $item->documentDropdownLabel() }}</option>
                                 @endforeach
                             </select>
                             <x-slot name="preappend">
@@ -462,10 +462,9 @@
         });
 
         initRemoteBootstrapSelect('#add-products', "{{ route('orders.search_products') }}", function(item, selected) {
-            var label = escapeHtml(item.name || '');
-            var sku = item.sku ? ' (' + escapeHtml(item.sku) + ')' : '';
+            var label = escapeHtml(item.label || item.name || '');
             var isSelected = selected.indexOf(String(item.id)) !== -1 || selected.indexOf(item.id) !== -1;
-            return '<option value="' + item.id + '"' + (isSelected ? ' selected' : '') + ' data-content="' + label + sku + '">' + label + '</option>';
+            return '<option value="' + item.id + '"' + (isSelected ? ' selected' : '') + ' data-content="' + label + '">' + label + '</option>';
         });
 
         $('.toggle-product-category').click(function() {
@@ -493,7 +492,8 @@
                     rData = response.data;
                     $.each(rData, function(index, value) {
                         var selectData = '';
-                        selectData = '<option value="' + value.id + '">' + value.name +
+                        var label = escapeHtml(value.label || value.name || '');
+                        selectData = '<option value="' + value.id + '" data-content="' + label + '">' + label +
                             '</option>';
                         options.push(selectData);
                     });

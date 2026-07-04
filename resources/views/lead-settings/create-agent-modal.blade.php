@@ -57,15 +57,11 @@
     // save agent
     $('#save-agent').click(function () {
 
-        $.easyAjax({
-            url: "{{ route('lead-agent-settings.store') }}",
-            container: '#createAgent',
-            type: "POST",
-            blockUI: true,
-            data: $('#createAgent').serialize(),
-            disableButton: true,
-            buttonSelector: "#save-agent",
-            success: function (response) {
+        $('#save-agent').prop('disabled', true);
+        $.easyBlockUI('#createAgent');
+
+        window.apiHttp.postUrlEncoded("{{ route('lead-agent-settings.store') }}", $('#createAgent').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     if ($('table#example').length) {
                         window.location.reload();
@@ -77,8 +73,14 @@
                         $(MODAL_LG).modal('hide');
                     }
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-agent').prop('disabled', false);
+                $.easyUnblockUI('#createAgent');
+            });
     });
 
     $('#deal_agents_id').change(function(){
@@ -87,13 +89,12 @@
     });
 
         function agentCategories(agentId) {
-            $.easyAjax({
-                url: "{{ route('lead_agent.categories')}}",
-                container: '#createMethods',
-                type: "GET",
-                blockUI: true,
-                data: {agent_id:agentId},
-                success: function(response) {
+            $.easyBlockUI('#createMethods');
+
+            window.apiHttp.get("{{ route('lead_agent.categories')}}", {
+                    params: {agent_id:agentId}
+                })
+                .then(function(response) {
                         var options = [];
                         var rData = [];
                         rData = response.data;
@@ -107,8 +108,13 @@
                         $('#lead_category').html(options);
                         $('#lead_category').selectpicker('refresh');
 
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#createMethods');
+                });
         }
 
 

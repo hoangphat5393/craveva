@@ -41,7 +41,7 @@ class PurchaseProductsDataTable extends BaseDataTable
         $datatables = datatables()->eloquent($query);
 
         $datatables->addColumn('check', function ($row) {
-            return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+            return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
         });
 
         $datatables->addColumn('category', function ($row) {
@@ -62,9 +62,9 @@ class PurchaseProductsDataTable extends BaseDataTable
         $datatables->addColumn('action', function ($row) {
 
             if (in_array('client', user_roles())) {
-                return '<button type="button" class="btn-secondary rounded f-14 add-product" data-product-id="' . $row->id . '">
+                return '<button type="button" class="btn-secondary rounded f-14 add-product" data-product-id="'.$row->id.'">
                         <i class="fa fa-plus mr-1"></i>
-                    ' . __('app.addToCart') . '
+                    '.__('app.addToCart').'
                     </button>';
             }
 
@@ -72,31 +72,31 @@ class PurchaseProductsDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('purchase-products.show', [$row->id]) . '" class="dropdown-item" data-product-id="' . $row->id . '"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('purchase-products.show', [$row->id]).'" class="dropdown-item" data-product-id="'.$row->id.'"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
             if ($this->editProductPermission == 'all' || ($this->editProductPermission == 'added' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item openRightModal" href="' . route('purchase-products.edit', [$row->id]) . '">
+                $action .= '<a class="dropdown-item openRightModal" href="'.route('purchase-products.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
             }
 
             if ($this->deleteProductPermission == 'all' || ($this->deleteProductPermission == 'added' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-product-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-product-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
             }
 
             if ($this->addProductPermission == 'all' || $this->addProductPermission == 'added') {
-                $action .= '<a class="dropdown-item openRightModal" href="' . route('purchase-products.create') . '?duplicate_product=' . $row->id . '">
+                $action .= '<a class="dropdown-item openRightModal" href="'.route('purchase-products.create').'?duplicate_product='.$row->id.'">
                             <i class="fa fa-clone mr-2"></i>
-                            ' . trans('app.duplicate') . '
+                            '.trans('app.duplicate').'
                         </a>';
             }
 
@@ -110,21 +110,21 @@ class PurchaseProductsDataTable extends BaseDataTable
         $datatables->editColumn('status', function ($row) {
 
             if ($this->editProductPermission == 'all' || ($this->editProductPermission == 'added' && user()->id == $row->added_by)) {
-                $status = '<select class="form-control select-picker change-product-status" data-product-id="' . $row->id . '">';
+                $status = '<select class="form-control select-picker change-product-status" data-product-id="'.$row->id.'">';
                 $status .= '<option ';
 
                 if ($row->status == 'active') {
                     $status .= 'selected';
                 }
 
-                $status .= ' value="active" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> ' . __('app.active') . '">' . __('app.active') . '</option>';
+                $status .= ' value="active" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> '.__('app.active').'">'.__('app.active').'</option>';
                 $status .= '<option ';
 
                 if ($row->status == 'inactive') {
                     $status .= 'selected';
                 }
 
-                $status .= ' value="inactive" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> ' . __('app.inactive') . '">' . __('app.inactive') . '</option>';
+                $status .= ' value="inactive" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> '.__('app.inactive').'">'.__('app.inactive').'</option>';
 
                 $status .= '</select>';
             } else {
@@ -136,7 +136,7 @@ class PurchaseProductsDataTable extends BaseDataTable
                     $status = __('app.inactive');
                 }
 
-                $status = '<i class="fa fa-circle mr-1 ' . $class . ' f-10"></i> ' . $status;
+                $status = '<i class="fa fa-circle mr-1 '.$class.' f-10"></i> '.$status;
             }
 
             return $status;
@@ -146,38 +146,38 @@ class PurchaseProductsDataTable extends BaseDataTable
             $name = $row->name;
 
             // Removed SKU concatenation
-            return '<h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('purchase-products.show', [$row->id]) . '" class="text-darkest-grey" >' . $name . '</a></h5>';
+            return '<h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('purchase-products.show', [$row->id]).'" class="text-darkest-grey" >'.$name.'</a></h5>';
         });
 
         $datatables->editColumn('default_image', function ($row) {
-            return '<img src="' . $row->image_url . '" class="border rounded height-35" />';
+            return '<img src="'.$row->image_url.'" class="border rounded height-35" />';
         });
 
         $datatables->editColumn('allow_purchase', function ($row) {
 
             if ($this->editProductPermission == 'all' || ($this->editProductPermission == 'added' && user()->id == $row->added_by)) {
-                $status = '<select class="form-control select-picker change-purchase-allow" data-product-id="' . $row->id . '">';
+                $status = '<select class="form-control select-picker change-purchase-allow" data-product-id="'.$row->id.'">';
                 $status .= '<option ';
 
                 if ($row->allow_purchase == 1) {
                     $status .= 'selected';
                 }
 
-                $status .= ' value="1" data-content="<i class=\'fa fa-circle mr-2 text-dark-green\'></i> ' . __('app.allowed') . '">' . __('app.allowed') . '</option>';
+                $status .= ' value="1" data-content="<i class=\'fa fa-circle mr-2 text-dark-green\'></i> '.__('app.allowed').'">'.__('app.allowed').'</option>';
                 $status .= '<option ';
 
                 if ($row->allow_purchase == 0) {
                     $status .= 'selected';
                 }
 
-                $status .= ' value="0" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> ' . __('app.notAllowed') . '">' . __('app.notAllowed') . '</option>';
+                $status .= ' value="0" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> '.__('app.notAllowed').'">'.__('app.notAllowed').'</option>';
 
                 $status .= '</select>';
             } else {
                 if ($row->allow_purchase == 1) {
-                    $status = '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('app.allowed') . '</label>';
+                    $status = '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('app.allowed').'</label>';
                 } else {
-                    $status = '<i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.notAllowed') . '</label>';
+                    $status = '<i class="fa fa-circle mr-1 text-red f-10"></i>'.__('app.notAllowed').'</label>';
                 }
             }
 
@@ -221,11 +221,7 @@ class PurchaseProductsDataTable extends BaseDataTable
         });
 
         $datatables->editColumn('stock_on_hand', function ($row) {
-            if ($row->track_inventory == 1) {
-                return (float) ($row->stock_on_hand ?? 0);
-            } else {
-                return '--';
-            }
+            return $this->formatStockOnHand($row);
         });
 
         $datatables->editColumn('unit_type', function ($row) {
@@ -247,7 +243,7 @@ class PurchaseProductsDataTable extends BaseDataTable
         $datatables->addIndexColumn();
         $datatables->smart(false);
 
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
 
         // Custom Fields For export
         $customFieldColumns = CustomField::customFieldData($datatables, Product::CUSTOM_FIELD_MODEL);
@@ -255,6 +251,19 @@ class PurchaseProductsDataTable extends BaseDataTable
         $datatables->rawColumns(array_merge(['action', 'price', 'allow_purchase', 'check', 'name', 'default_image', 'status'], $customFieldColumns));
 
         return $datatables;
+    }
+
+    protected function formatStockOnHand(object $row): float|string
+    {
+        if ($row->stock_on_hand !== null) {
+            return (float) $row->stock_on_hand;
+        }
+
+        if ($row->track_inventory == 1) {
+            return 0.0;
+        }
+
+        return '--';
     }
 
     /**
@@ -291,9 +300,9 @@ class PurchaseProductsDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $model->where(function ($query) {
-                $query->where('products.name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('products.price', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('products.sku', 'like', '%' . request('searchText') . '%');
+                $query->where('products.name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('products.price', 'like', '%'.request('searchText').'%')
+                    ->orWhere('products.sku', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -333,13 +342,13 @@ class PurchaseProductsDataTable extends BaseDataTable
         $buttons = [
             Button::make([
                 'extend' => 'colvis',
-                'text' => '<i class="fa fa-columns"></i> ' . trans('app.columns'),
+                'text' => '<i class="fa fa-columns"></i> '.trans('app.columns'),
                 'columns' => ':not(:first):not(:last):not(.not-column-chooser)',
             ]),
         ];
 
         if (canDataTableExport()) {
-            array_unshift($buttons, Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            array_unshift($buttons, Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         $dataTable->buttons($buttons);
@@ -377,7 +386,7 @@ class PurchaseProductsDataTable extends BaseDataTable
             // Removed duplicate Name column
             __('purchase::modules.product.dataTablePriceInclusiveTax') => ['data' => 'price', 'name' => 'price', 'title' => __('purchase::modules.product.dataTablePriceInclusiveTax')],
             __('purchase::modules.product.dataTableTotalNetQtyAdjustments') => ['data' => 'stock_on_hand', 'name' => 'stock_on_hand', 'title' => __('purchase::modules.product.dataTableTotalNetQtyAdjustments')],
-            __('app.unit_type') . ' (' . __('modules.unitType.unitType') . ')' => ['data' => 'unit_type', 'name' => 'unit_type', 'title' => __('modules.unitType.unitType')],
+            __('app.unit_type').' ('.__('modules.unitType.unitType').')' => ['data' => 'unit_type', 'name' => 'unit_type', 'title' => __('modules.unitType.unitType')],
             __('app.productSource') => ['data' => 'product_source', 'name' => 'product_source', 'title' => __('app.productSource'), 'visible' => false],
             __('app.brand') => ['data' => 'brand', 'name' => 'brand', 'title' => __('app.brand'), 'visible' => false],
             __('app.productGrade') => ['data' => 'product_grade', 'name' => 'product_grade', 'title' => __('app.productGrade'), 'visible' => false],
@@ -388,9 +397,7 @@ class PurchaseProductsDataTable extends BaseDataTable
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false, 'title' => __('app.status')],
         ];
 
-        $customFieldMerge = CustomFieldGroup::customFieldsDataMerge(new Product);
-        $excludeKeys = ['product_grade', 'product_source', 'brand', 'product-grade', 'product-source'];
-        $customFieldMerge = array_diff_key($customFieldMerge, array_flip($excludeKeys));
+        $customFieldMerge = $this->customFieldColumns();
 
         $action = [
             Column::computed('action', __('app.action'))
@@ -402,5 +409,13 @@ class PurchaseProductsDataTable extends BaseDataTable
         ];
 
         return array_merge($data, $customFieldMerge, $action);
+    }
+
+    protected function customFieldColumns(): array
+    {
+        $customFieldMerge = CustomFieldGroup::customFieldsDataMerge(new Product);
+        $excludeKeys = ['product_grade', 'product_source', 'brand', 'product-grade', 'product-source'];
+
+        return array_diff_key($customFieldMerge, array_flip($excludeKeys));
     }
 }

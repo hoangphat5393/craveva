@@ -225,24 +225,28 @@
 
         $('#save-form').on('click', function(e) {
             var url = "{{ route('profile.update', [$user->id]) }}";
-            $.easyAjax({
-                url: url,
-                container: '#editSettings',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-form",
-                file: true,
-                data: $('#editSettings').serialize(),
-                success: function(response) {
+            const $btn = $('#save-form');
+            const previousHtml = $btn.html();
+
+            $.easyBlockUI('#editSettings');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postForm(url, document.getElementById('editSettings'))
+                .then(function(response) {
                     if (response.status == 'success') {
                         if (response.redirect) {
                             window.location.href = response.redirectUrl;
                         }
 
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         $('.cropper').on('dropify.fileReady', function(e) {

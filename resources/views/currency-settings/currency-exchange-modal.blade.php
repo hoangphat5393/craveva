@@ -91,18 +91,26 @@
     });
 
     $('#save-currency').click(function () {
-        $.easyAjax({
-            url: "{{route('currency_settings.exchange_key_store')}}",
-            container: '#createCurrencyKey',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-currency",
-            data: $('#createCurrencyKey').serialize(),
-            success: function (response) {
+        const button = $('#save-currency');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createCurrencyKey');
+
+        window.apiHttp.postUrlEncoded("{{route('currency_settings.exchange_key_store')}}", $('#createCurrencyKey').serialize())
+            .then(() => {
                 $(MODAL_LG).modal('hide');
-            }
-        });
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#createCurrencyKey');
+            });
     });
 
     init(MODAL_LG);

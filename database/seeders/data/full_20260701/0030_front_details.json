@@ -1,0 +1,62 @@
+{
+    "table": "front_details",
+    "columns": [
+        "id",
+        "get_started_show",
+        "sign_in_show",
+        "address",
+        "phone",
+        "email",
+        "social_links",
+        "primary_color",
+        "custom_css",
+        "custom_css_theme_two",
+        "locale",
+        "contact_html",
+        "created_at",
+        "updated_at",
+        "homepage_background",
+        "background_color",
+        "background_image"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "get_started_show": "yes",
+            "sign_in_show": "yes",
+            "address": null,
+            "phone": null,
+            "email": null,
+            "social_links": null,
+            "primary_color": null,
+            "custom_css": null,
+            "custom_css_theme_two": null,
+            "locale": "en",
+            "contact_html": null,
+            "created_at": "2026-07-01 20:58:17",
+            "updated_at": "2026-07-01 20:58:17",
+            "homepage_background": "default",
+            "background_color": "#CDDCDC",
+            "background_image": null
+        },
+        {
+            "id": 2,
+            "get_started_show": "yes",
+            "sign_in_show": "yes",
+            "address": "4868  Ben Street Lansing Michigan 48906",
+            "phone": "+91 1234567890",
+            "email": "company@example.com",
+            "social_links": "[{\"name\":\"facebook\",\"link\":\"https:\\/\\/www.facebook.com\\/cravevaapp\"},{\"name\":\"twitter\",\"link\":\"https:\\/\\/twitter.com\\/cravevaapp\"},{\"name\":\"instagram\",\"link\":\"https:\\/\\/www.instagram.com\\/cravevaapp\\/\"},{\"name\":\"dribbble\",\"link\":\"https:\\/\\/dribbble.com\"}]",
+            "primary_color": "#453130",
+            "custom_css": null,
+            "custom_css_theme_two": null,
+            "locale": "en",
+            "contact_html": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05",
+            "homepage_background": "default",
+            "background_color": "#CDDCDC",
+            "background_image": null
+        }
+    ]
+}

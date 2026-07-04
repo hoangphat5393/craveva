@@ -1,0 +1,31 @@
+{
+    "table": "log_time_for",
+    "columns": [
+        "id",
+        "company_id",
+        "log_time_for",
+        "auto_timer_stop",
+        "approval_required",
+        "tracker_reminder",
+        "timelog_report",
+        "daily_report_roles",
+        "created_at",
+        "updated_at",
+        "time"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "log_time_for": "project",
+            "auto_timer_stop": "no",
+            "approval_required": 0,
+            "tracker_reminder": 0,
+            "timelog_report": 0,
+            "daily_report_roles": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04",
+            "time": null
+        }
+    ]
+}

@@ -100,20 +100,20 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                $.easyBlockUI('body');
+
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
     });
@@ -129,25 +129,27 @@
 
         const token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: {
+        $('#quick-action-apply').prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token,
                 'action_type': action_type
-            },
-            blockUI: true,
-            success: function(response) {
+            })
+            .then(function(response) {
                 if (response.status == 'success') {
                     showTable();
                     resetActionButtons();
                     deSelectAll();
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#quick-action-apply').prop('disabled', false);
+                $.easyUnblockUI('#quick-action-form');
+            });
     };
 
     $(body).on('click', '#add-consent', function() {

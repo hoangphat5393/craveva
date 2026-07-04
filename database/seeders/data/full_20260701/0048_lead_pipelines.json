@@ -1,0 +1,29 @@
+{
+    "table": "lead_pipelines",
+    "columns": [
+        "id",
+        "company_id",
+        "name",
+        "slug",
+        "priority",
+        "label_color",
+        "default",
+        "created_at",
+        "updated_at",
+        "added_by"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "name": "Sales Pipeline",
+            "slug": "sales-pipeline",
+            "priority": 1,
+            "label_color": "#009EFF",
+            "default": 1,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04",
+            "added_by": null
+        }
+    ]
+}

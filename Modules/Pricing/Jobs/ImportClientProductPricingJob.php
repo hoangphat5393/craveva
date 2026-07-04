@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Modules\Pricing\Entities\ClientProductPricing;
 
 class ImportClientProductPricingJob implements ShouldQueue
@@ -39,6 +40,8 @@ class ImportClientProductPricingJob implements ShouldQueue
         $customPrice = $this->getColumnValue('custom_price');
         $discountType = $this->getColumnValue('discount_type');
         $discountValue = $this->getColumnValue('discount_value');
+        $startDate = $this->parseImportDate($this->getColumnValue('start_date'), now()->toDateString());
+        $endDate = $this->parseImportDate($this->getColumnValue('end_date'), '2099-12-31');
 
         $clientDetails = null;
 
@@ -49,8 +52,10 @@ class ImportClientProductPricingJob implements ShouldQueue
         }
 
         if (! $clientDetails && $this->isEmailValid($email)) {
-            $user = User::where('email', $email)->first();
-            $clientDetails = $user ? ClientDetails::where('user_id', $user->id)->first() : null;
+            $user = User::where('email', $email)
+                ->where('company_id', $this->company?->id)
+                ->first();
+            $clientDetails = $user ? ClientDetails::where('company_id', $this->company?->id)->where('user_id', $user->id)->first() : null;
         }
 
         if (! $clientDetails) {
@@ -65,7 +70,9 @@ class ImportClientProductPricingJob implements ShouldQueue
             return;
         }
 
-        $product = Product::where('sku', $sku)->first();
+        $product = Product::where('company_id', $this->company?->id)
+            ->where('sku', $sku)
+            ->first();
 
         if (! $product) {
             $this->failJob('Product not found: ');
@@ -76,13 +83,30 @@ class ImportClientProductPricingJob implements ShouldQueue
         $pricing = ClientProductPricing::firstOrNew([
             'client_id' => $clientDetails->user_id,
             'product_id' => $product->id,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ]);
 
         $pricing->company_id = $this->company ? $this->company->id : null;
         $pricing->custom_price = $customPrice !== null && $customPrice !== '' ? (float) $customPrice : null;
         $pricing->discount_type = $discountType ?: null;
         $pricing->discount_value = $discountValue !== null && $discountValue !== '' ? (float) $discountValue : null;
+        $pricing->start_date = $startDate;
+        $pricing->end_date = $endDate;
         $pricing->is_active = true;
         $pricing->save();
+    }
+
+    private function parseImportDate($value, string $default): string
+    {
+        if ($value === null || $value === '') {
+            return $default;
+        }
+
+        try {
+            return Carbon::parse($value)->toDateString();
+        } catch (\Throwable) {
+            return $default;
+        }
     }
 }

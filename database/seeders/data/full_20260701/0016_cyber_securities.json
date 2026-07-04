@@ -1,0 +1,37 @@
+{
+    "table": "cyber_securities",
+    "columns": [
+        "id",
+        "max_retries",
+        "email",
+        "lockout_time",
+        "max_lockouts",
+        "extended_lockout_time",
+        "reset_retries",
+        "alert_after_lockouts",
+        "user_timeout",
+        "ip_check",
+        "ip",
+        "unique_session",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "max_retries": 3,
+            "email": null,
+            "lockout_time": 2,
+            "max_lockouts": 3,
+            "extended_lockout_time": 1,
+            "reset_retries": 24,
+            "alert_after_lockouts": 2,
+            "user_timeout": 10,
+            "ip_check": 0,
+            "ip": null,
+            "unique_session": 0,
+            "created_at": "2026-07-01 20:57:36",
+            "updated_at": "2026-07-01 20:57:36"
+        }
+    ]
+}

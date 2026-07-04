@@ -5,6 +5,7 @@ namespace Modules\Pricing\Services;
 use App\Models\ClientDetails;
 use App\Models\Product;
 use App\Scopes\CompanyScope;
+use Illuminate\Support\Carbon;
 use Modules\Pricing\Entities\ClientProductPricing;
 use Modules\Pricing\Entities\CompanyCustomerPricing;
 use Modules\Pricing\Entities\CompanyCustomerProductPricing;
@@ -13,6 +14,11 @@ use Modules\Pricing\Entities\PricingTierItem;
 
 class PricingService
 {
+    /**
+     * @var array<int, PricingTier|null>
+     */
+    private array $tierCache = [];
+
     /**
      * Calculate the final price for a product based on 2-Stage Pricing Logic.
      * Stage 1: Determine Base Unit Price (Client > Corporate > Tier > Base)
@@ -23,6 +29,8 @@ class PricingService
         $product = Product::findOrFail($productId);
         $sellerCompanyId = $product->company_id;
         $basePrice = (float) $product->price;
+        $pricingNow = $this->pricingNow();
+        $pricingToday = $pricingNow->toDateString();
 
         // --- STAGE 1: Determine Unit Price ---
 
@@ -30,11 +38,11 @@ class PricingService
         $specific = ClientProductPricing::where('client_id', $clientId)
             ->where('product_id', $productId)
             ->where('is_active', true)
-            ->where(function ($q) {
-                $q->whereNull('start_date')->orWhere('start_date', '<=', now());
+            ->where(function ($q) use ($pricingNow) {
+                $q->whereNull('start_date')->orWhere('start_date', '<=', $pricingNow);
             })
-            ->where(function ($q) {
-                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+            ->where(function ($q) use ($pricingNow) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', $pricingNow);
             })
             ->first();
 
@@ -46,7 +54,7 @@ class PricingService
 
         // 2. Corporate Pricing (Client Contract)
         if ($sellerCompanyId && $clientId) {
-            $corporatePricing = $this->getClientContractPricing($sellerCompanyId, $clientId, $productId);
+            $corporatePricing = $this->getClientContractPricing($sellerCompanyId, $clientId, $productId, $product);
             if ($corporatePricing) {
                 return $this->applyStage2($corporatePricing['unit_price'], $quantity, $productId, $sellerCompanyId, $corporatePricing['source']);
             }
@@ -61,8 +69,8 @@ class PricingService
             // Check validity
             if (
                 $tier && $tier->is_active &&
-                ($tier->valid_from === null || now()->toDateString() >= $tier->valid_from) &&
-                ($tier->valid_to === null || now()->toDateString() <= $tier->valid_to)
+                ($tier->valid_from === null || $pricingToday >= $tier->valid_from) &&
+                ($tier->valid_to === null || $pricingToday <= $tier->valid_to)
             ) {
 
                 // Check if tier belongs to seller or is platform (null)
@@ -153,11 +161,7 @@ class PricingService
 
     public function calculatePrice(int $productId, ?int $companyId, ?int $customerCompanyId, int $quantity = 1): array
     {
-        $product = Product::findOrFail($productId);
-        $sellerCompanyId = $product->company_id;
-        $basePrice = (float) $product->price;
-
-        return $this->applyStage2($basePrice, $quantity, $productId, $sellerCompanyId, 'base_price');
+        throw new \BadMethodCallException('Use calculate($productId, $clientUserId, $quantity) so client-specific pricing can be applied.');
     }
 
     public function getApplicableTiers(?int $companyId, ?int $customerCompanyId): array
@@ -184,7 +188,7 @@ class PricingService
         return $service->calculate($items, $companyId);
     }
 
-    public function getClientContractPricing(int $sellerCompanyId, int $clientId, int $productId): ?array
+    public function getClientContractPricing(int $sellerCompanyId, int $clientId, int $productId, ?Product $product = null): ?array
     {
         $relation = CompanyCustomerPricing::query()
             ->where('company_id', $sellerCompanyId)
@@ -193,6 +197,18 @@ class PricingService
             ->first();
 
         if (! $relation) {
+            return null;
+        }
+
+        $today = $this->pricingNow()->toDateString();
+        $validFrom = $relation->valid_from ? Carbon::parse($relation->valid_from)->toDateString() : null;
+        $validTo = $relation->valid_to ? Carbon::parse($relation->valid_to)->toDateString() : null;
+
+        if ($validFrom && $today < $validFrom) {
+            return null;
+        }
+
+        if ($validTo && $today > $validTo) {
             return null;
         }
 
@@ -208,8 +224,8 @@ class PricingService
             ];
         }
 
-        if ($relation->custom_discount_type && $relation->custom_discount_value) {
-            $product = Product::find($productId);
+        if ($relation->custom_discount_type !== null && $relation->custom_discount_value !== null) {
+            $product ??= Product::find($productId);
 
             if (! $product) {
                 return null;
@@ -229,11 +245,11 @@ class PricingService
             $tier = $this->resolvePricingTierById($relation->pricing_tier_id);
             if (
                 $tier && $tier->is_active &&
-                ($tier->valid_from === null || now()->toDateString() >= $tier->valid_from) &&
-                ($tier->valid_to === null || now()->toDateString() <= $tier->valid_to)
+                ($tier->valid_from === null || $today >= $tier->valid_from) &&
+                ($tier->valid_to === null || $today <= $tier->valid_to)
             ) {
 
-                $product = Product::find($productId);
+                $product ??= Product::find($productId);
                 if (! $product) {
                     return null;
                 }
@@ -273,6 +289,20 @@ class PricingService
      */
     private function resolvePricingTierById(int $tierId): ?PricingTier
     {
-        return PricingTier::withoutGlobalScope(CompanyScope::class)->find($tierId);
+        if (! array_key_exists($tierId, $this->tierCache)) {
+            $this->tierCache[$tierId] = PricingTier::withoutGlobalScope(CompanyScope::class)->find($tierId);
+        }
+
+        return $this->tierCache[$tierId];
+    }
+
+    private function pricingNow(): Carbon
+    {
+        $company = function_exists('company') ? company() : null;
+        $timezone = $company && $company->timezone
+            ? $company->timezone
+            : config('app.timezone');
+
+        return now($timezone);
     }
 }

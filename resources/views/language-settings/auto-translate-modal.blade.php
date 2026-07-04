@@ -29,20 +29,28 @@
     });
 
     $('#saveAutoTranslateSetting').click(function () {
-        $.easyAjax({
-            container: '#autoTranslateSetting',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-language",
-            url: "{{route('language_settings.auto_translate_update')}}",
-            data: $('#autoTranslateSetting').serialize(),
-            success: function (response) {
+        const button = $('#saveAutoTranslateSetting');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#autoTranslateSetting');
+
+        window.apiHttp.postUrlEncoded("{{route('language_settings.auto_translate_update')}}", $('#autoTranslateSetting').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#autoTranslateSetting');
+            });
     });
 
 </script>

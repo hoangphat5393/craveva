@@ -94,23 +94,29 @@
 
     <script>
         $('body').on('click', '#save-push-form', function() {
-            $.easyAjax({
-                url: "{{ route('push-notification-settings.update', 1) }}",
-                type: "POST",
-                container: "#editSettings",
-                blockUI: true,
-                data: $('#editSettings').serialize(),
-                success: function () {
+            $.easyBlockUI("#editSettings");
+
+            window.apiHttp.postUrlEncoded("{{ route('push-notification-settings.update', 1) }}", $('#editSettings').serialize())
+                .then(() => {
                     window.location.reload();
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI("#editSettings");
+                });
         });
 
         $('body').on('click', '#send-test-notification', function() {
-            $.easyAjax({
-                url: "{{ route('push_notification_settings.send_test_notification') }}",
-                type: "GET",
-            })
+            window.apiHttp.get("{{ route('push_notification_settings.send_test_notification') }}")
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                });
         });
 
         var checkboxes = document.querySelectorAll(".notification input[type=checkbox]");

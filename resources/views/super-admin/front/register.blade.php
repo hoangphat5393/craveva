@@ -139,27 +139,26 @@
 @push('footer-script')
     <script>
         $('#save-form').click(function () {
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('front.signup.store') }}",
-                container: '#register',
-                data: $('#register').serialize(),
-                messagePosition: 'inline',
-                errorPosition: 'field',
-                success: function (response) {
+            $.easyBlockUI('#register');
+
+            window.apiHttp.postUrlEncoded("{{ route('front.signup.store') }}", $('#register').serialize())
+                .then(function (response) {
                     if (response.status === 'success') {
                         $('#form-box').remove();
                         if (response.action === 'redirect' && response.url) {
                             window.location.href = response.url;
                         }
                     }
-                },
-                complete: function () {
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#register');
                     @if ($global->google_recaptcha_status)
                     grecaptcha.reset();
                     @endif
-                }
-            });
+                });
         });
     </script>
     @if ($global->google_recaptcha_status == 'active' && $global->google_recaptcha_v2_status == 'active')

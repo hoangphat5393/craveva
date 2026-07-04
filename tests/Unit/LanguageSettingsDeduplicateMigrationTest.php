@@ -1,12 +1,15 @@
 <?php
 
-it('language_settings dedupe migration is non-destructive and delegates to service', function () {
-    $path = database_path('migrations/2026_04_08_120000_deduplicate_language_settings_by_language_code.php');
+it('keeps language code uniqueness in the consolidated baseline and repair command', function () {
+    $path = database_path('migrations/2000_01_01_000171_create_language_settings_baseline.php');
 
     expect(file_exists($path))->toBeTrue();
     $contents = file_get_contents($path);
     expect($contents)->toBeString();
-    expect($contents)->toContain('LanguageSettingsDuplicateMergeService');
-    expect($contents)->toContain('ensureUniqueIndexOnLanguageCode');
-    expect($contents)->not->toContain('mergeDuplicateLanguageSetting');
+    expect($contents)->toContain('language_settings_language_code_unique');
+
+    $command = file_get_contents(app_path('Console/Commands/LanguageSettingsDedupeDuplicateCodesCommand.php'));
+    expect($command)->toBeString();
+    expect($command)->toContain('LanguageSettingsDuplicateMergeService');
+    expect($command)->toContain('ensureUniqueIndexOnLanguageCode');
 });

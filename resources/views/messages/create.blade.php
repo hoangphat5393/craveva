@@ -217,15 +217,14 @@
         $('#mentionUserIds').val(mention_user_id.join(','));
 
         var url = "{{ route('messages.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createConversationForm',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-message",
-            type: "POST",
-            data: $('#createConversationForm').serialize(),
-            success: function (response) {
+        const button = $('#save-message');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createConversationForm');
+
+        window.apiHttp.postUrlEncoded(url, $('#createConversationForm').serialize())
+            .then(function (response) {
                 $('#user_list').val(response.user_list);
                 $('#message_list').val(response.message_list);
                 $('#receiver_id').val(response.receiver_id);
@@ -243,8 +242,15 @@
                 $('#user-no-' + response.receiver_id + ' a').addClass('active');
                 let receiverId = $('#chatBox').data('chat-for-user');
                 $('#user-no-' + receiverId + ' a').addClass('active');
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#createConversationForm');
             }
-        })
+        );
     });
 
     function setContent() {

@@ -155,20 +155,17 @@
 
         $('#save-knowledgebase').click(function() {
             const url = "{{ route('knowledgebase.store') }}";
+            const button = $('#save-knowledgebase');
+            const buttonText = button.html();
 
             var note = document.getElementById('description').children[0].innerHTML;
             document.getElementById('description-text').value = note;
 
-            $.easyAjax({
-                url: url,
-                container: '#save-knowledgebase-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-knowledgebase",
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-knowledgebase-data-form');
 
-                data: $('#save-knowledgebase-data-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-knowledgebase-data-form').serialize())
+                .then((response) => {
                         if (response.status == 'success') {
                             if (knowledgeBaseDropzone.getQueuedFiles().length > 0) {
                                 knowledgeBaseId = response.knowledgeBaseId;
@@ -184,8 +181,17 @@
                                 }
                             }
                         }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#save-knowledgebase-data-form');
+                });
         });
 
         $('#addKnowledgeCategory').click(function() {

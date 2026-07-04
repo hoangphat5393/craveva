@@ -1,0 +1,25 @@
+{
+    "table": "message_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "allow_client_admin",
+        "allow_client_employee",
+        "restrict_client",
+        "created_at",
+        "updated_at",
+        "send_sound_notification"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "allow_client_admin": "no",
+            "allow_client_employee": "no",
+            "restrict_client": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04",
+            "send_sound_notification": 0
+        }
+    ]
+}

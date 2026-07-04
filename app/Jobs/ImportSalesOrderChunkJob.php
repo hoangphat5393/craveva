@@ -41,7 +41,7 @@ class ImportSalesOrderChunkJob implements ShouldQueue
     public function handle(): void
     {
         if (! $this->company?->id) {
-            $this->fail(__('messages.invalidData') . ': Company context is required for SO import.');
+            $this->fail(__('messages.invalidData').': Company context is required for SO import.');
 
             return;
         }
@@ -72,7 +72,7 @@ class ImportSalesOrderChunkJob implements ShouldQueue
                 }
             } catch (Exception $e) {
                 $fileRow = $this->chunkStartIndex + $index + 2;
-                $failures[] = 'Row ' . $fileRow . ': ' . $e->getMessage();
+                $failures[] = 'Row '.$fileRow.': '.$e->getMessage();
             }
         }
 
@@ -87,7 +87,7 @@ class ImportSalesOrderChunkJob implements ShouldQueue
         if ($failures !== []) {
             $message = implode("\n", array_slice($failures, 0, 50));
             if (count($failures) > 50) {
-                $message .= "\n… and " . (count($failures) - 50) . ' more';
+                $message .= "\n… and ".(count($failures) - 50).' more';
             }
             $this->fail($message);
         }
@@ -161,7 +161,7 @@ class ImportSalesOrderChunkJob implements ShouldQueue
         $order = new Order;
         $order->company_id = $this->company->id;
         $order->client_id = $client->user_id;
-        $order->order_number = 'SOIMP-' . substr($sourceHash, 0, 10);
+        $order->order_number = 'SOIMP-'.substr($sourceHash, 0, 10);
         $order->order_date = $shipmentDate;
         $order->sub_total = round($amountAbs ?? ($qtyAbs * $unitPrice), 2);
         $order->total = round($amountAbs ?? ($qtyAbs * $unitPrice), 2);
@@ -170,8 +170,11 @@ class ImportSalesOrderChunkJob implements ShouldQueue
         $order->status = $isReturn ? 'refunded' : 'completed';
         $order->currency_id = $this->company->currency_id;
         $order->show_shipping_address = 'no';
-        $order->company_address_id = DB::table('company_addresses')->where('is_default', 1)->value('id');
-        $order->note = trim('Imported SO from Last year net sales. Source hash: ' . $sourceHash);
+        $order->company_address_id = DB::table('company_addresses')
+            ->where('company_id', $this->company->id)
+            ->where('is_default', 1)
+            ->value('id');
+        $order->note = trim('Imported SO from Last year net sales. Source hash: '.$sourceHash);
         $order->save();
 
         $item = new OrderItems;
@@ -183,7 +186,9 @@ class ImportSalesOrderChunkJob implements ShouldQueue
         $item->quantity = $qtyAbs;
         $item->unit_price = round($unitPrice, 2);
         $item->amount = round($amountAbs ?? ($qtyAbs * $unitPrice), 2);
-        $item->unit_id = $product->unit_id ?: UnitType::query()->value('id');
+        $item->unit_id = $product->unit_id ?: UnitType::query()
+            ->where('company_id', $this->company->id)
+            ->value('id');
         $item->sku = $product->sku;
         $item->field_order = 1;
         $item->save();
@@ -224,7 +229,7 @@ class ImportSalesOrderChunkJob implements ShouldQueue
         try {
             return Carbon::parse($str)->format('Y-m-d');
         } catch (\Throwable $e) {
-            throw new Exception('Invalid Shipment/Return Date: ' . $value);
+            throw new Exception('Invalid Shipment/Return Date: '.$value);
         }
     }
 
@@ -244,7 +249,7 @@ class ImportSalesOrderChunkJob implements ShouldQueue
         $s = str_replace(',', '', $s);
 
         if (! is_numeric($s)) {
-            throw new Exception('Invalid numeric value: ' . $value);
+            throw new Exception('Invalid numeric value: '.$value);
         }
 
         return (float) $s;

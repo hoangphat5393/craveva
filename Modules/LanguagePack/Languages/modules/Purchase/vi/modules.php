@@ -267,6 +267,9 @@ return [
         'availableForSale' => 'Có sẵn để bán',
         'committed_Stock' => 'Tồn đã cam kết',
         'commitedStock' => 'Committed Stock',
+        'warehouseMovementReport' => 'Báo cáo nhập xuất kho',
+        'allReferences' => 'Tất cả chứng từ tham chiếu',
+        'referenceId' => 'ID chứng từ',
     ],
     'deliveryOrder' => [
         'draft' => 'Nháp',
@@ -289,8 +292,9 @@ return [
         'confirmed' => 'Đã xác nhận',
         'shipped' => 'Đã xuất kho',
         'delivered' => 'Đã giao khách',
+        'markDelivered' => 'Đánh dấu đã giao khách',
         'cancelled' => 'Đã hủy',
-        'reverse' => 'Hoàn tác xuất kho (Sales DO)',
+        'reverse' => 'Hoàn tác xuất kho',
     ],
     'order' => [
         'orderNumber' => 'Order Number',

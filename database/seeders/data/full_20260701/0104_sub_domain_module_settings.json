@@ -1,0 +1,27 @@
+{
+    "table": "sub_domain_module_settings",
+    "columns": [
+        "id",
+        "purchase_code",
+        "supported_until",
+        "purchased_on",
+        "license_type",
+        "notify_update",
+        "banned_subdomain",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "purchase_code": null,
+            "supported_until": null,
+            "purchased_on": null,
+            "license_type": null,
+            "notify_update": 1,
+            "banned_subdomain": null,
+            "created_at": "2026-07-01 20:58:34",
+            "updated_at": "2026-07-01 20:58:34"
+        }
+    ]
+}

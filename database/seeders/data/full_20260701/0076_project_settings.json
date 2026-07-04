@@ -1,0 +1,25 @@
+{
+    "table": "project_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "send_reminder",
+        "remind_time",
+        "remind_type",
+        "remind_to",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "send_reminder": "no",
+            "remind_time": 5,
+            "remind_type": "days",
+            "remind_to": "[\"admins\",\"members\"]",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

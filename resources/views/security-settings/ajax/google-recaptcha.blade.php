@@ -186,19 +186,22 @@
 
     function saveForm() {
         var url = "{{ route('security-settings.update', global_setting()->id ) }}";
-        $.easyAjax({
-            url: url,
-            container: '#editSettings',
-            type: "POST",
-            redirect: true,
-            disableButton: true,
-            blockUI: true,
-            data: $('#editSettings').serialize(),
-            buttonSelector: "#save-form",
-            success: function (response) {
+        $('#save-form').prop('disabled', true);
+        $.easyBlockUI('#editSettings');
+
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .then(() => {
                 window.location.reload();
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $('#save-form').prop('disabled', false);
+                $.easyUnblockUI('#editSettings');
+            });
     }
 
     function errorMsg() {

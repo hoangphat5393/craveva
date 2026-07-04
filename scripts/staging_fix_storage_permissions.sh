@@ -6,7 +6,7 @@
 #   APP=/var/www/craveva-staging/current/craveva bash scripts/staging_fix_storage_permissions.sh
 #   ssh craveva-staging 'APP=/var/www/craveva-staging/current/craveva bash -s' < scripts/staging_fix_storage_permissions.sh
 #
-# See docs/SERVER_RUNBOOK_VI.md §4.6
+# See docs/SERVER_RUNBOOK.md section 4.6
 
 set -euo pipefail
 

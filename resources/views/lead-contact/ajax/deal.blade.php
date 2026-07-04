@@ -132,10 +132,8 @@
         var url = "{{ route('deals.get-stage', ':id') }}";
         url = url.replace(':id', pipelineId);
 
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            success: function (response) {
+        window.apiHttp.get(url)
+            .then(function (response) {
                 if (response.status == 'success') {
                     var options = [];
                     var rData = [];
@@ -151,8 +149,10 @@
                     $('#change-stage-action').html(options);
                     $('#change-stage-action').selectpicker('refresh');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     }
 
     $('#reset-filters,#reset-filters-2').click(function() {
@@ -189,19 +189,19 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                $.easyBlockUI('#leads-table');
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#leads-table');
+                    });
             }
         });
     });
@@ -264,22 +264,27 @@
 
             var url = "{{ route('deals.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            const $btn = $('#quick-action-apply');
+            const previousHtml = $btn.html();
+            $.easyBlockUI('#quick-action-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#quick-action-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         };
 
         function changeStage(leadID, elem) {
@@ -289,15 +294,12 @@
             var url = "{{ route('deals.change_stage') }}";
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: {
-                    '_token': token,
-                    'leadID': leadID,
-                    'statusID': statusID
-                },
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                'leadID': leadID,
+                'statusID': statusID
+            })
+                .then(function(response) {
                     if (response.status == "success") {
 
                         if (statusSlug === 'win' || statusSlug === 'lost') {
@@ -313,8 +315,10 @@
                         resetActionButtons();
                         deSelectAll();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
 
         function followUp(leadID) {

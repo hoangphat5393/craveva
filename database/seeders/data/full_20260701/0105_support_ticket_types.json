@@ -1,0 +1,29 @@
+{
+    "table": "support_ticket_types",
+    "columns": [
+        "id",
+        "type",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "type": "Question",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "type": "Problem",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "type": "General Query",
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

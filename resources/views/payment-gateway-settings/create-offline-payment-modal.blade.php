@@ -41,19 +41,24 @@
     // });
     //  save offline payments
     $('#save-method').click(function () {
-        $.easyAjax({
-            url: "{{route('offline-payment-setting.store')}}",
-            container: '#createMethods',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-method",
-            blockUI: true,
-            file: true,
-            data: $('#createMethods').serialize(),
-            success: function () {
+        const button = $('#save-method');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createMethods');
+
+        window.apiHttp.postUrlEncoded("{{route('offline-payment-setting.store')}}", $('#createMethods').serialize())
+            .then(function () {
                 window.location.reload();
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#createMethods');
             }
-        })
+        );
     });
 </script>
 

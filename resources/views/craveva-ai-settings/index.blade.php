@@ -43,18 +43,22 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status === "success") {
                         $('#nav-tabContent .flex-wrap').html(response.html);
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI("#nav-tabContent");
+                });
         });
     </script>
 @endpush

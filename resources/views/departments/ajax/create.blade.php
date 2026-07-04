@@ -51,23 +51,31 @@
 
     $('#save-department-form').click(function() {
         var url = "{{ route('departments.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#save-department-data-form',
-            type: "POST",
-            data: $('#save-department-data-form').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            success: function(response) {
+        const button = $('#save-department-form');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#save-department-data-form');
+
+        window.apiHttp.postUrlEncoded(url, $('#save-department-data-form').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     $('#employee_department').html(response.data);
                     $('#employee_department').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                     window.location.href = response.redirectUrl
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#save-department-data-form');
+            });
     });
 
 </script>

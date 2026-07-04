@@ -76,21 +76,17 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == 'success') {
                             $('#task_category_id').html(response.data);
                             $('#task_category_id').selectpicker('refresh');
                             $(MODAL_LG).modal('hide');
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
             }
         });
 
@@ -98,22 +94,24 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('taskCategory.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createTaskCategory',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            data: $('#createTaskCategory').serialize(),
-            success: function(response) {
+        $('#save-category').prop('disabled', true);
+        $.easyBlockUI('#createTaskCategory');
+
+        window.apiHttp.postUrlEncoded(url, $('#createTaskCategory').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     $('#task_category_id').html(response.data);
                     $('#task_category_id').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-category').prop('disabled', false);
+                $.easyUnblockUI('#createTaskCategory');
+            });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -129,23 +127,25 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#row-' + id);
+
+            window.apiHttp.postUrlEncoded(url, {
                     'category_name': value,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#task_category_id').html(response.data);
                         $('#task_category_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#row-' + id);
+                });
         }
     });
 

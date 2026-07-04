@@ -29,21 +29,23 @@
 
         let noteId = "{{ $note->id }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#checkForpassword',
-            type: "POST",
-            data: {
-                note_id: noteId,
-                '_token': token,
-                password: password
-            },
-            success: function(response) {
+        $.easyBlockUI('#checkForpassword');
+        window.apiHttp.postUrlEncoded(url, {
+            note_id: noteId,
+            '_token': token,
+            password: password
+        })
+            .then(function(response) {
                 if (response.status == 'success') {
                     $(MODAL_LG).modal('hide');
                     getNoteDetail(noteId);
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#checkForpassword');
+            });
     });
 </script>

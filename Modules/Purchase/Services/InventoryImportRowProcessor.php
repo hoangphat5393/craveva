@@ -73,6 +73,15 @@ final class InventoryImportRowProcessor
      */
     public function run(): bool
     {
+        try {
+            return DB::transaction(fn (): bool => $this->runWithinTransaction());
+        } catch (\Throwable $e) {
+            throw new RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    private function runWithinTransaction(): bool
+    {
         $date = null;
         if ($this->isColumnExists('date')) {
             $dateValue = $this->getColumnValue('date');
@@ -166,7 +175,7 @@ final class InventoryImportRowProcessor
                 return false;
             }
 
-            throw new RuntimeException(__('messages.invalidData') . ': Product not found. Row: ');
+            throw new RuntimeException(__('messages.invalidData').': Product not found. Row: ');
         }
 
         if ($product->track_inventory != 1) {
@@ -200,164 +209,156 @@ final class InventoryImportRowProcessor
 
         $warehouseId = $this->resolveWarehouseId();
 
-        DB::beginTransaction();
-        try {
-            $type = 'quantity';
-            if ($this->isColumnExists('type')) {
-                $typeValue = $this->getColumnValue('type');
-                $type = ! empty($typeValue) ? strtolower((string) $typeValue) : 'quantity';
-            }
+        $type = 'quantity';
+        if ($this->isColumnExists('type')) {
+            $typeValue = $this->getColumnValue('type');
+            $type = ! empty($typeValue) ? strtolower((string) $typeValue) : 'quantity';
+        }
 
-            $inventory = new PurchaseInventory;
-            $inventory->company_id = $this->company->id;
-            $inventory->date = $date;
-            $inventory->type = $type;
-            $inventory->warehouse_id = $warehouseId;
-            $inventory->added_by = user() ? user()->id : null;
-            $inventory->save();
+        $inventory = new PurchaseInventory;
+        $inventory->company_id = $this->company->id;
+        $inventory->date = $date;
+        $inventory->type = $type;
+        $inventory->warehouse_id = $warehouseId;
+        $inventory->added_by = user() ? user()->id : null;
+        $inventory->save();
 
-            $addStock = new PurchaseStockAdjustment;
-            $addStock->company_id = $this->company->id;
-            $addStock->type = $type;
-            $addStock->date = $date;
-            $addStock->inventory_id = $inventory->id;
-            $addStock->product_id = $product->id;
-            $addStock->warehouse_id = $warehouseId;
-            $addStock->batch_number = $this->isColumnExists('batch_number') ? $this->getColumnValue('batch_number') : null;
-            $addStock->description = $this->isColumnExists('description') ? $this->getColumnValue('description') : null;
+        $addStock = new PurchaseStockAdjustment;
+        $addStock->company_id = $this->company->id;
+        $addStock->type = $type;
+        $addStock->date = $date;
+        $addStock->inventory_id = $inventory->id;
+        $addStock->product_id = $product->id;
+        $addStock->warehouse_id = $warehouseId;
+        $addStock->batch_number = $this->isColumnExists('batch_number') ? $this->getColumnValue('batch_number') : null;
+        $addStock->description = $this->isColumnExists('description') ? $this->getColumnValue('description') : null;
 
-            if ($this->isColumnExists('manufacturing_date')) {
-                $mDateValue = $this->getColumnValue('manufacturing_date');
-                if (! empty($mDateValue)) {
+        if ($this->isColumnExists('manufacturing_date')) {
+            $mDateValue = $this->getColumnValue('manufacturing_date');
+            if (! empty($mDateValue)) {
+                try {
+                    $addStock->manufacturing_date = Carbon::instance(Date::excelToDateTimeObject($mDateValue))->format('Y-m-d');
+                } catch (\Throwable $e) {
                     try {
-                        $addStock->manufacturing_date = Carbon::instance(Date::excelToDateTimeObject($mDateValue))->format('Y-m-d');
+                        $addStock->manufacturing_date = Carbon::parse($mDateValue)->format('Y-m-d');
                     } catch (\Throwable $e) {
-                        try {
-                            $addStock->manufacturing_date = Carbon::parse($mDateValue)->format('Y-m-d');
-                        } catch (\Throwable $e) {
-                        }
                     }
                 }
             }
+        }
 
-            if ($this->isColumnExists('expiration_date')) {
-                $eDateValue = $this->getColumnValue('expiration_date');
-                if (! empty($eDateValue)) {
+        if ($this->isColumnExists('expiration_date')) {
+            $eDateValue = $this->getColumnValue('expiration_date');
+            if (! empty($eDateValue)) {
+                try {
+                    $addStock->expiration_date = Carbon::instance(Date::excelToDateTimeObject($eDateValue))->format('Y-m-d');
+                } catch (\Throwable $e) {
                     try {
-                        $addStock->expiration_date = Carbon::instance(Date::excelToDateTimeObject($eDateValue))->format('Y-m-d');
+                        $addStock->expiration_date = Carbon::parse($eDateValue)->format('Y-m-d');
                     } catch (\Throwable $e) {
-                        try {
-                            $addStock->expiration_date = Carbon::parse($eDateValue)->format('Y-m-d');
-                        } catch (\Throwable $e) {
-                        }
                     }
                 }
             }
+        }
 
-            $addStock->status = 'converted';
+        $addStock->status = 'converted';
 
-            $quantity = 0.0;
-            if ($type == 'quantity') {
-                if ($this->isColumnExists('ending_inventory') && $this->getColumnValue('ending_inventory') !== null && $this->getColumnValue('ending_inventory') !== '') {
-                    $quantity = $this->parseImportNumber($this->getColumnValue('ending_inventory'));
-                } else {
-                    $quantity = $this->isColumnExists('quantity')
-                        ? $this->parseImportNumber($this->getColumnValue('quantity'))
-                        : 0.0;
-                }
-
-                $addStock->net_quantity = $quantity;
-                $addStock->quantity_adjustment = $quantity;
-                if (Schema::hasColumn('purchase_stock_adjustments', 'reserved_quantity')) {
-                    $addStock->reserved_quantity = $this->isColumnExists('reserved_quantity')
-                        ? $this->parseImportNumber($this->getColumnValue('reserved_quantity'))
-                        : 0;
-                }
+        $quantity = 0.0;
+        if ($type == 'quantity') {
+            if ($this->isColumnExists('ending_inventory') && $this->getColumnValue('ending_inventory') !== null && $this->getColumnValue('ending_inventory') !== '') {
+                $quantity = $this->parseImportNumber($this->getColumnValue('ending_inventory'));
             } else {
-                $costPrice = $this->isColumnExists('cost_price')
-                    ? $this->parseImportNumber($this->getColumnValue('cost_price'))
+                $quantity = $this->isColumnExists('quantity')
+                    ? $this->parseImportNumber($this->getColumnValue('quantity'))
                     : 0.0;
-                $addStock->changed_value = $costPrice;
-                $addStock->adjusted_value = $costPrice;
             }
 
-            $addStock->save();
-
-            if ($type == 'quantity' && $warehouseId && class_exists(StockMovementService::class)) {
-                $currentWarehouseQty = (float) (WarehouseProductStock::where('warehouse_id', $warehouseId)
-                    ->where('product_id', $product->id)
-                    ->value('quantity') ?? 0);
-                $this->syncWarehouseStockFromAbsoluteQuantity(
-                    app(StockMovementService::class),
-                    $inventory,
-                    (int) $warehouseId,
-                    (int) $product->id,
-                    $currentWarehouseQty,
-                    (float) $quantity,
-                    $addStock->expiration_date,
-                    $addStock->manufacturing_date
-                );
+            $addStock->net_quantity = $quantity;
+            $addStock->quantity_adjustment = $quantity;
+            if (Schema::hasColumn('purchase_stock_adjustments', 'reserved_quantity')) {
+                $addStock->reserved_quantity = $this->isColumnExists('reserved_quantity')
+                    ? $this->parseImportNumber($this->getColumnValue('reserved_quantity'))
+                    : 0;
             }
+        } else {
+            $costPrice = $this->isColumnExists('cost_price')
+                ? $this->parseImportNumber($this->getColumnValue('cost_price'))
+                : 0.0;
+            $addStock->changed_value = $costPrice;
+            $addStock->adjusted_value = $costPrice;
+        }
 
-            $customFields = CustomFieldGroup::where('model', PurchaseInventory::CUSTOM_FIELD_MODEL)
-                ->where('company_id', $this->company->id)
-                ->with('customField')
-                ->first();
+        $addStock->save();
 
-            if ($customFields) {
-                $customFieldsData = [];
-                foreach ($customFields->customField as $customField) {
-                    $value = null;
+        if ($type == 'quantity' && $warehouseId && class_exists(StockMovementService::class)) {
+            $currentWarehouseQty = (float) (WarehouseProductStock::where('warehouse_id', $warehouseId)
+                ->where('product_id', $product->id)
+                ->value('quantity') ?? 0);
+            $this->syncWarehouseStockFromAbsoluteQuantity(
+                app(StockMovementService::class),
+                $inventory,
+                (int) $warehouseId,
+                (int) $product->id,
+                $currentWarehouseQty,
+                (float) $quantity,
+                $addStock->expiration_date,
+                $addStock->manufacturing_date
+            );
+        }
 
-                    if ($this->isColumnExists('field_' . $customField->id)) {
-                        $value = $this->getColumnValue('field_' . $customField->id);
+        $customFields = CustomFieldGroup::where('model', PurchaseInventory::CUSTOM_FIELD_MODEL)
+            ->where('company_id', $this->company->id)
+            ->with('customField')
+            ->first();
+
+        if ($customFields) {
+            $customFieldsData = [];
+            foreach ($customFields->customField as $customField) {
+                $value = null;
+
+                if ($this->isColumnExists('field_'.$customField->id)) {
+                    $value = $this->getColumnValue('field_'.$customField->id);
+                }
+
+                if (empty($value)) {
+                    $label = __($customField->label);
+                    if ($label == __('purchase::modules.inventory.endingInventory') && $this->isColumnExists('ending_inventory')) {
+                        $value = $this->getColumnValue('ending_inventory');
+                    } elseif ($label == __('purchase::modules.inventory.specification') && $this->isColumnExists('specification')) {
+                        $value = $this->getColumnValue('specification');
+                    } elseif ($label == __('purchase::modules.inventory.manufacturingDate') && $this->isColumnExists('manufacturing_date')) {
+                        $value = $this->getColumnValue('manufacturing_date');
+                    } elseif ($label == __('purchase::modules.inventory.expirationDate') && $this->isColumnExists('expiration_date')) {
+                        $value = $this->getColumnValue('expiration_date');
                     }
+                }
 
-                    if (empty($value)) {
-                        $label = __($customField->label);
-                        if ($label == __('purchase::modules.inventory.endingInventory') && $this->isColumnExists('ending_inventory')) {
-                            $value = $this->getColumnValue('ending_inventory');
-                        } elseif ($label == __('purchase::modules.inventory.specification') && $this->isColumnExists('specification')) {
-                            $value = $this->getColumnValue('specification');
-                        } elseif ($label == __('purchase::modules.inventory.manufacturingDate') && $this->isColumnExists('manufacturing_date')) {
-                            $value = $this->getColumnValue('manufacturing_date');
-                        } elseif ($label == __('purchase::modules.inventory.expirationDate') && $this->isColumnExists('expiration_date')) {
-                            $value = $this->getColumnValue('expiration_date');
-                        }
-                    }
-
-                    if (! is_null($value) && $value !== '') {
-                        if ($customField->type == 'date' && ! empty($value)) {
+                if (! is_null($value) && $value !== '') {
+                    if ($customField->type == 'date' && ! empty($value)) {
+                        try {
+                            $dateObj = Carbon::instance(Date::excelToDateTimeObject($value));
+                        } catch (\Throwable $e) {
                             try {
-                                $dateObj = Carbon::instance(Date::excelToDateTimeObject($value));
+                                $dateObj = Carbon::parse($value);
                             } catch (\Throwable $e) {
-                                try {
-                                    $dateObj = Carbon::parse($value);
-                                } catch (\Throwable $e) {
-                                    $dateObj = Carbon::now();
-                                }
+                                $dateObj = Carbon::now();
                             }
-                            $value = $dateObj->format(companyOrGlobalSetting()->date_format);
                         }
+                        $value = $dateObj->format(companyOrGlobalSetting()->date_format);
+                    }
 
-                        if ($customField->type !== 'date' || ! empty($value)) {
-                            $customFieldsData['field_' . $customField->id] = $value;
-                        }
+                    if ($customField->type !== 'date' || ! empty($value)) {
+                        $customFieldsData['field_'.$customField->id] = $value;
                     }
                 }
-                if (! empty($customFieldsData)) {
-                    $inventory->updateCustomFieldData($customFieldsData, $this->company->id);
-                }
             }
-            if ($type == 'value' && ! is_null($addStock->changed_value) && $product) {
-                $product->price = $addStock->changed_value;
-                $product->save();
+            if (! empty($customFieldsData)) {
+                $inventory->updateCustomFieldData($customFieldsData, $this->company->id);
             }
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw new RuntimeException($e->getMessage(), 0, $e);
+        }
+        if ($type == 'value' && ! is_null($addStock->changed_value) && $product) {
+            $product->price = $addStock->changed_value;
+            $product->save();
         }
 
         return true;

@@ -20,17 +20,26 @@
 <script>
     $('#save-unit').click(function() {
         var url = "{{ route('unit-type.update', $unitType->id) }}";
-        $.easyAjax({
-            url: url,
-            container: '#createUnitType',
-            type: "PUT",
-            data: $('#createUnitType').serialize(),
-            success: function(response) {
+        const $btn = $('#save-unit');
+        const previousHtml = $btn.html();
+        var data = $('#createUnitType').serialize() + '&_method=PUT';
+
+        $.easyBlockUI('#createUnitType');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded(url, data)
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#createUnitType');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -44,22 +53,23 @@
             var url = "{{ route('unit-type.update', ':id') }}";
             url = url.replace(':id', id);
             var token = "{{ csrf_token() }}";
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'unit_type': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+            $.easyBlockUI('#row-' + id);
+            window.apiHttp.postUrlEncoded(url, {
+                'unit_type': value,
+                '_token': token,
+                '_method': 'PUT'
+            })
+                .then(function(response) {
                     if (response.status == 'success' && typeof window.refreshProductUnitTypeDropdown === 'function') {
                         window.refreshProductUnitTypeDropdown(response.data);
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#row-' + id);
+                });
         }
     });
 </script>

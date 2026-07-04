@@ -32,16 +32,19 @@
     })
 
     $('#save-group').click(function () {
-        $.easyAjax({
-            url: "{{route('ticketTypes.update', $type->id)}}",
-            container: '#editTicketType',
-            type: "POST",
-            data: $('#editTicketType').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#editTicketType');
+
+        window.apiHttp.postUrlEncoded("{{route('ticketTypes.update', $type->id)}}", $('#editTicketType').serialize())
+            .then(function (response) {
                 if(response.status == 'success'){
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editTicketType');
+            });
     });
 </script>

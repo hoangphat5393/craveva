@@ -58,14 +58,12 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'GET',
-                    url: url,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            window.LaravelDataTables["recurring-invoices-table"].draw(true);
-                        }
+                window.apiHttp.get(url).then(function(response) {
+                    if (response.status == "success") {
+                        window.LaravelDataTables["recurring-invoices-table"].draw(true);
                     }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
                 });
             }
         });
@@ -128,19 +126,16 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                $.easyBlockUI('#recurring-invoices-table');
+
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
+                }).finally(function () {
+                    $.easyUnblockUI('#recurring-invoices-table');
                 });
             }
         });
@@ -153,19 +148,18 @@
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            container: '#recurring-invoices-table',
-            blockUI: true,
-            data: {
+        $.easyBlockUI('#recurring-invoices-table');
+
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.LaravelDataTables["recurring-invoices-table"].draw(true);
-                }
+        }).then(function(response) {
+            if (response.status == "success") {
+                window.LaravelDataTables["recurring-invoices-table"].draw(true);
             }
+        }).catch(function (error) {
+            $.handleApiFormError(error);
+        }).finally(function () {
+            $.easyUnblockUI('#recurring-invoices-table');
         });
     });
 
@@ -176,17 +170,17 @@
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            type: 'GET',
-            container: '#recurring-invoices-table',
-            blockUI: true,
-            url: url,
-            success: function(response) {
-                if (response.status == "success") {
-                    $.unblockUI();
-                    window.LaravelDataTables["recurring-invoices-table"].draw(true);
-                }
+        $.easyBlockUI('#recurring-invoices-table');
+
+        window.apiHttp.get(url).then(function(response) {
+            if (response.status == "success") {
+                $.unblockUI();
+                window.LaravelDataTables["recurring-invoices-table"].draw(true);
             }
+        }).catch(function (error) {
+            $.handleApiFormError(error);
+        }).finally(function () {
+            $.easyUnblockUI('#recurring-invoices-table');
         });
     });
 
@@ -205,15 +199,13 @@
         let url = "{{ route('invoices.toggle_shipping_address', ':id') }}";
         url = url.replace(':id', invoiceId);
 
-        $.easyAjax({
-            url: url,
-            type: 'GET',
-            success: function (response) {
-                if (response.status === 'success') {
-                    window.LaravelDataTables["recurring-invoices-table"].draw(true);
-                }
+        window.apiHttp.get(url).then(function (response) {
+            if (response.status === 'success') {
+                window.LaravelDataTables["recurring-invoices-table"].draw(true);
             }
-        })
+        }).catch(function (error) {
+            $.handleApiFormError(error);
+        });
     }
 
     function addShippingAddress(invoiceId) {

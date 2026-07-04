@@ -23,19 +23,24 @@
 <script>
 
     $('#save-project-category').click(function () {
-        $.easyAjax({
-            container: '#createProjectCategory',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-project-category",
-            url: "{{ route('project-settings.saveProjectCategory') }}",
-            data: $('#createProjectCategory').serialize(),
-            success: function (response) {
+        const $btn = $('#save-project-category');
+        const previousHtml = $btn.html();
+
+        $.easyBlockUI('#createProjectCategory');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded("{{ route('project-settings.saveProjectCategory') }}", $('#createProjectCategory').serialize())
+            .then(function (response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#createProjectCategory');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 </script>

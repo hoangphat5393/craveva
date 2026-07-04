@@ -153,38 +153,43 @@ $addHolidayPermission = user()->permission('add_holiday');
             calendar.render();
         }
 
+        function renderRightModalError(error) {
+            if (error.status == 403) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
+                );
+            } else if (error.status == 404) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
+                );
+            } else if (error.status == 500) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
+                );
+            } else {
+                $.handleApiFormError(error);
+            }
+        }
+
         // show leave detail in right modal
         var addEvent = function(date) {
             openTaskDetail();
             let url = `{{ route('holidays.create') }}?date=${date}`;
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: RIGHT_MODAL,
-                historyPush: true,
-                success: function(response) {
+            historyPush(url);
+            $.easyBlockUI(RIGHT_MODAL);
+
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status == "success") {
                         $(RIGHT_MODAL_CONTENT).html(response.html);
                         $(RIGHT_MODAL_TITLE).html(response.title);
                     }
-                },
-                error: function(request, status, error) {
-                    if (request.status == 403) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
-                        );
-                    } else if (request.status == 404) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
-                        );
-                    } else if (request.status == 500) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
-                        );
-                    }
-                }
-            });
+                })
+                .catch(renderRightModalError)
+                .finally(function () {
+                    $.easyUnblockUI(RIGHT_MODAL);
+                });
         }
 
         // show leave detail in right modal
@@ -193,33 +198,20 @@ $addHolidayPermission = user()->permission('add_holiday');
             var url = "{{ route('holidays.show', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: RIGHT_MODAL,
-                historyPush: true,
-                success: function(response) {
+            historyPush(url);
+            $.easyBlockUI(RIGHT_MODAL);
+
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status == "success") {
                         $(RIGHT_MODAL_CONTENT).html(response.html);
                         $(RIGHT_MODAL_TITLE).html(response.title);
                     }
-                },
-                error: function(request, status, error) {
-                    if (request.status == 403) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
-                        );
-                    } else if (request.status == 404) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
-                        );
-                    } else if (request.status == 500) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
-                        );
-                    }
-                }
-            });
+                })
+                .catch(renderRightModalError)
+                .finally(function () {
+                    $.easyUnblockUI(RIGHT_MODAL);
+                });
         }
 
         $('body').on('click', '#mark-holiday', function() {

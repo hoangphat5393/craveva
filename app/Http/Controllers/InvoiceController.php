@@ -47,9 +47,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\Entities\PurchaseProduct;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
 use Modules\Purchase\Entities\SalesDo;
+use Modules\Purchase\Services\SalesDoInvoiceGuardService;
 use Modules\Purchase\Support\SalesDoRuntime;
 use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 use Modules\Warehouse\Services\WarehouseFlowConfigService;
@@ -241,7 +243,8 @@ class InvoiceController extends AccountBaseController
         $this->taxes = Tax::all();
 
         $this->products = Product::query()
-            ->select('id', 'name', 'sku')
+            ->select('id', 'name', 'sku', 'type')
+            ->sellableDocumentLine()
             ->orderBy('name')
             ->limit(100)
             ->get();
@@ -364,6 +367,17 @@ class InvoiceController extends AccountBaseController
             $invoiceBlockMessage = $this->invoiceBlockedForOrderMessage($orderId);
             if ($invoiceBlockMessage !== null) {
                 return Reply::error($invoiceBlockMessage);
+            }
+
+            $overInvoicedProducts = app(SalesDoInvoiceGuardService::class)->exceededProducts(
+                (int) company()->id,
+                $orderId,
+                (array) $request->input('product_id', []),
+                (array) $request->input('quantity', [])
+            );
+
+            if ($overInvoicedProducts !== []) {
+                return Reply::error('Invoice quantity exceeds shipped and uninvoiced Sales Delivery Order quantity.');
             }
         }
 
@@ -532,6 +546,10 @@ class InvoiceController extends AccountBaseController
 
         $outboundMode = app(WarehouseFlowConfigService::class)->salesOutboundMode($companyId);
         if ($outboundMode !== 'shipment') {
+            return null;
+        }
+
+        if (! Schema::hasTable(SalesDoRuntime::headerTable())) {
             return null;
         }
 
@@ -904,7 +922,8 @@ class InvoiceController extends AccountBaseController
 
         $this->taxes = Tax::all();
         $this->products = Product::query()
-            ->select('id', 'name', 'sku')
+            ->select('id', 'name', 'sku', 'type')
+            ->sellableDocumentLine()
             ->orderBy('name')
             ->limit(100)
             ->get();
@@ -1162,7 +1181,8 @@ class InvoiceController extends AccountBaseController
         $categoryId = $request->get('category_id');
 
         $query = Product::query()
-            ->select('products.id', 'products.name', 'products.sku')
+            ->select('products.id', 'products.name', 'products.sku', 'products.type')
+            ->sellableDocumentLine()
             ->orderBy('products.name');
 
         if (! is_null($categoryId) && $categoryId !== '' && $categoryId !== 'null') {
@@ -1199,6 +1219,8 @@ class InvoiceController extends AccountBaseController
                     'id' => $product->id,
                     'name' => $product->name,
                     'sku' => $product->sku,
+                    'type' => $product->type,
+                    'label' => $product->documentDropdownLabel(),
                 ];
             })->values(),
             'pagination' => [
@@ -1831,13 +1853,32 @@ class InvoiceController extends AccountBaseController
 
     public function productCategory(Request $request)
     {
-        $categorisedProduct = Product::with('category');
+        $categorisedProduct = Product::with('category')
+            ->select('id', 'name', 'sku', 'type', 'category_id');
+
+        if ($request->get('context') === 'purchase') {
+            $categorisedProduct->purchasableDocumentLine();
+        } else {
+            $categorisedProduct->sellableDocumentLine();
+        }
 
         if (! is_null($request->id) && $request->id != 'null' && $request->id != '') {
             $categorisedProduct = $categorisedProduct->where('category_id', $request->id);
         }
 
-        $categorisedProduct = $categorisedProduct->get();
+        $categorisedProduct = $categorisedProduct
+            ->orderBy('name')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'type' => $product->type,
+                    'category_id' => $product->category_id,
+                    'label' => $product->documentDropdownLabel(),
+                ];
+            });
 
         return Reply::dataOnly(['status' => 'success', 'data' => $categorisedProduct]);
     }

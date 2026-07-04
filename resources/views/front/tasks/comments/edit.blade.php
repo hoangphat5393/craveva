@@ -44,27 +44,29 @@
 
             const url = "{{ route('taskComment.update', $comment->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#edit-comment-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-edit-comment",
-                data: {
+            $('#save-edit-comment').prop('disabled', true);
+            $.easyBlockUI('#edit-comment-data-form');
+
+            window.apiHttp.postUrlEncoded(url, {
                     '_token': token,
                     comment: comment,
                     '_method': 'PUT',
                     taskId: '{{ $comment->task->id }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == "success") {
                         document.getElementById('comment-list').innerHTML = response.view;
                         $(MODAL_LG).modal('hide');
                     }
 
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $('#save-edit-comment').prop('disabled', false);
+                    $.easyUnblockUI('#edit-comment-data-form');
+                });
         });
 
     });

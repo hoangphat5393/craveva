@@ -364,24 +364,29 @@
     $(".select-picker").selectpicker();
 
     $('#save-form').click(function () {
-        $.easyAjax({
-            url: "{{ route('front.ticket_store') }}",
-            container: '#createTicket',
-            type: "POST",
-            redirect: true,
-            disableButton: true,
-            blockUI: true,
-            file: true,
-            data: $('#createTicket').serialize(),
-            success: function (response) {
+        const button = $('#save-form');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createTicket');
+
+        window.apiHttp.postUrlEncoded("{{ route('front.ticket_store') }}", $('#createTicket').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     $('#createTicket')[0].reset();
                     $('#createTicket').hide();
                     $('#success-message').html(response.message);
                     $('#success-message').show();
                 }
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#createTicket');
             }
-        })
+        );
     });
 </script>
 

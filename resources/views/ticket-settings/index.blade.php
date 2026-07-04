@@ -117,6 +117,25 @@
             $('.' + activeTab + '-btn').removeClass('d-none');
         }
 
+        function handleTicketSettingError(err) {
+            $.handleApiFormError(err);
+        }
+
+        function deleteTicketSetting(url, token, onSuccess) {
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.delete(url, token)
+                .then(function(response) {
+                    if (response.status == "success" && typeof onSuccess === 'function') {
+                        onSuccess(response);
+                    }
+                })
+                .catch(handleTicketSettingError)
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                });
+        }
+
         $(document).on('show.bs.dropdown', '.table-responsive', function() {
             $('.table-responsive').css( "overflow", "inherit" );
         });
@@ -129,20 +148,22 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            $.easyBlockUI('#nav-tabContent');
+
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
                         showBtn(response.activeTab);
 
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
+                        window.history.pushState({}, '', requestUrl);
                     }
-                }
-            });
+                })
+                .catch(handleTicketSettingError)
+                .finally(function() {
+                    $.easyUnblockUI('#nav-tabContent');
+                });
         });
 
         /* delete agent */
@@ -172,19 +193,8 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row' + id).fadeOut(100);
-                            }
-                        }
+                    deleteTicketSetting(url, token, function() {
+                        $('.row' + id).fadeOut(100);
                     });
                 }
             });
@@ -201,15 +211,16 @@
             url = url.replace(':id', agentId);
 
             if (typeof agentId !== 'undefined') {
-                $.easyAjax({
-                    type: 'PUT',
-                    url: url,
-                    blockUI: true,
-                    data: {
+                $.easyBlockUI('#editSettings');
+
+                window.apiHttp.put(url, {
                         '_token': token,
                         'status': status
-                    }
-                });
+                    })
+                    .catch(handleTicketSettingError)
+                    .finally(function() {
+                        $.easyUnblockUI('#editSettings');
+                    });
             }
         });
 
@@ -240,19 +251,8 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row' + id).fadeOut(100);
-                            }
-                        }
+                    deleteTicketSetting(url, token, function() {
+                        $('.row' + id).fadeOut(100);
                     });
                 }
             });
@@ -293,19 +293,8 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row' + id).fadeOut(100);
-                            }
-                        }
+                    deleteTicketSetting(url, token, function() {
+                        $('.row' + id).fadeOut(100);
                     });
                 }
             });
@@ -357,19 +346,8 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row' + id).fadeOut(100);
-                            }
-                        }
+                    deleteTicketSetting(url, token, function() {
+                        $('.row' + id).fadeOut(100);
                     });
                 }
             });
@@ -426,15 +404,16 @@
             var url = "{{ route('ticket_agents.update_group', ':id') }}";
             url = url.replace(':id', agentId);
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                blockUI: true,
-                data: {
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded(url, {
                     '_token': token,
                     'groupId': groupId
-                }
-            });
+                })
+                .catch(handleTicketSettingError)
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                });
         });
 
         $('body').on('click', '.delete-group', function() {
@@ -463,19 +442,8 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row' + id).fadeOut(100);
-                            }
-                        }
+                    deleteTicketSetting(url, token, function() {
+                        $('.row' + id).fadeOut(100);
                     });
                 }
             });

@@ -60,17 +60,19 @@ $viewTaskPermission = user()->permission('view_tasks');
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $('.content-wrapper').html(response.html);
-                        init('.content-wrapper');
-                    }
+            $.easyBlockUI(".content-wrapper");
+
+            window.apiHttp.get(requestUrl).then(function(response) {
+                historyPush(requestUrl);
+
+                if (response.status == "success") {
+                    $('.content-wrapper').html(response.html);
+                    init('.content-wrapper');
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI(".content-wrapper");
             });
         });
     </script>

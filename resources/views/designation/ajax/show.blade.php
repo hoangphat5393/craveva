@@ -73,19 +73,17 @@ $deleteDesignationPermission = user()->permission('delete_designation');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then((response) => {
                         if (response.status == "success") {
                             window.location.href = response.redirectUrl;
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    });
             }
         });
     });

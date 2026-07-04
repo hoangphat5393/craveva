@@ -780,35 +780,41 @@ class EstimateController extends AccountBaseController
             return Reply::error(__('modules.estimates.convertSoBlocked'));
         }
 
-        $existingOrder = Order::query()
-            ->where('estimate_id', $estimate->id)
-            ->orderByDesc('id')
-            ->first();
-
-        if ($existingOrder) {
-            return Reply::redirect(route('orders.show', $existingOrder->id), __('messages.updateSuccess'));
-        }
-
         $order = null;
 
         DB::transaction(function () use ($estimate, &$order): void {
+            $lockedEstimate = Estimate::query()
+                ->with('items')
+                ->lockForUpdate()
+                ->findOrFail($estimate->id);
+
+            $existingOrder = Order::query()
+                ->where('estimate_id', $lockedEstimate->id)
+                ->orderByDesc('id')
+                ->first();
+            if ($existingOrder) {
+                $order = $existingOrder;
+
+                return;
+            }
+
             $order = new Order;
-            $order->client_id = $estimate->client_id;
-            $order->project_id = $estimate->project_id;
-            $order->estimate_id = $estimate->id;
+            $order->client_id = $lockedEstimate->client_id;
+            $order->project_id = $lockedEstimate->project_id;
+            $order->estimate_id = $lockedEstimate->id;
             $order->order_date = now()->format('Y-m-d');
-            $order->sub_total = round((float) $estimate->sub_total, 2);
-            $order->total = round((float) $estimate->total, 2);
-            $order->discount = round((float) $estimate->discount, 2);
-            $order->discount_type = $estimate->discount_type;
+            $order->sub_total = round((float) $lockedEstimate->sub_total, 2);
+            $order->total = round((float) $lockedEstimate->total, 2);
+            $order->discount = round((float) $lockedEstimate->discount, 2);
+            $order->discount_type = $lockedEstimate->discount_type;
             $order->status = 'pending';
-            $order->currency_id = $estimate->currency_id;
-            $order->note = $estimate->note;
+            $order->currency_id = $lockedEstimate->currency_id;
+            $order->note = $lockedEstimate->note;
             $order->show_shipping_address = 'yes';
             $order->order_number = Order::lastOrderNumber() + 1;
             $order->save();
 
-            foreach ($estimate->items as $item) {
+            foreach ($lockedEstimate->items as $item) {
                 OrderItems::query()->create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,

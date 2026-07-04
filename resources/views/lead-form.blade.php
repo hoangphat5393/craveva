@@ -381,24 +381,29 @@
     $(".select-picker").selectpicker();
 
     $('#save-form').click(function () {
-        $.easyAjax({
-            url: "{{route('front.lead_store')}}",
-            container: '#createLead',
-            type: "POST",
-            redirect: true,
-            disableButton: true,
-            file: true,
-            blockUI: true,
-            data: $('#createLead').serialize(),
-            success: function (response) {
+        const button = $('#save-form');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createLead');
+
+        window.apiHttp.postUrlEncoded("{{route('front.lead_store')}}", $('#createLead').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     $('#createLead')[0].reset();
                     $('#createLead').hide();
                     $('#success-message').html(response.message);
                     $('#success-message').show();
                 }
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#createLead');
             }
-        })
+        );
     });
 
 </script>

@@ -17,6 +17,7 @@
                 @endif
                 <th>@lang('production::app.materialTotalRequired')</th>
                 @if (!empty($materialRequirementsShowStock))
+                    <th>@lang('production::app.materialReservedInRawMaterialWarehouse')</th>
                     <th>@lang('production::app.materialAvailableInRawMaterialWarehouse')</th>
                     <th>@lang('production::app.materialShortage')</th>
                 @endif
@@ -45,6 +46,12 @@
                         @endif
                     </td>
                     @if (!empty($materialRequirementsShowStock))
+                        <td>
+                            {{ $formatQty((float) ($row['reserved_in_rm_warehouse'] ?? 0)) }}
+                            @if (!empty($row['unit_label_base']))
+                                <span class="text-muted">{{ $row['unit_label_base'] }}</span>
+                            @endif
+                        </td>
                         <td>
                             {{ $formatQty((float) ($row['available_in_rm_warehouse'] ?? 0)) }}
                             @if (!empty($row['unit_label_base']))

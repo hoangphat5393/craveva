@@ -271,18 +271,21 @@
 
             const url = "{{ route('clients.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function (response) {
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url)
+                .then(function (response) {
                     if (response.status == "success") {
                         $(MODAL_XL + ' .modal-body').html(response.html);
                         $(MODAL_XL + ' .modal-title').html(response.title);
                         init(MODAL_XL);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI(MODAL_XL);
+                });
         });
 
         $('#save-contract-form').click(function () {
@@ -291,17 +294,24 @@
 
             const url = "{{ route('contracts.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-contract-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-contract-form",
-                file: true,
-                data: $('#save-contract-data-form').serialize(),
-                redirect: true
-            })
+            const $btn = $('#save-contract-form');
+            const previousHtml = $btn.html();
+            $.easyBlockUI('#save-contract-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postForm(url, document.getElementById('save-contract-data-form'))
+                .then(function(response) {
+                    if (response.status === 'success' && response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    }
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-contract-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         quillMention(null, '#description');
@@ -318,15 +328,11 @@
             url = url.replace(':id', id);
             const token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-contract-data-form',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: token
-                },
-                success: function (response) {
+            $.easyBlockUI('#save-contract-data-form');
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token
+            })
+                .then(function (response) {
                     if (response.status == 'success') {
                         if (response.data !== null) {
                             $('#office').val(response.data.client_details.office);
@@ -338,8 +344,13 @@
                             }
                         }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-contract-data-form');
+                });
 
         });
         $('#client_list_id').change(function() {
@@ -351,15 +362,11 @@
             url = url.replace(':id', id);
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-contract-data-form',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: token
-                },
-                success: function(response) {
+            $.easyBlockUI('#save-contract-data-form');
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token
+            })
+                .then(function(response) {
                     if (response.status == 'success') {
                         const client = response.clientDetails;
 
@@ -374,8 +381,13 @@
                         $('#project_id').html(response.data);
                         $('#project_id').selectpicker('refresh');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-contract-data-form');
+                });
         });
 
         $('#save-contract-data-form').on('change', '#project_id', function () {
@@ -385,17 +397,18 @@
             }
             let url = "{{ route('clients.client_details', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-contract-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
+            $.easyBlockUI('#save-contract-data-form');
+            window.apiHttp.get(url)
+                .then(function (data) {
                         $('#client_list_id').html(data.teamData);
                         $('#client_list_id').selectpicker('refresh');
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-contract-data-form');
+                });
         });
 
         $('#without_duedate').click(function () {

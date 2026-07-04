@@ -91,20 +91,24 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
                         showBtn(response.activeTab);
 
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI("#nav-tabContent");
+                });
         });
 
 
@@ -142,21 +146,22 @@
             var url = "{{ route('module-settings.update', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '.settings-box',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    'status': moduleStatus,
-                    'name': name,
-                    '_method':'PUT'
-                },
-                success: function () {
+            $.easyBlockUI('.settings-box');
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                'status': moduleStatus,
+                'name': name,
+                '_method':'PUT'
+            })
+                .then(function () {
                     window.location.reload();
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('.settings-box');
+                });
         });
 
     </script>

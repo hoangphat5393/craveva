@@ -5,6 +5,7 @@ namespace Modules\Purchase\Observers;
 use App\Models\DeliveryOrder;
 use App\Models\Grn;
 use Carbon\Carbon;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Purchase\Support\GrnRuntime;
@@ -20,6 +21,13 @@ use Modules\Warehouse\Services\WarehouseFlowPolicyService;
  */
 class DeliveryOrderObserver
 {
+    public function deleting(DeliveryOrder|Grn $deliveryOrder): void
+    {
+        if ((string) $deliveryOrder->status === 'received' || (bool) $deliveryOrder->inbound_stock_applied) {
+            throw new DomainException(__('purchase::app.grnReceivedImmutable'));
+        }
+    }
+
     public function saved(DeliveryOrder|Grn $deliveryOrder): void
     {
         $companyId = (int) $deliveryOrder->company_id;

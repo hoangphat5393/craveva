@@ -1,0 +1,35 @@
+{
+    "table": "global_invoice_settings",
+    "columns": [
+        "id",
+        "billing_name",
+        "billing_address",
+        "billing_tax_name",
+        "billing_tax_id",
+        "logo",
+        "template",
+        "locale",
+        "authorised_signatory",
+        "authorised_signatory_signature",
+        "invoice_terms",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "billing_name": null,
+            "billing_address": null,
+            "billing_tax_name": null,
+            "billing_tax_id": null,
+            "logo": null,
+            "template": "invoice-5",
+            "locale": "en",
+            "authorised_signatory": 0,
+            "authorised_signatory_signature": null,
+            "invoice_terms": "Thank you for your business.",
+            "created_at": "2026-07-01 20:57:16",
+            "updated_at": "2026-07-01 20:57:16"
+        }
+    ]
+}

@@ -206,7 +206,7 @@ If you discover any security-related issues, please email [info@macsi.co.uk](mai
 
 - [Colin Hall](https://github.com/colinhall17)
 - [MacsiDigital](https://github.com/MacsiDigital)
-- [All Contributors](../../contributors)
+- [All Contributors](https://github.com/macsidigital/laravel-oauth2-client/graphs/contributors)
 
 ## License
 

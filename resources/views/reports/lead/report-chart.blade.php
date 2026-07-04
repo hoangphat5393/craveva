@@ -183,19 +183,20 @@
                     category = null;
                 }
 
-                $.easyAjax({
-                    url: "{{ route('lead-report.chart') }}",
-                    type: "GET",
-                    data: {
+                window.apiHttp.get("{{ route('lead-report.chart') }}", {
+                        params: {
                         year: year,
                         pipeline: pipeline,
                         category: category
-                    },
-                    success: function(response) {
+                        }
+                    })
+                    .then(function(response) {
                         chart(response.datasets);
                         $('#deal-report').html(response.html);
-                    },
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
             });
 
             function showTable(loading = true) {
@@ -207,19 +208,20 @@
                     category = null;
                 }
 
-                $.easyAjax({
-                    url: "{{ route('lead-report.chart') }}",
-                    type: "GET",
-                    data: {
+                window.apiHttp.get("{{ route('lead-report.chart') }}", {
+                        params: {
                         year: year,
                         pipeline: pipeline,
                         category: category
-                    },
-                    success: function(response) {
+                        }
+                    })
+                    .then(function(response) {
                         chart(response.datasets);
                         $('#deal-report').html(response.html);
-                    },
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
 
             }
 

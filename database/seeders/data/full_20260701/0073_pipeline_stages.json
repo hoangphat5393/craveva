@@ -1,0 +1,101 @@
+{
+    "table": "pipeline_stages",
+    "columns": [
+        "id",
+        "company_id",
+        "lead_pipeline_id",
+        "name",
+        "slug",
+        "priority",
+        "default",
+        "label_color",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "lead_pipeline_id": 1,
+            "name": "Generated",
+            "slug": "generated",
+            "priority": 1,
+            "default": 1,
+            "label_color": "#FFD700",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "lead_pipeline_id": 1,
+            "name": "Qualified",
+            "slug": "qualified",
+            "priority": 2,
+            "default": 0,
+            "label_color": "#009EFF",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "lead_pipeline_id": 1,
+            "name": "Initial Contact",
+            "slug": "initial-contact",
+            "priority": 3,
+            "default": 0,
+            "label_color": "#00CED1",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "lead_pipeline_id": 1,
+            "name": "Schedule Appointment",
+            "slug": "schedule-appointment",
+            "priority": 4,
+            "default": 0,
+            "label_color": "#32CD32",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "lead_pipeline_id": 1,
+            "name": "Proposal Sent",
+            "slug": "proposal-sent",
+            "priority": 5,
+            "default": 0,
+            "label_color": "#FFA07A",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 6,
+            "company_id": 1,
+            "lead_pipeline_id": 1,
+            "name": "Win",
+            "slug": "win",
+            "priority": 6,
+            "default": 0,
+            "label_color": "#1FAE07",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 7,
+            "company_id": 1,
+            "lead_pipeline_id": 1,
+            "name": "Lost",
+            "slug": "lost",
+            "priority": 7,
+            "default": 0,
+            "label_color": "#DB1313",
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

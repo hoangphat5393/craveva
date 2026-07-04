@@ -94,20 +94,23 @@
     $('body').on('click', '#save-email-form', function() {
         var url = "{{ route('ticket-email-settings.update', $ticketEmailSetting) }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            container: "#editSettings",
-            blockUI: true,
-            data: $('#editSettings').serialize(),
-        })
+        $.easyBlockUI('#editSettings');
+
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+            });
     });
 
     $('body').on('click', '#send-test-notification', function() {
         var url = '{{ route('slack_settings.send_test_notification') }}';
-        $.easyAjax({
-            url: url,
-            type: "GET",
-        })
+
+        window.apiHttp.get(url)
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

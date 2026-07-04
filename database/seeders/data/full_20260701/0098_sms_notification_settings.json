@@ -1,0 +1,608 @@
+{
+    "table": "sms_notification_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "setting_name",
+        "slug",
+        "send_sms",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": null,
+            "setting_name": "Test Sms Notification",
+            "slug": "test-sms-notification",
+            "send_sms": "yes",
+            "created_at": "2026-07-01 20:56:40",
+            "updated_at": "2026-07-01 20:56:40"
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "setting_name": "Attendance Reminder",
+            "slug": "attendance-reminder",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "setting_name": "Follow Up Reminder",
+            "slug": "follow-up-reminder",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "setting_name": "Auto Task Reminder",
+            "slug": "auto-task-reminder",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "setting_name": "Contract Signed",
+            "slug": "contract-signed",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 6,
+            "company_id": 1,
+            "setting_name": "Estimate Declined",
+            "slug": "estimate-declined",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 7,
+            "company_id": 1,
+            "setting_name": "Event Invite",
+            "slug": "event-invite",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 8,
+            "company_id": 1,
+            "setting_name": "Event Reminder",
+            "slug": "event-reminder",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 9,
+            "company_id": 1,
+            "setting_name": "Recurring Expense Status Updated",
+            "slug": "recurring-expense-status-updated",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 10,
+            "company_id": 1,
+            "setting_name": "New File Uploaded to Project",
+            "slug": "new-file-uploaded-to-project",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 11,
+            "company_id": 1,
+            "setting_name": "Payment Received",
+            "slug": "payment-received",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 12,
+            "company_id": 1,
+            "setting_name": "Payment Reminder",
+            "slug": "payment-reminder",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 13,
+            "company_id": 1,
+            "setting_name": "Project Reminder",
+            "slug": "project-reminder",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 14,
+            "company_id": 1,
+            "setting_name": "Proposal Approved",
+            "slug": "proposal-approved",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 15,
+            "company_id": 1,
+            "setting_name": "Proposal Rejected",
+            "slug": "proposal-rejected",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 16,
+            "company_id": 1,
+            "setting_name": "Recurring Invoice Status Updated",
+            "slug": "recurring-invoice-status-updated",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 17,
+            "company_id": 1,
+            "setting_name": "Invoice Reminder",
+            "slug": "invoice-reminder",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 18,
+            "company_id": 1,
+            "setting_name": "New Expense/Added by Admin",
+            "slug": "new-expense-added-by-admin",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 19,
+            "company_id": 1,
+            "setting_name": "New Expense/Added by Member",
+            "slug": "new-expense-added-by-member",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 20,
+            "company_id": 1,
+            "setting_name": "Invoice Created",
+            "slug": "invoice-created",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 21,
+            "company_id": 1,
+            "setting_name": "Invoice Updated",
+            "slug": "invoice-updated",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 22,
+            "company_id": 1,
+            "setting_name": "Lead notification",
+            "slug": "lead-notification",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 23,
+            "company_id": 1,
+            "setting_name": "New Leave Application",
+            "slug": "new-leave-application",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 24,
+            "company_id": 1,
+            "setting_name": "New Leave Request",
+            "slug": "new-leave-request",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 25,
+            "company_id": 1,
+            "setting_name": "Leave Approved",
+            "slug": "leave-approved",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 26,
+            "company_id": 1,
+            "setting_name": "Leave Rejected",
+            "slug": "leave-rejected",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 27,
+            "company_id": 1,
+            "setting_name": "Leave Updated",
+            "slug": "leave-updated",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 28,
+            "company_id": 1,
+            "setting_name": "Multiple Leave Application",
+            "slug": "multiple-leave-application",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 29,
+            "company_id": 1,
+            "setting_name": "New Multiple Leave Application",
+            "slug": "new-multiple-leave-application",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 30,
+            "company_id": 1,
+            "setting_name": "New Task",
+            "slug": "new-task",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 31,
+            "company_id": 1,
+            "setting_name": "New Order",
+            "slug": "new-order",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 32,
+            "company_id": 1,
+            "setting_name": "Order Updated",
+            "slug": "order-updated",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 33,
+            "company_id": 1,
+            "setting_name": "New Payment",
+            "slug": "new-payment",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 34,
+            "company_id": 1,
+            "setting_name": "New Product Purchase",
+            "slug": "new-product-purchase",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 35,
+            "company_id": 1,
+            "setting_name": "New Project",
+            "slug": "new-project",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 36,
+            "company_id": 1,
+            "setting_name": "New Proposal",
+            "slug": "new-proposal",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 37,
+            "company_id": 1,
+            "setting_name": "New Recurring Invoice",
+            "slug": "new-recurring-invoice",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 38,
+            "company_id": 1,
+            "setting_name": "New Ticket Reply",
+            "slug": "new-ticket-reply",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 39,
+            "company_id": 1,
+            "setting_name": "New Ticket Request",
+            "slug": "new-ticket-request",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 40,
+            "company_id": 1,
+            "setting_name": "Task Updated",
+            "slug": "task-updated",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 41,
+            "company_id": 1,
+            "setting_name": "Task Status Updated",
+            "slug": "task-status-changed",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 42,
+            "company_id": 1,
+            "setting_name": "Task Mention Notification",
+            "slug": "task-mention-notification",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 43,
+            "company_id": 1,
+            "setting_name": "Task Completed Client",
+            "slug": "task-completed-client",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 44,
+            "company_id": 1,
+            "setting_name": "Task Completed",
+            "slug": "task-completed",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 45,
+            "company_id": 1,
+            "setting_name": "New Client Task",
+            "slug": "new-client-task",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 46,
+            "company_id": 1,
+            "setting_name": "Task Update Client",
+            "slug": "task-update-client",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 47,
+            "company_id": 1,
+            "setting_name": "New Notice Published",
+            "slug": "new-notice-published",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 48,
+            "company_id": 1,
+            "setting_name": "New Support Ticket Request",
+            "slug": "new-support-ticket-request",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 49,
+            "company_id": 1,
+            "setting_name": "Agent Ticket",
+            "slug": "agent-ticket",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 50,
+            "company_id": 1,
+            "setting_name": "Employee Assign to Project",
+            "slug": "employee-assign-to-project",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 51,
+            "company_id": 1,
+            "setting_name": "User Join Via Invitation",
+            "slug": "user-join-via-invitation",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 52,
+            "company_id": 1,
+            "setting_name": "Notice Updated",
+            "slug": "notice-updated",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 53,
+            "company_id": 1,
+            "setting_name": "Removal Request Admin Notification",
+            "slug": "removal-request-admin-notification",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 54,
+            "company_id": 1,
+            "setting_name": "Removal Request Approved",
+            "slug": "removal-request-approved",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 55,
+            "company_id": 1,
+            "setting_name": "Removal Request Reject",
+            "slug": "removal-request-reject",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 56,
+            "company_id": 1,
+            "setting_name": "Removal Request Approved Lead",
+            "slug": "removal-request-approved-lead",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 57,
+            "company_id": 1,
+            "setting_name": "Removal Request Reject Lead",
+            "slug": "removal-request-reject-lead",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 58,
+            "company_id": 1,
+            "setting_name": "Sub Task Assignee Added",
+            "slug": "sub-task-assignee-added",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 59,
+            "company_id": 1,
+            "setting_name": "Sub Task Completed",
+            "slug": "sub-task-completed",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 60,
+            "company_id": 1,
+            "setting_name": "Task Comment",
+            "slug": "task-comment",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 61,
+            "company_id": 1,
+            "setting_name": "Task Note",
+            "slug": "task-note",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 62,
+            "company_id": 1,
+            "setting_name": "Task Reminder",
+            "slug": "task-reminder",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 63,
+            "company_id": 1,
+            "setting_name": " User Registration/Added by Admin",
+            "slug": "user-registrationadded-by-admin",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 64,
+            "company_id": 1,
+            "setting_name": "Two Factor Code",
+            "slug": "two-factor-code",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 65,
+            "company_id": 1,
+            "setting_name": "Removal Request Reject User",
+            "slug": "removal-request-reject-user",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 66,
+            "company_id": 1,
+            "setting_name": "Removal Request Approved User",
+            "slug": "removal-request-approved-user",
+            "send_sms": "no",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        }
+    ]
+}

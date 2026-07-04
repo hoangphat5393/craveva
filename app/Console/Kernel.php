@@ -206,18 +206,20 @@ class Kernel extends ConsoleKernel
         // Without --queue=..., only `default` is processed; import batches use named queues (e.g. SalesHistoryImport).
         // When import_batch_connection is redis, import jobs live on Redis — run a redis worker for import queues
         // and keep database worker for `default` (and any jobs still on the database connection).
-        $queueList = implode(',', self::DATABASE_WORKER_QUEUE_NAMES);
-        $importConnection = config('queue.import_batch_connection', 'database');
+        if (config('queue.run_workers_in_scheduler', false)) {
+            $queueList = implode(',', self::DATABASE_WORKER_QUEUE_NAMES);
+            $importConnection = config('queue.import_batch_connection', 'database');
 
-        if ($importConnection === 'redis') {
-            $importOnlyQueues = implode(',', array_values(array_filter(
-                self::DATABASE_WORKER_QUEUE_NAMES,
-                static fn (string $q): bool => $q !== 'default'
-            )));
-            $schedule->command('queue:work database --queue=default --tries=3 --stop-when-empty')->withoutOverlapping();
-            $schedule->command("queue:work redis --queue={$importOnlyQueues} --tries=3 --stop-when-empty")->withoutOverlapping();
-        } else {
-            $schedule->command("queue:work database --queue={$queueList} --tries=3 --stop-when-empty")->withoutOverlapping();
+            if ($importConnection === 'redis') {
+                $importOnlyQueues = implode(',', array_values(array_filter(
+                    self::DATABASE_WORKER_QUEUE_NAMES,
+                    static fn (string $q): bool => $q !== 'default'
+                )));
+                $schedule->command('queue:work database --queue=default --tries=3 --stop-when-empty')->withoutOverlapping();
+                $schedule->command("queue:work redis --queue={$importOnlyQueues} --tries=3 --stop-when-empty")->withoutOverlapping();
+            } else {
+                $schedule->command("queue:work database --queue={$queueList} --tries=3 --stop-when-empty")->withoutOverlapping();
+            }
         }
     }
 

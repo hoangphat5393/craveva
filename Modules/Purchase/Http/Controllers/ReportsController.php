@@ -11,6 +11,8 @@ use Modules\Purchase\DataTables\PurchaseOrderReportDataTable;
 use Modules\Purchase\DataTables\VendorReportDataTable;
 use Modules\Purchase\Entities\PurchaseSetting;
 use Modules\Purchase\Entities\PurchaseVendor;
+use Modules\Warehouse\DataTables\WarehouseMovementsDataTable;
+use Modules\Warehouse\Entities\Warehouse;
 
 class ReportsController extends AccountBaseController
 {
@@ -43,6 +45,8 @@ class ReportsController extends AccountBaseController
                 return $this->inventorySummary();
             case 'inventory-valuation-summary':
                 return $this->inventoryValuationSummary();
+            case 'warehouse-movement-report':
+                return $this->warehouseMovementReport();
             default:
                 return $this->vendorReport();
         }
@@ -111,6 +115,23 @@ class ReportsController extends AccountBaseController
         $this->view = 'purchase::reports.ajax.inventory-valuation-summary';
 
         $dataTable = new InventoryValuationSummaryDatatable;
+
+        return $dataTable->render('purchase::reports.index', $this->data);
+    }
+
+    public function warehouseMovementReport()
+    {
+        $viewPermission = user()->permission('view_warehouse_stock');
+        abort_403($viewPermission === 'none');
+
+        $this->activeTab = 'warehouse-movement-report';
+        $this->view = 'purchase::reports.ajax.warehouse-movement-report';
+        $this->warehouses = Warehouse::query()
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'code', 'is_default']);
+
+        $dataTable = new WarehouseMovementsDataTable;
 
         return $dataTable->render('purchase::reports.index', $this->data);
     }

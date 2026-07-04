@@ -322,12 +322,9 @@
 
             var url = "{{ route('task-report.chart') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#task-chart-card',
-                blockUI: true,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#task-chart-card');
+
+            window.apiHttp.postUrlEncoded(url, {
                     clientID: clientID,
                     assignedBY: assignedBY,
                     assignedTo: assignedTo,
@@ -340,11 +337,16 @@
                     endDate: endDate,
                     searchText: searchText,
                     _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     $('#task-chart-card').html(response.html);
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#task-chart-card');
+                });
         }
         pieChart();
 

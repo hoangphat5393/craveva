@@ -1,0 +1,25 @@
+{
+    "table": "onboarding_settings",
+    "columns": [
+        "id",
+        "purchase_code",
+        "supported_until",
+        "purchased_on",
+        "notify_update",
+        "license_type",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "purchase_code": null,
+            "supported_until": null,
+            "purchased_on": null,
+            "notify_update": 1,
+            "license_type": null,
+            "created_at": "2026-07-01 20:57:42",
+            "updated_at": "2026-07-01 20:57:42"
+        }
+    ]
+}

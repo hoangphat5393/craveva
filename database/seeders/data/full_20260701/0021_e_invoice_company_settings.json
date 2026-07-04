@@ -1,0 +1,25 @@
+{
+    "table": "e_invoice_company_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "electronic_address",
+        "electronic_address_scheme",
+        "e_invoice_company_id",
+        "e_invoice_company_id_scheme",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "electronic_address": null,
+            "electronic_address_scheme": null,
+            "e_invoice_company_id": null,
+            "e_invoice_company_id_scheme": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

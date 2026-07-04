@@ -585,15 +585,14 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
 
             let url = "{{ route('tasks.clientDetail') }}";
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
+            window.apiHttp.get(url, {
+                params: {
                     id: id,
-                },
-                success: function (response) {
-                    $('#clientDetails').html(response.data);
                 }
+            }).then(function (response) {
+                $('#clientDetails').html(response.data);
+            }).catch(function (error) {
+                $.handleApiFormError(error);
             });
         }
 
@@ -687,11 +686,9 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
                 var startDate = $('#task_start_date').val();
                 var userId = $('#selectAssignee').val();
 
-                $.easyAjax({
-                    url:"{{ route('tasks.checkLeaves')}}",
-                    type:'GET',
-                    data:{due_date:dueDate, start_date:startDate, user_id:userId},
-                    success:function(response) {
+                window.apiHttp.get("{{ route('tasks.checkLeaves')}}", {
+                    params: {due_date:dueDate, start_date:startDate, user_id:userId}
+                }).then(function(response) {
                     $('.show-leave').removeClass('d-none');
                     var rData = [];
                     var leaveData = [];
@@ -703,7 +700,8 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
                             var label = '<label id="leave-date"> {{ __("modules.tasks.leaveMessage") }} <i class="fa fa-question-circle" title="'+leaveData+'" id="leave-tooltip"></i></label>'
                             $(".show-leave").html(label);
                         });
-                }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
                 });
             },
             ...datepickerConfig
@@ -719,11 +717,9 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
                 var startDate = $('#task_start_date').val();
                 var userId = $('#selectAssignee').val();
 
-                $.easyAjax({
-                    url:"{{ route('tasks.checkLeaves')}}",
-                    type:'GET',
-                    data:{start_date:startDate, due_date:dueDate, user_id:userId},
-                    success:function(response) {
+                window.apiHttp.get("{{ route('tasks.checkLeaves')}}", {
+                    params: {start_date:startDate, due_date:dueDate, user_id:userId}
+                }).then(function(response) {
                     $('.show-leave').removeClass('d-none');
                     var rData = [];
                     var leaveData = [];
@@ -735,7 +731,8 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
                             var label = '<label id="leave-date"> {{ __("modules.tasks.leaveMessage") }} <i class="fa fa-question-circle" title="'+leaveData+'" id="leave-tooltip"></i></label>'
                             $(".show-leave").html(label);
                         });
-                }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
                 });
             },
             ...datepickerConfig
@@ -746,11 +743,9 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
             var startDate = $('#task_start_date').val();
             var userId = $('#selectAssignee').val();
 
-            $.easyAjax({
-                url:"{{ route('tasks.checkLeaves')}}",
-                type:'GET',
-                data:{start_date:startDate, due_date:dueDate, user_id:userId},
-                success:function(response) {
+            window.apiHttp.get("{{ route('tasks.checkLeaves')}}", {
+                params: {start_date:startDate, due_date:dueDate, user_id:userId}
+            }).then(function(response) {
                     $('.show-leave').removeClass('d-none');
                     var rData = [];
                     var leaveData = [];
@@ -762,7 +757,8 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
                             var label = '<label id="leave-date"> {{ __("modules.tasks.leaveMessage") }} <i class="fa fa-question-circle" title="'+leaveData+'" id="leave-tooltip"></i></label>'
                             $(".show-leave").html(label);
                         });
-                }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
             });
         })
 
@@ -777,22 +773,15 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
             var mention_user_id  =  $.makeArray(usesr);
             $('#mentionUserId').val(mention_user_id.join(','));
 
-            var taskData = $('#save-task-data-form').serialize();
-
-            var data = taskData+='&mention_user_id=' + mention_user_id;
+            var data = new FormData(document.getElementById('save-task-data-form'));
+            data.set('mention_user_id', mention_user_id.join(','));
 
             const url = "{{ route('recurring-task.update', $task->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-task-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-task-form",
-                data: data,
-                success: function(response) {
+            $.easyBlockUI('#save-task-data-form');
+            $('#save-task-form').prop('disabled', true);
+
+            window.apiHttp.postForm(url, data).then(function(response) {
                     if ((add_task_files == "all" || add_task_files == "added") &&
                         taskDropzone.getQueuedFiles().length > 0) {
                         taskDropzone.processQueue();
@@ -812,7 +801,11 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
                         window.location.href = response.redirectUrl;
                     }
 
-                }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
+                $('#save-task-form').prop('disabled', false);
             });
         });
 
@@ -857,17 +850,17 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
             var url = "{{ route('milestones.by_project', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-task-data-form',
-                type: "GET",
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#milestone-id').html(response.data);
-                        $('#milestone-id').selectpicker('refresh');
-                    }
+            $.easyBlockUI('#save-task-data-form');
+
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    $('#milestone-id').html(response.data);
+                    $('#milestone-id').selectpicker('refresh');
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
             });
         });
 
@@ -878,18 +871,17 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
             }
             let url = "{{ route('projects.members', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
-                    $('#selectAssignee').html(data.data);
-                    $('.projectId').text(data.unique_id);
-                    $('#selectAssignee').selectpicker('refresh');
-                }
-            })
+            $.easyBlockUI('#save-task-data-form');
+
+            window.apiHttp.get(url).then(function (data) {
+                $('#selectAssignee').html(data.data);
+                $('.projectId').text(data.unique_id);
+                $('#selectAssignee').selectpicker('refresh');
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
 
         $('#project-id').change(function() {
@@ -899,18 +891,17 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
             }
             let url = "{{ route('tasks.project_tasks', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
-                    $('#dependent_task_id').html(data.data);
-                    $('.projectId').text(data.unique_id);
-                    $('#dependent_task_id').selectpicker('refresh');
-                }
-            })
+            $.easyBlockUI('#save-task-data-form');
+
+            window.apiHttp.get(url).then(function (data) {
+                $('#dependent_task_id').html(data.data);
+                $('.projectId').text(data.unique_id);
+                $('#dependent_task_id').selectpicker('refresh');
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
 
         $('#save-task-data-form').on('change', '#project_id', function () {
@@ -920,20 +911,19 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
             }
             let url = "{{ route('projects.labels', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
-                    var atValues = data.userData;
-                    destory_editor('#description')
-                    quillMention(atValues, '#description');
-                    $('#task_labels').html(data.data);
-                    $('#task_labels').selectpicker('refresh');
-                }
-            })
+            $.easyBlockUI('#save-task-data-form');
+
+            window.apiHttp.get(url).then(function (data) {
+                var atValues = data.userData;
+                destory_editor('#description')
+                quillMention(atValues, '#description');
+                $('#task_labels').html(data.data);
+                $('#task_labels').selectpicker('refresh');
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
 
 
@@ -948,17 +938,18 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
 
             const url = "{{ route('projects.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -967,17 +958,18 @@ $editMilestonePermission = user()->permission('edit_project_milestones');
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 

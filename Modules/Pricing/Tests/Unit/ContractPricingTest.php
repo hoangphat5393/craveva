@@ -32,7 +32,7 @@ class ContractPricingTest extends TestCase
         $this->company->save();
 
         // Create Client
-        $clientEmail = 'client_' . uniqid() . '@example.com';
+        $clientEmail = 'client_'.uniqid().'@example.com';
         $clientAuth = UserAuth::create([
             'email' => $clientEmail,
             'password' => bcrypt('123456'),
@@ -52,7 +52,7 @@ class ContractPricingTest extends TestCase
         ]);
 
         // Login as admin
-        $adminEmail = 'admin_' . uniqid() . '@example.com';
+        $adminEmail = 'admin_'.uniqid().'@example.com';
         $adminAuth = UserAuth::create([
             'email' => $adminEmail,
             'password' => bcrypt('123456'),
@@ -184,6 +184,42 @@ class ContractPricingTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+    }
+
+    public function test_inactive_contract_pricing_does_not_block_overlapping_new_contract_pricing()
+    {
+        $start = now()->addMonth()->startOfMonth();
+        $end = now()->addMonth()->endOfMonth();
+
+        ClientProductPricing::create([
+            'company_id' => $this->company->id,
+            'client_id' => $this->client->id,
+            'product_id' => $this->product->id,
+            'start_date' => $start,
+            'end_date' => $end,
+            'is_active' => false,
+        ]);
+
+        $response = $this->post(route('pricing.client_pricing.store'), [
+            'client_id' => $this->client->id,
+            'product_id' => $this->product->id,
+            'start_date' => $start->copy()->addDays(5)->format($this->company->date_format),
+            'end_date' => $end->copy()->subDays(5)->format($this->company->date_format),
+            'custom_price' => 90,
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_bulk_action_rejects_invalid_row_ids()
+    {
+        $response = $this->post(route('pricing.client_pricing.apply_quick_action'), [
+            'action_type' => 'change-status',
+            'row_ids' => 'abc,def',
+            'status' => 'active',
+        ]);
+
+        $response->assertSessionHasErrors('row_ids');
     }
 
     public function test_change_status_updates_client_product_pricing(): void

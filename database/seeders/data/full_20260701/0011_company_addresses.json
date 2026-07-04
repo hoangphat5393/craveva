@@ -1,0 +1,33 @@
+{
+    "table": "company_addresses",
+    "columns": [
+        "id",
+        "company_id",
+        "country_id",
+        "address",
+        "is_default",
+        "tax_number",
+        "tax_name",
+        "location",
+        "created_at",
+        "updated_at",
+        "latitude",
+        "longitude"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "country_id": null,
+            "address": "Your Company address here",
+            "is_default": 1,
+            "tax_number": null,
+            "tax_name": null,
+            "location": "CRAVEVA",
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03",
+            "latitude": null,
+            "longitude": null
+        }
+    ]
+}

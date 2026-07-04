@@ -79,20 +79,22 @@
             var url = "{{ route('taskboards.update', $boardColumn->id) }}";
         }
 
-        $.easyAjax({
-            url: url,
-            container: '#updateTaskBoardColumn',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#update-board-column",
-            type: "POST",
-            data: $('#updateTaskBoardColumn').serialize(),
-            success: function(response) {
+        $('#update-board-column').prop('disabled', true);
+        $.easyBlockUI('#updateTaskBoardColumn');
+
+        window.apiHttp.postUrlEncoded(url, $('#updateTaskBoardColumn').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#update-board-column').prop('disabled', false);
+                $.easyUnblockUI('#updateTaskBoardColumn');
+            });
     });
 
 </script>

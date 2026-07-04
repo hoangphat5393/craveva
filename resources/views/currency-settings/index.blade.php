@@ -69,18 +69,24 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function (response) {
+            historyPush(requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+
+            window.apiHttp.get(requestUrl)
+                .then((response) => {
                     if (response.status == "success") {
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI("#nav-tabContent");
+                });
         });
 
         // Delete currency
@@ -110,20 +116,22 @@
 
                     const token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    $.easyBlockUI('body');
+
+                    window.apiHttp.delete(url, token)
+                        .then((response) => {
                             if (response.status === "success") {
                                 $('.row' + id).fadeOut();
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        })
+                        .finally(() => {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });
@@ -131,17 +139,23 @@
         // update exchange rates
         $('#update-exchange-rates').click(function () {
             var url = "{{ route('currency_settings.update_exchange_rates') }}";
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                blockUI: true,
-                success: function (response) {
+            $.easyBlockUI('body');
+
+            window.apiHttp.get(url)
+                .then((response) => {
                     if (response.status == "success") {
                         $.unblockUI();
                         window.location.reload();
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('body');
+                });
         });
 
         // Currency code converter modal open script

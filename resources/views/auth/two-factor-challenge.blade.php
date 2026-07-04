@@ -93,21 +93,24 @@
             function resendCode() {
                 let url = "{{ route('resend_code') }}";
                 let user_id = "{{ Session::get('login.id') }}";
-                $.easyAjax({
-                    url: url,
-                    container: '.login_box',
-                    type: "GET",
-                    blockUI: true,
-                    messagePosition: "pop",
-                    data: {
-                        user_id: user_id
-                    },
-                    success: function(response) {
+                $.easyBlockUI('.login_box');
+
+                window.apiHttp.get(url, {
+                        params: {
+                            user_id: user_id
+                        }
+                    })
+                    .then(function(response) {
                         if (response.status === 'success') {
                             showEmailMessage();
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('.login_box');
+                    });
             }
 
             $('#verify-using-recovery-code').click(function() {

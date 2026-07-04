@@ -1,0 +1,118 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        DB::unprepared(<<<'SQL'
+CREATE TABLE `global_settings` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `global_app_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `logo` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `light_logo` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `login_background` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `logo_background_color` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `header_color` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '#1D82F5',
+  `sidebar_logo_style` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT 'square',
+  `locale` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en',
+  `hash` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `purchase_code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `supported_until` timestamp NULL DEFAULT NULL,
+  `purchased_on` timestamp NULL DEFAULT NULL,
+  `last_license_verified_at` timestamp NULL DEFAULT NULL,
+  `google_recaptcha_status` enum('active','deactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'deactive',
+  `google_recaptcha_v2_status` enum('active','deactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'deactive',
+  `google_recaptcha_v2_site_key` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `google_recaptcha_v2_secret_key` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `google_recaptcha_v3_status` enum('active','deactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'deactive',
+  `google_recaptcha_v3_site_key` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `google_recaptcha_v3_secret_key` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `app_debug` tinyint(1) NOT NULL DEFAULT '0',
+  `currency_converter_key` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `currency_key_version` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'free',
+  `dedicated_subdomain` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `moment_format` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DD-MM-YYYY',
+  `timezone` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Asia/Kolkata',
+  `rtl` tinyint(1) NOT NULL DEFAULT '0',
+  `license_type` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide_cron_message` tinyint(1) NOT NULL DEFAULT '0',
+  `system_update` tinyint(1) NOT NULL DEFAULT '1',
+  `show_review_modal` tinyint(1) NOT NULL DEFAULT '1',
+  `last_cron_run` timestamp NULL DEFAULT NULL,
+  `favicon` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth_theme` enum('dark','light') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'light',
+  `auth_theme_text` enum('dark','light') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'dark',
+  `session_driver` enum('file','database') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'file',
+  `allowed_file_types` text COLLATE utf8mb4_unicode_ci,
+  `allowed_file_size` int NOT NULL DEFAULT '10',
+  `allow_max_no_of_files` int NOT NULL DEFAULT '10',
+  `datatable_row_limit` int NOT NULL DEFAULT '10',
+  `show_update_popup` tinyint(1) NOT NULL DEFAULT '1',
+  `terms_link` text COLLATE utf8mb4_unicode_ci,
+  `sign_up_phone_field` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
+  `sign_up_phone_required` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
+  `sign_up_terms` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
+  `google_calendar_status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'inactive',
+  `google_client_id` text COLLATE utf8mb4_unicode_ci,
+  `google_client_secret` text COLLATE utf8mb4_unicode_ci,
+  `google_calendar_verification_status` enum('verified','non_verified') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'non_verified',
+  `google_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `company_email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `company_phone` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `website` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `currency_id` bigint unsigned DEFAULT NULL,
+  `date_format` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'd-m-Y',
+  `time_format` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'h:i a',
+  `google_map_key` text COLLATE utf8mb4_unicode_ci,
+  `date_picker_format` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` decimal(10,8) NOT NULL DEFAULT '26.91243360',
+  `longitude` decimal(11,8) NOT NULL DEFAULT '75.78727090',
+  `active_theme` enum('default','custom') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default',
+  `last_updated_by` int unsigned DEFAULT NULL,
+  `rounded_theme` tinyint(1) NOT NULL,
+  `front_design` tinyint(1) NOT NULL DEFAULT '1',
+  `email_verification` tinyint(1) NOT NULL DEFAULT '0',
+  `logo_front` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `login_ui` tinyint(1) NOT NULL,
+  `auth_css` longtext COLLATE utf8mb4_unicode_ci,
+  `auth_css_theme_two` longtext COLLATE utf8mb4_unicode_ci,
+  `new_company_locale` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `frontend_disable` tinyint(1) NOT NULL DEFAULT '0',
+  `setup_homepage` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default',
+  `custom_homepage_url` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `expired_message` text COLLATE utf8mb4_unicode_ci,
+  `enable_register` tinyint(1) NOT NULL DEFAULT '1',
+  `registration_open` tinyint(1) NOT NULL DEFAULT '1',
+  `company_need_approval` tinyint(1) NOT NULL DEFAULT '0',
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ai_workspace_agent_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ai_workspace_api_base` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ai_workspace_api_key` text COLLATE utf8mb4_unicode_ci,
+  `ai_assistant_widget_agent_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ai_assistant_widget_api_base` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ai_assistant_widget_api_key` text COLLATE utf8mb4_unicode_ci,
+  `ai_workspace_embed_code` longtext COLLATE utf8mb4_unicode_ci,
+  `ai_assistant_widget_embed_code` longtext COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `global_settings_last_updated_by_foreign` (`last_updated_by`),
+  KEY `global_settings_currency_id_foreign` (`currency_id`),
+  CONSTRAINT `global_settings_currency_id_foreign` FOREIGN KEY (`currency_id`) REFERENCES `global_currencies` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `global_settings_last_updated_by_foreign` FOREIGN KEY (`last_updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SQL);
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('global_settings');
+    }
+};

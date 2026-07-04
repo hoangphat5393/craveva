@@ -6,6 +6,7 @@ use App\Models\SuperAdmin\GlobalCurrency;
 use App\Traits\HasMaskImage;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -748,6 +749,27 @@ class GlobalSetting extends BaseModel
     public function hasAiAssistantWidgetIntegration(): bool
     {
         return $this->hasAiAssistantWidgetEmbedCode() || $this->aiAssistantWidgetScriptUrl() !== null;
+    }
+
+    public function aiWorkspaceApiKey(): ?string
+    {
+        return $this->optionalEncryptedValue('ai_workspace_api_key');
+    }
+
+    public function aiAssistantWidgetApiKey(): ?string
+    {
+        return $this->optionalEncryptedValue('ai_assistant_widget_api_key');
+    }
+
+    private function optionalEncryptedValue(string $attribute): ?string
+    {
+        try {
+            $value = $this->getAttribute($attribute);
+        } catch (DecryptException) {
+            return null;
+        }
+
+        return filled($value) ? (string) $value : null;
     }
 
     public function aiWorkspaceWidgetScriptUrl(): ?string

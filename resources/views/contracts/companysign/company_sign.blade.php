@@ -84,25 +84,29 @@
         return false;
     }
 
-    $.easyAjax({
-        url: "{{ route('company.sign', '$contract->id') }}",
-        container: '#acceptEstimate',
-        type: "POST",
-        blockUI: true,
-        file: true,
-        disableButton: true,
-        buttonSelector : '#save-sign',
-        data: {
-            signature: signature,
-            image: image,
-            signature_type: signature_type,
-            _token: '{{ csrf_token() }}'
-        },
-        success: function(response) {
+    const $btn = $('#save-sign');
+    const previousHtml = $btn.html();
+    const formData = new FormData();
+    formData.append('signature', signature);
+    formData.append('image', image);
+    formData.append('signature_type', signature_type);
+    formData.append('_token', '{{ csrf_token() }}');
+
+    $.easyBlockUI('#acceptEstimate');
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+    window.apiHttp.postForm("{{ route('company.sign', '$contract->id') }}", formData)
+        .then(function(response) {
             if (response.status == 'success') {
                 window.location.reload();
             }
-        }
-    })
+        })
+        .catch(function(err) {
+            $.handleApiFormError(err);
+        })
+        .finally(function() {
+            $.easyUnblockUI('#acceptEstimate');
+            $btn.prop('disabled', false).html(previousHtml);
+        });
     });
 </script>

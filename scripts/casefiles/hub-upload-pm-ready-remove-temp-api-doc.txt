@@ -1,6 +1,0 @@
-# Hub upload case: PM_READY runbook — đã gỡ URL/secret tạm khỏi tài liệu (2026-05-12)
-# Upload:
-#   .\scripts\upload_hub_temp.ps1 -CaseFile "scripts\casefiles\hub-upload-pm-ready-remove-temp-api-doc.txt"
-
-FUNC_LOGIC/PM_READY_AI_WEBHOOK_STAGING_VI.md
-scripts/upload_hub_temp.ps1

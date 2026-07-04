@@ -1,0 +1,43 @@
+{
+    "table": "gdpr_settings",
+    "columns": [
+        "id",
+        "enable_gdpr",
+        "show_customer_area",
+        "show_customer_footer",
+        "top_information_block",
+        "enable_export",
+        "data_removal",
+        "lead_removal_public_form",
+        "terms_customer_footer",
+        "terms",
+        "policy",
+        "public_lead_edit",
+        "consent_customer",
+        "consent_leads",
+        "consent_block",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "enable_gdpr": 0,
+            "show_customer_area": 0,
+            "show_customer_footer": 0,
+            "top_information_block": null,
+            "enable_export": 0,
+            "data_removal": 0,
+            "lead_removal_public_form": 0,
+            "terms_customer_footer": 0,
+            "terms": null,
+            "policy": null,
+            "public_lead_edit": 0,
+            "consent_customer": 0,
+            "consent_leads": 0,
+            "consent_block": null,
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03"
+        }
+    ]
+}

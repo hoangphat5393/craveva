@@ -60,53 +60,59 @@ class StockReservationService
 
     public function release(StockReservation $reservation): void
     {
-        if ($reservation->status !== 'active') {
-            return;
-        }
-
         DB::transaction(function () use ($reservation) {
-            $expiry = $reservation->expiration_date;
+            $lockedReservation = StockReservation::query()
+                ->lockForUpdate()
+                ->findOrFail($reservation->id);
+            if ($lockedReservation->status !== 'active') {
+                return;
+            }
+
+            $expiry = $lockedReservation->expiration_date;
             $expiryStr = $expiry instanceof \DateTimeInterface ? $expiry->format('Y-m-d') : $expiry;
 
             $batch = $this->lockBatch([
-                'warehouse_id' => $reservation->warehouse_id,
-                'product_id' => $reservation->product_id,
-                'batch_number' => $reservation->batch_number,
+                'warehouse_id' => $lockedReservation->warehouse_id,
+                'product_id' => $lockedReservation->product_id,
+                'batch_number' => $lockedReservation->batch_number,
                 'expiry_date' => $expiryStr,
             ]);
 
-            $qty = (float) $reservation->reserved_quantity;
+            $qty = (float) $lockedReservation->reserved_quantity;
             $batch->reserved_quantity = max(0, (float) $batch->reserved_quantity - $qty);
             $batch->save();
 
-            $reservation->status = 'released';
-            $reservation->save();
+            $lockedReservation->status = 'released';
+            $lockedReservation->save();
         });
     }
 
     public function consume(StockReservation $reservation): void
     {
-        if ($reservation->status !== 'active') {
-            return;
-        }
-
         DB::transaction(function () use ($reservation) {
-            $expiry = $reservation->expiration_date;
+            $lockedReservation = StockReservation::query()
+                ->lockForUpdate()
+                ->findOrFail($reservation->id);
+            if ($lockedReservation->status !== 'active') {
+                return;
+            }
+
+            $expiry = $lockedReservation->expiration_date;
             $expiryStr = $expiry instanceof \DateTimeInterface ? $expiry->format('Y-m-d') : $expiry;
 
             $batch = $this->lockBatch([
-                'warehouse_id' => $reservation->warehouse_id,
-                'product_id' => $reservation->product_id,
-                'batch_number' => $reservation->batch_number,
+                'warehouse_id' => $lockedReservation->warehouse_id,
+                'product_id' => $lockedReservation->product_id,
+                'batch_number' => $lockedReservation->batch_number,
                 'expiry_date' => $expiryStr,
             ]);
 
-            $qty = (float) $reservation->reserved_quantity;
+            $qty = (float) $lockedReservation->reserved_quantity;
             $batch->reserved_quantity = max(0, (float) $batch->reserved_quantity - $qty);
             $batch->save();
 
-            $reservation->status = 'consumed';
-            $reservation->save();
+            $lockedReservation->status = 'consumed';
+            $lockedReservation->save();
         });
     }
 

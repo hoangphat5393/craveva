@@ -92,9 +92,19 @@
             const labels = {
                 confirm: "@lang('app.confirm')",
                 ship: "@lang('purchase::app.ship')",
-                deliver: "@lang('purchase::modules.salesShipment.delivered')",
+                deliver: "@lang('purchase::modules.salesShipment.markDelivered')",
                 reverse: "@lang('purchase::modules.salesShipment.reverse')",
                 cancel: "@lang('app.cancel')"
+            };
+
+            const openShipmentEdit = (editUrl) => {
+                const $link = $('<a/>', {
+                    href: editUrl,
+                    class: 'openRightModal d-none'
+                }).appendTo('body');
+
+                $link.trigger('click');
+                $link.remove();
             };
 
             Swal.fire({
@@ -117,9 +127,16 @@
                 window.apiHttp.postUrlEncoded(url, body).then(function() {
                     drawShipmentTable();
                 }).catch(function(err) {
+                    const payload = err.payload || {};
+
+                    if (name === 'ship' && payload.error_name === 'sales_do_ship_quantity_required') {
+                        const editUrl = (payload.data && payload.data.editUrl) || "{{ url('/account') }}/{{ $salesDoRoutePrefix }}/" + id + "/edit";
+                        openShipmentEdit(editUrl);
+                    }
+
                     Swal.fire({
                         icon: 'error',
-                        text: err.message,
+                        text: err.message || @json(__('messages.salesDoShipQuantityOpenEdit')),
                         toast: true,
                         position: 'top-end',
                         timer: 4000,

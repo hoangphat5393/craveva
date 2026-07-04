@@ -92,7 +92,7 @@
                 <ul class="dropdown-menu" tabindex="0">
                     <li>
                         <a class="dropdown-item f-14 text-dark" href="{{ route($salesDoRoutePrefix . '.download', $shipment->id) }}" target="_blank">
-                            <i class="fa fa-download f-w-500 mr-2 f-11"></i> @lang('app.downloadPdf')
+                            <i class="fa fa-download mr-2"></i> @lang('app.download')
                         </a>
                     </li>
                     @if ($canUpdate && !in_array($shipment->status, ['shipped', 'delivered', 'cancelled'], true))
@@ -106,10 +106,14 @@
                         <li><a class="dropdown-item f-14 text-dark shipment-action" data-action="confirm" href="javascript:;"><i class="fa fa-check mr-2"></i>@lang('app.confirm')</a></li>
                     @endif
                     @if ($canShip && in_array($shipment->status, ['draft', 'confirmed'], true))
-                        <li><a class="dropdown-item f-14 text-dark shipment-action" data-action="ship" href="javascript:;"><i class="fa fa-truck mr-2"></i>@lang('purchase::app.ship')</a></li>
+                        <li>
+                            <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route($salesDoRoutePrefix . '.ship-form', $shipment->id) }}">
+                                <i class="fa fa-truck mr-2"></i>@lang('purchase::app.ship')
+                            </a>
+                        </li>
                     @endif
                     @if ($canShip && $shipment->status === 'shipped')
-                        <li><a class="dropdown-item f-14 text-dark shipment-action" data-action="deliver" href="javascript:;"><i class="fa fa-box mr-2"></i>@lang('purchase::modules.salesShipment.delivered')</a></li>
+                        <li><a class="dropdown-item f-14 text-dark shipment-action" data-action="deliver" href="javascript:;"><i class="fa fa-box mr-2"></i>@lang('purchase::modules.salesShipment.markDelivered')</a></li>
                     @endif
                     @if ($canCancel && in_array($shipment->status, ['shipped', 'delivered'], true))
                         <li><a class="dropdown-item f-14 text-dark shipment-action" data-action="reverse" href="javascript:;"><i class="fa fa-undo mr-2"></i>@lang('purchase::modules.salesShipment.reverse')</a></li>
@@ -140,9 +144,19 @@
         const labels = {
             confirm: "@lang('app.confirm')",
             ship: "@lang('purchase::app.ship')",
-            deliver: "@lang('purchase::modules.salesShipment.delivered')",
+            deliver: "@lang('purchase::modules.salesShipment.markDelivered')",
             reverse: "@lang('purchase::modules.salesShipment.reverse')",
             cancel: "@lang('app.cancel')"
+        };
+
+        const openShipmentEdit = (editUrl) => {
+            const $link = $('<a/>', {
+                href: editUrl,
+                class: 'openRightModal d-none'
+            }).appendTo('body');
+
+            $link.trigger('click');
+            $link.remove();
         };
 
         Swal.fire({
@@ -168,9 +182,16 @@
                     window.location.reload();
                 }
             }).catch(function(err) {
+                const payload = err.payload || {};
+
+                if (action === 'ship' && payload.error_name === 'sales_do_ship_quantity_required') {
+                    const shipUrl = (payload.data && (payload.data.shipUrl || payload.data.editUrl)) || "{{ route($salesDoRoutePrefix . '.ship-form', $shipment->id) }}";
+                    openShipmentEdit(shipUrl);
+                }
+
                 Swal.fire({
                     icon: 'error',
-                    text: err.message,
+                    text: err.message || @json(__('messages.salesDoShipQuantityOpenEdit')),
                     toast: true,
                     position: 'top-end',
                     timer: 4000,

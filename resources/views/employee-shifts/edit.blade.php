@@ -155,21 +155,28 @@
 
     // save type
     $('#save-employee-shift').click(function() {
-        $.easyAjax({
-            url: "{{ route('employee-shifts.update', $employeeShift->id) }}",
-            container: '#createTicket',
-            type: "POST",
-            blockUI: true,
-            blockUI: '#save-employee-shift',
-            disableButton: true,
-            buttonSelector: '#save-signature',
-            data: $('#createTicket').serialize(),
-            success: function(response) {
+        const button = $('#save-employee-shift');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createTicket');
+
+        window.apiHttp.postUrlEncoded("{{ route('employee-shifts.update', $employeeShift->id) }}", $('#createTicket').serialize())
+            .then((response) => {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#createTicket');
+            });
     });
 
     setTimeout(function(){

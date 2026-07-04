@@ -1,0 +1,23 @@
+{
+    "table": "slack_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "slack_webhook",
+        "slack_logo",
+        "status",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "slack_webhook": null,
+            "slack_logo": null,
+            "status": "inactive",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

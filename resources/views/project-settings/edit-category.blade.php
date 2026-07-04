@@ -27,19 +27,25 @@
 
 <script>
     $('#edit-category').click(function () {
-        $.easyAjax({
-            container: '#editCategory',
-            type: "PUT",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            url: "{{ route('projectCategory.update', $projectCategory->id) }}",
-            data: $('#editCategory').serialize(),
-            success: function (response) {
+        const $btn = $('#edit-category');
+        const previousHtml = $btn.html();
+        const data = $('#editCategory').serialize() + '&_method=PUT';
+
+        $.easyBlockUI('#editCategory');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded("{{ route('projectCategory.update', $projectCategory->id) }}", data)
+            .then(function (response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editCategory');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 </script>

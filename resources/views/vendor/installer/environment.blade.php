@@ -60,15 +60,100 @@
     </form>
     <script>
         function checkEnv() {
-            $.easyAjax({
-                url: "{!! route('LaravelInstaller::environmentSave') !!}",
-                type: "GET",
-                data: $("#env-form").serialize(),
-                container: "#env-form",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: ".button",
-                messagePosition: "inline"
+            var form = document.getElementById('env-form');
+            var button = form.querySelector('.button');
+            var previousText = button.innerHTML;
+            var query = new URLSearchParams(new FormData(form)).toString();
+            var url = "{!! route('LaravelInstaller::environmentSave') !!}" + '?' + query;
+
+            clearInstallerErrors(form);
+            $.easyBlockUI('#env-form');
+            button.disabled = true;
+            button.innerHTML = 'Submitting...';
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then(function(response) {
+                return response.json();
+            }).then(function(response) {
+                if (response.status === 'success') {
+                    if (response.message) {
+                        showInstallerMessage(form, response.message, 'success');
+                    }
+
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    }
+
+                    return;
+                }
+
+                showInstallerFailure(form, response);
+            }).catch(function() {
+                showInstallerMessage(form, 'A server side error occurred. Please try again after sometime.', 'danger');
+            }).finally(function() {
+                $.easyUnblockUI('#env-form');
+                button.disabled = false;
+                button.innerHTML = previousText;
+            });
+        }
+
+        function clearInstallerErrors(form) {
+            form.querySelectorAll('.has-error').forEach(function(group) {
+                group.classList.remove('has-error');
+                group.querySelectorAll('.help-block').forEach(function(error) {
+                    error.remove();
+                });
+            });
+
+            var alert = form.querySelector('#alert');
+
+            if (alert) {
+                alert.remove();
+            }
+        }
+
+        function showInstallerMessage(form, message, type) {
+            var alert = form.querySelector('#alert');
+            var html = '<div class="alert alert-' + type + '">' + message + '</div>';
+
+            if (!alert) {
+                var firstGroup = form.querySelector('.form-group');
+                alert = document.createElement('div');
+                alert.id = 'alert';
+                firstGroup.parentNode.insertBefore(alert, firstGroup);
+            }
+
+            alert.innerHTML = html;
+        }
+
+        function showInstallerFailure(form, response) {
+            if (response.message) {
+                showInstallerMessage(form, response.message, 'danger');
+            }
+
+            if (!response.errors) {
+                return;
+            }
+
+            Object.keys(response.errors).forEach(function(key) {
+                var input = form.querySelector('[name="' + key + '"]') || form.querySelector('#' + key);
+
+                if (!input) {
+                    return;
+                }
+
+                var group = input.closest('.form-group');
+                var errorContainer = group.querySelector('div') || group;
+                var help = document.createElement('div');
+                help.className = 'help-block';
+                help.textContent = Array.isArray(response.errors[key]) ? response.errors[key].join(' ') : response.errors[key];
+                errorContainer.appendChild(help);
+                group.classList.add('has-error');
             });
         }
     </script>

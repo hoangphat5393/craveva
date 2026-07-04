@@ -257,70 +257,78 @@ $changeStatusPermission = user()->permission('change_status');
 
                     var token = "{{ csrf_token() }}";
                     var isApproval = 1;
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
+                    window.apiHttp.postUrlEncoded(url, {
                             '_token': token,
                             taskId: movingTaskId,
                             isApproval: isApproval,
                             '_method': 'POST'
-                        },
-                        success: function(response) {
+                        })
+                        .then(function(response) {
                             if (response.status == "success") {
                                 loadData();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(error) {
+                            $.handleApiFormError(error);
+                        });
                 }else{
                     loadData();
                 }
             });
         }else{
-            $.easyAjax({
-                url: "{{ route('taskboards.update_index') }}",
-                type: 'POST',
-                container: '#taskboard-columns',
-                blockUI: true,
-                data: {
+            const handleMoveResponse = function(response) {
+                if(response.status == 'failed'){
+                    Swal.fire({
+                        title: "@lang('messages.sweetAlertTitle')",
+                        text: "@lang('messages.You cant ')",
+                        icon: 'warning',
+                        confirmButtonText: "@lang('app.okay')", // Changed to 'OK'
+                        customClass: {
+                            confirmButton: 'btn btn-primary'
+                        },
+                        showClass: {
+                            popup: 'swal2-noanimation',
+                            backdrop: 'swal2-noanimation'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Handle the confirmation action here
+                        }
+                    });
+                }
+                if ($('#' + source.id + ' .task-card').length == 0) {
+                    $('#' + source.id + ' .no-task-card').removeClass('d-none');
+                }
+                if ($('#' + target.id + ' .task-card').length > 0) {
+                    $('#' + target.id + ' .no-task-card').addClass('d-none');
+                }
+
+                $('#task-column-count-' + sourceBoardColumnId).text(sourceColumnCount - 1);
+                $('#task-column-count-' + boardColumnId).text(targetColumnCount + 1);
+            };
+
+            $.easyBlockUI('#taskboard-columns');
+
+            window.apiHttp.postUrlEncoded("{{ route('taskboards.update_index') }}", {
                     boardColumnId: boardColumnId,
                     movingTaskId: movingTaskId,
                     taskIds: taskIds,
                     prioritys: prioritys,
                     '_token': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if(response.status == 'failed'){
-                        Swal.fire({
-                            title: "@lang('messages.sweetAlertTitle')",
-                            text: "@lang('messages.You cant ')",
-                            icon: 'warning',
-                            confirmButtonText: "@lang('app.okay')", // Changed to 'OK'
-                            customClass: {
-                                confirmButton: 'btn btn-primary'
-                            },
-                            showClass: {
-                                popup: 'swal2-noanimation',
-                                backdrop: 'swal2-noanimation'
-                            },
-                            buttonsStyling: false
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Handle the confirmation action here
-                            }
-                        });
-                    }
-                    if ($('#' + source.id + ' .task-card').length == 0) {
-                        $('#' + source.id + ' .no-task-card').removeClass('d-none');
-                    }
-                    if ($('#' + target.id + ' .task-card').length > 0) {
-                        $('#' + target.id + ' .no-task-card').addClass('d-none');
+                })
+                .then(handleMoveResponse)
+                .catch(function(error) {
+                    if (error.payload && error.payload.status == 'failed') {
+                        handleMoveResponse(error.payload);
+                        return;
                     }
 
-                    $('#task-column-count-' + sourceBoardColumnId).text(sourceColumnCount - 1);
-                    $('#task-column-count-' + boardColumnId).text(targetColumnCount + 1);
-                }
-            });
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#taskboard-columns');
+                });
         }
 
     });

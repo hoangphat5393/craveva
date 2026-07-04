@@ -1,0 +1,19 @@
+{
+    "table": "database_backup_cron_settings",
+    "columns": [
+        "id",
+        "status",
+        "hour_of_day",
+        "backup_after_days",
+        "delete_backup_after_days"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "status": "inactive",
+            "hour_of_day": "00:00:00",
+            "backup_after_days": "0",
+            "delete_backup_after_days": "0"
+        }
+    ]
+}

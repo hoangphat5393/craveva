@@ -36,15 +36,15 @@
     $('#save-mollie-detail').click(function () {
         var url = "{{ route('mollie_public', [$id, $company->hash])}}";
 
-        $.easyAjax({
-            container: '#mollieDetails',
-            messagePosition: 'inline',
-            buttonSelector: "#save-mollie-detail",
-            disableButton: true,
-            blockUI: true,
-            type: 'POST',
-            url: url,
-            data: $('#mollieDetails').serialize()
-        })
+        $.easyBlockUI('#mollieDetails');
+        $('#save-mollie-detail').prop('disabled', true);
+
+        window.apiHttp.postUrlEncoded(url, $('#mollieDetails').serialize())
+            .catch(function (error) {
+                $.handleApiFormError(error, 'inline');
+            }).finally(function () {
+                $.easyUnblockUI('#mollieDetails');
+                $('#save-mollie-detail').prop('disabled', false);
+            });
     })
 </script>

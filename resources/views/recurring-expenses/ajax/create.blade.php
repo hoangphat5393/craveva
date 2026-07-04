@@ -231,20 +231,18 @@ foreach ($projects as $project) {
 
         $('#save-expense-form').click(function() {
             const url = "{{ route('recurring-expenses.store') }}";
-            var data = $('#save-expense-data-form').serialize();
+            var form = document.getElementById('save-expense-data-form');
 
-            $.easyAjax({
-                url: url,
-                container: '#save-expense-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-expense-form",
-                data: data,
-                file: true,
-                success: function(response) {
+            $.easyBlockUI('#save-expense-data-form');
+            $('#save-expense-form').prop('disabled', true);
+
+            window.apiHttp.postForm(url, form).then(function(response) {
                     window.location.href = response.redirectUrl;
-                }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-expense-data-form');
+                $('#save-expense-form').prop('disabled', false);
             });
         });
 
@@ -258,23 +256,21 @@ foreach ($projects as $project) {
             let userId = $(this).val();
 
             const url = "{{ route('expenses.get_employee_projects') }}";
-            let data = $('#save-expense-data-form').serialize();
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
+            window.apiHttp.get(url, {
+                params: {
                     'userId': userId
-                },
-                success: function(response) {
-                    $('#project_id').html('<option value="">--</option>' + response.data);
-                    $('#project_id').selectpicker('refresh')
-                    if($('#project_id').val() == '')
-                    {
-                        $('#currency').prop('disabled', false);
-                        $('#currency').selectpicker('refresh');
-                    }
                 }
+            }).then(function(response) {
+                $('#project_id').html('<option value="">--</option>' + response.data);
+                $('#project_id').selectpicker('refresh')
+                if($('#project_id').val() == '')
+                {
+                    $('#currency').prop('disabled', false);
+                    $('#currency').selectpicker('refresh');
+                }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
             });
 
         });
@@ -398,17 +394,19 @@ foreach ($projects as $project) {
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('payments.account_list') }}",
-            type: "GET",
-            blockUI: true,
-            data: { 'curId' : currencyId , _token: token},
-            success: function(response) {
-                if (response.status == 'success') {
-                    $('#bank_account_id').html(response.data);
-                    $('#bank_account_id').selectpicker('refresh');
-                }
+        $.easyBlockUI('body');
+
+        window.apiHttp.get("{{ route('payments.account_list') }}", {
+            params: { 'curId' : currencyId , _token: token}
+        }).then(function(response) {
+            if (response.status == 'success') {
+                $('#bank_account_id').html(response.data);
+                $('#bank_account_id').selectpicker('refresh');
             }
+        }).catch(function (error) {
+            $.handleApiFormError(error);
+        }).finally(function () {
+            $.easyUnblockUI('body');
         });
     });
 </script>

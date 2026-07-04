@@ -55,14 +55,14 @@
                 if (result.isConfirmed) {
                     var url = "{{ route('holidays.mark_holiday_store') }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        disableButton: true,
-                        buttonSelector: "#save-mark-holiday",
-                        data: $('#save-mark-holiday-form').serialize(),
-                        success: function(response) {
+                    const button = $('#save-mark-holiday');
+                    const buttonHtml = button.html();
+
+                    button.prop('disabled', true);
+                    $.easyBlockUI('#save-mark-holiday-form');
+
+                    window.apiHttp.postUrlEncoded(url, $('#save-mark-holiday-form').serialize())
+                        .then(function(response) {
                             if (response.status == "success") {
                                 if (response.redirectUrl == 'table-view') {
                                     window.LaravelDataTables["holiday-table"].draw(true);
@@ -71,8 +71,15 @@
                                     location.href = response.redirectUrl;
                                 }
                             }
+                        })
+                        .catch(function (error) {
+                            $.handleApiFormError(error);
+                        })
+                        .finally(function () {
+                            button.prop('disabled', false).html(buttonHtml);
+                            $.easyUnblockUI('#save-mark-holiday-form');
                         }
-                    });
+                    );
                 }
             });
         });

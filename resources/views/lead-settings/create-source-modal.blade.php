@@ -26,15 +26,11 @@
 <script>
     // save source
     $('#save-source').click(function() {
-        $.easyAjax({
-            url: "{{ route('lead-source-settings.store') }}",
-            container: '#addLeadSource',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-source",
-            data: $('#addLeadSource').serialize(),
-            success: function(response) {
+        $('#save-source').prop('disabled', true);
+        $.easyBlockUI('#addLeadSource');
+
+        window.apiHttp.postUrlEncoded("{{ route('lead-source-settings.store') }}", $('#addLeadSource').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     if($('table#example').length) {
                         window.location.reload();
@@ -47,7 +43,13 @@
                         $(MODAL_LG).modal('hide');
                     }
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-source').prop('disabled', false);
+                $.easyUnblockUI('#addLeadSource');
+            });
     });
 </script>

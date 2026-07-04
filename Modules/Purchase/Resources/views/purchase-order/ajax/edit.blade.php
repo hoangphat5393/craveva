@@ -191,8 +191,8 @@
                         <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-products">
                             <option value="">{{ __('app.select') . ' ' . __('app.product') }}</option>
                             @foreach ($products as $item)
-                                <option data-content="{{ $item->name }}@if ($item->sku) ({{ $item->sku }}) @endif" value="{{ $item->id }}">
-                                    {{ $item->name }}</option>
+                                <option data-content="{{ e($item->documentDropdownLabel()) }}" value="{{ $item->id }}">
+                                    {{ $item->documentDropdownLabel() }}</option>
                             @endforeach
                         </select>
                         <x-slot name="preappend">
@@ -499,7 +499,7 @@
 
         $('#product_category_id').on('change', function() {
             var id = $(this).val();
-            var url = "{{ route('invoices.product_category', ':id') }}",
+            var url = "{{ route('invoices.product_category', ':id') }}?context=purchase",
                 url = url.replace(':id', id);
             $.easyBlockUI('#saveOrderForm');
             window.apiHttp.get(url).then(function(response) {
@@ -509,8 +509,8 @@
                     rData = response.data;
                     $.each(rData, function(index, value) {
                         var selectData = '';
-                        var skuSuffix = value.sku ? ' (' + value.sku + ')' : '';
-                        selectData = '<option data-content="' + value.name + skuSuffix + '" value="' + value.id + '">' + value.name +
+                        var label = escapeHtml(value.label || value.name || '');
+                        selectData = '<option data-content="' + label + '" value="' + value.id + '">' + label +
                             '</option>';
                         options.push(selectData);
                     });

@@ -5,7 +5,7 @@
 ## Isolation rule
 
 - **Do not** follow links outside `REFERENCE/ERP-SYSTEM-OVERVIEW.md`.
-- **Do not** require `FUNC_LOGIC/`, `docs/`, `Modules/`, or `RAG_agent.md` at answer time.
+- **Do not** require `FUNC_LOGIC/`, unrelated `docs/`, or `Modules/` at answer time.
 - Deep context lives in [REFERENCE/](REFERENCE/) and [flows/](flows/).
 
 ## Structure

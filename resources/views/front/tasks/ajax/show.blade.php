@@ -218,20 +218,28 @@
 
                 const requestUrl = this.href;
 
-                $.easyAjax({
-                    url: requestUrl,
-                    blockUI: true,
-                    container: "#nav-tabContent",
-                    historyPush: (!$(RIGHT_MODAL).hasClass('in')),
-                    data: {
-                        'json': true
-                    },
-                    success: function (response) {
+                if (!$(RIGHT_MODAL).hasClass('in')) {
+                    historyPush(requestUrl);
+                }
+
+                $.easyBlockUI("#nav-tabContent");
+
+                window.apiHttp.get(requestUrl, {
+                        params: {
+                            'json': true
+                        }
+                    })
+                    .then(function (response) {
                         if (response.status == "success") {
                             $('#nav-tabContent').html(response.html);
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI("#nav-tabContent");
+                    });
             });
 
             init(RIGHT_MODAL);

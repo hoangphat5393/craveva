@@ -255,13 +255,17 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: "{{ route('theme-settings.store') }}",
-                        container: '#editSettings',
-                        blockUI: true,
-                        type: "POST",
-                        data: $('#editSettings').serialize()
-                    });
+                    $.easyBlockUI('#editSettings');
+
+                    window.apiHttp.postUrlEncoded("{{ route('theme-settings.store') }}", $('#editSettings').serialize())
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        })
+                        .finally(() => {
+                            $.easyUnblockUI('#editSettings');
+                        });
                 }
             });
 
@@ -269,14 +273,17 @@
         });
 
         $('#save-form').click(function () {
-            $.easyAjax({
-                url: "{{ route('theme-settings.store') }}",
-                container: '#editSettings',
-                blockUI: true,
-                type: "POST",
-                file: true,
-                data: $('#editSettings').serialize()
-            })
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postForm("{{ route('theme-settings.store') }}", document.getElementById('editSettings'))
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#editSettings');
+                });
         });
 
         $('.cropper').on('dropify.fileReady', function (e) {

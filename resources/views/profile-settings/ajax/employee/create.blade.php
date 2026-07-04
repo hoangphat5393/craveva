@@ -29,22 +29,26 @@
 <script>
     $('#submit-document').click(function () {
         var url = "{{ route('employee-docs.store') }}";
+        const $btn = $('#submit-document');
+        const previousHtml = $btn.html();
 
-        $.easyAjax({
-            url: url,
-            container: '#save-document-data-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#submit-document",
-            file: true,
-            data: $('#save-document-data-form').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#save-document-data-form');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postForm(url, document.getElementById('save-document-data-form'))
+            .then(function (response) {
                 if (response.status == 'success') {
                     $('#task-file-list').html(response.view);
                     $(MODAL_DEFAULT).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#save-document-data-form');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 
     init('#save-document-data-form');

@@ -94,16 +94,11 @@
                 $('#submit-signup').click(function () {
 
                     var url = "{{ route('accept_invite') . '?invite=' . $invite->invitation_code }}";
-                    $.easyAjax({
-                        url: url,
-                        container: '#acceptInviteForm',
-                        disableButton: true,
-                        buttonSelector: "#submit-signup",
-                        type: "POST",
-                        blockUI: true,
-                        messagePosition: 'inline',
-                        data: $('#acceptInviteForm').serialize(),
-                        success: function (response) {
+                    $('#submit-signup').prop('disabled', true);
+                    $.easyBlockUI('#acceptInviteForm');
+
+                    window.apiHttp.postUrlEncoded(url, $('#acceptInviteForm').serialize())
+                        .then(function (response) {
                             window.location.href = "{{ route('dashboard') }}"
                             // if (response.status == 'fail') {
                             //     $('#alert').removeClass('d-none');
@@ -116,8 +111,14 @@
                             // setTimeout(() => {
                             //     window.location.href = "{{ route('dashboard') }}"
                             // }, 2000);
-                        },
-                    })
+                        })
+                        .catch(function(error) {
+                            $.handleApiFormError(error);
+                        })
+                        .finally(function() {
+                            $('#submit-signup').prop('disabled', false);
+                            $.easyUnblockUI('#acceptInviteForm');
+                        });
                 });
 
             </script>

@@ -89,20 +89,14 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#row-' + id).fadeOut();
-                            $('#expense_category_id').html(response.data);
-                            $('#expense_category_id').selectpicker('refresh');
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        $('#row-' + id).fadeOut();
+                        $('#expense_category_id').html(response.data);
+                        $('#expense_category_id').selectpicker('refresh');
                     }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
                 });
             }
         });
@@ -111,15 +105,11 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('expenseCategory.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            success: function(response) {
+        $.easyBlockUI('#createProjectCategory');
+        $('#save-category').prop('disabled', true);
+
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     if (response.status == 'success') {
                         $('#expense_category_id').html(response.data);
@@ -127,8 +117,12 @@
                         $(MODAL_LG).modal('hide');
                     }
                 }
-            }
-        })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#createProjectCategory');
+                $('#save-category').prop('disabled', false);
+            });
     });
 
 
@@ -146,23 +140,22 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#row-' + id);
+
+            window.apiHttp.postUrlEncoded(url, {
                     'category_name': value,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#expense_category_id').html(response.data);
-                        $('#expense_category_id').selectpicker('refresh');
-                    }
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    $('#expense_category_id').html(response.data);
+                    $('#expense_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#row-' + id);
+            });
         }
     });
 

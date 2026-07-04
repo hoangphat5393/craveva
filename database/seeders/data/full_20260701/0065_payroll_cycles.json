@@ -1,0 +1,40 @@
+{
+    "table": "payroll_cycles",
+    "columns": [
+        "id",
+        "cycle",
+        "status",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "cycle": "monthly",
+            "status": "active",
+            "created_at": "2026-07-01 20:56:28",
+            "updated_at": "2026-07-01 20:56:28"
+        },
+        {
+            "id": 2,
+            "cycle": "weekly",
+            "status": "active",
+            "created_at": "2026-07-01 20:56:28",
+            "updated_at": "2026-07-01 20:56:28"
+        },
+        {
+            "id": 3,
+            "cycle": "biweekly",
+            "status": "active",
+            "created_at": "2026-07-01 20:56:28",
+            "updated_at": "2026-07-01 20:56:28"
+        },
+        {
+            "id": 4,
+            "cycle": "semimonthly",
+            "status": "active",
+            "created_at": "2026-07-01 20:56:28",
+            "updated_at": "2026-07-01 20:56:28"
+        }
+    ]
+}

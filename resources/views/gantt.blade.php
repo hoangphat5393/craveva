@@ -90,12 +90,10 @@
                 var url = "{{ route('front.gantt_data', $project->id) }}?assignedTo=" +
                     assignedTo + '&projectID=' + projectID + '&projectTask=' + projectTask + '&_token=' + token;
 
-                $.easyAjax({
-                    url: url,
-                    blockUI: true,
-                    container: '.content-wrapper',
-                    type: "POST",
-                    success: function (response) {
+                $.easyBlockUI('.content-wrapper');
+
+                window.apiHttp.post(url, {})
+                    .then(function (response) {
                         if (!response.length) {
                             $("#gantt").html(
                                 "<div class='d-flex justify-content-center p-20'>{{ __('messages.noRecordFound') }}</div>"
@@ -122,16 +120,19 @@
                                 var endDate = moment.utc(end.toDateString())
                                     .subtract(1, "days").format('DD/MM/Y');
 
-                                $.easyAjax({
-                                    url: url,
-                                    type: "POST",
-                                    container: '#gantt',
-                                    data: {
+                                $.easyBlockUI('#gantt');
+
+                                window.apiHttp.post(url, {
                                         '_token': token,
                                         'start_date': startDate,
                                         'end_date': endDate
-                                    }
-                                });
+                                    })
+                                    .catch(function (error) {
+                                        $.handleApiFormError(error);
+                                    })
+                                    .finally(function () {
+                                        $.easyUnblockUI('#gantt');
+                                    });
                             },
                             on_progress_change: function (task, progress) {
                             },
@@ -139,8 +140,13 @@
                             }
                         });
 
-                    }
-                });
+                    })
+                    .catch(function (error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function () {
+                        $.easyUnblockUI('.content-wrapper');
+                    });
             }
 
             $('#assignedTo, #gantt-view, #projectTask').on('change keyup', function () {
@@ -153,33 +159,36 @@
                 var url = "{{ route('front.task_detail', ':id') }}";
                 url = url.replace(':id', id);
 
-                $.easyAjax({
-                    url: url,
-                    blockUI: true,
-                    container: RIGHT_MODAL,
-                    historyPush: true,
-                    success: function (response) {
+                historyPush(url);
+                $.easyBlockUI(RIGHT_MODAL);
+
+                window.apiHttp.get(url)
+                    .then(function (response) {
                         if (response.status == "success") {
                             $(RIGHT_MODAL_CONTENT).html(response.html);
                             $(RIGHT_MODAL_TITLE).html(response.title);
                         }
-                    },
-                    error: function (request, status, error) {
-                        if (request.status == 403) {
+                    })
+                    .catch(function (error) {
+                        if (error.status == 403) {
                             $(RIGHT_MODAL_CONTENT).html(
                                 '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
                             );
-                        } else if (request.status == 404) {
+                        } else if (error.status == 404) {
                             $(RIGHT_MODAL_CONTENT).html(
                                 '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
                             );
-                        } else if (request.status == 500) {
+                        } else if (error.status == 500) {
                             $(RIGHT_MODAL_CONTENT).html(
                                 '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
                             );
+                        } else {
+                            $.handleApiFormError(error);
                         }
-                    }
-                });
+                    })
+                    .finally(function () {
+                        $.easyUnblockUI(RIGHT_MODAL);
+                    });
             }
 
             loadData();

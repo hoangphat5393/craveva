@@ -33,18 +33,20 @@
     $('#submit-login').click(function() {
 
         var url = "{{ route('password.confirm') }}";
-        $.easyAjax({
-            url: url,
-            container: '#reset-password-form',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#submit-login",
-            type: "POST",
-            data: $('#reset-password-form').serialize(),
-            success: function(response) {
+        $('#submit-login').prop('disabled', true);
+        $.easyBlockUI('#reset-password-form');
+
+        window.apiHttp.postUrlEncoded(url, $('#reset-password-form').serialize())
+            .then(function(response) {
                 changeFortifySettings();
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#submit-login').prop('disabled', false);
+                $.easyUnblockUI('#reset-password-form');
+            });
     });
 
     function changeFortifySettings() {
@@ -54,25 +56,27 @@
         let url = "{{ route('two-fa-settings.update', '1') }}";
         let token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            blockUI: true,
-            container: '#reset-password-form',
-            data: {
+        $.easyBlockUI('#reset-password-form');
+
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token,
                 '_method': 'put',
                 'method': method,
                 'status': status
-            },
-            success: function(response) {
+            })
+            .then(function(response) {
                 if (method == 'google_authenticator') {
                     changeFortifyStatus(status);
                 } else {
                     window.location.reload();
                 }
-            }
-        });
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#reset-password-form');
+            });
     }
 
     function changeFortifyStatus(type) {
@@ -80,19 +84,21 @@
         let method =  (type) == 'disable' ? 'DELETE' : 'POST';
         let token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            blockUI: true,
-            container: '#reset-password-form',
-            data: {
+        $.easyBlockUI('#reset-password-form');
+
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token,
                 '_method': method
-            },
-            success: function(response) {
+            })
+            .then(function(response) {
                 window.location.reload();
-            }
-        });
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#reset-password-form');
+            });
     }
 
 </script>

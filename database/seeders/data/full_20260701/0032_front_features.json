@@ -1,0 +1,41 @@
+{
+    "table": "front_features",
+    "columns": [
+        "id",
+        "language_setting_id",
+        "title",
+        "description",
+        "status",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "language_setting_id": 1,
+            "title": "Task Management",
+            "description": "Manage your projects and talent in one system for empowered teams, satisfied clients, and increased profitability.",
+            "status": "enable",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 2,
+            "language_setting_id": 1,
+            "title": "Manage All Bills",
+            "description": "Automate billing and revenue recognition to streamline the contract-to-cash cycle.",
+            "status": "enable",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 3,
+            "language_setting_id": 1,
+            "title": null,
+            "description": null,
+            "status": "enable",
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        }
+    ]
+}

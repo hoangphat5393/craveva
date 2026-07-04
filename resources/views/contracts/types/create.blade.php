@@ -76,21 +76,21 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                $.easyBlockUI('#createContractTypeForm');
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == 'success') {
                             $('#contractType').html(response.data);
                             $('#contractType').selectpicker('refresh');
                             $(MODAL_LG).modal('hide');
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#createContractTypeForm');
+                    });
             }
         });
 
@@ -98,20 +98,21 @@
 
     $('#save-contract-type').click(function() {
         var url = "{{ route('contractTypes.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createContractTypeForm',
-            type: "POST",
-            blockUI: true,
-            data: $('#createContractTypeForm').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createContractTypeForm');
+        window.apiHttp.postUrlEncoded(url, $('#createContractTypeForm').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     $('#contractType').html(response.data);
                     $('#contractType').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#createContractTypeForm');
+            });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -131,23 +132,24 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'name': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+            $.easyBlockUI('#row-' + id);
+            window.apiHttp.postUrlEncoded(url, {
+                'name': value,
+                '_token': token,
+                '_method': 'PUT'
+            })
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#contractType').html(response.data);
                         $('#contractType').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#row-' + id);
+                });
         }
     });
 

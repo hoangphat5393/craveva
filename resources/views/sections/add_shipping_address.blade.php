@@ -26,20 +26,22 @@
 
         var url = "{{ route('invoices.add_shipping_address', $clientId) }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#addShippingAddress',
-            type: "POST",
-            file: true,
-            disableButton: true,
-            buttonSelector: "#save-shipping-address",
-            data: $('#addShippingAddress').serialize(),
-            success: function(response) {
+        $('#save-shipping-address').prop('disabled', true);
+        $.easyBlockUI('#addShippingAddress');
+
+        window.apiHttp.postUrlEncoded(url, $('#addShippingAddress').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-shipping-address').prop('disabled', false);
+                $.easyUnblockUI('#addShippingAddress');
+            });
     });
     init(MODAL_LG);
 

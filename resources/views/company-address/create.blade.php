@@ -220,20 +220,28 @@
 <script>
     $('.select-picker').selectpicker('refresh');
     $('#save-address-setting').click(function () {
-        $.easyAjax({
-            container: '#createAddress',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-address-setting",
-            url: "{{ route('business-address.store') }}",
-            data: $('#createAddress').serialize(),
-            success: function (response) {
+        const button = $('#save-address-setting');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createAddress');
+
+        window.apiHttp.postUrlEncoded("{{ route('business-address.store') }}", $('#createAddress').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#createAddress');
+            });
     });
 </script>
 @if(!is_null(global_setting()->google_map_key))

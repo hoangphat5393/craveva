@@ -1,0 +1,71 @@
+{
+    "table": "project_status_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "status_name",
+        "alias",
+        "color",
+        "status",
+        "default_status",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "status_name": "in progress",
+            "alias": "in progress",
+            "color": "#00b5ff",
+            "status": "active",
+            "default_status": "1",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "status_name": "not started",
+            "alias": "not started",
+            "color": "#616e80",
+            "status": "active",
+            "default_status": "0",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "status_name": "on hold",
+            "alias": "on hold",
+            "color": "#f5c308",
+            "status": "active",
+            "default_status": "0",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "status_name": "canceled",
+            "alias": "canceled",
+            "color": "#d21010",
+            "status": "active",
+            "default_status": "0",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "status_name": "finished",
+            "alias": "finished",
+            "color": "#679c0d",
+            "status": "active",
+            "default_status": "0",
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

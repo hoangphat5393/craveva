@@ -171,8 +171,8 @@ if [ '__RB_GITPULL__' -eq 1 ]; then
 fi
 
 # Lệnh bảo trì (Permissions, Migration, Optimize)
-# Publish ngôn ngữ từ UI cần www-data ghi được resources/lang — xem SERVER_RUNBOOK_VI §4.8.
-# FPM (www-data) phải ghi storage/framework/sessions — xem SERVER_RUNBOOK_VI §4.6.
+# Publish ngôn ngữ từ UI cần www-data ghi được resources/lang — xem SERVER_RUNBOOK §4.8.
+# FPM (www-data) phải ghi storage/framework/sessions — xem SERVER_RUNBOOK §4.6.
 sudo chown -R '__RB_GITUSER__':www-data .
 sudo mkdir -p lang resources/lang storage/logs
 sudo mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data

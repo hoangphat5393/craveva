@@ -53,6 +53,25 @@ class LoginTest extends TestCase
         $this->assertAuthenticatedAs($userAuth, 'web');
     }
 
+    public function test_user_auth_hashes_plain_password_assignments()
+    {
+        $password = '12345678';
+        $email = 'test_plain_password_'.time().'@example.com';
+
+        $userAuth = new UserAuth;
+        $userAuth->email = $email;
+        $userAuth->password = $password;
+        $userAuth->save();
+
+        $this->assertNotSame($password, $userAuth->password);
+        $this->assertTrue(Hash::check($password, $userAuth->password));
+
+        $userAuth->password = $userAuth->password;
+        $userAuth->save();
+
+        $this->assertTrue(Hash::check($password, $userAuth->fresh()->password));
+    }
+
     /**
      * Test login failure with invalid password.
      *

@@ -36,18 +36,20 @@
 
     // save agent
     $('#save-agent').click(function() {
-        $.easyAjax({
-            url: "{{ route('ticket-agents.store') }}",
-            container: '#createMethods',
-            type: "POST",
-            blockUI: true,
-            data: $('#createMethods').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createMethods');
+
+        window.apiHttp.postUrlEncoded("{{ route('ticket-agents.store') }}", $('#createMethods').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#createMethods');
+            });
     });
 
     $('#manage-groups').click(function() {
@@ -65,13 +67,12 @@
     });
 
         function agentGroups(agentId) {
-            $.easyAjax({
-                url: "{{ route('ticket_agents.agent_groups') }}",
-                container: '#createMethods',
-                type: "GET",
-                blockUI: true,
-                data: {agent_id:agentId},
-                success: function(response) {
+            $.easyBlockUI('#createMethods');
+
+            window.apiHttp.get("{{ route('ticket_agents.agent_groups') }}", {
+                    params: {agent_id:agentId}
+                })
+                .then(function(response) {
                         var options = [];
                         var rData = [];
                         rData = response.data;
@@ -85,8 +86,13 @@
                         $('#ticket_group_id').html(options);
                         $('#ticket_group_id').selectpicker('refresh');
 
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#createMethods');
+                });
         }
 
 </script>

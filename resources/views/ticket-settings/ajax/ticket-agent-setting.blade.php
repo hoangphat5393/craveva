@@ -99,24 +99,26 @@
             var url = "{{ route('ticket-agent-settings.update', ':id') }}";
             url = url.replace(':id', companyID);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-ticket-agent-setting-data-form',
-                type: "POST",
-                blockUI: true,
-                data:  {
+            $.easyBlockUI('#save-ticket-agent-setting-data-form');
+
+            window.apiHttp.postUrlEncoded(url, {
                     '_token': token,
                     id: companyID,
                     userId: userID,
                     ticketScope: ticketScope,
                     groupId: groupID,
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == "success") {
                         window.location.reload();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-ticket-agent-setting-data-form');
+                });
         });
 
     });

@@ -40,20 +40,22 @@
         var token = "{{ csrf_token() }}";
         console.log(categoryId);
 
-        $.easyAjax({
-            url: "{{ route('category.updateDefault') }}",
-            type: "POST",
-            data: {
+        $.easyBlockUI('#editSettings');
+
+        window.apiHttp.postUrlEncoded("{{ route('category.updateDefault') }}", {
                 categoryId: categoryId,
                 _token: token
-            },
-            blockUI: true,
-            container: '#editSettings',
-            success: function(response) {
+            })
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+            });
     });
 </script>

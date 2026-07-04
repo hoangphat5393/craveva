@@ -126,18 +126,24 @@
 
             const url = "{{ route('holidays.update', $holiday->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-holiday-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-holiday-form",
-                data: $('#save-holiday-data-form').serialize(),
-                success: function(response) {
+            const button = $('#save-holiday-form');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-holiday-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#save-holiday-data-form').serialize())
+                .then(function(response) {
                     window.location.href = response.redirectUrl;
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#save-holiday-data-form');
                 }
-            });
+            );
         });
 
         init(RIGHT_MODAL);

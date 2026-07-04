@@ -47,19 +47,27 @@
     $('#colorpickeredit').colorpicker({"color": "{{$taskboardColumn->label_color}}"});
 
     $('#edit-status-setting').click(function () {
-        $.easyAjax({
-            container: '#editStatus',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#edit-status-setting",
-            url: "{{ route('task-settings.statusUpdate', $taskboardColumn->id) }}",
-            data: $('#editStatus').serialize(),
-            success: function (response) {
+        const button = $('#edit-status-setting');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#editStatus');
+
+        window.apiHttp.postUrlEncoded("{{ route('task-settings.statusUpdate', $taskboardColumn->id) }}", $('#editStatus').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#editStatus');
+            });
     });
 </script>

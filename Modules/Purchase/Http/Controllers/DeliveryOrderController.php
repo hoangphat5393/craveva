@@ -116,6 +116,9 @@ class DeliveryOrderController extends AccountBaseController
     {
         abort_403(! FlowPermission::allowsAlias('grn.delete'));
         $delivery = $this->queryByCompany()->findOrFail($id);
+        if ($message = app(GrnService::class)->mutationBlockedMessage($delivery)) {
+            return Reply::error(__($message));
+        }
         $delivery->delete();
 
         return Reply::success(__('messages.deleteSuccess'));
@@ -146,6 +149,11 @@ class DeliveryOrderController extends AccountBaseController
         abort_403(! FlowPermission::allowsAlias('grn.update'));
         $this->pageTitle = __('app.edit').' '.__($this->grnTitleKey());
         $this->delivery = $this->queryByCompany()->with(['items.purchaseItem.unit', 'purchaseOrder'])->findOrFail($id);
+        abort_if(
+            app(GrnService::class)->mutationBlockedMessage($this->delivery) !== null,
+            409,
+            __('purchase::app.grnReceivedImmutable')
+        );
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
         $this->warehouses = $this->warehouseList();
         $this->deliveryItems = $this->delivery->items;
@@ -172,6 +180,9 @@ class DeliveryOrderController extends AccountBaseController
         ]);
 
         $delivery = $this->queryByCompany()->findOrFail($id);
+        if ($message = app(GrnService::class)->mutationBlockedMessage($delivery)) {
+            return Reply::error(__($message));
+        }
         app(GrnService::class)->update($delivery, $this->buildDeliveryPayload($request, $delivery->type ?? 'inbound'));
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route($this->grnRouteName('index'))]);

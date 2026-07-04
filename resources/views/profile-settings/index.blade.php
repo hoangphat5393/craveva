@@ -82,12 +82,11 @@ $viewClientDocumentPermission = user()->permission('view_client_document');
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
                         showBtn(response.activeTab);
 
@@ -95,8 +94,13 @@ $viewClientDocumentPermission = user()->permission('view_client_document');
 
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI("#nav-tabContent");
+                });
 
         });
 
@@ -157,20 +161,19 @@ $viewClientDocumentPermission = user()->permission('view_client_document');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('#nav-tabContent');
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('.tableRow'+id).hide();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#nav-tabContent');
+                        });
                 }
             });
         });

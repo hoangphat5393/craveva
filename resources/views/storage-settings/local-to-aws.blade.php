@@ -106,19 +106,25 @@
         $('.aws-move-success').addClass('d-none');
         $('.aws-move-spinner').removeClass('d-none');
 
-        $.easyAjax({
-            url: "{{ route('storage-settings.aws_local_to_aws') }}",
-            container: '#AWSForm',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#test-aws-submit",
-            data: $('#AWSForm').serialize(),
-            success: function (response) {
+        const button = $('#test-aws-submit');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#AWSForm');
+
+        window.apiHttp.postUrlEncoded("{{ route('storage-settings.aws_local_to_aws') }}", $('#AWSForm').serialize())
+            .then(function (response) {
                 if (response.status === "success") {
                     $(MODAL_LG).modal('hide');
                 }
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#AWSForm');
             }
-        })
+        );
     });
 </script>

@@ -1,0 +1,41 @@
+{
+    "table": "purchase_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "purchase_order_prefix",
+        "purchase_order_number_separator",
+        "purchase_order_number_digit",
+        "bill_prefix",
+        "bill_number_separator",
+        "bill_number_digit",
+        "vendor_credit_prefix",
+        "vendor_credit_number_seprator",
+        "vendor_credit_number_digit",
+        "purchase_code",
+        "created_at",
+        "updated_at",
+        "purchase_terms",
+        "grn_terms"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "purchase_order_prefix": "PO",
+            "purchase_order_number_separator": "#",
+            "purchase_order_number_digit": 3,
+            "bill_prefix": "BL",
+            "bill_number_separator": "#",
+            "bill_number_digit": 3,
+            "vendor_credit_prefix": "VC",
+            "vendor_credit_number_seprator": "#",
+            "vendor_credit_number_digit": 3,
+            "purchase_code": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04",
+            "purchase_terms": null,
+            "grn_terms": null
+        }
+    ]
+}

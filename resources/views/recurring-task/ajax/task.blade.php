@@ -90,39 +90,35 @@
 
                         var token = "{{ csrf_token() }}";
                         var isApproval = 1;
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
+                        window.apiHttp.postUrlEncoded(url, {
                                 '_token': token,
                                 taskId: id,
                                 isApproval: isApproval,
                                 '_method': 'POST'
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    showTable();
-                                }
+                        }).then(function(response) {
+                            if (response.status == "success") {
+                                showTable();
                             }
+                        }).catch(function (error) {
+                            $.handleApiFormError(error);
                         });
                     }
                 });
             }else{
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '.content-wrapper',
-                    blockUI: true,
-                    data: {
+                $.easyBlockUI('.content-wrapper');
+
+                window.apiHttp.postUrlEncoded(url, {
                         '_token': token,
                         taskId: id,
                         status: status,
                         sortBy: 'id'
-                    },
-                    success: function(response) {
-                        $('#timer-clock').html(response.clockHtml);
-                        window.LaravelDataTables["allTasks-table"].draw(true);
-                    }
+                }).then(function(response) {
+                    $('#timer-clock').html(response.clockHtml);
+                    window.LaravelDataTables["allTasks-table"].draw(true);
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
+                }).finally(function () {
+                    $.easyUnblockUI('.content-wrapper');
                 });
             }
         }
@@ -203,20 +199,14 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.redirectUrl) {
-                                window.location.href = response.redirectUrl;
-                            } else {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.redirectUrl) {
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            showTable();
                         }
+                    }).catch(function (error) {
+                        $.handleApiFormError(error);
                     });
                 }
             });
@@ -229,23 +219,21 @@
 
             var url = "{{ route('recurring-task.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.redirectUrl) {
-                        window.location.href = response.redirectUrl;
-                    } else {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                    }
+            $('#quick-action-apply').prop('disabled', true);
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                } else {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
                 }
-            })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $('#quick-action-apply').prop('disabled', false);
+            });
         };
 
 </script>

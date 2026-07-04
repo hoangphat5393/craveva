@@ -66,21 +66,28 @@ $(".select-picker").selectpicker();
         // Save form data
         $('#save-form').click(function () {
             const url = "{{ route('custom-link-settings.update', [$custom_link->id]) }}";
-            $.easyAjax({
-                url: url,
-                container: '#editCustomLink',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-form",
-                data: $('#editCustomLink').serialize(),
-                success: function (response) {
+            const button = $('#save-form');
+            const buttonText = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#editCustomLink');
+
+            window.apiHttp.postUrlEncoded(url, $('#editCustomLink').serialize())
+                .then((response) => {
                     if (response.status == 'success') {
                         window.location.reload();
                     }
-                }
-
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#editCustomLink');
+                });
         });
 
 </script>

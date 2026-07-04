@@ -141,3 +141,40 @@ it('keeps received status when creating grn directly as received', function () {
     expect($delivery->fresh()->status)->toBe('received');
     expect(DB::table('grn_items')->where('grn_id', $delivery->id)->count())->toBe(1);
 });
+
+it('blocks updates and deletes after a grn is received', function () {
+    $service = app(GrnService::class);
+    $delivery = $service->create([
+        'purchase_order_id' => 7004,
+        'warehouse_id' => 9,
+        'type' => 'inbound',
+        'delivery_number' => 'GRN-0004',
+        'delivery_date' => now()->toDateString(),
+        'status' => 'received',
+        'delivery_fee' => null,
+        'item_id' => [601],
+        'product_id' => [907],
+        'quantity_ordered' => [5],
+        'quantity_received' => [5],
+        'batch_number' => ['LOCKED-1'],
+        'expiry_date' => [null],
+        'picking_rule_applied' => ['FIFO'],
+    ], 10);
+
+    expect(fn () => $service->update($delivery->fresh(), [
+        'purchase_order_id' => 7004,
+        'warehouse_id' => 9,
+        'type' => 'inbound',
+        'delivery_number' => 'GRN-0004',
+        'delivery_date' => now()->toDateString(),
+        'status' => 'received',
+        'item_id' => [602],
+        'product_id' => [907],
+        'quantity_ordered' => [3],
+        'quantity_received' => [3],
+    ]))->toThrow(DomainException::class);
+
+    expect(DB::table('grn_items')->where('grn_id', $delivery->id)->value('batch_number'))->toBe('LOCKED-1')
+        ->and(fn () => $delivery->fresh()->delete())->toThrow(DomainException::class)
+        ->and(DB::table('grns')->where('id', $delivery->id)->exists())->toBeTrue();
+});

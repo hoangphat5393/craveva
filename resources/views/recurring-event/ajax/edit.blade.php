@@ -433,17 +433,20 @@
             let url = "{{ route('departments.members', ':id') }}?userId="+userId;
             url = url.replace(':id', departmentIds);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-project-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
+            $.easyBlockUI('#save-project-data-form');
+
+            window.apiHttp.get(url)
+                .then(function (data) {
                     $('#selectAssignee').html(data.data);
                     $('#selectAssignee').selectpicker('refresh');
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#save-project-data-form');
                 }
-            })
+            );
         });
 
             $('body').on('click', '.delete-file', function() {
@@ -472,19 +475,16 @@
 
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
+                        window.apiHttp.delete(url, token)
+                            .then(function(response) {
                                 if (response.status == "success") {
                                     $('#event-file-list').html(response.view);
                                 }
+                            })
+                            .catch(function (error) {
+                                $.handleApiFormError(error);
                             }
-                        });
+                        );
                     }
                 });
             });
@@ -562,15 +562,14 @@
 
             const url = "{{ route('recurring-event.update', $event->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-event-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-event-form",
-                data: $('#save-event-data-form').serialize(),
-                success: function(response) {
+            const button = $('#save-event-form');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-event-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#save-event-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         if(eventDropzone.getQueuedFiles().length > 0) {
                             eventDropzone.processQueue();
@@ -582,8 +581,15 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#save-event-data-form');
                 }
-            });
+            );
         });
 
         init(RIGHT_MODAL);

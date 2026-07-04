@@ -52,20 +52,28 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('timelog-break.update', $timelogBreak->id) }}";
-        $.easyAjax({
-            url: url,
-            container: '#editTimelogBreak',
-            type: "POST",
-            data: $('#editTimelogBreak').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            success: function(response) {
+        const button = $('#save-category');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#editTimelogBreak');
+
+        window.apiHttp.postUrlEncoded(url, $('#editTimelogBreak').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#editTimelogBreak');
+            });
     });
 
     $('body').on('click', '#delete-break', function() {
@@ -93,20 +101,22 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                $.easyBlockUI('body');
+
+                window.apiHttp.delete(url, token)
+                    .then((response) => {
                         if (response.status == "success") {
                             window.location.reload();
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    })
+                    .finally(() => {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
     });

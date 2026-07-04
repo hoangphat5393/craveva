@@ -164,19 +164,19 @@ $deleteDocumentPermission = user()->permission('delete_client_document');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                $.easyBlockUI('#task-file-list');
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             $('#task-file-list').html(response.view);
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#task-file-list');
+                    });
             }
         });
     });

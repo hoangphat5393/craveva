@@ -197,19 +197,19 @@ $addLeadCustomFormPermission = user()->permission('manage_lead_custom_forms');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('#lead-contact-table');
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#lead-contact-table');
+                        });
                 }
             });
         });
@@ -221,22 +221,27 @@ $addLeadCustomFormPermission = user()->permission('manage_lead_custom_forms');
 
             var url = "{{ route('lead-contact.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            const $btn = $('#quick-action-apply');
+            const previousHtml = $btn.html();
+            $.easyBlockUI('#quick-action-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#quick-action-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         };
 
         $('body').on('click', '#add-lead', function() {

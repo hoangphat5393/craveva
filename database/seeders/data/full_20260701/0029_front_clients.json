@@ -1,0 +1,45 @@
+{
+    "table": "front_clients",
+    "columns": [
+        "id",
+        "title",
+        "image",
+        "language_setting_id",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "title": "Client 1",
+            "image": null,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "title": "Client 2",
+            "image": null,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "title": "Client 3",
+            "image": null,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "title": "Client 4",
+            "image": null,
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

@@ -159,6 +159,18 @@
                     </x-forms.link-secondary>
                 @endif
                 <div id="client-dt-buttons" class="d-inline-flex align-items-center mb-2 mb-lg-0 mb-md-0"></div>
+                <div class="client-column-presets d-inline-flex align-items-center flex-wrap mb-2 mb-lg-0 mb-md-0 ml-0 ml-lg-2 ml-md-2"
+                    aria-label="@lang('app.columnPresets')">
+                    <button type="button" class="btn btn-secondary f-14 mr-2 client-column-preset" data-column-preset="sales">
+                        <i class="fa fa-user-tie mr-1"></i>@lang('app.salesPreset')
+                    </button>
+                    <button type="button" class="btn btn-secondary f-14 mr-2 client-column-preset" data-column-preset="finance">
+                        <i class="fa fa-file-invoice-dollar mr-1"></i>@lang('app.financePreset')
+                    </button>
+                    <button type="button" class="btn btn-secondary f-14 mr-2 client-column-preset" data-column-preset="logistics">
+                        <i class="fa fa-truck mr-1"></i>@lang('app.logisticsPreset')
+                    </button>
+                </div>
             </div>
 
             <x-datatable.actions>
@@ -202,6 +214,159 @@
     @include('sections.datatable_js')
 
     <script>
+        const clientListFiltersStorageKey = 'client-list-filters-v1';
+        const clientListColumnPresetStorageKey = 'client-list-column-preset-v1';
+        let restoringClientListFilters = false;
+
+        const clientListColumnPresets = {
+            sales: [
+                'client_code', 'name', 'pricing_tier_name', 'contract_pricing_active',
+                'status', 'salesperson', 'last_transaction_at', 'email', 'mobile'
+            ],
+            finance: [
+                'client_code', 'name', 'pricing_tier_name', 'contract_pricing_active',
+                'outstanding_balance', 'payment_terms', 'customer_grade', 'status'
+            ],
+            logistics: [
+                'client_code', 'name', 'status', 'mobile', 'category_name',
+                'geographical-distinction', 'geographical_distinction', 'last_transaction_at'
+            ]
+        };
+
+        const protectedClientListColumns = ['check', 'DT_RowIndex', 'id', 'action'];
+
+        const getClientListColumnKey = (columnSettings) => {
+            const dataKey = columnSettings.data ?? columnSettings.mData ?? columnSettings.name ?? columnSettings.sName;
+            return typeof dataKey === 'string' ? dataKey : null;
+        };
+
+        const getClientListDataTable = () => {
+            if (window.LaravelDataTables?.["clients-table"]) {
+                return window.LaravelDataTables["clients-table"];
+            }
+
+            if (typeof $ !== 'undefined' && $.fn.dataTable?.isDataTable('#clients-table')) {
+                return $('#clients-table').DataTable();
+            }
+
+            return null;
+        };
+
+        const syncClientListColumnPresetButton = (preset) => {
+            $('.client-column-preset').removeClass('btn-active');
+
+            if (preset) {
+                $(`.client-column-preset[data-column-preset="${preset}"]`).addClass('btn-active');
+            }
+        };
+
+        const applyClientListColumnPreset = (preset) => {
+            const visibleColumns = clientListColumnPresets[preset];
+            const dataTable = getClientListDataTable();
+
+            if (!visibleColumns || !dataTable) {
+                return;
+            }
+
+            dataTable.settings()[0].aoColumns.forEach((columnSettings, index) => {
+                const columnKey = getClientListColumnKey(columnSettings);
+
+                if (!columnKey || protectedClientListColumns.includes(columnKey)) {
+                    return;
+                }
+
+                dataTable.column(index).visible(visibleColumns.includes(columnKey), false);
+            });
+
+            dataTable.columns.adjust().draw(false);
+            localStorage.setItem(clientListColumnPresetStorageKey, preset);
+            syncClientListColumnPresetButton(preset);
+        };
+
+        const getClientListFilters = () => ({
+            status: $('#status').val(),
+            category_id: $('#filter_category_id').val(),
+            sub_category_id: $('#filter_sub_category_id').val(),
+            project_id: $('#project_id').val(),
+            contract_type_id: $('#contract_type_id').val(),
+            country_id: $('#country_id').val(),
+            verification: $('#verification').val(),
+            searchText: $('#search-text-field').val(),
+            dateRange: $('#datatableRange').val(),
+            startDate: $('#datatableRange').data('daterangepicker')?.startDate?.format('{{ company()->moment_date_format }}') || null,
+            endDate: $('#datatableRange').data('daterangepicker')?.endDate?.format('{{ company()->moment_date_format }}') || null
+        });
+
+        const hasActiveClientListFilters = (filters = getClientListFilters()) => {
+            return (filters.status && filters.status !== 'all') ||
+                (filters.category_id && filters.category_id !== 'all') ||
+                (filters.sub_category_id && filters.sub_category_id !== 'all') ||
+                (filters.project_id && filters.project_id !== 'all') ||
+                (filters.contract_type_id && filters.contract_type_id !== 'all') ||
+                (filters.country_id && filters.country_id !== 'all') ||
+                (filters.verification && filters.verification !== 'all') ||
+                (filters.searchText && filters.searchText !== '') ||
+                (filters.dateRange && filters.dateRange !== '');
+        };
+
+        const syncClientListResetButton = () => {
+            $('#reset-filters').toggleClass('d-none', !hasActiveClientListFilters());
+        };
+
+        const saveClientListFilters = () => {
+            if (restoringClientListFilters) {
+                return;
+            }
+
+            const filters = getClientListFilters();
+
+            if (!hasActiveClientListFilters(filters)) {
+                localStorage.removeItem(clientListFiltersStorageKey);
+                return;
+            }
+
+            localStorage.setItem(clientListFiltersStorageKey, JSON.stringify(filters));
+        };
+
+        const restoreClientListFilters = () => {
+            const savedFilters = localStorage.getItem(clientListFiltersStorageKey);
+
+            if (!savedFilters) {
+                return false;
+            }
+
+            let filters;
+
+            try {
+                filters = JSON.parse(savedFilters);
+            } catch (e) {
+                localStorage.removeItem(clientListFiltersStorageKey);
+                return false;
+            }
+
+            restoringClientListFilters = true;
+            $('#status').val(filters.status || 'all');
+            $('#filter_category_id').val(filters.category_id || 'all');
+            $('#filter_sub_category_id').val(filters.sub_category_id || 'all');
+            $('#project_id').val(filters.project_id || 'all');
+            $('#contract_type_id').val(filters.contract_type_id || 'all');
+            $('#country_id').val(filters.country_id || 'all');
+            $('#verification').val(filters.verification || 'all');
+            $('#search-text-field').val(filters.searchText || '');
+            if (filters.dateRange && filters.startDate && filters.endDate && $('#datatableRange').data('daterangepicker')) {
+                $('#datatableRange').val(filters.dateRange);
+                $('#datatableRange').data('daterangepicker').setStartDate(filters.startDate);
+                $('#datatableRange').data('daterangepicker').setEndDate(filters.endDate);
+            } else {
+                $('#datatableRange').val('');
+            }
+            $('.filter-box .select-picker').selectpicker('refresh');
+            restoringClientListFilters = false;
+            syncClientListResetButton();
+
+            return hasActiveClientListFilters(filters);
+        };
+
         $('#clients-table').on('preXhr.dt', function(e, settings, data) {
 
             const dateRangePicker = $('#datatableRange').data('daterangepicker');
@@ -242,23 +407,8 @@
 
         $('#status, #filter_category_id, #filter_sub_category_id, #project_id, #contract_type_id, #country_id, #verification')
             .on('change keyup', function() {
-                if ($('#status').val() !== "all") {
-                    $('#reset-filters').removeClass('d-none');
-                } else if ($('#filter_category_id').val() !== "all") {
-                    $('#reset-filters').removeClass('d-none');
-                } else if ($('#filter_sub_category_id').val() !== "all") {
-                    $('#reset-filters').removeClass('d-none');
-                } else if ($('#project_id').val() !== "all") {
-                    $('#reset-filters').removeClass('d-none');
-                } else if ($('#contract_type_id').val() !== "all") {
-                    $('#reset-filters').removeClass('d-none');
-                } else if ($('#country_id').val() !== "all") {
-                    $('#reset-filters').removeClass('d-none');
-                } else if ($('#verification').val() != 'all') {
-                    $('#reset-filters').removeClass('d-none');
-                } else {
-                    $('#reset-filters').addClass('d-none');
-                }
+                syncClientListResetButton();
+                saveClientListFilters();
                 showTable();
             });
 
@@ -305,8 +455,10 @@
         $('#search-text-field').on('keyup', function() {
             if ($('#search-text-field').val() != "") {
                 $('#reset-filters').removeClass('d-none');
-                showTable();
             }
+
+            saveClientListFilters();
+            showTable();
         });
 
         $('#reset-filters,#reset-filters-2').click(function() {
@@ -319,9 +471,18 @@
             $('.show-unverified').removeClass("btn-active");
             $('.show-clients').addClass("btn-active");
             $('#reset-filters').addClass('d-none');
+            localStorage.removeItem(clientListFiltersStorageKey);
             showTable();
         });
 
+        $('#datatableRange').on('apply.daterangepicker cancel.daterangepicker change', function() {
+            syncClientListResetButton();
+            saveClientListFilters();
+        });
+
+        $('body').on('click', '.client-column-preset', function() {
+            applyClientListColumnPreset($(this).data('column-preset'));
+        });
 
         $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
@@ -503,10 +664,18 @@
             $('#verification').selectpicker('refresh');
             $(this).addClass('btn-active')
             $('#reset-filters').removeClass('d-none');
+            saveClientListFilters();
             showTable();
         });
 
         $(document).ready(function() {
+            const restoredClientListFilters = restoreClientListFilters();
+            syncClientListColumnPresetButton(localStorage.getItem(clientListColumnPresetStorageKey));
+
+            if (restoredClientListFilters) {
+                showTable();
+            }
+
             @if (!is_null(request('start')) && !is_null(request('end')))
                 $('#datatableRange').val('{{ request('start') }}' +
                     ' @lang('app.to') ' + '{{ request('end') }}');

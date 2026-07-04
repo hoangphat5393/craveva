@@ -155,16 +155,8 @@
                     var prev = $btn.html();
                     $.easyBlockUI('.login_box');
                     $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        container: '#login-form',
-                        data: $('#login-form').serialize(),
-                        messagePosition: 'inline',
-                        errorPosition: 'field',
-                        blockUI: false,
-                        disableButton: false,
-                        success: function(response) {
+                    window.apiHttp.postUrlEncoded(url, $('#login-form').serialize())
+                        .then(function(response) {
                             if (response.status === 'success') {
                                 $('#form-box').remove();
                                 if (response.action === 'redirect' && response.url) {
@@ -179,15 +171,17 @@
                                     }
                                 }
                             }
-                        },
-                        complete: function() {
+                        })
+                        .catch(function (error) {
+                            $.handleApiFormError(error);
+                        })
+                        .finally(function() {
                             $.easyUnblockUI('.login_box');
                             $btn.prop('disabled', false).html(prev);
                             @if ($global->google_recaptcha_status)
                                 grecaptcha.reset();
                             @endif
-                        }
-                    });
+                        });
                 });
 
                 // @if (session('message'))

@@ -86,44 +86,50 @@
             var url = "{{ route('employees.by_department', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-automated-data-form',
-                type: "GET",
-                blockUI: true,
-                data: {
+            $.easyBlockUI('#save-automated-data-form');
+            window.apiHttp.get(url, {
+                params: {
                     request_from: 'rotation',
                     department_id: id,
                     rotation: rotation,
-                },
-                success: function(response) {
+                }
+            })
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#selectEmployee').html(response.data);
                         $('#selectEmployee').selectpicker('refresh');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-automated-data-form');
+                });
         });
 
         $('#save-automated-form').click(function() {
             const url = "{{ route('shift-rotations.store_automate_shift') }}";
+            const $btn = $('#save-automated-form');
+            const previousHtml = $btn.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#save-automated-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-automated-form",
-                data: $('#save-automated-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#save-automated-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postForm(url, document.getElementById('save-automated-data-form'))
+                .then(function(response) {
                     if (response.status == 'success') {
                         let url = "{{ route('attendance-settings.index') }}?tab=shift-rotation";
                         window.location.href = url;
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-automated-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         init(RIGHT_MODAL);

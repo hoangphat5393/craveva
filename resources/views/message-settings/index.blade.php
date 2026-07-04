@@ -88,12 +88,19 @@
             });
 
             $('#save-form').click(function() {
-                $.easyAjax({
-                    url: "{{ route('message-settings.update', [1]) }}",
-                    container: '#editSettings',
-                    type: "POST",
-                    data: $('#editSettings').serialize()
-                })
+                $.easyBlockUI('#editSettings');
+                window.apiHttp.postUrlEncoded("{{ route('message-settings.update', [1]) }}", $('#editSettings').serialize())
+                    .then(function(response) {
+                        if (response.status === 'success' && typeof response.message !== 'undefined') {
+                            $.showApiSuccessToast(response.message);
+                        }
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#editSettings');
+                    });
             });
 
     </script>

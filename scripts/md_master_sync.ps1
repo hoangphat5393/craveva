@@ -3,7 +3,7 @@
   Read-only documentation sync checker for FUNC_* markdown structure.
 
 .DESCRIPTION
-  Scans markdown files under FUNC_BUG, FUNC_IMPORT, FUNC_IMPROVE, FUNC_LOGIC
+  Scans markdown files under FUNC_BUG, FUNC_IMPROVE, FUNC_LOGIC, FUNC_TEST
   and reports what likely needs updates in:
   - FUNC_INDEX.md (root navigation)
   - group INDEX.md files
@@ -181,7 +181,7 @@ function Add-MissingLinksToMasterGuide {
     return $changed
 }
 
-$groups = @("FUNC_BUG", "FUNC_IMPORT", "FUNC_IMPROVE", "FUNC_LOGIC")
+$groups = @("FUNC_BUG", "FUNC_IMPROVE", "FUNC_LOGIC", "FUNC_TEST")
 $rulesConfig = Get-RulesConfig -Path $RulesPath
 $rootFuncIndex = Join-Path $ProjectRoot "FUNC_INDEX.md"
 $rootFuncIndexText = Get-FileText -Path $rootFuncIndex
@@ -255,7 +255,7 @@ foreach ($group in $groups) {
         $relPath = ($doc.FullName.Substring($ProjectRoot.Length + 1)).Replace("\", "/")
 
         $inGroupIndex = $false
-        if ($groupIndexText -and $groupIndexText.Contains($relPath)) {
+        if ($groupIndexText -and ($groupIndexText.Contains($relPath) -or $groupIndexText.Contains($doc.Name))) {
             $inGroupIndex = $true
         }
 
@@ -300,7 +300,7 @@ foreach ($group in $groups) {
             }
         }
 
-        if (-not $isNavigationDoc -and $masterGuides.Count -gt 0 -and -not $inAnyMasterGuide) {
+        if (-not $isNavigationDoc -and $suggestedGuidePath -and -not $inAnyMasterGuide) {
             $result.stats.missing_from_master_guides++
             $guideNames = @($masterGuides | ForEach-Object { ($_.FullName.Substring($ProjectRoot.Length + 1)).Replace("\", "/") })
             if ($suggestedGuidePath) {
@@ -449,4 +449,3 @@ $result.issues | ForEach-Object {
         Write-Host "  -> Update: $([string]::Join(', ', $_.suggest_update))"
     }
 }
-

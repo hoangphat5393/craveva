@@ -64,19 +64,21 @@
 
     // save status
     $('#save-status').click(function() {
-        $.easyAjax({
-            url: "{{ route('lead-stage-setting.store') }}",
-            container: '#createStatus',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-status",
-            data: $('#createStatus').serialize(),
-            success: function(response) {
+        $('#save-status').prop('disabled', true);
+        $.easyBlockUI('#createStatus');
+
+        window.apiHttp.postUrlEncoded("{{ route('lead-stage-setting.store') }}", $('#createStatus').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-status').prop('disabled', false);
+                $.easyUnblockUI('#createStatus');
+            });
     });
 </script>

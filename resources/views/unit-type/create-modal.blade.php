@@ -73,14 +73,8 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then((response) => {
                         if (response.status === 'success') {
                             $('#unit-type-row-' + id).fadeOut();
                             if (response.data && typeof window.refreshProductUnitTypeDropdown === 'function') {
@@ -92,28 +86,37 @@
                                 text: response.message
                             });
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    });
             }
         });
     });
 
     $('#save-unit-type').click(function() {
         const url = "{{ route('unit-type.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createUnitTypeForm',
-            type: "POST",
-            data: $('#createUnitTypeForm').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createUnitTypeForm');
+
+        window.apiHttp.postUrlEncoded(url, $('#createUnitTypeForm').serialize())
+            .then((response) => {
                 if (response.status === 'success') {
                     if (typeof window.refreshProductUnitTypeDropdown === 'function') {
                         window.refreshProductUnitTypeDropdown(response.data);
                     }
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('#createUnitTypeForm');
+            });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -129,22 +132,26 @@
 
             const token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#unit-type-row-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#unit-type-row-' + id);
+
+            window.apiHttp.postUrlEncoded(url, {
                     'unit_type': value,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+                })
+                .then((response) => {
                     if (response.status == 'success' && response.data && typeof window.refreshProductUnitTypeDropdown === 'function') {
                         window.refreshProductUnitTypeDropdown(response.data);
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#unit-type-row-' + id);
+                });
         }
     });
 </script>

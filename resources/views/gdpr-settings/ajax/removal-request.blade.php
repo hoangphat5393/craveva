@@ -45,19 +45,24 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'GET',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                    },
-                    success: function(response) {
+                $.easyBlockUI('body');
+
+                window.apiHttp.get(url, {
+                        params: {
+                            '_token': token,
+                        }
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
     });

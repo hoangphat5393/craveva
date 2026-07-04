@@ -26,19 +26,21 @@
 <script>
     // save channel
     $('#save-source').click(function() {
-        $.easyAjax({
-            url: "{{route('lead-source-settings.update', $source->id)}}",
-            container: '#editLeadSource',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-source",
-            data: $('#editLeadSource').serialize(),
-            success: function(response) {
+        $('#save-source').prop('disabled', true);
+        $.easyBlockUI('#editLeadSource');
+
+        window.apiHttp.postUrlEncoded("{{route('lead-source-settings.update', $source->id)}}", $('#editLeadSource').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-source').prop('disabled', false);
+                $.easyUnblockUI('#editLeadSource');
+            });
     });
 </script>

@@ -45,18 +45,24 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI(".content-wrapper");
+
+            window.apiHttp.get(requestUrl)
+                .then((response) => {
                     if (response.status == "success") {
                         $('.content-wrapper').html(response.html);
                         init('.content-wrapper');
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI(".content-wrapper");
+                });
         });
 
     </script>

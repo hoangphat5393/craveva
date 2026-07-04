@@ -54,19 +54,19 @@
     $('#save-authorize-detail').click( function () {
 
         var url = "{{ route('authorize_public', $id)}}";
-        $.easyAjax({
-            container: '.modal-content',
-            buttonSelector: "#save-authorize-detail",
-            disableButton: true,
-            blockUI: true,
-            type:'POST',
-            url:url,
-            data: $('#authorizeDetails').serialize(),
-            success: function (response) {
+        $.easyBlockUI('.modal-content');
+        $('#save-authorize-detail').prop('disabled', true);
+
+        window.apiHttp.postUrlEncoded(url, $('#authorizeDetails').serialize())
+            .then(function (response) {
                 if(response.status == 'success'){
                     window.location.reload();
                 }
-            }
-        });
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('.modal-content');
+                $('#save-authorize-detail').prop('disabled', false);
+            });
     });
 </script>

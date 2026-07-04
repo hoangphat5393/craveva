@@ -84,17 +84,20 @@
         document.addEventListener("visibilitychange", function() {
             if (document.visibilityState === "visible") {
                 var url = "{{ route('timelogs.timer_data') }}";
-                    $.easyAjax({
-                    url: url,
-                    container: '#startTimerForm',
-                    type: "GET",
-                    blockUI: true,
-                    success: function (response) {
+                $.easyBlockUI('#startTimerForm');
+
+                window.apiHttp.get(url)
+                    .then(function (response) {
                         if (response.status == 'success') {
                             $('#active-timer').html(response.data.timer);
                         }
-                    }
-                });
+                    })
+                    .catch(function (error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function () {
+                        $.easyUnblockUI('#startTimerForm');
+                    });
             }
         });
 
@@ -112,16 +115,16 @@
 @if(!is_null($selfActiveTimer) && $selfActiveTimer->project_id)
     setInterval(function() {
         var url = "{{ route('timelogs.check_project_time_limit', $selfActiveTimer->project_id ?? 0) }}";
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            success: function (response) {
+        window.apiHttp.get(url)
+            .then(function (response) {
                 if (response.status == 'success' && response.timeLimitReached) {
                     // Stop the timer automatically
                     stopTimerOnTimeLimit();
                 }
-            }
-        });
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            });
     }, 30000); // Check every 30 seconds
 @endif
 
@@ -130,15 +133,12 @@ function stopTimerOnTimeLimit() {
     var stopUrl = "{{ route('timelogs.stop_timer') }}";
     var timeId = "{{ $selfActiveTimer->id ?? 0 }}";
     
-    $.easyAjax({
-        url: stopUrl,
-        type: "POST",
-        data: {
+    window.apiHttp.post(stopUrl, {
             timeId: timeId,
             memo: 'Timer stopped due to project time limit reached',
             _token: '{{ csrf_token() }}'
-        },
-        success: function (response) {
+        })
+        .then(function (response) {
             if (response.status == 'success') {
                 // Show warning modal
                 showProjectTimeLimitModal(response.message || '@lang("messages.projectTimeReached")');
@@ -148,8 +148,10 @@ function stopTimerOnTimeLimit() {
                     window.location.reload();
                 }, 2000);
             }
-        }
-    });
+        })
+        .catch(function (error) {
+            $.handleApiFormError(error);
+        });
 }
 
 function showProjectTimeLimitModal(message) {

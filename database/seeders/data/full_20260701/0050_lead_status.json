@@ -1,0 +1,45 @@
+{
+    "table": "lead_status",
+    "columns": [
+        "id",
+        "company_id",
+        "type",
+        "priority",
+        "default",
+        "label_color",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "type": "pending",
+            "priority": 1,
+            "default": 1,
+            "label_color": "#FFE700",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "type": "in process",
+            "priority": 2,
+            "default": 0,
+            "label_color": "#009EFF",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "type": "done",
+            "priority": 3,
+            "default": 0,
+            "label_color": "#1FAE07",
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

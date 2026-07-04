@@ -115,16 +115,14 @@
 
         $('#save-appreciation-type').click(function() {
             const url = "{{ route('awards.update', $appreciationType->id) }}";
+            const button = $('#save-appreciation-type');
+            const buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#updateAppreciationType',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-appreciation-type",
-                data: $('#updateAppreciationType').serialize(),
-                success: function(response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#updateAppreciationType');
+
+            window.apiHttp.postUrlEncoded(url, $('#updateAppreciationType').serialize())
+                .then((response) => {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -133,8 +131,17 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#updateAppreciationType');
+                });
         });
 
         showIconPreview();

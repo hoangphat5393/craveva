@@ -49,20 +49,19 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });
@@ -74,22 +73,24 @@
             var url = "{{ route('shift-rotations.change_status') }}";
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                type: 'POST',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    id: rotationId,
-                    status: status,
-                    sortBy: 'id'
-                },
-                success: function(response) {
+            $.easyBlockUI('#nav-tabContent');
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                id: rotationId,
+                status: status,
+                sortBy: 'id'
+            })
+                .then(function(response) {
                     if (response.status == "success") {
                         showTable();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#nav-tabContent');
+                });
         });
     </script>
 @endpush

@@ -270,21 +270,28 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
 
             var url = "{{ route('bankaccounts.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            const button = $('#quick-action-apply');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#quick-action-form');
                 }
-            })
+            );
         };
 
         $('body').on('click', '.delete-table-row', function() {
@@ -313,19 +320,16 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
+                        })
+                        .catch(function (error) {
+                            $.handleApiFormError(error);
                         }
-                    });
+                    );
                 }
             });
         });
@@ -338,23 +342,22 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
+                window.apiHttp.post(url, {
                         '_token': token,
                         accountId: id,
                         status: status
-                    },
-
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                             resetActionButtons();
                             deSelectAll();
                         }
+                    })
+                    .catch(function (error) {
+                        $.handleApiFormError(error);
                     }
-                });
+                );
             }
         });
 

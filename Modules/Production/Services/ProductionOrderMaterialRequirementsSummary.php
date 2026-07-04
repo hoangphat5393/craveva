@@ -22,6 +22,7 @@ use Modules\Warehouse\Services\WarehouseUnitConversionService;
  *     total_required: float,
  *     unit_label: string|null,
  *     unit_label_base: string|null,
+ *     reserved_in_rm_warehouse: float|null,
  *     available_in_rm_warehouse: float|null,
  *     shortfall: float|null,
  * }
@@ -65,16 +66,25 @@ class ProductionOrderMaterialRequirementsSummary
                 $rows,
             ))),
         );
+        $reservedByProduct = $this->reservedQuantityByProductInWarehouse(
+            $order->rm_warehouse_id !== null ? (int) $order->rm_warehouse_id : null,
+            array_values(array_unique(array_map(
+                static fn (array $row): int => (int) $row['component_product_id'],
+                $rows,
+            ))),
+        );
 
         foreach ($rows as $index => $row) {
             $productId = (int) $row['component_product_id'];
             $available = $availableByProduct[$productId] ?? null;
+            $reserved = $reservedByProduct[$productId] ?? null;
             $shortfall = null;
 
             if ($available !== null && (float) $row['total_required'] > $available + 0.0000001) {
                 $shortfall = round((float) $row['total_required'] - $available, 6);
             }
 
+            $rows[$index]['reserved_in_rm_warehouse'] = $reserved;
             $rows[$index]['available_in_rm_warehouse'] = $available;
             $rows[$index]['shortfall'] = $shortfall;
         }
@@ -120,6 +130,7 @@ class ProductionOrderMaterialRequirementsSummary
                 'total_required' => round($perFgBase * $plannedFg * (1 + ($wastePercent / 100)), 6),
                 'unit_label' => $component['unit_label'],
                 'unit_label_base' => $component['unit_label_base'] ?? $component['unit_label'],
+                'reserved_in_rm_warehouse' => null,
                 'available_in_rm_warehouse' => null,
                 'shortfall' => null,
             ];
@@ -256,6 +267,32 @@ class ProductionOrderMaterialRequirementsSummary
         }
 
         return $available;
+    }
+
+    /**
+     * @param  list<int>  $productIds
+     * @return array<int, float>
+     */
+    protected function reservedQuantityByProductInWarehouse(?int $warehouseId, array $productIds): array
+    {
+        if ($warehouseId === null || $productIds === []) {
+            return [];
+        }
+
+        $reserved = WarehouseProductBatch::query()
+            ->selectRaw('product_id, SUM(reserved_quantity) as reserved')
+            ->where('warehouse_id', $warehouseId)
+            ->whereIn('product_id', $productIds)
+            ->groupBy('product_id')
+            ->get()
+            ->keyBy('product_id');
+
+        $result = [];
+        foreach ($productIds as $productId) {
+            $result[$productId] = (float) ($reserved->get($productId)->reserved ?? 0);
+        }
+
+        return $result;
     }
 
     /**

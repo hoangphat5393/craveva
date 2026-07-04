@@ -1,0 +1,25 @@
+{
+    "table": "zoom_global_settings",
+    "columns": [
+        "id",
+        "purchase_code",
+        "license_type",
+        "supported_until",
+        "purchased_on",
+        "notify_update",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "purchase_code": null,
+            "license_type": null,
+            "supported_until": null,
+            "purchased_on": null,
+            "notify_update": 1,
+            "created_at": "2026-07-01 20:56:39",
+            "updated_at": "2026-07-01 20:56:39"
+        }
+    ]
+}

@@ -33,21 +33,23 @@
 <script>
 
     $('#save-consent').click(function () {
-        $.easyAjax({
-            container: '#createConsent',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-consent",
-            url: "{{route('gdpr.store_consent')}}",
-            data: $('#createConsent').serialize(),
-            success: function (response) {
+        $('#save-consent').prop('disabled', true);
+        $.easyBlockUI('#createConsent');
+
+        window.apiHttp.postUrlEncoded("{{route('gdpr.store_consent')}}", $('#createConsent').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     showTable();
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-consent').prop('disabled', false);
+                $.easyUnblockUI('#createConsent');
+            });
     });
 
 </script>

@@ -738,7 +738,17 @@ if (! function_exists('module_enabled')) {
     // @codingStandardsIgnoreLine
     function module_enabled($moduleName)
     {
-        return Module::collections()->has($moduleName);
+        $modules = Module::collections();
+
+        if ($modules->has($moduleName)) {
+            return true;
+        }
+
+        $needle = strtolower((string) $moduleName);
+
+        return $modules->keys()->contains(
+            fn ($key) => strtolower((string) $key) === $needle
+        );
     }
 }
 

@@ -16,7 +16,7 @@
             (function() {
                 const agentId = @json(global_setting()->ai_workspace_agent_id);
                 const widgetScriptUrl = @json(global_setting()->aiWorkspaceWidgetScriptUrl());
-                const apiKey = @json(global_setting()->ai_workspace_api_key);
+                const apiKey = @json(global_setting()->aiWorkspaceApiKey());
                 const root = document.getElementById('ai-workspace-page-root');
 
                 if (!widgetScriptUrl || !agentId) {

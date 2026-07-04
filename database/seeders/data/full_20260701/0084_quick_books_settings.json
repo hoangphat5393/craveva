@@ -1,0 +1,37 @@
+{
+    "table": "quick_books_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "sandbox_client_id",
+        "sandbox_client_secret",
+        "client_id",
+        "client_secret",
+        "access_token",
+        "refresh_token",
+        "realmid",
+        "sync_type",
+        "environment",
+        "status",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "sandbox_client_id": "",
+            "sandbox_client_secret": "",
+            "client_id": "",
+            "client_secret": "",
+            "access_token": "",
+            "refresh_token": "",
+            "realmid": "",
+            "sync_type": "one_way",
+            "environment": "Production",
+            "status": 0,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

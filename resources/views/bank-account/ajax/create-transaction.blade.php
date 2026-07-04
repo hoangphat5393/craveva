@@ -144,21 +144,26 @@
         $('#save-transaction').click(function() {
             const url = "{{ route('bankaccounts.store_transaction') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-bank-transaction-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-transaction",
-                data: $('#save-bank-transaction-data-form').serialize(),
-                success: function(response) {
+            const button = $('#save-transaction');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-bank-transaction-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#save-bank-transaction-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         window.location.href = response.redirectUrl;
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#save-bank-transaction-data-form');
                 }
-            });
+            );
         });
 
         init(RIGHT_MODAL);

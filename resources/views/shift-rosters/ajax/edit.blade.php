@@ -89,16 +89,14 @@
                 var url = "{{ route('shifts.store') }}";
             @endif
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                container: '#attendance-container',
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-shift",
-                data: $('#attendance-container').serialize(),
-                file: true,
-                success: function(response) {
+            const button = $('#save-shift');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#attendance-container');
+
+            window.apiHttp.postUrlEncoded(url, $('#attendance-container').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         if (typeof loadData !== 'undefined' && typeof loadData === 'function') {
                             loadData();
@@ -107,8 +105,15 @@
                         }
                         $(MODAL_DEFAULT).modal('hide');
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#attendance-container');
                 }
-            })
+            );
         });
 
         $('#delete-shift').click(function() {
@@ -121,15 +126,14 @@
             var formData = $('#attendance-container').serialize();
             formData = formData.replace('&_method=PUT', '&_method=DELETE');
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                container: '#attendance-container',
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#delete-shift",
-                data: formData,
-                success: function(response) {
+            const button = $('#delete-shift');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#attendance-container');
+
+            window.apiHttp.postUrlEncoded(url, formData)
+                .then(function(response) {
                     if (response.status == 'success') {
                         if (typeof loadData !== 'undefined' && typeof loadData === 'function') {
                             loadData();
@@ -138,8 +142,15 @@
                         }
                         $(MODAL_DEFAULT).modal('hide');
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#attendance-container');
                 }
-            })
+            );
         });
 
         init(MODAL_DEFAULT);

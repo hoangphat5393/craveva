@@ -199,16 +199,10 @@
         CHANGE_DETECTED = false;
         const url = "{{ route('smtp-settings.update', $smtpSetting->id) }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            container: '#editSettings',
-            blockUI: true,
-            @if (user()->is_superadmin)
-                messagePosition: "inline",
-            @endif
-            data: $('#editSettings').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#editSettings');
+
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .then((response) => {
                 if (response.status === 'error') {
                     $('#alert').prepend(
                         '<div class="alert alert-danger">{{ __('messages.smtpError') }}</div>'
@@ -216,8 +210,15 @@
                 } else {
                     $('#alert').show();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('#editSettings');
+            });
     }
 
     var checkboxes = document.querySelectorAll(".notification input[type=checkbox]");
@@ -251,14 +252,19 @@
     });
 
     $('body').on('click', '#send-test-email-btn', function() {
-        $.easyAjax({
-            container: "#testEmail",
-            url: "{{ route('smtp_settings.send_test_mail') }}",
-            type: "GET",
-            messagePosition: "inline",
-            blockUI: true,
-            data: $('#testEmail').serialize(),
+        $.easyBlockUI("#testEmail");
+
+        window.apiHttp.get("{{ route('smtp_settings.send_test_mail') }}", {
+            params: Object.fromEntries(new URLSearchParams($('#testEmail').serialize()))
         })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI("#testEmail");
+            });
     });
 </script>
 <script>

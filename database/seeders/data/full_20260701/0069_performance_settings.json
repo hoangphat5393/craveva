@@ -1,0 +1,41 @@
+{
+    "table": "performance_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "create_meeting_roles",
+        "create_meeting_manager",
+        "create_meeting_participant",
+        "view_meeting_roles",
+        "view_meeting_manager",
+        "view_meeting_participant",
+        "objective_slack_notification",
+        "objective_push_notification",
+        "objective_email_notification",
+        "meeting_slack_notification",
+        "meeting_push_notification",
+        "meeting_email_notification",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "create_meeting_roles": null,
+            "create_meeting_manager": 1,
+            "create_meeting_participant": 1,
+            "view_meeting_roles": null,
+            "view_meeting_manager": 1,
+            "view_meeting_participant": 1,
+            "objective_slack_notification": "no",
+            "objective_push_notification": "no",
+            "objective_email_notification": "no",
+            "meeting_slack_notification": "no",
+            "meeting_push_notification": "no",
+            "meeting_email_notification": "no",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

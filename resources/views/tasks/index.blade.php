@@ -911,7 +911,7 @@
         //     var url = "{{ route('timelogs.stop_timer', ':id') }}";
         //     url = url.replace(':id', id);
         //     var token = '{{ csrf_token() }}';
-        //     $.easyAjax({
+        //     window.apiHttp.post(url, {
         //         url: url,
         //         blockUI: true,
         //         container: '#allTasks-table',

@@ -117,19 +117,20 @@
                 $('.mobile-description').remove();
             }
 
-            $.easyAjax({
-                url: "{{ route('estimate-request.store') }}",
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                file: true,
-                data: $('#saveInvoiceForm').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.postUrlEncoded("{{ route('estimate-request.store') }}", $('#saveInvoiceForm').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         window.location.href = response.redirectUrl;
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         });
 
         $('body').on('change', "#client_list_id", function () {
@@ -137,14 +138,13 @@
             let requesterType = 'client';
             if (requesterType == 'client' && clientId) {
                 let url = "{{ route('get.projects') }}";
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    data: {
+                window.apiHttp.get(url, {
+                    params: {
                         "requesterType": requesterType,
                         "clientId": clientId,
-                    },
-                    success: function(response) {
+                    }
+                })
+                    .then(function(response) {
                         let options = [];
                         let rData = [];
                         rData = response.projects;
@@ -157,8 +157,10 @@
                         $('#project_id').html('<option value="">--</option>' +
                             options);
                         $('#project_id').selectpicker('refresh');
-                    }
-                })
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             } else {
                 $('#project_id').html('<option value="">--</option>');
                 $('#project_id').selectpicker('refresh');

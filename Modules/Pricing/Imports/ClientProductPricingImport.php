@@ -17,6 +17,8 @@ class ClientProductPricingImport implements ToArray
             ['id' => 'custom_price', 'name' => 'Custom Price', 'required' => 'No'],
             ['id' => 'discount_type', 'name' => 'Discount Type', 'required' => 'No'],
             ['id' => 'discount_value', 'name' => 'Discount Value', 'required' => 'No'],
+            ['id' => 'start_date', 'name' => 'Start Date', 'required' => 'No'],
+            ['id' => 'end_date', 'name' => 'End Date', 'required' => 'No'],
         ];
     }
 

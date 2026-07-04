@@ -17,7 +17,7 @@ Manage **Key Results Metrics** in the current company.
 ## Who uses it / access
 
 - Requires module **`key-results-metrics`** in `user_modules()` and matching permission.
-- Role details: [01-ROLES-AND-ACCESS.md](../01-ROLES-AND-ACCESS.md).
+- Role details: [01-ROLES-AND-ACCESS.md](../../01-ROLES-AND-ACCESS.md).
 
 ## How to open the screen
 
@@ -37,7 +37,7 @@ Use sidebar group (requires module `key-results-metrics`).
 ## Expected results
 
 - On successful save: return to list or close modal; new/updated row on DataTable.
-- AJAX form: toast success; validation errors → red border + toast (see [UI-CONVENTIONS.md](../REFERENCE/UI-CONVENTIONS.md)).
+- AJAX form: toast success; validation errors → red border + toast (see [UI-CONVENTIONS.md](../../REFERENCE/UI-CONVENTIONS.md)).
 
 ## Common errors
 
@@ -50,5 +50,5 @@ Use sidebar group (requires module `key-results-metrics`).
 
 ## Related
 
-[01-ROLES-AND-ACCESS.md](../01-ROLES-AND-ACCESS.md)
+[01-ROLES-AND-ACCESS.md](../../01-ROLES-AND-ACCESS.md)
 

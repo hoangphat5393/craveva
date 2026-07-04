@@ -71,21 +71,22 @@
 
     // save status
     $('#save-status').click(function() {
-        $.easyAjax({
-            url: "{{route('lead-pipeline-setting.update', $pipeline->id)}}",
-            container: '#editStatus',
-            type: "POST",
-            blockUI: true,
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-status",
-            data: $('#editStatus').serialize(),
-            success: function(response) {
+        $('#save-status').prop('disabled', true);
+        $.easyBlockUI('#editStatus');
+
+        window.apiHttp.postUrlEncoded("{{route('lead-pipeline-setting.update', $pipeline->id)}}", $('#editStatus').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-status').prop('disabled', false);
+                $.easyUnblockUI('#editStatus');
+            });
     });
 
     $('body').on('click', '.delete-pipeline', function() {
@@ -114,19 +115,20 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('#editStatus');
+
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#editStatus');
+                        });
                 }
             });
         });

@@ -93,17 +93,22 @@
 
         $('#save-appreciationType').click(function() {
             var url = "{{ route('awards.quick-store') }}";
-            $.easyAjax({
-                url: url,
-                container: '#createAppreciationType',
-                type: "POST",
-                data: $('#createAppreciationType').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#createAppreciationType');
+
+            window.apiHttp.postUrlEncoded(url, $('#createAppreciationType').serialize())
+                .then((response) => {
                     $('#appreciation_type').html(response.data);
                     $('#appreciation_type').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#createAppreciationType');
+                });
         });
     });
 </script>

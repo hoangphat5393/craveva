@@ -49,19 +49,26 @@
         $('#save-department-form').click(function() {
 
             const url = "{{ route('departments.update', $department->id) }}";
+            const button = $('#save-department-form');
+            const buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#save-department-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-department-form",
-                data: $('#save-department-data-form').serialize(),
-                success: function(response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-department-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#save-department-data-form').serialize())
+                .then((response) => {
                     window.location.href = response.redirectUrl;
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#save-department-data-form');
+                });
         });
 
         init(RIGHT_MODAL);

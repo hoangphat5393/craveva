@@ -4,7 +4,7 @@ Navigation index for test strategy, test cases, and UAT execution evidence.
 
 ## Test Documents
 
-- `FUNC_TEST/01_BIOMIXING_TEST_MATRIX_VI.md` — ma trận UAT Bio-TC-001…021 + lệnh Pest cụm Biomixing
+- `FUNC_TEST/01_BIOMIXING_TEST_MATRIX.md` — ma trận UAT Bio-TC-001…021 + lệnh Pest cụm Biomixing
 
 ## Snapshot test suite (archive 2026-04-08)
 

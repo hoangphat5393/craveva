@@ -71,20 +71,25 @@
         var url = "{{ route('task-settings.setDefault', ':id') }}";
         url = url.replace(':id', statusID);
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            data: {
+        $.easyBlockUI('body');
+
+        window.apiHttp.postUrlEncoded(url, {
                 id: statusID,
                 _token: token
-            },
-            blockUI: true,
-            success: function (response) {
+            })
+            .then((response) => {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        });
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('body');
+            });
     });
 
     $('#add-status').click(function () {
@@ -133,20 +138,22 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                $.easyBlockUI('body');
+
+                window.apiHttp.delete(url, token)
+                    .then((response) => {
                         if (response.status == "success") {
                             $('#status-' + id).fadeOut();
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    })
+                    .finally(() => {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
     });

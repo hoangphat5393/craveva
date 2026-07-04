@@ -238,16 +238,12 @@
                 // Show loading state
                 $(this).prop('disabled', true);
 
-                $.easyAjax({
-                    url: "{{ route('gdpr_settings.update_general') }}",
-                    container: '.content-wrapper',
-                    type: "PUT",
-                    data: {
+                window.apiHttp.put("{{ route('gdpr_settings.update_general') }}", {
                         '_token': '{{ csrf_token() }}',
                         '_method': 'PUT',
                         'enable_gdpr': isEnabled ? 1 : 0
-                    },
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         console.log('Success response:', response);
                         if (response.status == "success") {
                             // Reload the page to show/hide GDPR settings panel
@@ -255,18 +251,18 @@
                                 window.location.reload();
                             }, 500);
                         }
-                    },
-                    error: function(xhr, status, error) {
+                    })
+                    .catch(function(error) {
                         console.log('Error:', error);
-                        console.log('Response:', xhr.responseText);
+                        console.log('Response:', error.payload);
                         // Revert toggle state on error
                         $('#gdpr-master-toggle').prop('checked', !isEnabled);
                         $('#gdpr-status-text').text(isEnabled ? '@lang("app.disabled")' : '@lang("app.enabled")');
-                    },
-                    complete: function() {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
                         $('#gdpr-master-toggle').prop('disabled', false);
-                    }
-                });
+                    });
             });
         });
 
@@ -291,18 +287,22 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI(".content-wrapper");
+
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI(".content-wrapper");
+                });
         });
 
         /*******************************************************
@@ -392,80 +392,52 @@
     </script>
 
     <script>
+        function saveGdprGeneralSettings(buttonSelector) {
+            $(buttonSelector).prop('disabled', true);
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded("{{ route('gdpr_settings.update_general') }}", $('#editSettings').serialize())
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $(buttonSelector).prop('disabled', false);
+                    $.easyUnblockUI('#editSettings');
+                });
+        }
+
         $('body').on('click', '#save-general-data', function() {
-            $.easyAjax({
-                url: "{{ route('gdpr_settings.update_general') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-general-data",
-                data: $('#editSettings').serialize(),
-            })
+            saveGdprGeneralSettings('#save-general-data');
         })
     </script>
 
     <script>
         $('body').on('click', '#save-right-to-data-portability', function() {
-            $.easyAjax({
-                url: "{{ route('gdpr_settings.update_general') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-right-to-data-portability",
-                data: $('#editSettings').serialize(),
-            })
+            saveGdprGeneralSettings('#save-right-to-data-portability');
         })
     </script>
 
     <script>
         $('body').on('click', '#save-right-to-informed-data', function() {
-            $.easyAjax({
-                url: "{{ route('gdpr_settings.update_general') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-right-to-informed-data",
-                data: $('#editSettings').serialize(),
-            })
+            saveGdprGeneralSettings('#save-right-to-informed-data');
         })
     </script>
 
     <script>
         $('body').on('click', '#save-right-to-erasure-data', function() {
-            $.easyAjax({
-                url: "{{ route('gdpr_settings.update_general') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-right-to-erasure-data",
-                data: $('#editSettings').serialize(),
-            })
+            saveGdprGeneralSettings('#save-right-to-erasure-data');
         })
     </script>
 
     <script>
         $('body').on('click', '#save-right-to-access-data', function() {
-            $.easyAjax({
-                url: "{{ route('gdpr_settings.update_general') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-right-to-access-data",
-                data: $('#editSettings').serialize(),
-            })
+            saveGdprGeneralSettings('#save-right-to-access-data');
         })
     </script>
 
     <script>
         $('body').on('click', '#save-consent-data', function() {
-            $.easyAjax({
-                url: "{{route('gdpr_settings.update_general')}}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-consent-data",
-                data: $('#editSettings').serialize(),
-            })
+            saveGdprGeneralSettings('#save-consent-data');
         })
     </script>
 

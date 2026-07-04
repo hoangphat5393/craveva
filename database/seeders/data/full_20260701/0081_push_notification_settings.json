@@ -1,0 +1,29 @@
+{
+    "table": "push_notification_settings",
+    "columns": [
+        "id",
+        "onesignal_app_id",
+        "onesignal_rest_api_key",
+        "notification_logo",
+        "status",
+        "created_at",
+        "updated_at",
+        "beams_push_status",
+        "instance_id",
+        "beam_secret"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "onesignal_app_id": null,
+            "onesignal_rest_api_key": null,
+            "notification_logo": null,
+            "status": "inactive",
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03",
+            "beams_push_status": "inactive",
+            "instance_id": null,
+            "beam_secret": null
+        }
+    ]
+}

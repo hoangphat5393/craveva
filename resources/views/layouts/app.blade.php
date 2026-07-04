@@ -408,19 +408,18 @@
             const id = $(this).data('notification-id');
             const href = $(this).attr('href');
 
-            $.easyAjax({
-                url: "{{ route('mark_single_notification_read') }}",
-                type: "POST",
-                data: {
+            window.apiHttp.postUrlEncoded("{{ route('mark_single_notification_read') }}", {
                     '_token': "{{ csrf_token() }}",
                     'id': id
-                },
-                success: function() {
+                })
+                .then(function() {
                     if (typeof href !== 'undefined') {
                         window.location = href;
                     }
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                });
         });
 
         $('body').on('click', '.img-lightbox', function() {
@@ -440,14 +439,13 @@
         });
 
         function updateOnesignalPlayerId(userId) {
-            $.easyAjax({
-                url: '{{ route('profile.update_onesignal_id') }}',
-                type: 'POST',
-                data: {
+            window.apiHttp.postUrlEncoded('{{ route('profile.update_onesignal_id') }}', {
                     'userId': userId,
                     '_token': '{{ csrf_token() }}'
-                }
-            })
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                });
         }
 
         if (SEARCH_KEYWORD !== '' && $('#search-text-field').length > 0) {
@@ -472,18 +470,15 @@
 
             let currentUrl = $(this).data('url');
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#pause-timer-btn",
-                data: {
+            $('#pause-timer-btn').prop('disabled', true);
+            $.easyBlockUI('body');
+
+            window.apiHttp.postUrlEncoded(url, {
                     timeId: id,
                     currentUrl: currentUrl,
                     _token: token
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status === 'success') {
                         // Always refresh the page when timer is paused
                         window.location.reload();
@@ -505,8 +500,14 @@
                         //     $('#timer-clock').html(response.clockHtml);
                         // }
                     }
-                }
-            })
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $('#pause-timer-btn').prop('disabled', false);
+                    $.easyUnblockUI('body');
+                });
         });
 
         $('body').on('click', '#resume-timer-btn, .resume-active-timer', function() {
@@ -517,18 +518,15 @@
 
             let currentUrl = $(this).data('url');
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#resume-timer-btn",
-                data: {
+            $('#resume-timer-btn').prop('disabled', true);
+            $.easyBlockUI('body');
+
+            window.apiHttp.postUrlEncoded(url, {
                     timeId: id,
                     currentUrl: currentUrl,
                     _token: token
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
 
                     if (response.status === 'success') {
                         if ($('#myActiveTimer').length > 0) {
@@ -544,8 +542,14 @@
                             window.location.reload();
                         }
                     }
-                }
-            })
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $('#resume-timer-btn').prop('disabled', false);
+                    $.easyUnblockUI('body');
+                });
         });
 
         $('body').on('click', '.stop-active-timer', function() {
@@ -568,13 +572,10 @@
                 var url = "{{ route('messages.check_new_message') }}";
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
+                window.apiHttp.postUrlEncoded(url, {
                         '_token': token,
-                    },
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.new_message_count > 0) {
                             newMessageNotificationPlay();
                             Swal.fire({
@@ -596,8 +597,10 @@
                                 },
                             });
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
             }
 
             @if (!user()->is_superadmin)
@@ -615,7 +618,7 @@
         $globalAi = global_setting();
         $hasAiAssistantEmbed = $globalAi->hasAiAssistantWidgetEmbedCode();
         $aiAssistantWidgetUrl = $hasAiAssistantEmbed ? null : $globalAi->aiAssistantWidgetScriptUrl();
-        $aiAssistantWidgetApiKey = $globalAi->ai_assistant_widget_api_key;
+        $aiAssistantWidgetApiKey = $globalAi->aiAssistantWidgetApiKey();
         $hasAiAssistantIntegration = $globalAi->hasAiAssistantWidgetIntegration();
     @endphp
     @if ($hasAiAssistantIntegration)

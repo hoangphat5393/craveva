@@ -5,6 +5,9 @@ declare(strict_types=1);
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Modules\Production\Entities\ProductionBom;
 use Modules\Production\Entities\ProductionOrder;
+use Modules\Production\Services\ProductionPostingService;
+use Modules\Warehouse\Entities\WarehouseProductBatch;
+use Modules\Warehouse\Entities\WarehouseProductStock;
 
 uses(DatabaseTransactions::class);
 
@@ -125,6 +128,109 @@ it('creates BOM and draft production order over HTTP like a signed-in tenant bro
         ->assertSuccessful()
         ->assertSee(__('production::app.materialShortage'), false)
         ->assertSee(__('modules.invoices.unitType'), false);
+});
+
+it('rejects a BOM line when the component matches the manufactured product', function (): void {
+    $fix = productionTenantFlowFixtures();
+    if ($fix === null) {
+        return;
+    }
+
+    $response = $this->actingAs($fix['userAuth'], 'web')
+        ->withSession([
+            'company' => $fix['company'],
+            'multi_company_selected' => 1,
+            'user_company_count' => 1,
+        ])
+        ->from(route('production.boms.create'))
+        ->post(route('production.boms.store'), [
+            '_token' => csrf_token(),
+            'output_product_id' => (int) $fix['fg']->id,
+            'version' => 'fg-as-rm-'.uniqid('', true),
+            'code' => 'fg-as-rm',
+            'effective_from' => null,
+            'effective_to' => null,
+            'is_default' => '0',
+            'notes' => null,
+            'items' => [
+                [
+                    'component_product_id' => (int) $fix['fg']->id,
+                    'quantity' => 1,
+                ],
+            ],
+        ]);
+
+    $response->assertRedirect(route('production.boms.create'));
+    $response->assertSessionHasErrors('items.0.component_product_id');
+});
+
+it('shows reserved raw material quantity on the production order detail material table', function (): void {
+    $fix = productionTenantFlowFixtures();
+    if ($fix === null) {
+        return;
+    }
+
+    $session = [
+        'company' => $fix['company'],
+        'multi_company_selected' => 1,
+        'user_company_count' => 1,
+    ];
+
+    WarehouseProductStock::query()->updateOrCreate(
+        [
+            'warehouse_id' => (int) $fix['rmWarehouse']->id,
+            'product_id' => (int) $fix['rm']->id,
+        ],
+        [
+            'quantity' => 10000,
+        ],
+    );
+
+    WarehouseProductBatch::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'warehouse_id' => (int) $fix['rmWarehouse']->id,
+        'product_id' => (int) $fix['rm']->id,
+        'batch_number' => 'RM-RES-UI-'.uniqid(),
+        'quantity' => 10000,
+        'reserved_quantity' => 0,
+    ]);
+
+    $bom = ProductionBom::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'output_product_id' => (int) $fix['fg']->id,
+        'version' => 'reserved-ui-'.uniqid('', true),
+        'code' => 'reserved-ui',
+        'is_default' => false,
+        'created_by' => $fix['user']->id,
+        'updated_by' => $fix['user']->id,
+    ]);
+
+    $bom->items()->create([
+        'company_id' => (int) $fix['company']->id,
+        'component_product_id' => (int) $fix['rm']->id,
+        'quantity' => 1,
+        'sort_order' => 0,
+    ]);
+
+    $order = ProductionOrder::query()->create([
+        'company_id' => (int) $fix['company']->id,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => (int) $fix['fg']->id,
+        'production_bom_id' => (int) $bom->id,
+        'rm_warehouse_id' => (int) $fix['rmWarehouse']->id,
+        'fg_warehouse_id' => (int) $fix['fgWarehouse']->id,
+        'planned_quantity' => 10,
+    ]);
+
+    app(ProductionPostingService::class)->releaseOrder($order);
+
+    $this->actingAs($fix['userAuth'], 'web')
+        ->withSession($session)
+        ->get(route('production.orders.show', $order))
+        ->assertSuccessful()
+        ->assertSee(__('production::app.materialReservedInRawMaterialWarehouse'), false)
+        ->assertSee('10', false)
+        ->assertSee(__('production::app.materialAvailableInRawMaterialWarehouse'), false);
 });
 
 it('lists BOM index with unit type column for finished good', function (): void {

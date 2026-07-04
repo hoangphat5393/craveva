@@ -5,7 +5,7 @@
             "includePatterns": ["*WAREHOUSE*", "*PO_DO*", "*GRN*", "*STOCK*", "*INVENTORY*", "*SALES_RETURN*", "*PURCHASE_RETURN*"]
         },
         {
-            "masterGuide": "FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md",
+            "masterGuide": "FUNC_LOGIC/MAOLIN_BUSINESS.md",
             "includePatterns": ["*MAOLIN*", "*MIAOLIN*", "*IMPORT*", "*SKU*", "*PRICING*", "*CLIENT*"]
         }
     ]

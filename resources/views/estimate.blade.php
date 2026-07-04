@@ -592,19 +592,22 @@
         });
 
         $('#decline-estimate').click(function() {
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('front.estimate.decline', $estimate->id) }}",
-                blockUI: true,
-                data: {
+            $.easyBlockUI('.content-wrapper');
+
+            window.apiHttp.postUrlEncoded("{{ route('front.estimate.decline', $estimate->id) }}", {
                     _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         window.location.reload();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
+                });
         });
 
         $('#toggle-pad-uploader').click(function() {
@@ -644,15 +647,10 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('front.estimate.accept', $estimate->id) }}",
-                container: '#acceptEstimate',
-                type: "POST",
-                blockUI: true,
-                file: true,
-                disableButton: true,
-                buttonSelector: '#save-signature',
-                data: {
+            $('#save-signature').prop('disabled', true);
+            $.easyBlockUI('#acceptEstimate');
+
+            window.apiHttp.postUrlEncoded("{{ route('front.estimate.accept', $estimate->id) }}", {
                     first_name: first_name,
                     last_name: last_name,
                     email: email,
@@ -660,13 +658,19 @@
                     image: image,
                     signature_type: signature_type,
                     _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         window.location.reload();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $('#save-signature').prop('disabled', false);
+                    $.easyUnblockUI('#acceptEstimate');
+                });
         });
 
         $('body').on('click', '.img-lightbox', function() {

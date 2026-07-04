@@ -58,19 +58,20 @@
             $('#submit-login').click(function() {
 
                 var url = "{{ route('setup_account') }}";
-                $.easyAjax({
-                    url: url,
-                    container: '#login-form',
-                    disableButton: true,
-                    buttonSelector: "#submit-login",
-                    type: "POST",
-                    data: $('#login-form').serialize(),
-                    success: function(response) {
+                $('#submit-login').prop('disabled', true);
+
+                window.apiHttp.postUrlEncoded(url, $('#login-form').serialize())
+                    .then(function(response) {
                         if (response.status == 'success') {
                             window.location.href = "{{ route('checklist') }}";
                         }
-                    }
-                })
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $('#submit-login').prop('disabled', false);
+                    });
             });
         </script>
     </x-slot>

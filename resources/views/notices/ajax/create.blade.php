@@ -210,19 +210,24 @@
                 var url = "{{ route('employees.by_department', ':id') }}";
                 url = url.replace(':id', id);
 
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    blockUI: true,
-                    data: {id: id},
-                    success: function (response) {
+                $.easyBlockUI('body');
+
+                window.apiHttp.get(url, { params: {id: id} })
+                    .then((response) => {
                         if (response.status == "success") {
                             $.unblockUI();
                             $('#selectEmployee').html(response.data);
                             $('#selectEmployee').selectpicker('refresh');
                         }
-                    }
-                })
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    })
+                    .finally(() => {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
 
@@ -231,16 +236,14 @@
 
             var note = document.getElementById('description').children[0].innerHTML;
             document.getElementById('description-text').value = note;
+            const button = $('#save-notice');
+            const buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#save-notice-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-notice",
-                data: $('#save-notice-data-form').serialize(),
-                success: function(response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-notice-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#save-notice-data-form').serialize())
+                .then((response) => {
                     if (response.status == 'success') {
                         if (typeof noticeDropzone !== 'undefined' && noticeDropzone.getQueuedFiles().length > 0) {
                             noticeID = response.noticeID;
@@ -255,8 +258,17 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#save-notice-data-form');
+                });
         });
 
         init(RIGHT_MODAL);

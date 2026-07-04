@@ -470,15 +470,14 @@
 
             let url = "{{ route('tasks.clientDetail') }}";
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
+            window.apiHttp.get(url, {
+                params: {
                     id: id,
-                },
-                success: function (response) {
-                    $('#clientDetails').html(response.data);
                 }
+            }).then(function (response) {
+                $('#clientDetails').html(response.data);
+            }).catch(function (error) {
+                $.handleApiFormError(error);
             });
         }
 
@@ -580,11 +579,9 @@
                 var dueDate = $('#due_date').val();
                 var userId = $('#selectAssignee').val();
 
-                $.easyAjax({
-                    url:"{{ route('tasks.checkLeaves')}}",
-                    type:'GET',
-                    data:{due_date:dueDate, start_date:startDate, user_id:userId},
-                    success:function(response) {
+                window.apiHttp.get("{{ route('tasks.checkLeaves')}}", {
+                    params: {due_date:dueDate, start_date:startDate, user_id:userId}
+                }).then(function(response) {
                     if (response.data === null) {
                         $(".show-leave").html('');
                         return;
@@ -599,7 +596,8 @@
                             var label = '<label id="leave-date"> {{ __("modules.tasks.leaveMessage") }} <i class="fa fa-question-circle" data-toggle="tooltip"  data-original-title="'+leaveData+'" id="leave-tooltip"></i></label>'
                             $(".show-leave").html(label);
                         });
-                }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
                 });
             },
             ...datepickerConfig
@@ -615,11 +613,9 @@
                 var startDate = $('#task_start_date').val();
                 var userId = $('#selectAssignee').val();
 
-                $.easyAjax({
-                    url:"{{ route('tasks.checkLeaves')}}",
-                    type:'GET',
-                    data:{start_date:startDate, due_date:dueDate, user_id:userId},
-                    success:function(response) {
+                window.apiHttp.get("{{ route('tasks.checkLeaves')}}", {
+                    params: {start_date:startDate, due_date:dueDate, user_id:userId}
+                }).then(function(response) {
                     if (response.data === null) {
                         $(".show-leave").html('');
                         return;
@@ -635,7 +631,8 @@
                             var label = '<label id="leave-date"> {{ __("modules.tasks.leaveMessage") }} <i class="fa fa-question-circle" data-toggle="tooltip"  data-original-title="'+leaveData+'" id="leave-tooltip"></i></label>'
                             $(".show-leave").html(label);
                         });
-                }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
                 });
 
             },
@@ -648,11 +645,9 @@
             var startDate = $('#task_start_date').val();
             var userId = $('#selectAssignee').val();
 
-            $.easyAjax({
-                url:"{{ route('tasks.checkLeaves')}}",
-                type:'GET',
-                data:{start_date:startDate, due_date:dueDate, user_id:userId},
-                success:function(response) {
+            window.apiHttp.get("{{ route('tasks.checkLeaves')}}", {
+                params: {start_date:startDate, due_date:dueDate, user_id:userId}
+            }).then(function(response) {
                     if (response.data === null) {
                         $(".show-leave").html('');
                         return;
@@ -668,7 +663,8 @@
                             var label = '<label id="leave-date"> {{ __("modules.tasks.leaveMessage") }} <i class="fa fa-question-circle" data-toggle="tooltip"  data-original-title="'+leaveData+'" id="leave-tooltip"></i></label>'
                             $(".show-leave").html(label);
                         });
-                }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
             });
         })
 
@@ -680,17 +676,17 @@
             let url = "{{ route('milestones.by_project', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-task-data-form',
-                type: "GET",
-                blockUI: true,
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#milestone-id').html(response.data);
-                        $('#milestone-id').selectpicker('refresh');
-                    }
+            $.easyBlockUI('#save-task-data-form');
+
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status == 'success') {
+                    $('#milestone-id').html(response.data);
+                    $('#milestone-id').selectpicker('refresh');
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
             });
         });
 
@@ -701,18 +697,17 @@
             }
             let url = "{{ route('tasks.project_tasks', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
-                    $('#dependent_task_id').html(data.data);
-                    $('.projectId').text(data.unique_id + '-');
-                    $('#dependent_task_id').selectpicker('refresh');
-                }
-            })
+            $.easyBlockUI('#save-task-data-form');
+
+            window.apiHttp.get(url).then(function (data) {
+                $('#dependent_task_id').html(data.data);
+                $('.projectId').text(data.unique_id + '-');
+                $('#dependent_task_id').selectpicker('refresh');
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
              const atValues = @json($userData);
 
@@ -726,21 +721,20 @@
             }
             let url = "{{ route('projects.members', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
-                    var atValues = data.userData;
-                    destory_editor('#description')
-                    quillMention(atValues, '#description');
-                    $('#selectAssignee').html(data.data);
-                    $('.projectId').text(data.unique_id + '-');
-                    $('#selectAssignee').selectpicker('refresh');
-                }
-            })
+            $.easyBlockUI('#save-task-data-form');
+
+            window.apiHttp.get(url).then(function (data) {
+                var atValues = data.userData;
+                destory_editor('#description')
+                quillMention(atValues, '#description');
+                $('#selectAssignee').html(data.data);
+                $('.projectId').text(data.unique_id + '-');
+                $('#selectAssignee').selectpicker('refresh');
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
 
         $('#save-task-data-form').on('change', '#project_id', function () {
@@ -750,17 +744,16 @@
             }
             let url = "{{ route('projects.labels', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
-                    $('#task_labels').html(data.data);
-                    $('#task_labels').selectpicker('refresh');
-                }
-            })
+            $.easyBlockUI('#save-task-data-form');
+
+            window.apiHttp.get(url).then(function (data) {
+                $('#task_labels').html(data.data);
+                $('#task_labels').selectpicker('refresh');
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
 
         $('#save-more-task-form').click(function () {
@@ -791,16 +784,17 @@
         });
 
         function saveTask(data, url, buttonSelector) {
-            $.easyAjax({
-                url: url,
-                container: '#save-task-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: buttonSelector,
-                data: data,
-                success: function (response) {
+            var formData = new FormData(document.getElementById('save-task-data-form'));
+            var searchParams = new URLSearchParams(data);
+
+            searchParams.forEach(function(value, key) {
+                formData.set(key, value);
+            });
+
+            $.easyBlockUI('#save-task-data-form');
+            $(buttonSelector).prop('disabled', true);
+
+            window.apiHttp.postForm(url, formData).then(function (response) {
                     if (response.status === 'success') {
 
                         if (typeof taskDropzone !== 'undefined' && taskDropzone.getQueuedFiles().length > 0) {
@@ -832,7 +826,11 @@
                             showTable();
                         }
                     }
-                }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#save-task-data-form');
+                $(buttonSelector).prop('disabled', false);
             });
         }
 
@@ -890,17 +888,18 @@
 
             const url = "{{ route('projects.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function (response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -909,17 +908,18 @@
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function (response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 

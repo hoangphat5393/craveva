@@ -112,6 +112,14 @@ it('imports sales order row and is idempotent by source hash', function () {
         'created_at' => now(),
         'updated_at' => now(),
     ]);
+    DB::table('company_addresses')->insert([
+        ['company_id' => 2, 'is_default' => true, 'created_at' => now(), 'updated_at' => now()],
+        ['company_id' => 1, 'is_default' => true, 'created_at' => now(), 'updated_at' => now()],
+    ]);
+    DB::table('unit_types')->insert([
+        ['company_id' => 2, 'unit_type' => 'wrong-tenant', 'created_at' => now(), 'updated_at' => now()],
+        ['company_id' => 1, 'unit_type' => 'piece', 'created_at' => now(), 'updated_at' => now()],
+    ]);
 
     $rows = [
         ['2024/01/02', 'A1173', 'A0101009', '2', '4100'],
@@ -125,6 +133,8 @@ it('imports sales order row and is idempotent by source hash', function () {
     expect(DB::table('orders')->count())->toBe(1);
     expect(DB::table('order_items')->count())->toBe(1);
     expect(DB::table('order_import_rows')->count())->toBe(1);
+    expect((int) DB::table('orders')->value('company_address_id'))->toBe(2);
+    expect((int) DB::table('order_items')->value('unit_id'))->toBe(2);
 });
 
 it('fails row when client or product not found', function () {

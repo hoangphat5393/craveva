@@ -300,43 +300,46 @@
 
             if (typeof openStatus == "undefined" || openStatus == "false") {
 
-                const token = '{{ csrf_token() }}';
-                $.easyAjax({
-                    type: 'POST',
-                    url: "{{ route('show_notifications') }}",
-                    container: "#notification-list",
-                    blockUI: true,
-                    data: {
-                        '_token': token
-                    },
-                    success: function (data) {
+                $.easyBlockUI("#notification-list");
+
+                window.apiHttp.post("{{ route('show_notifications') }}", {
+                        '_token': '{{ csrf_token() }}'
+                    })
+                    .then(function (data) {
                         if (data.status === 'success') {
                             $('#notification-list').html(data.html);
                         }
-                    }
-                });
+                    })
+                    .catch(function (error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function () {
+                        $.easyUnblockUI("#notification-list");
+                    });
 
             }
 
         });
 
         $('.mark-notification-read').click(function () {
-            const token = '{{ csrf_token() }}';
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('mark_notification_read') }}",
-                blockUI: true,
-                data: {
-                    '_token': token
-                },
-                success: function (data) {
+            $.easyBlockUI('body');
+
+            window.apiHttp.post("{{ route('mark_notification_read') }}", {
+                    '_token': '{{ csrf_token() }}'
+                })
+                .then(function (data) {
                     if (data.status === 'success') {
                         $('#notification-list').html('');
                         $('.unread-notifications-count').remove();
                         window.location.reload();
                     }
-                }
-            });
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('body');
+                });
 
         });
 

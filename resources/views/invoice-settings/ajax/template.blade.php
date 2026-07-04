@@ -45,16 +45,28 @@
 
     // save invoice setting
     $('#save-form').click(function() {
-        $.easyAjax({
-            url: "{{ route('invoice_settings.update_template', $invoiceSetting->id) }}",
-            container: '#editSettings',
-            type: "POST",
-            redirect: true,
-            file: true,
-            data: $('#editSettings').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-form",
-        });
+        const $btn = $('#save-form');
+        const previousHtml = $btn.html();
+
+        $.easyBlockUI('#editSettings');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postForm("{{ route('invoice_settings.update_template', $invoiceSetting->id) }}", document.getElementById('editSettings'))
+            .then(function(response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        $.showApiSuccessToast(response.message);
+                    }
+                }
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 </script>

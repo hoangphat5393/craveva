@@ -1,0 +1,29 @@
+{
+    "table": "front_faqs",
+    "columns": [
+        "id",
+        "question",
+        "answer",
+        "language_setting_id",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "question": "Can i see demo?",
+            "answer": "<span style=\"color: rgb(68, 68, 68); font-family: Lato, sans-serif; font-size: 16px;\">Yes, definitely. We would be happy to demonstrate you Craveva through a web conference at your convenience. Please submit a query on our contact us page or drop a mail to our mail id craveva@example.com.</span>",
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "question": "How can i update app?",
+            "answer": "<span style=\"color: rgb(68, 68, 68); font-family: Lato, sans-serif; font-size: 16px;\">Yes, definitely. We would be happy to demonstrate you Craveva through a web conference at your convenience. Please submit a query on our contact us page or drop a mail to our mail id craveva@example.com.</span>",
+            "language_setting_id": 1,
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

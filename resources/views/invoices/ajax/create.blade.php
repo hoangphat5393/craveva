@@ -323,8 +323,8 @@
                                 <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-products" title="{{ __('app.menu.selectProduct') }}">
                                     <option value="">{{ __('app.menu.selectProduct') }}</option>
                                     @foreach ($products as $item)
-                                        <option data-content="{{ $item->name }}@if ($item->sku) ({{ $item->sku }}) @endif" value="{{ $item->id }}">
-                                            {{ $item->name }}</option>
+                                        <option data-content="{{ e($item->documentDropdownLabel()) }}" value="{{ $item->id }}">
+                                            {{ $item->documentDropdownLabel() }}</option>
                                     @endforeach
                                 </select>
                                 <x-slot name="preappend">
@@ -1095,8 +1095,8 @@
                         var options = [];
                         var rData = response.items || [];
                         $.each(rData, function(index, value) {
-                            var sku = value.sku ? ' (' + value.sku + ')' : '';
-                            var selectData = '<option value="' + value.id + '" data-content="' + value.name + sku + '">' + value.name + '</option>';
+                            var label = escapeHtml(value.label || value.name || '');
+                            var selectData = '<option value="' + value.id + '" data-content="' + label + '">' + label + '</option>';
                             options.push(selectData);
                         });
                         $('#add-products').html(
@@ -1157,10 +1157,9 @@
             }, '<option value="">--</option>');
 
             initRemoteBootstrapSelect('#add-products', "{{ route('invoices.search_products') }}", function(item, selected) {
-                var label = escapeHtml(item.name || '');
-                var sku = item.sku ? ' (' + escapeHtml(item.sku) + ')' : '';
+                var label = escapeHtml(item.label || item.name || '');
                 var isSelected = selected.indexOf(String(item.id)) !== -1 || selected.indexOf(item.id) !== -1;
-                return '<option value="' + item.id + '"' + (isSelected ? ' selected' : '') + ' data-content="' + label + sku + '">' + label + '</option>';
+                return '<option value="' + item.id + '"' + (isSelected ? ' selected' : '') + ' data-content="' + label + '">' + label + '</option>';
             }, '<option value="">{{ __('app.menu.selectProduct') }}</option>', function() {
                 return {
                     category_id: $('#product_category_id').val() || null

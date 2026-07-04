@@ -72,7 +72,12 @@ class PurchaseOrderController extends AccountBaseController
     {
         $this->pageTitle = __('purchase::app.menu.purchaseOrder');
         $this->lastOrder = PurchaseOrder::lastOrderNumber() + 1;
-        $this->products = Product::where('status', 'active')->get();
+        $this->products = Product::query()
+            ->select('id', 'name', 'sku', 'type')
+            ->where('status', 'active')
+            ->purchasableDocumentLine()
+            ->orderBy('name')
+            ->get();
         $this->categories = ProductCategory::all();
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
@@ -320,7 +325,12 @@ class PurchaseOrderController extends AccountBaseController
         $this->addresses = CompanyAddress::all();
 
         $this->taxes = Tax::all();
-        $this->products = Product::where('status', 'active')->get();
+        $this->products = Product::query()
+            ->select('id', 'name', 'sku', 'type')
+            ->where('status', 'active')
+            ->purchasableDocumentLine()
+            ->orderBy('name')
+            ->get();
         $this->categories = ProductCategory::all();
         $this->linkOrderPermission = user()->permission('link_order_bank_account');
         $this->viewBankAccountPermission = user()->permission('view_bankaccount');

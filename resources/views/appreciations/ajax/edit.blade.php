@@ -103,21 +103,18 @@
 
         $('#update-appreciation').click(function() {
             const url = "{{ route('appreciations.update', $appreciation->id) }}";
+            const button = $('#update-appreciation');
+            const buttonText = button.html();
 
             var note = document.getElementById('summery').children[0].innerHTML;
 
             document.getElementById('summery-text').value = note;
 
-            $.easyAjax({
-                url: url,
-                container: '#update-appreciation-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#update-appreciation",
-                data: $('#update-appreciation-data-form').serialize(),
-                file: true,
-                success: function(response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#update-appreciation-data-form');
+
+            window.apiHttp.postForm(url, document.getElementById('update-appreciation-data-form'))
+                .then((response) => {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -126,8 +123,17 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#update-appreciation-data-form');
+                });
         });
 
         init(RIGHT_MODAL);

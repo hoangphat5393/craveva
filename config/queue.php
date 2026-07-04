@@ -119,4 +119,6 @@ return [
 
     'import_batch_connection' => env('IMPORT_BATCH_QUEUE_CONNECTION', 'database'),
 
+    'run_workers_in_scheduler' => (bool) env('QUEUE_WORKERS_IN_SCHEDULER', false),
+
 ];

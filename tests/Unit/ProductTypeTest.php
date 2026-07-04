@@ -16,9 +16,11 @@ it('defines five product types with goods as finished goods', function (): void 
 });
 
 it('scopes finished goods and bom components on product query', function (): void {
-    expect(Product::forBomOutput()->toSql())->toContain('`type` =');
-    expect(Product::forBomComponents()->toSql())->toContain('`type` in');
-    expect(Product::forBomRawMaterials()->toSql())->toContain('`type` =');
+    $normalizeSql = static fn (string $sql): string => str_replace('"', '`', strtolower($sql));
+
+    expect($normalizeSql(Product::forBomOutput()->toSql()))->toContain('`type` =');
+    expect($normalizeSql(Product::forBomComponents()->toSql()))->toContain('`type` in');
+    expect($normalizeSql(Product::forBomRawMaterials()->toSql()))->toContain('`type` =');
 });
 
 it('defines production BOM raw material type values', function (): void {

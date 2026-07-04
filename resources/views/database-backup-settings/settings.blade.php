@@ -58,18 +58,22 @@
 
         $('#save-settings').click(function () {
             const url = "{{ route('database-backup-settings.store') }}";
-            $.easyAjax({
-                url: url,
-                container: '#update-backup-settings',
-                type: "POST",
-                data: $('#update-backup-settings').serialize(),
-                success: function (response) {
+            $.easyBlockUI('#update-backup-settings');
+
+            window.apiHttp.postUrlEncoded(url, $('#update-backup-settings').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         $(MODAL_DEFAULT).modal('hide');
                         window.location.reload();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#update-backup-settings');
                 }
-            })
+            );
         });
 
         $("#status").change(function () {

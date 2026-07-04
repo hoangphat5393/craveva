@@ -44,7 +44,7 @@ return [
     'signatureAdded' => 'Signature Added Successfully',
     'contractRenewSuccess' => 'Contract renewed successfully.',
     'quantityNumber' => 'Quantity should be a number',
-    'salesDoShipQuantityRequired' => 'Ship quantity must be greater than zero on at least one line. Edit the sales delivery order to set ship quantities.',
+    'salesDoShipQuantityRequired' => 'Ship quantity must be greater than zero on at least one line. Open the Ship form to set ship quantities.',
     'salesDoHeaderRequiresOrderAndWarehouse' => 'This sales delivery order must be linked to a sales order and a warehouse before confirming or shipping. Open it, select the sales order and warehouse, save, then try again.',
     'salesDoHeaderOrderNotFoundForCompany' => 'The linked sales order was not found for this company. Choose a valid sales order, save, then confirm or ship.',
     'salesDoHeaderWarehouseNotFoundForCompany' => 'The linked warehouse was not found for this company. Choose a valid warehouse, save, then confirm or ship.',

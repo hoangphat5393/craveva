@@ -34,6 +34,10 @@ class WarehouseMovementController extends AccountBaseController
         $request->validate([
             'warehouse_id' => 'nullable|integer',
             'movement_type' => 'nullable|in:inbound,outbound',
+            'reference_type' => 'nullable|string|max:191',
+            'reference_id' => 'nullable|integer',
+            'startDate' => 'nullable|string|max:50',
+            'endDate' => 'nullable|string|max:50',
             'searchText' => 'nullable|string|max:255',
         ]);
 

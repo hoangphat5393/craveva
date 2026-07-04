@@ -44,27 +44,29 @@
 
             const url = "{{ route('task-note.update', $note->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#edit-note-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-edit-note",
-                data: {
+            $('#save-edit-note').prop('disabled', true);
+            $.easyBlockUI('#edit-note-data-form');
+
+            window.apiHttp.postUrlEncoded(url, {
                     '_token': token,
                     note: note,
                     '_method': 'PUT',
                     taskId: '{{ $note->task->id }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == "success") {
                         document.getElementById('note-list').innerHTML = response.view;
                         $(MODAL_LG).modal('hide');
                     }
 
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $('#save-edit-note').prop('disabled', false);
+                    $.easyUnblockUI('#edit-note-data-form');
+                });
         });
 
     });

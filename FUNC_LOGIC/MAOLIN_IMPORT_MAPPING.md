@@ -1,160 +1,159 @@
-# MAOLIN Import Mapping Template (Ready to Use)
+# MAOLIN Import Mapping Template
 
-**Mục lục MAOLIN:** [`MAOLIN_INDEX.md`](MAOLIN_INDEX.md) — mở file đó nếu không biết bắt đầu từ đâu.
+**Mục lục MAOLIN:** [`MAOLIN_BUSINESS.md`](MAOLIN_BUSINESS.md) — mở file đó nếu không biết bắt đầu từ đâu.
 
-> **Gợi ý đọc:** Bản gộp (dễ đọc, ưu tiên multi-warehouse) nằm ở [`MAOLIN_MASTER_GUIDE.md`](MAOLIN_MASTER_GUIDE.md). File này giữ bảng mapping chi tiết.
+> Bản gộp nghiệp vụ nằm ở [`MAOLIN_BUSINESS.md`](MAOLIN_BUSINESS.md). File này chỉ giữ bảng mapping chi tiết.
 
-Tai lieu nay dung de map cot khi import, theo bo file trong `PROJECT MAOLIN New/`.
-Muc tieu: import nhanh, dung core multi-warehouse, giam phu thuoc custom fields.
-
----
-
-## 0) Nguyen tac chung
-
-- Import theo thu tu:
-    1. Warehouse master (neu chua co du)
-    2. Client
-    3. Product
-    4. Pricing
-    5. Inventory
-- Khoa chinh:
-    - Client: `client_code`
-    - Product: `sku`
-    - Warehouse: `warehouse_code` (name chi fallback)
-- Inventory uu tien luu vao core:
-    - `warehouse_id` (resolve tu `warehouse_code/name`)
-    - `batch_number`
-    - `manufacturing_date`
-    - `expiration_date`
+Tài liệu này dùng để map cột khi import, theo bộ file trong `PROJECT MAOLIN New/`. Mục tiêu: import nhanh, đúng core multi-warehouse, giảm phụ thuộc custom fields.
 
 ---
 
-## 0.1) File `Quote, unit price, inventory.xlsx` — **nhiều sheet** (DigiWin export)
+## 0. Nguyên Tắc Chung
 
-Một workbook, thường có **ít nhất các sheet sau** (tên có thể giữ tiếng Trung):
+Import theo thứ tự:
 
-| Sheet (tên gợi ý) | Mục đích                             | Map vào hệ thống (thực tế import)                                                                                                                                                                                  |
-| ----------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `報價單匯出`      | Báo giá / quotation export           | **Chưa** có importer “báo giá” tương ứng trong luồng chuẩn; chỉ dùng tham chiếu hoặc cần adapter riêng nếu nghiệp vụ bắt buộc.                                                                                     |
-| `產品價格表`      | Bảng giá theo SKU                    | Cập nhật giá sản phẩm (`products.price`, `wholesale_price`, `price_per_box`, `employee_price`) — xem **mục 3**; thường import/update qua **Product** hoặc job cập nhật giá theo SKU (cần map cột giống bảng dưới). |
-| `產品庫存表`      | Tồn theo kho/lô (dạng bảng tổng hợp) | Cùng họ cột với inventory MAOLIN — map sang **Inventory import** (id cố định: `sku`, `warehouse_code`, `ending_inventory`, …) — xem **mục 4**.                                                                     |
+1. Warehouse master (nếu chưa có đủ)
+2. Client
+3. Product
+4. Pricing
+5. Inventory
 
-**Cách dùng với màn import hiện tại:** Luồng import trong app thường đọc **một sheet / một file** mỗi lần (tùy cấu hình Excel). Thực tế vận hành:
+Khóa chính:
 
-1. **Tách sheet** cần dùng: lưu riêng `產品價格表` → một file `.xlsx` chỉ một sheet, hoặc copy nội dung sheet sang sheet đầu tiên rồi upload.
-2. **Giá:** import/update product theo SKU và cột giá (mục 3).
-3. **Tồn:** dùng sheet `產品庫存表` (hoặc file `Craveva full inventory.xlsx` sheet `庫存明細總表` nếu cần chi tiết lô hơn) — **một lần import inventory** map cột tới `InventoryImport` (mục 4).
+- Client: `client_code`
+- Product: `sku`
+- Warehouse: `warehouse_code` (name chỉ fallback)
 
-**Liên quan bỏ Custom Field Inventory:** Việc gỡ CF **không** làm mất khả năng import **nếu** cột file được map vào **id hệ thống** (`sku`, `warehouse_code`, `expiration_date`, `ending_inventory`, …). Các cột chỉ từng lưu qua CF (kỳ kế toán, v.v.) vẫn như đã mô tả trong [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md) — không phụ thuộc sheet này hay sheet full inventory.
+Inventory ưu tiên lưu vào core:
 
----
-
-## 1) CLIENT — `Craveva customer.xlsx`
-
-### 1.1 Mapping cot
-
-| Cot file (de xuat) | Import field id             | Bat buoc | Ghi chu                         |
-| ------------------ | --------------------------- | -------- | ------------------------------- |
-| 客戶代號           | `client_code`               | Nen co   | Khoa update/upsert              |
-| 客戶簡稱           | `name`                      | Bat buoc | Ten hien thi                    |
-| 統一編號           | `gst_number`                | Tuy chon | Tax ID                          |
-| 送貨地址           | `address`                   | Tuy chon | Dia chi                         |
-| TEL_NO(一)         | `mobile`                    | Tuy chon | SDT chinh                       |
-| TEL_NO(二)         | `company_phone`             | Tuy chon | SDT van phong                   |
-| 業務員             | `salesperson`               | Tuy chon | Custom field                    |
-| 業務助理名稱       | `sales_assistant_name`      | Tuy chon | Custom field                    |
-| 客戶(集團)分級     | `customer_grade`            | Tuy chon | Custom field                    |
-| 通路別             | `channel_type`              | Tuy chon | Custom field                    |
-| 型態別             | `business_type`             | Tuy chon | Custom field                    |
-| 最近交易           | `last_transaction_at`       | Tuy chon | Custom field (date)             |
-| 交易條件           | `payment_terms`             | Tuy chon | Custom field                    |
-| 歇業日期           | `business_closure_date`     | Tuy chon | Custom field (date)             |
-| 指定庫別代碼       | `designated_warehouse_code` | Nen co   | Map sang `default_warehouse_id` |
-| 指定庫別名稱       | `designated_warehouse_name` | Fallback | Dung neu khong co code          |
-
-### 1.2 Rule map kho uu tien client
-
-- Tim kho theo `designated_warehouse_code` truoc.
-- Neu khong co, fallback `designated_warehouse_name`.
-- Neu van khong khop: de `default_warehouse_id = null`, ghi log dong loi de doi soat.
-
-### 1.3 Neu bo het Client custom fields thi sao?
-
-Theo note van hanh trong `PROJECT MAOLIN New/customer do.txt` (sang import, toi export, lap hang ngay; DigiWin la ERP chinh):
-
-- **Van import duoc phan core**: `client_code`, `name`, `gst_number`, `address`, `mobile`, `company_phone`, `default_warehouse_id` (qua designated warehouse code/name).
-- **Khong con cho luu** cac cot dang map custom field: `salesperson`, `department`, `sales_assistant_name`, `customer_grade`, `channel_type`, `business_type`, `last_transaction_at`, `payment_terms`, `business_closure_date`.
-
-Neu muon giam phu thuoc custom fields cho sync hang ngay, uu tien chuan hoa DB:
-
-1. `payment_terms` -> `payment_term_id` (lookup)
-2. `customer_grade` -> `customer_grade_id` (neu dung cho tier pricing)
-3. `channel_type` -> `channel_type_id` (neu dung cho phan khuc/bao cao)
-4. `business_type` -> `business_type_id` (neu dung nhieu trong nghiep vu)
-
-Nhom co the giu custom field neu chi de hien thi/ghi chu:
-
-- `salesperson`, `department`, `sales_assistant_name`, `last_transaction_at`, `business_closure_date`, `region`
+- `warehouse_id` resolve từ `warehouse_code/name`
+- `batch_number`
+- `manufacturing_date`
+- `expiration_date`
 
 ---
 
-## 2) PRODUCT — `Craveva product.xlsx` (sheet hang hoa)
+## 1. Workbook `Quote, unit price, inventory.xlsx`
 
-### 2.1 Mapping cot
+| Sheet | Mục đích | Map vào hệ thống |
+| ----- | -------- | ---------------- |
+| `報價單匯出` | Báo giá / quotation export | Chưa có importer chuẩn; chỉ tham chiếu hoặc cần adapter riêng. |
+| `產品價格表` | Bảng giá theo SKU | Cập nhật giá sản phẩm: `products.price`, `wholesale_price`, `price_per_box`, `employee_price`. |
+| `產品庫存表` | Tồn theo kho/lô | Map sang Inventory import: `sku`, `warehouse_code`, `batch_number`, `expiration_date`, `quantity`. |
 
-| Cot file | Import field id     | Bat buoc | Ghi chu                 |
-| -------- | ------------------- | -------- | ----------------------- |
-| 品號     | `sku`               | Bat buoc | Khoa san pham           |
-| 品名     | `name`              | Bat buoc | Ten san pham            |
-| 規格     | `specification`     | Tuy chon | Cot core                |
-| 庫存單位 | `unit_type`         | Tuy chon | Tu dong map/create unit |
-| 商品級別 | `product_grade`     | Tuy chon | Cot core                |
-| 品牌類別 | `brand`             | Tuy chon | Cot core                |
-| 保存天數 | `shelf_life_days`   | Tuy chon | Cot core                |
-| 備貨型態 | `inventory_type`    | Tuy chon | Cot core                |
-| 儲存溫層 | `storage_condition` | Tuy chon | Cot core                |
+Cách dùng với màn import hiện tại:
+
+1. Tách sheet cần dùng thành một file `.xlsx` hoặc `.csv` riêng.
+2. Giá: import/update product theo SKU và cột giá.
+3. Tồn: dùng sheet `產品庫存表`, ưu tiên cột `warehouse_code`.
 
 ---
 
-## 3) PRICING — `Quote, unit price, inventory.xlsx` sheet `產品價格表`
+## 2. CLIENT — `Craveva customer.xlsx`
 
-### 3.1 Mapping cot
+### 2.1 Mapping Cột
 
-| Cot file | Dich nghia     | Di vao he thong            |
-| -------- | -------------- | -------------------------- |
-| 品號     | SKU            | Tim product theo `sku`     |
-| 標準售價 | Standard price | `products.price`           |
-| 中盤價   | Wholesale      | `products.wholesale_price` |
-| 成箱價   | Price per box  | `products.price_per_box`   |
-| 員工價   | Employee price | `products.employee_price`  |
+| Cột file | Import field id | Bắt buộc | Ghi chú |
+| -------- | --------------- | -------- | ------- |
+| 客戶代號 | `client_code` | Nên có | Khóa update/upsert |
+| 客戶簡稱 | `name` | Bắt buộc | Tên hiển thị |
+| 統一編號 | `gst_number` | Tùy chọn | Tax ID |
+| 送貨地址 | `address` | Tùy chọn | Địa chỉ |
+| TEL_NO(一) | `mobile` | Tùy chọn | SĐT chính |
+| TEL_NO(二) | `company_phone` | Tùy chọn | SĐT văn phòng |
+| 業務員 | `salesperson` | Tùy chọn | Custom field |
+| 業務助理名稱 | `sales_assistant_name` | Tùy chọn | Custom field |
+| 客戶(集團)分級 | `customer_grade` | Tùy chọn | Core DB: `client_details.customer_grade` |
+| 通路別 | `channel_type` | Tùy chọn | Core DB: `client_details.channel_type` |
+| 型態別 | `business_type` | Tùy chọn | Core DB: `client_details.business_type` |
+| 最近交易 | `last_transaction_at` | Tùy chọn | Custom field date nếu PM cần |
+| 交易條件 | `payment_terms` | Tùy chọn | Core DB: `client_details.payment_terms` |
+| 歇業日期 | `business_closure_date` | Tùy chọn | Core DB; có giá trị thì client inactive |
+| 指定庫別代碼 | `designated_warehouse_code` | Nên có | Map sang `default_warehouse_id` |
+| 指定庫別名稱 | `designated_warehouse_name` | Fallback | Dùng nếu không có code |
+
+### 2.2 Rule Map Kho Ưu Tiên Client
+
+- Tìm kho theo `designated_warehouse_code` trước.
+- Nếu không có, fallback `designated_warehouse_name`.
+- Nếu vẫn không khớp: để `default_warehouse_id = null`, ghi log dòng lỗi để đối soát.
+
+### 2.3 Nếu Bỏ Hết Client Custom Fields
+
+Vẫn import được phần core:
+
+- `client_code`
+- `name`
+- `gst_number`
+- `address`
+- `mobile`
+- `company_phone`
+- `default_warehouse_id`
+- `customer_grade`
+- `channel_type`
+- `business_type`
+- `payment_terms`
+- `business_closure_date`
+
+Không còn chỗ lưu nếu bỏ hết Client custom fields: các cột metadata/BI như `salesperson`, `department`, `sales_assistant_name`, `last_transaction_at`, `region`, trừ khi PM tạo lại custom field từ UI.
 
 ---
 
-## 4) INVENTORY — `產品庫存表` / `庫存明細總表`
+## 3. PRODUCT — `Craveva product.xlsx`
 
-### 4.1 Mapping cot toi importer (bat buoc cho multi-warehouse)
+| Cột file | Import field id | Bắt buộc | Ghi chú |
+| -------- | --------------- | -------- | ------- |
+| 品號 | `sku` | Bắt buộc | Khóa sản phẩm |
+| 品名 | `name` | Bắt buộc | Tên sản phẩm |
+| 規格 | `specification` | Tùy chọn | Cột core |
+| 庫存單位 | `unit_type` | Tùy chọn | Tự động map/create unit |
+| 商品級別 | `product_grade` | Tùy chọn | Cột core |
+| 品牌類別 | `brand` | Tùy chọn | Cột core |
+| 保存天數 | `shelf_life_days` | Tùy chọn | Cột core |
+| 備貨型態 | `inventory_type` | Tùy chọn | Cột core |
+| 儲存溫層 | `storage_condition` | Tùy chọn | Cột core |
 
-| Cot file          | Import field id                    | Bat buoc           | Ghi chu             |
-| ----------------- | ---------------------------------- | ------------------ | ------------------- |
-| 品號 / 產品料號   | `sku`                              | Bat buoc           | Khoa product        |
-| 品名 / 產品名稱   | `product_name`                     | Tuy chon           | Doi soat            |
-| 庫別              | `warehouse_code`                   | Nen co             | Resolve kho uu tien |
-| 庫別名稱          | `warehouse_name`                   | Fallback           | Dung khi thieu code |
-| 批號              | `batch_number`                     | Nen co             | Da la cot DB        |
-| 製造日期          | `manufacturing_date`               | Tuy chon           | Da la cot DB        |
-| 有效日期          | `expiration_date`                  | Nen co             | Da la cot DB        |
-| 期末庫存 / 庫存量 | `ending_inventory` hoac `quantity` | Bat buoc 1 trong 2 | Snapshot so luong   |
-| 單位              | `unit`                             | Tuy chon           | Doi soat don vi     |
-| 規格              | `specification`                    | Tuy chon           | Doi soat            |
+---
 
-### 4.2 Rule resolve kho (quan trong)
+## 4. PRICING — Sheet `產品價格表`
 
-- He thong resolve:
-    1. `warehouse_code` (uu tien)
-    2. `warehouse_name` (fallback)
-- Neu khong resolve duoc: bo qua dong va ghi log (khong cho ghi sai kho).
+| Cột file | Dịch nghĩa | Đi vào hệ thống |
+| -------- | ---------- | ---------------- |
+| 品號 | SKU | Tìm product theo `sku` |
+| 標準售價 | Standard price | `products.price` |
+| 中盤價 | Wholesale | `products.wholesale_price` |
+| 成箱價 | Price per box | `products.price_per_box` |
+| 員工價 | Employee price | `products.employee_price` |
 
-### 4.3 Cac cot KHONG can map vao custom fields nua
+---
+
+## 5. INVENTORY — `產品庫存表` / `庫存明細總表`
+
+### 5.1 Mapping Cột Tới Importer
+
+| Cột file | Import field id | Bắt buộc | Ghi chú |
+| -------- | --------------- | -------- | ------- |
+| 品號 / 產品料號 | `sku` | Bắt buộc | Khóa product |
+| 品名 / 產品名稱 | `product_name` | Tùy chọn | Đối soát |
+| 庫別 | `warehouse_code` | Nên có | Resolve kho ưu tiên |
+| 庫別名稱 | `warehouse_name` | Fallback | Dùng khi thiếu code |
+| 批號 | `batch_number` | Nên có | Cột DB |
+| 製造日期 | `manufacturing_date` | Tùy chọn | Cột DB |
+| 有效日期 | `expiration_date` | Nên có | Cột DB |
+| 期末庫存 / 庫存量 | `ending_inventory` hoặc `quantity` | Bắt buộc 1 trong 2 | Snapshot số lượng |
+| 單位 | `unit` | Tùy chọn | Đối soát đơn vị |
+| 規格 | `specification` | Tùy chọn | Đối soát |
+
+### 5.2 Rule Resolve Kho
+
+Hệ thống resolve:
+
+1. `warehouse_code` (ưu tiên)
+2. `warehouse_name` (fallback)
+
+Nếu không resolve được: bỏ qua dòng và ghi log, không cho ghi sai kho.
+
+### 5.3 Các Cột Không Cần Map Vào Custom Fields Nữa
 
 - `beginning_inventory`
 - `inbound_quantity`
@@ -166,26 +165,26 @@ Nhom co the giu custom field neu chi de hien thi/ghi chu:
 - `beginning_package_inventory`
 - `packaging_inbound_quantity`
 - `packaging_outbound_quantity`
-- `closing_code` (neu khong co quy trinh nghiep vu)
+- `closing_code` nếu không có quy trình nghiệp vụ
 
 ---
 
-## 5) Checklist truoc khi chay import that
+## 6. Checklist Trước Khi Chạy Import Thật
 
-- [ ] Da migrate DB moi nhat
-- [ ] Da co warehouse master day du code + name
-- [ ] Da map dung 3 cot quan trong inventory: `warehouse_code`, `warehouse_name`, `batch_number`
-- [ ] Da test trial 20-50 dong
-- [ ] Da doi soat 5 SKU o 2 kho:
+- [ ] Đã migrate DB mới nhất.
+- [ ] Đã có warehouse master đầy đủ code + name.
+- [ ] Đã map đúng 3 cột quan trọng inventory: `warehouse_code`, `warehouse_name`, `batch_number`.
+- [ ] Đã test trial 20-50 dòng.
+- [ ] Đã đối soát 5 SKU ở 2 kho:
     - `purchase_stock_adjustments.warehouse_id`
     - `purchase_stock_adjustments.batch_number`
     - `warehouse_product_batches.quantity`
 
 ---
 
-## 6) Checklist sau import
+## 7. Checklist Sau Import
 
-- [ ] Khong co dong loi resolve warehouse
-- [ ] Ton kho theo kho khop giua UI (`/warehouse-stock`) va DB
-- [ ] Client co `default_warehouse_id` neu file co designated warehouse
-- [ ] Khong can dung lai custom fields `warehouse_code/name` tren form Inventory
+- [ ] Không có dòng lỗi resolve warehouse.
+- [ ] Tồn kho theo kho khớp giữa UI (`/warehouse-stock`) và DB.
+- [ ] Client có `default_warehouse_id` nếu file có designated warehouse.
+- [ ] Không cần dùng lại custom fields `warehouse_code/name` trên form Inventory.

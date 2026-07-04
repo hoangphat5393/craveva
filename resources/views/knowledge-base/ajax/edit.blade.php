@@ -279,19 +279,17 @@ color: #fff !important;
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then((response) => {
                             if (response.status == "success") {
                                 $('#knowledgebase-file-list').html(response.view);
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        });
                 }
             });
         });
@@ -303,20 +301,17 @@ color: #fff !important;
 
         $('#save-notice').click(function() {
             const url = "{{ route('knowledgebase.update', [$knowledge->id]) }}";
+            const button = $('#save-notice');
+            const buttonText = button.html();
 
             var note = document.getElementById('description').children[0].innerHTML;
             document.getElementById('description-text').value = note;
 
-            $.easyAjax({
-                url: url,
-                container: '#save-notice-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-notice",
-                file: true,
-                data: $('#save-notice-data-form').serialize(),
-                success: function(response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-notice-data-form');
+
+            window.apiHttp.postForm(url, document.getElementById('save-notice-data-form'))
+                .then((response) => {
                     if (response.status == 'success') {
                         if (knowledgeBaseDropzone.getQueuedFiles().length > 0) {
                             knowledgeBaseDropzone.processQueue();
@@ -328,8 +323,17 @@ color: #fff !important;
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#save-notice-data-form');
+                });
         });
 
 

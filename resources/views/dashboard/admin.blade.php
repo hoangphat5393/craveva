@@ -208,22 +208,27 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".admin-dashboard",
-                historyPush: true,
-                data: {
-                    startDate: startDate,
-                    endDate: endDate
-                },
-                success: function (response) {
+            historyPush(requestUrl);
+            $.easyBlockUI(".admin-dashboard");
+
+            window.apiHttp.get(requestUrl, {
+                    params: {
+                        startDate: startDate,
+                        endDate: endDate
+                    }
+                })
+                .then(function (response) {
                     if (response.status === "success") {
                         $('.admin-dashboard').html(response.html);
                         init('.admin-dashboard');
                     }
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI(".admin-dashboard");
+                });
         });
 
         $('.keep-open .dropdown-menu').on({
@@ -247,21 +252,26 @@ $viewFinanceDashboard = user()->permission('view_finance_dashboard');
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".admin-dashboard",
-                data: {
-                    startDate: startDate,
-                    endDate: endDate
-                },
-                success: function (response) {
+            $.easyBlockUI(".admin-dashboard");
+
+            window.apiHttp.get(requestUrl, {
+                    params: {
+                        startDate: startDate,
+                        endDate: endDate
+                    }
+                })
+                .then(function (response) {
                     if (response.status === "success") {
                         $('.admin-dashboard').html(response.html);
                         init('.admin-dashboard');
                     }
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI(".admin-dashboard");
+                });
         }
 
     </script>

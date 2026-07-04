@@ -63,24 +63,28 @@
 
     // Save source
     $('#test-aws-submit').click(function () {
-        $.easyAjax({
-            url: "{{ route('storage-settings.aws_test') }}",
-            container: '#StorageUploadForm',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            messagePosition: 'inline',
-            buttonSelector: "#test-aws-submit",
-            file: true,
-            data: $('#StorageUploadForm').serialize(),
-            success: function (response) {
+        const button = $('#test-aws-submit');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#StorageUploadForm');
+
+        window.apiHttp.postForm("{{ route('storage-settings.aws_test') }}", document.getElementById('StorageUploadForm'))
+            .then(function (response) {
                 if (response.status === "success") {
                     $('.alert-success').append(` <a href="${response.fileurl}" target="_blank">@lang('app.storageSetting.viewFile') </a>`);
                     $('#file_url').val(response.fileurl);
                     $('#show-file').removeClass('d-none');
                 }
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#StorageUploadForm');
             }
-        })
+        );
     });
     init();
 </script>

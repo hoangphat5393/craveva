@@ -62,17 +62,19 @@
             var url = "{{ route('shift-rotations.change_employee_rotation') }}";
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                type: 'POST',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    empId: empId,
-                    rotationId: rotationId,
-                    newRotationId: newRotationId
-                },
-            });
+            $.easyBlockUI('#empRecordTable');
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                empId: empId,
+                rotationId: rotationId,
+                newRotationId: newRotationId
+            })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#empRecordTable');
+                });
 
             return false;
         });
@@ -104,15 +106,13 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            'empId': empId,
-                            'rotationId': rotationId
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('#empRecordTable');
+                    window.apiHttp.postUrlEncoded(url, {
+                        '_token': token,
+                        'empId': empId,
+                        'rotationId': rotationId
+                    })
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#emp-' + empId).fadeOut(function() {
                                     $(this).remove();
@@ -134,8 +134,13 @@
                                     }
                                 });
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#empRecordTable');
+                        });
                 }
             });
         });

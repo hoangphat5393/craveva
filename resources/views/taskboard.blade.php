@@ -31,17 +31,16 @@
 
             var url = "{{ route('front.taskboard', $project->hash) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#taskboard-columns',
-                type: "GET",
-                success: function (response) {
+            window.apiHttp.get(url)
+                .then(function (response) {
                     $('#taskboard-columns').html(response.view);
                     $("body").tooltip({
                         selector: '[data-toggle="tooltip"]'
                     });
-                }
-            });
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                });
         }
 
         $('body').on('click', '.load-more-tasks', function () {
@@ -53,12 +52,10 @@
                 '&currentTotalTasks=' + currentTotalTasks +
                 '&totalTasks=' + totalTasks;
 
-            $.easyAjax({
-                url: url,
-                container: '#drag-container-' + columnId,
-                blockUI: true,
-                type: "GET",
-                success: function (response) {
+            $.easyBlockUI('#drag-container-' + columnId);
+
+            window.apiHttp.get(url)
+                .then(function (response) {
                     $('#drag-container-' + columnId).append(response.view);
                     if (response.load_more == 'show') {
                         $('#drag-container-' + columnId).closest('.b-p-body').find('.load-more-tasks');
@@ -71,8 +68,13 @@
                     $("body").tooltip({
                         selector: '[data-toggle="tooltip"]'
                     });
-                }
-            });
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#drag-container-' + columnId);
+                });
 
         });
 
@@ -103,33 +105,36 @@
             var url = "{{ route('front.task_detail', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: RIGHT_MODAL,
-                historyPush: true,
-                success: function (response) {
+            historyPush(url);
+            $.easyBlockUI(RIGHT_MODAL);
+
+            window.apiHttp.get(url)
+                .then(function (response) {
                     if (response.status == "success") {
                         $(RIGHT_MODAL_CONTENT).html(response.html);
                         $(RIGHT_MODAL_TITLE).html(response.title);
                     }
-                },
-                error: function (request, status, error) {
-                    if (request.status == 403) {
+                })
+                .catch(function (error) {
+                    if (error.status == 403) {
                         $(RIGHT_MODAL_CONTENT).html(
                             '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
                         );
-                    } else if (request.status == 404) {
+                    } else if (error.status == 404) {
                         $(RIGHT_MODAL_CONTENT).html(
                             '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
                         );
-                    } else if (request.status == 500) {
+                    } else if (error.status == 500) {
                         $(RIGHT_MODAL_CONTENT).html(
                             '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
                         );
+                    } else {
+                        $.handleApiFormError(error);
                     }
-                }
-            });
+                })
+                .finally(function () {
+                    $.easyUnblockUI(RIGHT_MODAL);
+                });
         });
 
         $('body').on('click', '.collapse-column', function () {

@@ -104,3 +104,26 @@ it('rejects invalid grn status change', function () {
     expect($result)->toBe('messages.invalidRequest');
     expect($delivery->fresh()->status)->toBe('draft');
 });
+
+it('does not move a received grn back to an earlier status', function () {
+    $service = app(GrnService::class);
+    DB::table('purchase_orders')->insert([
+        'id' => 7003,
+        'warehouse_id' => 5,
+        'delivery_status' => 'pending',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $delivery = DeliveryOrder::create([
+        'company_id' => 10,
+        'purchase_order_id' => 7003,
+        'type' => 'inbound',
+        'delivery_number' => 'GRN-1003',
+        'delivery_date' => now()->toDateString(),
+        'status' => 'received',
+    ]);
+
+    expect($service->changeStatus($delivery, 'draft'))->toBe('purchase::app.grnReceivedImmutable')
+        ->and($delivery->fresh()->status)->toBe('received');
+});

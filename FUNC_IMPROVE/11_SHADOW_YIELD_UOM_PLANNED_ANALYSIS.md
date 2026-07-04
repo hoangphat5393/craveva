@@ -1,0 +1,118 @@
+# Phân tích: Shadow mode, Yield/UOM và `planned_quantity` (chưa triển khai bừa bãi)
+
+| Thuộc tính                           | Giá trị                                                                                                                                                                                         |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mục đích**                         | Gom phân tích kỹ thuật/nghiệp vụ về `planned_quantity_shadow`, đổi UOM, hệ số yield — tách khỏi tài liệu mapping proposal để tránh hiểu nhầm là đã “go-live” mandatory.                         |
+| **Tham chiếu proposal**              | `PROJECT BIOMIXING/2-4-2026_Biomixing_Proposal_CravevaERP_Formatted.pdf`                                                                                                                        |
+| **Trạng thái vận hành (2026-05-07)** | **Phase 1 + Phase 2 của Biomixing được chốt trên `planned_quantity` hiện tại** (định mức × số lượng TP kế hoạch từ BOM snapshot). Shadow/Yield/UOM chỉ bật sau khi có **xác nhận có chủ đích**. |
+
+---
+
+## Lưu ý bắt buộc (governance)
+
+1. **Không tự ý bật** `production.phase2.yield_uom_shadow_enabled = true` trên staging/production cho đến khi PM + Tech Lead (hoặc chủ dự án được ủy quyền) **ghi nhận bằng văn bản** sau khi đánh giá rủi ro tồn kho và UAT.
+2. Shadow mode là **công cụ đội triển khai** (so sánh old/new), **không** phải yêu cầu bắt buộc trong proposal dưới dạng tên cột cụ thể.
+3. Việc **enforce** công thức mới làm mặc định cho post kho (`planned_quantity` thay thế hoàn toàn) là **change lớn**, cần cutover plan + rollback flag; **không làm** trong scope “đóng Phase 1–2” nếu chưa được chốt.
+
+---
+
+## 1) `planned_quantity` (cách đang dùng — chuẩn hiện tại)
+
+- Một Production Order chỉ chọn **một BOM**.
+- `planned_quantity` trên dòng tiêu hao RM = `quantity_per_fg_unit` (trong snapshot) × `bom_snapshot_planned_quantity`.
+- Đây là con số dùng cho **vận hành thật**: gán lô, post outbound RM, cân đối với FG policy, v.v.
+- **Lưu ý (2026-05-20):** Post outbound phải **quy đổi ĐVT** qua `unit_id` — `PRODUCTION_BUSINESS.md` §3.
+
+---
+
+## 2) `planned_quantity_shadow` và “công thức song song”
+
+- **Không phải** hai BOM khác nhau; là **hai cách tính planned** từ **cùng một BOM**:
+    - Cũ/`planned_quantity`: nhân đơn giản như trên.
+    - Mới/`planned_quantity_shadow` (khi bật flag): đổi về đơn vị cơ sở + điều chỉnh yield, rồi nhân số TP kế hoạch — chủ yếu để **đối chiếu**, tránh bật thẳng lên post kho khi mapping UOM/yield chưa ổn định.
+
+---
+
+## 3) Proposal có nhắc Yield/UOM không?
+
+- **Có** ý nghĩa nghiệp vụ: tính đúng định mức theo đơn vị và hao hụt.
+- **Không** bắt buộc phải đi theo đúng tên kỹ thuật `planned_quantity_shadow` / `yield_uom_shadow_enabled`; đó là **quyết định triển khai nội bộ**.
+
+---
+
+## 4) Vì sao không bật thẳng logic mới?
+
+1. Bảo toàn luồng B2B: `SO → DO → Invoice`, `PO → GRN → Bill`.
+2. Tránh sai lệch tồn kho trên nhiều tenant khi dữ liệu quy đổi chưa chuẩn.
+3. Cho phép PM/QA so sánh old/new trước khi enforce.
+
+### 4.1 Ví dụ A — ảnh hưởng `PO → GRN → Bill`
+
+- Định mức cũ: 100 kg RM; công thức mới (Yield/UOM) ra 120 kg nhưng mapping chưa ổn; hệ thống enforce ngay số mới.
+- Hậu quả: trừ RM quá tay → tồn ảo thấp → PO mua bù → GRN/Bill đúng kỹ thuật nhưng quyết định sai.
+
+### 4.2 Ví dụ B — ảnh hưởng `SO → DO → Invoice`
+
+- FG receipt/tồn sai do UOM/yield → Sales thấy tồn sai → ship chậm/chặn sai hoặc commit giao không đúng thực tế → trễ invoice.
+
+**Kết luận:** Rủi ro nằm ở **số tồn đầu vào**, không phải “route hỏng”.
+
+---
+
+## 5) Điều kiện nên cân nhắc chuyển từ shadow sang enforce (chỉ khi đã được phê duyệt)
+
+- Test High/Critical trên staging (matrix: `FUNC_TEST/01_BIOMIXING_TEST_MATRIX.md`).
+- Chênh lệch old/new trong ngưỡng business chấp nhận.
+- UAT có biên bản signed-off.
+- Rollback bằng feature flag và quy trình vận hành đã rehearse.
+
+---
+
+## 6) Gợi ý một đoạn trình bày với stakeholder
+
+“Phần định mức đa đơn vị và hao hụt nằm trong hướng chuẩn hóa dài hạn. Hiện tại hệ thống đang chạy chuẩn `planned_quantity` theo BOM đã duyệt. Nếu cần bật so sánh song song (shadow), bên kỹ thuật sẽ chỉ bật sau khi PM/kho xác nhận dữ liệu UOM/yield đã sẵn sàng và UAT đạt.”
+
+---
+
+## 7) Tham chiếu cấu hình
+
+- File: `Modules/Production/Config/config.php`
+- Key: `production.phase2.yield_uom_shadow_enabled` — **mặc định repo: `false`** (chỉ bật `true` khi có xác nhận).
+
+---
+
+## 8) Governance rollup — sign-off P0-03 (pilot)
+
+**Cập nhật:** 2026-06-16 · **Hàng đợi P0:** `P0_BIOMIXING_NEXT_STEPS.md` (mục P0-03).
+
+### 8.1 Mặc định kỹ thuật (baseline)
+
+| Khóa                                              | Giá trị mặc định (config) | Ý nghĩa vận hành                                                           |
+| ------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------- |
+| `production.phase2.yield_uom_shadow_enabled`      | `false`                   | Không tính `planned_quantity_shadow`; chỉ planned chuẩn BOM × FG           |
+| `production.phase2.enforce_variance_approval`     | `true`                    | Vượt tolerance có thể yêu cầu duyệt trước post FG (kết hợp policy company) |
+| `production.phase2.enforce_quality_lock_sales_do` | `true`                    | Khóa giao DO khi production order chưa xong (theo cấu hình rollout)        |
+
+**Rollback nhanh (pilot):** đặt `yield_uom_shadow_enabled` = `false`; `php artisan config:clear`. Không cần migration.
+
+**Dev evidence 2026-06-16:**
+
+- Runtime config check: `config('production.phase2.yield_uom_shadow_enabled')` = `false`.
+- Baseline OFF test: `php artisan test --compact tests\Feature\ProductionPostingServiceTest.php --filter="creates planned consumption lines from snapshot for a single-batch order"` -> **1 passed / 5 assertions**; `planned_quantity_shadow` và `quantity_per_fg_unit_base_shadow` đều null.
+- Shadow ON capability test: `php artisan test --compact tests\Feature\ProductionPostingServiceTest.php --filter=shadow` -> **1 passed / 4 assertions**; khi test bật flag, hệ thống tính `planned_quantity_shadow` đúng theo UOM + yield factor.
+
+### 8.2 Điều kiện bật shadow (cần PM + Tech Lead ký)
+
+1. BOM / đơn vị đã map đủ (hoặc chấp nhận sai số có kiểm soát).
+2. Có ít nhất một tenant pilot và cửa sổ UAT so sánh `planned` vs `planned_quantity_shadow`.
+3. Ghi log P0: ai approve, ngày, phạm vi tenant.
+
+### 8.3 Việc còn lại cho P0-03
+
+| Việc                                          | Owner          | Trạng thái |
+| --------------------------------------------- | -------------- | ---------- |
+| Xác nhận baseline pilot OFF (`yield_uom_shadow_enabled=false`) | Dev/QA | Done 2026-06-16 |
+| Sign-off bật shadow cho tenant pilot          | PM + Tech Lead | Gated — chỉ làm nếu PM quyết định bật |
+| Cập nhật execution log + screenshot/tenant id | Tech Lead      | Gated — sau khi có sign-off bật shadow |
+
+**Lịch sử file rollup riêng:** `git log -- FUNC_IMPROVE/P0_SHADOW_YIELD_UOM_GOVERNANCE_ROLLUP.md` (đã gộp pass 10).

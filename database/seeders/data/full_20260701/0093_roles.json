@@ -1,0 +1,50 @@
+{
+    "table": "roles",
+    "columns": [
+        "id",
+        "company_id",
+        "name",
+        "display_name",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "name": "admin",
+            "display_name": "App Administrator",
+            "description": "Admin is allowed to manage everything of the app.",
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03"
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "name": "employee",
+            "display_name": "Employee",
+            "description": "Employee can see tasks and projects assigned to him.",
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03"
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "name": "client",
+            "display_name": "Client",
+            "description": "Client can see own tasks and projects.",
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03"
+        },
+        {
+            "id": 4,
+            "company_id": null,
+            "name": "superadmin",
+            "display_name": "Superadmin",
+            "description": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        }
+    ]
+}

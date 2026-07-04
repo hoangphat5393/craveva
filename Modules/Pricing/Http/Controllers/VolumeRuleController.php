@@ -7,9 +7,12 @@ use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Modules\Pricing\Entities\VolumeDiscountRule;
+use Modules\Pricing\Http\Controllers\Concerns\ValidatesBulkRowIds;
 
 class VolumeRuleController extends AccountBaseController
 {
+    use ValidatesBulkRowIds;
+
     public function __construct()
     {
         parent::__construct();
@@ -96,7 +99,7 @@ class VolumeRuleController extends AccountBaseController
         $editPermission = user()->permission('edit_volume_discounts');
         abort_403($editPermission == 'none');
 
-        $this->rule = VolumeDiscountRule::findOrFail($id);
+        $this->rule = VolumeDiscountRule::where('company_id', user()->company_id)->findOrFail($id);
         $this->products = Product::all();
         $this->view = 'pricing::volume_rules.ajax.edit';
 
@@ -123,7 +126,7 @@ class VolumeRuleController extends AccountBaseController
             'is_active' => 'nullable|boolean',
         ]);
 
-        $rule = VolumeDiscountRule::findOrFail($id);
+        $rule = VolumeDiscountRule::where('company_id', user()->company_id)->findOrFail($id);
         $rule->name = $request->name;
         $rule->discount_type = $request->discount_type;
         $rule->minimum_quantity = $request->minimum_quantity;
@@ -147,10 +150,15 @@ class VolumeRuleController extends AccountBaseController
         $editPermission = user()->permission('edit_volume_discounts');
         abort_403($editPermission == 'none');
 
-        $rule = VolumeDiscountRule::find($request->id);
+        $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $rule = VolumeDiscountRule::where('company_id', user()->company_id)->find($request->id);
 
         if (! $rule) {
-            return Reply::error('Record not found for ID: ' . $request->id);
+            return Reply::error('Record not found for ID: '.$request->id);
         }
 
         $rule->is_active = $request->status == 'active';
@@ -164,7 +172,7 @@ class VolumeRuleController extends AccountBaseController
         $deletePermission = user()->permission('delete_volume_discounts');
         abort_403($deletePermission == 'none');
 
-        VolumeDiscountRule::destroy($id);
+        VolumeDiscountRule::where('company_id', user()->company_id)->where('id', $id)->delete();
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('pricing.volume_rules.index')]);
     }
@@ -190,10 +198,7 @@ class VolumeRuleController extends AccountBaseController
         $deletePermission = user()->permission('delete_volume_discounts');
         abort_403($deletePermission == 'none');
 
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
+        $ids = $this->validatedBulkRowIds($request);
 
         VolumeDiscountRule::where('company_id', user()->company_id)->whereIn('id', $ids)->delete();
     }
@@ -203,10 +208,11 @@ class VolumeRuleController extends AccountBaseController
         $editPermission = user()->permission('edit_volume_discounts');
         abort_403($editPermission == 'none');
 
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
+        $request->validate([
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $ids = $this->validatedBulkRowIds($request);
 
         VolumeDiscountRule::where('company_id', user()->company_id)->whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
     }

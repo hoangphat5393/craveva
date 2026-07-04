@@ -45,27 +45,31 @@
 
             const url = "{{ route('contractDiscussions.update', $comment->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#edit-comment-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-edit-comment",
-                data: {
-                    '_token': token,
-                    comment: comment,
-                    '_method': 'PUT',
-                    taskId: '{{ $comment->contract_id }}'
-                },
-                success: function(response) {
+            const $btn = $('#save-edit-comment');
+            const previousHtml = $btn.html();
+            $.easyBlockUI('#edit-comment-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                comment: comment,
+                '_method': 'PUT',
+                taskId: '{{ $comment->contract_id }}'
+            })
+                .then(function(response) {
                     if (response.status == "success") {
                         document.getElementById('comment-list').innerHTML = response.view;
                         $(MODAL_LG).modal('hide');
                     }
 
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#edit-comment-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
     });

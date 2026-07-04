@@ -56,19 +56,24 @@
     $('#colorpicker').colorpicker({"color": "#16813D"});
 
     $('#save-status-setting').click(function () {
-        $.easyAjax({
-            container: '#createStatus',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-status-setting",
-            url: "{{ route('project-settings.store') }}",
-            data: $('#createStatus').serialize(),
-            success: function (response) {
+        const $btn = $('#save-status-setting');
+        const previousHtml = $btn.html();
+
+        $.easyBlockUI('#createStatus');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded("{{ route('project-settings.store') }}", $('#createStatus').serialize())
+            .then(function (response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#createStatus');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 </script>

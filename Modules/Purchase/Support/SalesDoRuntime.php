@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Support;
 
+use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\Entities\SalesShipment;
 use Modules\Purchase\Entities\SalesShipmentItem;
 
@@ -9,9 +10,11 @@ class SalesDoRuntime
 {
     public static function isCutoverEnabled(): bool
     {
-        // Legacy shipment tables are removed in phase 5.
-        // Runtime is now permanently pinned to new Sales DO tables.
-        return true;
+        if (Schema::hasTable('sales_dos')) {
+            return true;
+        }
+
+        return ! Schema::hasTable('sales_shipments');
     }
 
     public static function headerModelClass(): string

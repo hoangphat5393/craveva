@@ -668,15 +668,13 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('front.proposal_action', $proposal->id) }}",
-                container: '#acceptEstimate',
-                type: "POST",
-                blockUI: true,
-                file: true,
-                disableButton: true,
-                buttonSelector: '#save-signature',
-                data: {
+            const button = $('#save-signature');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#acceptEstimate');
+
+            window.apiHttp.post("{{ route('front.proposal_action', $proposal->id) }}", {
                     _token: '{{ csrf_token() }}',
                     id: id,
                     full_name: name,
@@ -686,33 +684,44 @@
                     isSignatureNull: isSignatureNull,
                     signature: signature,
                     image: image,
-                },
-                success: function(data) {
+                })
+                .then(function(data) {
                     if (data.status == 'success') {
                         window.location.reload();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#acceptEstimate');
                 }
-            })
+            );
         });
 
         $('#decline-proposal').click(function() {
             const comment = $('#comment').val();
 
-            $.easyAjax({
-                url: "{{ route('front.proposal_action', $proposal->id) }}",
-                type: "POST",
-                blockUI: true,
-                data: {
+            $.easyBlockUI();
+
+            window.apiHttp.post("{{ route('front.proposal_action', $proposal->id) }}", {
                     type: 'decline',
                     comment: comment,
                     _token: '{{ csrf_token() }}'
-                },
-                success: function(data) {
+                })
+                .then(function(data) {
                     if (data.status == 'success') {
                         window.location.reload();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI();
                 }
-            })
+            );
         });
 
         $('body').on('click', '.img-lightbox', function() {

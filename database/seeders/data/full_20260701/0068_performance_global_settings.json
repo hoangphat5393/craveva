@@ -1,0 +1,25 @@
+{
+    "table": "performance_global_settings",
+    "columns": [
+        "id",
+        "purchase_code",
+        "license_type",
+        "purchased_on",
+        "supported_until",
+        "notify_update",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "purchase_code": null,
+            "license_type": null,
+            "purchased_on": null,
+            "supported_until": null,
+            "notify_update": 1,
+            "created_at": "2026-07-01 20:57:59",
+            "updated_at": "2026-07-01 20:57:59"
+        }
+    ]
+}

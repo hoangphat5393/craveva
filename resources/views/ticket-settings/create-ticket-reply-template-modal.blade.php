@@ -46,18 +46,20 @@
         var note = document.getElementById('description').children[0].innerHTML;
         document.getElementById('description-text').value = note;
 
-        $.easyAjax({
-            url: "{{ route('replyTemplates.store') }}",
-            container: '#addTicketTemplate',
-            type: "POST",
-            blockUI: true,
-            data: $('#addTicketTemplate').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#addTicketTemplate');
+
+        window.apiHttp.postUrlEncoded("{{ route('replyTemplates.store') }}", $('#addTicketTemplate').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#addTicketTemplate');
+            });
     });
 
 </script>

@@ -1,0 +1,68 @@
+{
+    "table": "lead_sources",
+    "columns": [
+        "id",
+        "company_id",
+        "type",
+        "added_by",
+        "last_updated_by",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "type": "Email",
+            "added_by": null,
+            "last_updated_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "type": "Google",
+            "added_by": null,
+            "last_updated_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "type": "Facebook",
+            "added_by": null,
+            "last_updated_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "type": "Friend",
+            "added_by": null,
+            "last_updated_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "type": "Direct",
+            "added_by": null,
+            "last_updated_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 6,
+            "company_id": 1,
+            "type": "Tv",
+            "added_by": null,
+            "last_updated_by": null,
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

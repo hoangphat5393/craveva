@@ -1,0 +1,71 @@
+{
+    "table": "permission_types",
+    "columns": [
+        "id",
+        "name",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "name": "added",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "name": "owned",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "name": "both",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "name": "all",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "name": "none",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 6,
+            "name": "added",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 7,
+            "name": "owned",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 8,
+            "name": "both",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 9,
+            "name": "all",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 10,
+            "name": "none",
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

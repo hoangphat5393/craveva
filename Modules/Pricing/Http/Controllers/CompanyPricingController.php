@@ -9,9 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Modules\Pricing\Entities\CompanyCustomerPricing;
 use Modules\Pricing\Entities\PricingTier;
+use Modules\Pricing\Http\Controllers\Concerns\ValidatesBulkRowIds;
 
 class CompanyPricingController extends AccountBaseController
 {
+    use ValidatesBulkRowIds;
+
     public function __construct()
     {
         parent::__construct();
@@ -104,7 +107,7 @@ class CompanyPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_company_pricing');
         abort_403($editPermission == 'none');
 
-        $this->pricing = CompanyCustomerPricing::findOrFail($id);
+        $this->pricing = CompanyCustomerPricing::where('company_id', user()->company_id)->findOrFail($id);
 
         $this->clients = User::allClients();
 
@@ -161,12 +164,17 @@ class CompanyPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_company_pricing');
         abort_403($editPermission == 'none');
 
+        $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|in:active,inactive',
+        ]);
+
         $pricing = CompanyCustomerPricing::where('company_id', user()->company_id)
             ->where('id', $request->id)
             ->first();
 
         if (! $pricing) {
-            return Reply::error('Record not found for ID: ' . $request->id);
+            return Reply::error('Record not found for ID: '.$request->id);
         }
 
         $pricing->is_active = ($request->status == 'active');
@@ -210,10 +218,7 @@ class CompanyPricingController extends AccountBaseController
         $deletePermission = user()->permission('delete_company_pricing');
         abort_403($deletePermission == 'none');
 
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
+        $ids = $this->validatedBulkRowIds($request);
 
         CompanyCustomerPricing::where('company_id', user()->company_id)->whereIn('id', $ids)->delete();
     }
@@ -223,10 +228,11 @@ class CompanyPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_company_pricing');
         abort_403($editPermission == 'none');
 
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
+        $request->validate([
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $ids = $this->validatedBulkRowIds($request);
 
         CompanyCustomerPricing::where('company_id', user()->company_id)->whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
     }

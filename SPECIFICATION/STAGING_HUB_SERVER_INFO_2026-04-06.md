@@ -1,6 +1,6 @@
 # Staging, Hub & AI — inventory tài nguyên & PHP (snapshot)
 
-**Bảng IP VM / Cloud SQL (snapshot GCP):** `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`, `docs/GCP_INFRA_INVENTORY_SUMMARY.md` (đối chiếu khi cần).
+**Bảng IP VM / Cloud SQL (snapshot GCP):** `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT.md`, `docs/GCP_INVENTORY.md` (đối chiếu khi cần).
 
 **Thu thập:** 2026-04-06 (SSH read-only staging/hub). **Cập nhật 2026-05-15:** quét read-only **`gcloud`** + SSH (staging/hub alias; **AI** qua `gcloud compute ssh`). Giá trị **thay đổi theo thời gian** — dùng `free -h`, `uptime` khi điều tra sự cố.
 
@@ -42,7 +42,7 @@ Sau khi đổi RAM / FPM (staging/hub), chạy lại các lệnh ở **mục 7**
 
 - **2026-04-04:** Hub / staging **`pm.max_spare_servers = 2`** cùng **`pm.max_children = 2`** (sửa 502). **2026-04-08:** staging **4/4**, hub **8/8** — vẫn **`max_spare` ≤ `max_children`**.
 
-**Supervisor (staging):** đã cài **`supervisor`**, program **`craveva-queue-all`** chạy `queue:work` nền (**2026-04-04**). `.env` staging: **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=false`**. Chi tiết: `docs/SERVER_RUNBOOK_VI.md` §4.2 và [phụ lục mẫu Supervisor](../docs/SERVER_RUNBOOK_VI.md#deploy-supervisor-conf).
+**Supervisor (staging):** đã cài **`supervisor`**, program **`craveva-queue-all`** chạy `queue:work` nền (**2026-04-04**). `.env` staging: **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=false`**. Chi tiết: `docs/SERVER_RUNBOOK.md` §4.2 và [phụ lục mẫu Supervisor](../docs/SERVER_RUNBOOK.md#deploy-supervisor-conf).
 
 **Mục đích:** giải thích vì sao sau import / tăng `max_execution_time` / upload limit, máy có thể **load cao hoặc “đơ”**: RAM nhỏ (cũ), swap, và **oversubscription** `memory_limit` PHP-FPM.
 
@@ -274,7 +274,7 @@ Và khớp với Nginx: `grep -R fastcgi_pass /www/server/panel/vhost/nginx/*.co
 | **Internal** | `10.148.0.7`        |
 | **Status**   | `RUNNING`           |
 
-Egress VM này thường được **allow** trên authorized networks Cloud SQL hub (`136.110.35.154/32` — xem `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`).
+Egress VM này thường được **allow** trên authorized networks Cloud SQL hub (`136.110.35.154/32` — xem `SPECIFICATION/GCP_AND_CLOUDSQL_SNAPSHOT.md`).
 
 ### Thư mục trên VM (`/var/www`)
 
@@ -321,7 +321,7 @@ Egress VM này thường được **allow** trên authorized networks Cloud SQL 
 | **`craveva-ai-db`**       | MySQL 8.0     | `34.158.38.112`                            | DB module AI       |
 | **`craveva-ai-pgvector`** | PostgreSQL 15 | `136.110.25.28` (+ IP phụ trong inventory) | Vector / embedding |
 
-Chi tiết tier, private IP, firewall: `docs/GCP_INFRA_INVENTORY_SUMMARY.md`.
+Chi tiết tier, private IP, firewall: `docs/GCP_INVENTORY.md`.
 
 ### Lệnh tái kiểm tra (read-only)
 
@@ -352,8 +352,8 @@ gcloud compute ssh craveva-ai --zone=asia-southeast1-a --command="cd /var/www/ai
 | **Theo dõi**                        | `free -h`, `swapon --show`, `uptime` khi import — xác nhận swap có nhảy không.                                                                                                                 |
 | **Queue / import**                  | Giữ chunk hợp lý; tránh nhiều import song song trên cùng VM nhỏ.                                                                                                                               |
 | **Hub: swap cao**                   | Tìm process ăn RAM (`ps aux --sort=-%mem \| head`); cân nhắc **nâng RAM VM** hoặc giảm service trùng.                                                                                          |
-| **Quyền / cache**                   | `docs/SERVER_RUNBOOK_VI.md`.                                                                                                                                                                   |
-| **Supervisor**                      | Staging: worker queue nền; tránh **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=true`** đồng thời. `docs/SERVER_RUNBOOK_VI.md`.                                                                           |
+| **Quyền / cache**                   | `docs/SERVER_RUNBOOK.md`.                                                                                                                                                                   |
+| **Supervisor**                      | Staging: worker queue nền; tránh **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=true`** đồng thời. `docs/SERVER_RUNBOOK.md`.                                                                           |
 
 ---
 
@@ -417,12 +417,12 @@ sudo php-fpm8.3 -t && sudo systemctl restart php8.3-fpm
 
 ## 8. Liên quan trong repo
 
-- GCP inventory (gồm AI VM + Cloud SQL): `docs/GCP_INFRA_INVENTORY_SUMMARY.md`
+- GCP inventory (gồm AI VM + Cloud SQL): `docs/GCP_INVENTORY.md`
 - Scale FPM pool (staging 4 / hub 8): `scripts/fpm_scale_pool_apply.sh`
 - PHP ini tuning script: `scripts/tune_php83_import_limits.sh`
-- Staging vận hành (Supervisor, deploy): `docs/SERVER_RUNBOOK_VI.md`; rehearsal/zip: `docs/STAGING_OPERATIONS.md`
-- Supervisor mẫu cấu hình queue: `docs/SERVER_RUNBOOK_VI.md` ([mục 10.4](../docs/SERVER_RUNBOOK_VI.md#deploy-supervisor-conf))
-- Import & poll: `FUNC_IMPORT/IMPORT_POLL_TRACKERS_VI.md`
+- Staging vận hành (Supervisor, deploy): `docs/SERVER_RUNBOOK.md`; rehearsal/zip: `docs/STAGING_OPERATIONS.md`
+- Supervisor mẫu cấu hình queue: `docs/SERVER_RUNBOOK.md` ([mục 10.4](../docs/SERVER_RUNBOOK.md#deploy-supervisor-conf))
+- Import & poll: `FUNC_IMPROVE/IMPORT_POLL_TRACKERS.md`
 
 ---
 

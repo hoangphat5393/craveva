@@ -1,0 +1,57 @@
+{
+    "table": "goal_types",
+    "columns": [
+        "id",
+        "company_id",
+        "type",
+        "view_by_owner",
+        "manage_by_owner",
+        "view_by_manager",
+        "manage_by_manager",
+        "view_by_roles",
+        "manage_by_roles",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "type": "individual",
+            "view_by_owner": 1,
+            "manage_by_owner": 1,
+            "view_by_manager": 0,
+            "manage_by_manager": 0,
+            "view_by_roles": "[]",
+            "manage_by_roles": "[]",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "type": "department",
+            "view_by_owner": 1,
+            "manage_by_owner": 1,
+            "view_by_manager": 0,
+            "manage_by_manager": 0,
+            "view_by_roles": "[]",
+            "manage_by_roles": "[]",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "type": "company",
+            "view_by_owner": 1,
+            "manage_by_owner": 1,
+            "view_by_manager": 0,
+            "manage_by_manager": 0,
+            "view_by_roles": "[]",
+            "manage_by_roles": "[]",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

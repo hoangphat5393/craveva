@@ -30,7 +30,7 @@ class VolumeDiscountController extends AccountBaseController
             $items = [];
         }
 
-        $result = $service->calculate($items);
+        $result = $service->calculate($items, (int) company()->id);
 
         return response()->json([
             'status' => 'success',

@@ -276,7 +276,7 @@ class Estimate extends BaseModel
      */
     public function approvalTimelineEntries(): array
     {
-        if (estimates_phase1_review_enabled() && $this->relationLoaded('approvalEvents') ? $this->approvalEvents->isNotEmpty() : $this->approvalEvents()->exists()) {
+        if (estimates_phase1_review_enabled() && ($this->relationLoaded('approvalEvents') ? $this->approvalEvents->isNotEmpty() : $this->approvalEvents()->exists())) {
             $events = $this->relationLoaded('approvalEvents')
                 ? $this->approvalEvents
                 : $this->approvalEvents()->with('actor')->get();

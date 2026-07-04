@@ -75,14 +75,8 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                window.apiHttp.delete(url, token)
+                    .then((response) => {
                         if (response.status === "success") {
                             $('#cat-' + id).fadeOut();
 
@@ -101,8 +95,12 @@
                             $('#category').html(`<option value="">--</option> ${options}`);
                             $('#category').selectpicker('refresh');
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    });
             }
         });
 
@@ -110,12 +108,10 @@
 
     $('#save-category').click(function () {
         var url = "{{ route('knowledgebasecategory.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createknowledgebaseCategory',
-            type: "POST",
-            data: $('#createknowledgebaseCategory').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#createknowledgebaseCategory');
+
+        window.apiHttp.postUrlEncoded(url, $('#createknowledgebaseCategory').serialize())
+            .then((response) => {
                 if (response.status === 'success') {
 
                     // If form submitted from index page reload the page to show that on sidebar
@@ -127,8 +123,15 @@
                     $('#category').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('#createknowledgebaseCategory');
+            });
     });
 
     $('.client-cat-table [contenteditable=true]').focus(function () {
@@ -145,17 +148,14 @@
 
             const token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#cat-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#cat-' + id);
+
+            window.apiHttp.postUrlEncoded(url, {
                     'category_name': value,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function (response) {
+                })
+                .then((response) => {
                     if (response.status === 'success') {
 
                         const options = [];
@@ -176,8 +176,15 @@
                         // Update on index page
                         $(`#category-${id}>a`).html(value);
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#cat-' + id);
+                });
         }
     });
 </script>

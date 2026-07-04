@@ -148,6 +148,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     /* Sales Shipments (Option B) */
     Route::get('sales-shipments/download/{id}', [SalesShipmentController::class, 'download'])->name('sales-shipments.download');
     Route::get('sales-shipments/get-items', [SalesShipmentController::class, 'getOrderItems'])->name('sales-shipments.get-items');
+    Route::get('sales-shipments/{id}/ship-form', [SalesShipmentController::class, 'shipForm'])->name('sales-shipments.ship-form');
     Route::post('sales-shipments/{id}/confirm', [SalesShipmentController::class, 'confirm'])->name('sales-shipments.confirm');
     Route::post('sales-shipments/{id}/ship', [SalesShipmentController::class, 'ship'])->name('sales-shipments.ship');
     Route::post('sales-shipments/{id}/deliver', [SalesShipmentController::class, 'deliver'])->name('sales-shipments.deliver');
@@ -157,6 +158,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     // Phase-2 transition aliases (business naming): Sales DO -> SalesShipmentController
     Route::get('sales-do/download/{id}', [SalesShipmentController::class, 'download'])->name('sales-do.download');
     Route::get('sales-do/get-items', [SalesShipmentController::class, 'getOrderItems'])->name('sales-do.get-items');
+    Route::get('sales-do/{id}/ship-form', [SalesShipmentController::class, 'shipForm'])->name('sales-do.ship-form');
     Route::post('sales-do/{id}/confirm', [SalesShipmentController::class, 'confirm'])->name('sales-do.confirm');
     Route::post('sales-do/{id}/ship', [SalesShipmentController::class, 'ship'])->name('sales-do.ship');
     Route::post('sales-do/{id}/deliver', [SalesShipmentController::class, 'deliver'])->name('sales-do.deliver');

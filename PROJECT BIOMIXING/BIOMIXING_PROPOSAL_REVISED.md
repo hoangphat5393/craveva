@@ -78,7 +78,7 @@ As a multinational organisation, Biomixing’s sales teams and distributors oper
 
 We have analyzed your current process flow (commercial request / Estimate → Recipe Review → Sales Order → Production → Delivery) and designed Craveva to eliminate bottlenecks at each step:
 
-![Biomixing Process Flow Diagram](biomixing_process_flow.png)
+[Biomixing Phase 1-3 Process Flow](PHASE1_TO_3_END_TO_END_FLOW.mmd)
 
 ### **Phase 1: Order & Recipe Review (The "3-Day Wait")**
 

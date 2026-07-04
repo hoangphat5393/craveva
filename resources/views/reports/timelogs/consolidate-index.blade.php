@@ -148,27 +148,29 @@
 
             var url = "{{ route('time-log-report.time') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#e',
-                blockUI: true,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#e');
+
+            window.apiHttp.postUrlEncoded(url, {
                     startDate: startDate,
                     endDate: endDate,
                     categoryID: categoryID,
                     projectID: projectID,
                     employeeID: employeeID,
                     _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     $('#e .card-body').html(response.html);
                     $('#expense-chart-card').html(response.html2);
                     $('#totalHours').html(response.totalHoursWorked);
                     $('#totalBreaks').html(response.totalBreak);
                     $('#totalEarnings').html(response.totalEarnings);
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#e');
+                });
         }
 
         barChart();

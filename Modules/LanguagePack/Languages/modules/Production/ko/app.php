@@ -277,6 +277,7 @@ return [
     'materialAvailableStock' => 'Available Stock',
     'materialAvailableInRmWarehouse' => 'Available',
     'materialAvailableInRawMaterialWarehouse' => 'Available',
+    'materialReservedInRawMaterialWarehouse' => 'Reserved',
     'materialShortage' => 'Insufficient Materials',
     'materialShortageHelp' => 'How much more is needed in the raw material warehouse when available stock is less than total required.',
     'materialShortageToProcure' => 'Shortage To Procure',

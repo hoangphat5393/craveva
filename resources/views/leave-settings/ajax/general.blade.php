@@ -57,15 +57,17 @@
     $('input[name=leaves_start_from], #year_starts_from').on("click change", function () {
         var leaveCountFrom = $('input[name=leaves_start_from]:checked').val();
         var yearStartFrom = $('#year_starts_from').val();
-        $.easyAjax({
-            url: "{{ route('leaves-settings.store') }}",
-            type: "POST",
-            data: {
+
+        window.apiHttp.postUrlEncoded("{{ route('leaves-settings.store') }}", {
                 '_token': '{{ csrf_token() }}',
                 'leaveCountFrom': leaveCountFrom,
                 'yearStartFrom': yearStartFrom
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            });
     });
 
     $(function () {
@@ -80,14 +82,15 @@
         var token = "{{ csrf_token() }}";
         var id = {{$leavePermission->id}};
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            data: {
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token,
                 'value': value,
                 'id': id,
-            },
-        });
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            });
     }
 </script>

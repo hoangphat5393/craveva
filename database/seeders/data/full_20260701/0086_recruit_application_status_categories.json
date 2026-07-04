@@ -1,0 +1,54 @@
+{
+    "table": "recruit_application_status_categories",
+    "columns": [
+        "id",
+        "company_id",
+        "name",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "name": "applied",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "name": "shortlist",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "name": "interview",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "name": "hired",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "name": "rejected",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 6,
+            "company_id": 1,
+            "name": "others",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

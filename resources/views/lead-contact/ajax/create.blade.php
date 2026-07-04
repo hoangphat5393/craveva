@@ -353,16 +353,22 @@ $addDealPermission = user()->permission('add_deals');
         });
 
         function saveLead(data, url, buttonSelector) {
-            $.easyAjax({
-                url: url,
-                container: '#save-lead-data-form',
-                type: "POST",
-                file: true,
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: buttonSelector,
-                data: data,
-                success: function(response) {
+            const $btn = $(buttonSelector);
+            const previousHtml = $btn.html();
+            const formEl = document.getElementById('save-lead-data-form');
+            const formData = new FormData(formEl);
+
+            if (typeof data === 'string') {
+                new URLSearchParams(data).forEach(function(value, key) {
+                    formData.set(key, value);
+                });
+            }
+
+            $.easyBlockUI('#save-lead-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postForm(url, formData)
+                .then(function(response) {
                     if(response.add_more == true) {
 
                         var right_modal_content = $.trim($(RIGHT_MODAL_CONTENT).html());
@@ -386,8 +392,14 @@ $addDealPermission = user()->permission('add_deals');
                     if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
                             showTable();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-lead-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
 
         }
 
@@ -433,10 +445,8 @@ $addDealPermission = user()->permission('add_deals');
         function getAgents(categoryId){
             var url = "{{ route('deals.get_agents', ':id')}}";
             url = url.replace(':id', categoryId);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response)
+            window.apiHttp.get(url)
+                .then(function(response)
                 {
                     var options = [];
                     var rData = [];
@@ -457,8 +467,10 @@ $addDealPermission = user()->permission('add_deals');
                     }
 
                     $('#deal_agent_id').selectpicker('refresh');
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
 
         $('#close_date').each(function (ind, el) {
@@ -481,10 +493,8 @@ $addDealPermission = user()->permission('add_deals');
         function getStages(pipelineId) {
             var url = "{{ route('deals.get-stage', ':id') }}";
             url = url.replace(':id', pipelineId);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function (response) {
+            window.apiHttp.get(url)
+                .then(function (response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -499,8 +509,10 @@ $addDealPermission = user()->permission('add_deals');
                         $('#stages').html(options);
                         $('#stages').selectpicker('refresh');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
 
         // GET STAGES

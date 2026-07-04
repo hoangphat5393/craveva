@@ -9,9 +9,12 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Modules\Pricing\Entities\PricingTier;
 use Modules\Pricing\Entities\PricingTierItem;
+use Modules\Pricing\Http\Controllers\Concerns\ValidatesBulkRowIds;
 
 class PricingTierController extends AccountBaseController
 {
+    use ValidatesBulkRowIds;
+
     public function __construct()
     {
         parent::__construct();
@@ -90,7 +93,7 @@ class PricingTierController extends AccountBaseController
         $editPermission = user()->permission('edit_pricing_tiers');
         abort_403($editPermission == 'none');
 
-        $this->pricingTier = PricingTier::findOrFail($id);
+        $this->pricingTier = PricingTier::where('company_id', user()->company_id)->findOrFail($id);
         $this->view = 'pricing::tiers.ajax.edit';
 
         if (request()->ajax()) {
@@ -114,7 +117,7 @@ class PricingTierController extends AccountBaseController
             'discount_value' => 'nullable|numeric|min:0',
         ]);
 
-        $tier = PricingTier::findOrFail($id);
+        $tier = PricingTier::where('company_id', user()->company_id)->findOrFail($id);
         $tier->name = $request->name;
         $tier->description = $request->description;
         $tier->priority = $request->priority;
@@ -133,7 +136,7 @@ class PricingTierController extends AccountBaseController
         $deletePermission = user()->permission('delete_pricing_tiers');
         abort_403($deletePermission == 'none');
 
-        PricingTier::destroy($id);
+        PricingTier::where('company_id', user()->company_id)->where('id', $id)->delete();
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('pricing.tiers.index')]);
     }
@@ -143,7 +146,9 @@ class PricingTierController extends AccountBaseController
         $viewPermission = user()->permission('view_pricing_tiers');
         abort_403($viewPermission == 'none');
 
-        $this->pricingTier = PricingTier::with(['items.product.unit'])->findOrFail($id);
+        $this->pricingTier = PricingTier::with(['items.product.unit'])
+            ->where('company_id', user()->company_id)
+            ->findOrFail($id);
         $this->products = Product::query()
             ->select(['id', 'name', 'sku', 'allow_purchase', 'status', 'unit_id'])
             ->with('unit')
@@ -169,7 +174,7 @@ class PricingTierController extends AccountBaseController
             'discount_value' => 'required|numeric|min:0',
         ]);
 
-        PricingTier::findOrFail($id);
+        PricingTier::where('company_id', user()->company_id)->findOrFail($id);
 
         $item = new PricingTierItem;
         $item->pricing_tier_id = $id;
@@ -217,30 +222,27 @@ class PricingTierController extends AccountBaseController
 
     protected function deleteRecords($request)
     {
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
-        PricingTier::whereIn('id', $ids)->delete();
+        $ids = $this->validatedBulkRowIds($request);
+
+        PricingTier::where('company_id', user()->company_id)->whereIn('id', $ids)->delete();
     }
 
     protected function deleteItemRecords($request)
     {
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
-        $allowedTierIds = PricingTier::query()->pluck('id');
+        $ids = $this->validatedBulkRowIds($request);
+        $allowedTierIds = PricingTier::where('company_id', user()->company_id)->pluck('id');
         PricingTierItem::whereIn('id', $ids)->whereIn('pricing_tier_id', $allowedTierIds)->delete();
     }
 
     protected function changeBulkStatus($request)
     {
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
-        PricingTier::whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
+        $request->validate([
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $ids = $this->validatedBulkRowIds($request);
+
+        PricingTier::where('company_id', user()->company_id)->whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
     }
 
     public function changeStatus(Request $request)
@@ -248,7 +250,12 @@ class PricingTierController extends AccountBaseController
         $editPermission = user()->permission('edit_pricing_tiers');
         abort_403($editPermission == 'none');
 
-        $tier = PricingTier::findOrFail($request->tierId);
+        $request->validate([
+            'tierId' => 'required|integer',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $tier = PricingTier::where('company_id', user()->company_id)->findOrFail($request->tierId);
         $tier->is_active = $request->status == 'active';
         $tier->save();
 
@@ -261,7 +268,7 @@ class PricingTierController extends AccountBaseController
         abort_403($editPermission == 'none');
 
         $item = PricingTierItem::findOrFail($itemId);
-        PricingTier::findOrFail($item->pricing_tier_id);
+        PricingTier::where('company_id', user()->company_id)->findOrFail($item->pricing_tier_id);
         $item->delete();
 
         return Reply::success(__('messages.deleteSuccess'));

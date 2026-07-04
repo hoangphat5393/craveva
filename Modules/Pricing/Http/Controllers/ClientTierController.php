@@ -6,7 +6,9 @@ use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\ClientDetails;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Modules\Pricing\DataTables\ClientTiersDataTable;
 use Modules\Pricing\Entities\PricingTier;
@@ -42,21 +44,23 @@ class ClientTierController extends AccountBaseController
         $viewPermission = user()->permission('view_client_tiers');
         abort_403($viewPermission == 'none');
 
-        $this->client = User::with('clientDetails')->findOrFail($id);
+        $this->client = $this->scopedClientQuery()
+            ->where('users.id', $id)
+            ->firstOrFail();
 
         if (! $this->client->clientDetails) {
             $details = new ClientDetails;
             $details->user_id = $this->client->id;
-            $details->company_name = $this->client->name ?? 'Client ' . $this->client->id;
-            // Ensure company_id is set if available on client
-            if ($this->client->company_id) {
-                $details->company_id = $this->client->company_id;
-            }
+            $details->company_name = $this->client->name ?? 'Client '.$this->client->id;
+            $details->company_id = company()->id;
             $details->save();
             $this->client->load('clientDetails');
         }
 
-        $this->tiers = PricingTier::orderBy('name')->get();
+        $this->tiers = PricingTier::where(function ($query) {
+            $query->where('company_id', company()->id)
+                ->orWhereNull('company_id');
+        })->orderBy('name')->get();
         $this->clients = User::allClients(active: false);
 
         if (request()->ajax()) {
@@ -82,18 +86,16 @@ class ClientTierController extends AccountBaseController
             ],
         ]);
 
-        $user = User::findOrFail($id);
+        $user = $this->scopedClientQuery()
+            ->where('users.id', $id)
+            ->firstOrFail();
         $details = $user->clientDetails;
 
         if (! $details) {
             $details = new ClientDetails;
             $details->user_id = $user->id;
             $details->company_name = $user->name;
-            if ($user->company_id) {
-                $details->company_id = $user->company_id;
-            } elseif (company()) {
-                $details->company_id = company()->id;
-            }
+            $details->company_id = company()->id;
         }
 
         // Only assign tier here. Do not overwrite client_code from this form — it caused
@@ -103,5 +105,27 @@ class ClientTierController extends AccountBaseController
         $details->save();
 
         return Reply::success(__('messages.updateSuccess'));
+    }
+
+    protected function scopedClientQuery(): Builder
+    {
+        $companyId = (int) company()->id;
+
+        return User::withoutGlobalScopes()
+            ->with('clientDetails')
+            ->whereNull('users.is_client_contact')
+            ->where(function ($query) use ($companyId) {
+                $query->where('users.company_id', $companyId)
+                    ->orWhereHas('clientDetails', function ($details) use ($companyId) {
+                        $details->where('company_id', $companyId);
+                    });
+            })
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('role_user')
+                    ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->whereColumn('role_user.user_id', 'users.id')
+                    ->where('roles.name', 'client');
+            });
     }
 }

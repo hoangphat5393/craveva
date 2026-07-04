@@ -1,6 +1,29 @@
-# easyAjax → axios migration (standard process)
+# easyAjax -> axios migration (standard process)
 
 This folder tracks **per-module** migration from `$.easyAjax` (see `public/vendor/helper/helper.js`) to **`window.apiHttp`** (`resources/js/http/apiClient.js`), compiled into `public/js/main.js`.
+
+For the remaining full migration plan and wave-by-wave progress tracker, see [FULL_MIGRATION_PLAN.md](./FULL_MIGRATION_PLAN.md).
+
+## Current status snapshot
+
+**Last static scan:** 2026-06-25 from repo root, limited to `resources/views`, `Modules`, and `resources/js` Blade/JS files.
+
+The `$.easyAjax` migration is complete for app/module views and the installer environment view. Direct `$.ajax` remains a separate backlog.
+
+| Pattern | Current result |
+| ------- | -------------- |
+| `$.easyAjax(` | 0 matches |
+| `$.ajax(` / `jQuery.ajax(` | 32 matches in 21 files |
+| `window.apiHttp` / `apiHttp.` | 1065 files |
+
+Breakdown for `$.easyAjax(`:
+
+| Area | Files |
+| ---- | ----- |
+| `resources/views/**` | 0 |
+| `Modules/**` | 0 |
+
+The installer environment view uses standalone browser `fetch` instead of `window.apiHttp` because installer pages do not load `public/js/main.js`.
 
 ## Shared client
 
@@ -51,65 +74,48 @@ Do **not** start this during active migration waves — wait until `resources/vi
 
 For **core app** areas (Product, Client, Order, etc.), scan `resources/views/{area}/` and related controllers under `app/Http/Controllers/`.
 
-### Migration order (business priority — agreed)
+### Migration waves
 
-Work these **before** optional nwidart modules (Sms, Letter, QRCode pilot, …):
+The per-module tracker files were retired on 2026-06-17 after the listed implementation waves were marked complete. Keep this README as the canonical process + status index; use `git log -- docs/axios-migration/<old-file>.md` only when historical implementation notes are needed.
 
-| Priority | Area           | Code location (this repo)                                                                                                                                    | Tracker file                             |
-| -------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| 1        | Product        | `resources/views/products/**`                                                                                                                                | [product.md](./product.md)               |
-| 2        | Client         | `resources/views/clients/**`                                                                                                                                 | [client.md](./client.md)                 |
-| 3        | Inventory      | Stock/quantity flows: overlap with products + warehouse; scan `resources/views/products/**`, `Modules/Warehouse/**`, and any `*stock*` / `*inventory*` views | [inventory.md](./inventory.md)           |
-| 4        | Warehouse      | `Modules/Warehouse/**` (nwidart module; may use Blade, Vue, or API-only)                                                                                     | [warehouse.md](./warehouse.md)           |
-| 5        | Order          | `resources/views/orders/**`                                                                                                                                  | [order.md](./order.md)                   |
-| 6        | Purchase order | `Modules/Purchase/Resources/views/purchase-order/**` (+ related routes)                                                                                      | [purchase-order.md](./purchase-order.md) |
-| 7        | Delivery order | `Modules/Purchase/Resources/views/delivery-order/**`                                                                                                         | [delivery-order.md](./delivery-order.md) |
-| 8        | Invoice        | `resources/views/invoices/**`                                                                                                                                | [invoice.md](./invoice.md)               |
-| 9        | Payment        | `resources/views/payments/**`                                                                                                                                | [payment.md](./payment.md)               |
+Important: as of the 2026-06-27 scan, `$.easyAjax` scopes are clean. Use the commands in this README and `AJAX_AUDIT.md` before claiming direct `$.ajax` is migrated.
 
-**Notes**
+Core business waves:
 
-- **Product / Client / Order** live in the **main app**, not under `Modules/`. Track them with the `.md` files above, same checklist as modules.
-- **Inventory** is often cross-cutting (catalog + stock + warehouse). Complete **Product** and align **Warehouse** before closing `inventory.md`.
-- **Pilot modules** already migrated for process proof: see [QRCode.md](./QRCode.md).
+| Area | Scope | Status |
+| ---- | ----- | ------ |
+| Product | `resources/views/products/**` | Completed |
+| Client | `resources/views/clients/**` | Completed |
+| Inventory | Product inventory + purchase inventory + Warehouse stock/adjust/transfer UI | Completed |
+| Warehouse | `Modules/Warehouse/**` create/adjust/transfer AJAX flows | Completed |
+| Order | `resources/views/orders/**` | Completed |
+| Purchase order | `Modules/Purchase/Resources/views/purchase-order/**` | Completed |
+| Delivery order | `Modules/Purchase/Resources/views/delivery-order/**` | Completed |
+| Invoice | `resources/views/invoices/**` | Completed for `$.easyAjax`; still has direct `$.ajax` to review |
+| Payment | `resources/views/payments/**` | Completed |
+| Finance core | Invoices, estimates, proposals, credit notes, expenses | Completed for listed estimate/invoice/payment/proposal/credit-note/expense scopes; direct `$.ajax` still needs separate review |
+| HR / attendance / leave | Employees, attendances, timelogs, leaves, weekly timesheets | Partial: related settings/timelog views still need review |
 
-Secondary / later waves: remaining `Modules/*`, super-admin-only views, integrations — lower priority than the table above unless blocking.
+Other completed waves:
 
-Latest core waves completed:
+| Area | Scope | Status |
+| ---- | ----- | ------ |
+| Tasks / Projects / Project templates | `resources/views/tasks/**`, `projects/**`, `project-templates/**`, `recurring-task/**` | Completed for `$.easyAjax`; direct `$.ajax` still needs separate review |
+| Leads / Tickets / Event calendar / Super-admin | Core app views | Completed for `$.easyAjax`; direct `$.ajax` still needs separate review |
+| Purchase vendors and related purchase screens | `Modules/Purchase/Resources/views/**` vendor/bill/payment/product/report areas | Completed |
+| QRCode pilot | `Modules/QRCode/Resources/views/**` | Completed |
+| Sms / EInvoice / LanguagePack / Subdomain / Policy / Webhooks | Module views | Completed |
+| Asset / Biometric / Affiliate / Pricing / CyberSecurity | Module views | Completed |
+| ServerManager / Zoom / Onboarding / Letter / ProjectRoadmap / Biolinks / Performance | Module views | Completed |
+| Payroll / Recruit | Module views | Completed |
+| Global right modal | `.openRightModal` in `resources/js/custom.js` | Completed |
 
-- **Tasks** (`resources/views/tasks/**`) — migrated to `window.apiHttp`
-- **Projects** (`resources/views/projects/**`) — migrated to `window.apiHttp`
-- **Project templates** (`resources/views/project-templates/**`) — migrated to `window.apiHttp`
-- **Leads** (`resources/views/leads/**`) — see [leads.md](./leads.md)
-- **Tickets** (`resources/views/tickets/**`) — see [tickets.md](./tickets.md)
-- **Event calendar** (`resources/views/event-calendar/**`) — see [event-calendar.md](./event-calendar.md)
-- **Super-admin** (`resources/views/super-admin/**`) — see [super-admin.md](./super-admin.md)
+### Known remaining `$.easyAjax` hotspots
 
-Latest secondary waves completed:
+Remaining `$.easyAjax` from the 2026-06-27 scan:
 
-- **Purchase vendors** (`Modules/Purchase/Resources/views/vendors/**`) — see [vendor.md](./vendor.md)
-- **Sms** (`Modules/Sms/Resources/views/**`) — see [sms.md](./sms.md)
-- **EInvoice** (`Modules/EInvoice/Resources/views/**`) — see [einvoice.md](./einvoice.md)
-- **LanguagePack** (`Modules/LanguagePack/Resources/views/**`) — see [languagepack.md](./languagepack.md)
-- **Subdomain** (`Modules/Subdomain/Resources/views/**`) — see [subdomain.md](./subdomain.md)
-- **Policy** (`Modules/Policy/Resources/views/**`) — see [policy.md](./policy.md)
-- **Webhooks** (`Modules/Webhooks/Resources/views/**`) — see [webhooks.md](./webhooks.md)
-- **Asset** (`Modules/Asset/Resources/views/**`) — see [asset.md](./asset.md)
-- **Biometric** (`Modules/Biometric/Resources/views/**`) — see [biometric.md](./biometric.md)
-- **Affiliate** (`Modules/Affiliate/Resources/views/**`) — see [affiliate.md](./affiliate.md)
-- **Pricing** (`Modules/Pricing/Resources/views/**`) — see [pricing.md](./pricing.md)
-- **CyberSecurity** (`Modules/CyberSecurity/Resources/views/**`) — see [cybersecurity.md](./cybersecurity.md)
-- **ServerManager** (`Modules/ServerManager/Resources/views/**`) — see [servermanager.md](./servermanager.md)
-- **Zoom** (`Modules/Zoom/Resources/views/**`) — see [zoom.md](./zoom.md)
-- **Onboarding** (`Modules/Onboarding/Resources/views/**`) — see [onboarding.md](./onboarding.md)
-- **Letter** (`Modules/Letter/Resources/views/**`) — see [letter.md](./letter.md)
-- **ProjectRoadmap** (`Modules/ProjectRoadmap/Resources/views/**`) — see [projectroadmap.md](./projectroadmap.md)
-- **Biolinks** (`Modules/Biolinks/Resources/views/**`) — see [biolinks.md](./biolinks.md)
-- **Performance** (`Modules/Performance/Resources/views/**`) — see [performance.md](./performance.md)
-  Latest completed waves:
+| Area | Files with `$.easyAjax` |
+| ---- | ----------------------- |
+| None | 0 |
 
-- **Finance core** (`resources/views/invoices/**`, `estimates/**`, `proposals/**`, `credit-notes/**`, `expenses/**`) — completed, see [finance-core.md](./finance-core.md)
-- **HR / attendance / leave** (`resources/views/employees/**`, `attendances/**`, `timelogs/**`, `leaves/**`, `weekly-timesheets/**`) — completed, see [hr-attendance-leave.md](./hr-attendance-leave.md)
-- **Payroll** (`Modules/Payroll/Resources/views/**`) — completed, see [payroll.md](./payroll.md)
-- **Recruit** (`Modules/Recruit/Resources/views/**`) — completed, see [recruit.md](./recruit.md)
-- **Global right modal** (`.openRightModal` in `resources/js/custom.js`) — completed, see [global-right-modal.md](./global-right-modal.md)
+Estimate-related public/request/template views were migrated in the 2026-06-22 cleanup batch.

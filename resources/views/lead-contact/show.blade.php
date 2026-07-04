@@ -60,18 +60,22 @@ $viewDeals = user()->permission('view_deals');
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI(".content-wrapper");
+
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
                         $('.content-wrapper').html(response.html);
                         init('.content-wrapper');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI(".content-wrapper");
+                });
         });
 
     </script>
@@ -105,19 +109,19 @@ $viewDeals = user()->permission('view_deals');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 window.location.href = "{{ route('lead-contact.index')}}";
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('.content-wrapper');
+                        });
                 }
             });
         });

@@ -53,6 +53,7 @@ beforeEach(function () {
         $table->unsignedBigInteger('product_id');
         $table->string('batch_number')->nullable();
         $table->date('expiration_date')->nullable();
+        $table->date('manufacturing_date')->nullable();
         $table->decimal('quantity', 20, 4)->default(0);
         $table->decimal('reserved_quantity', 20, 4)->default(0);
         $table->timestamps();
@@ -88,6 +89,8 @@ beforeEach(function () {
         $table->string('movement_type');
         $table->unsignedBigInteger('warehouse_from_id')->nullable();
         $table->unsignedBigInteger('warehouse_to_id')->nullable();
+        $table->unsignedBigInteger('warehouse_location_from_id')->nullable();
+        $table->unsignedBigInteger('warehouse_location_to_id')->nullable();
         $table->string('batch_number')->nullable();
         $table->date('expiry_date')->nullable();
         $table->decimal('quantity', 20, 4)->default(0);
@@ -290,6 +293,57 @@ it('guards double inbound config to avoid duplicate posting', function () {
     expect(fn () => $method->invoke($observer, $po, 100, 5.0))
         ->toThrow(WarehouseBusinessException::class);
     expect(DB::table('stock_movements')->count())->toBe(0);
+});
+
+it('preserves warehouse location ids on inbound and outbound movements', function () {
+    DB::table('warehouses')->insert([
+        'id' => 17,
+        'company_id' => 1,
+        'name' => 'Location WH',
+        'warehouse_type' => 'normal',
+        'status' => 'active',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $service = app(StockMovementService::class);
+
+    $service->recordInbound([
+        'company_id' => 1,
+        'warehouse_id' => 17,
+        'warehouse_location_id' => 701,
+        'product_id' => 100,
+        'quantity' => 8,
+        'batch_number' => 'LOC-1',
+        'reference_type' => 'manual_warehouse_stock',
+        'reference_id' => 9001,
+    ]);
+
+    $service->recordOutbound([
+        'company_id' => 1,
+        'warehouse_id' => 17,
+        'warehouse_location_id' => 702,
+        'product_id' => 100,
+        'quantity' => 3,
+        'batch_number' => 'LOC-1',
+        'reference_type' => SalesDo::class,
+        'reference_id' => 9002,
+    ]);
+
+    $inbound = DB::table('stock_movements')
+        ->where('movement_type', 'inbound')
+        ->where('reference_id', 9001)
+        ->first();
+
+    $outbound = DB::table('stock_movements')
+        ->where('movement_type', 'outbound')
+        ->where('reference_id', 9002)
+        ->first();
+
+    expect((int) $inbound->warehouse_location_to_id)->toBe(701);
+    expect($inbound->warehouse_location_from_id)->toBeNull();
+    expect((int) $outbound->warehouse_location_from_id)->toBe(702);
+    expect($outbound->warehouse_location_to_id)->toBeNull();
 });
 
 it('releases reservations when shipment is cancelled', function () {

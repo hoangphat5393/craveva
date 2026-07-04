@@ -1,0 +1,39 @@
+{
+    "table": "social_auth_settings",
+    "columns": [
+        "id",
+        "facebook_client_id",
+        "facebook_secret_id",
+        "facebook_status",
+        "google_client_id",
+        "google_secret_id",
+        "google_status",
+        "twitter_client_id",
+        "twitter_secret_id",
+        "twitter_status",
+        "linkedin_client_id",
+        "linkedin_secret_id",
+        "linkedin_status",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "facebook_client_id": null,
+            "facebook_secret_id": null,
+            "facebook_status": "disable",
+            "google_client_id": null,
+            "google_secret_id": null,
+            "google_status": "disable",
+            "twitter_client_id": null,
+            "twitter_secret_id": null,
+            "twitter_status": "disable",
+            "linkedin_client_id": null,
+            "linkedin_secret_id": null,
+            "linkedin_status": "disable",
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03"
+        }
+    ]
+}

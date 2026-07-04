@@ -39,22 +39,24 @@
 
             const url = "{{ route('sub-tasks.update', $subTask->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#edit-save-subtask-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#edit-save-subtask",
-                data: $('#edit-save-subtask-data-form').serialize(),
-                success: function(response) {
+            $('#edit-save-subtask').prop('disabled', true);
+            $.easyBlockUI('#edit-save-subtask-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#edit-save-subtask-data-form').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
                         $('#sub-task-list').html(response.view);
                         $(MODAL_LG).modal('hide');
                     }
 
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $('#edit-save-subtask').prop('disabled', false);
+                    $.easyUnblockUI('#edit-save-subtask-data-form');
+                });
         });
 
     });

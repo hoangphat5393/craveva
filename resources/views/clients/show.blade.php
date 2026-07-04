@@ -10,6 +10,8 @@
     $viewClientNote = user()->permission('view_client_note');
     $viewClientContact = user()->permission('view_client_contacts');
     $viewClientOrder = user()->permission('view_order');
+    $viewClientTiers = user()->permission('view_client_tiers');
+    $viewClientPricing = user()->permission('view_client_pricing');
 @endphp
 
 @section('filter-section')
@@ -85,6 +87,12 @@
                     @if ((in_array('orders', user_modules()) && $viewClientOrder == 'all') || ($viewClientOrder == 'added' && $client->clientDetails->added_by == user()->id) || ($viewClientOrder == 'owned' && $client->clientDetails->user_id == user()->id) || ($viewClientOrder == 'both' && ($client->clientDetails->added_by == user()->id || $client->clientDetails->user_id == user()->id)))
                         <li>
                             <x-tab :href="route('clients.show', $client->id) . '?tab=orders'" ajax="false" :text="__('app.menu.orders')" class="orders" />
+                        </li>
+                    @endif
+
+                    @if (in_array('pricing', array_map('strtolower', user_modules())) && ($viewClientTiers != 'none' || $viewClientPricing != 'none'))
+                        <li>
+                            <x-tab :href="route('clients.show', $client->id) . '?tab=pricing'" ajax="false" :text="__('pricing::app.menu.pricing')" class="pricing" />
                         </li>
                     @endif
 

@@ -21,7 +21,7 @@
         "eluceo/ical": "^0.16.1",
         "endroid/qr-code": "^5.0",
         "froiden/envato": "^5.0",
-        "froiden/laravel-installer": "^1.6",
+        "froiden/laravel-installer": "^11.0",
         "froiden/laravel-rest-api": "^12.0",
         "google/apiclient": "^2.10",
         "graham-campbell/gitlab": "^7.0",
@@ -32,7 +32,6 @@
         "intervention/image": "^2.5",
         "ivanomatteo/laravel-device-tracking": "dev-master as 1.0.1",
         "kingflamez/laravelrave": "^4.5",
-        "laravel-lang/lang": "~6.1",
         "laravel-notification-channels/onesignal": "^2.5",
         "laravel-notification-channels/telegram": "^6.0",
         "laravel-notification-channels/twilio": "^3.3",
@@ -59,7 +58,6 @@
         "opcodesio/log-viewer": "^3.8",
         "paragonie/random_compat": "^9.99",
         "paypal/rest-api-sdk-php": "dev-laravel10",
-        "pcinaglia/laraupdater": "^1.0",
         "psr/http-factory-implementation": "*",
         "pusher/pusher-php-server": "^7.2",
         "pusher/pusher-push-notifications": "^2.0",
@@ -69,7 +67,6 @@
         "sentry/sentry-laravel": "^4.2",
         "setasign/fpdf": "^1.8",
         "spatie/laravel-backup": "8.*",
-        "spatie/laravel-model-status": "^1.18",
         "square/square": "16.0.0.20211117",
         "stevebauman/location": "^7.2",
         "stichoza/google-translate-php": "^5.0",
@@ -84,9 +81,9 @@
         "yajra/laravel-datatables-oracle": "^11.0"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "3.0",
+        "barryvdh/laravel-ide-helper": "^3.7",
         "fakerphp/faker": "^1.9.1",
-        "larastan/larastan": "^2.8",
+        "larastan/larastan": "^3.10",
         "laravel/boost": "^1.8",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
@@ -205,8 +202,7 @@
             "@php artisan key:generate --ansi"
         ],
         "post-update-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "@php artisan ide-helper:meta"
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate"
         ]
     }
 }

@@ -149,20 +149,19 @@ $manageShiftPermission = user()->permission('manage_employee_shifts');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                $.easyBlockUI('body');
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             $('.row' + id).fadeOut(100);
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
     });
@@ -171,21 +170,22 @@ $manageShiftPermission = user()->permission('manage_employee_shifts');
         var shiftID = $(this).data('shift-id');
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('employee-shifts.set_default') }}",
-            type: "POST",
-            data: {
-                shiftID: shiftID,
-                _token: token
-            },
-            blockUI: true,
-            container: '#editSettings',
-            success: function(response) {
+        $.easyBlockUI('#editSettings');
+        window.apiHttp.postUrlEncoded("{{ route('employee-shifts.set_default') }}", {
+            shiftID: shiftID,
+            _token: token
+        })
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+            });
     });
 
 </script>

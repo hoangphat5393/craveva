@@ -44,22 +44,28 @@
 
         $('#save-notice').click(function() {
             const url = "{{ route('sticky-notes.store') }}";
+            const button = $('#save-notice');
+            const buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#save-notice-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-notice",
-                file: true,
-                data: $('#save-notice-data-form').serialize(),
-                success: function(response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-notice-data-form');
+
+            window.apiHttp.postForm(url, document.getElementById('save-notice-data-form'))
+                .then((response) => {
                     if (response.status == 'success') {
                         window.location.href = response.redirectUrl;
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#save-notice-data-form');
+                });
         });
 
         init(RIGHT_MODAL);

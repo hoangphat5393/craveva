@@ -1,0 +1,75 @@
+{
+    "table": "ticket_types",
+    "columns": [
+        "id",
+        "company_id",
+        "type",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "type": "Bug",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "type": "Suggestion",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "type": "Question",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "type": "Sales",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "type": "Code",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 6,
+            "company_id": 1,
+            "type": "Management",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 7,
+            "company_id": 1,
+            "type": "Problem",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 8,
+            "company_id": 1,
+            "type": "Incident",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 9,
+            "company_id": 1,
+            "type": "Feature Request",
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

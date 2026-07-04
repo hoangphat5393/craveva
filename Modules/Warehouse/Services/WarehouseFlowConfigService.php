@@ -100,8 +100,8 @@ class WarehouseFlowConfigService
         return [
             'allow_negative_stock' => (bool) config('warehouse.allow_negative_stock', false),
             'strict_unit_conversion' => (bool) config('warehouse.strict_unit_conversion', false),
-            'inbound_from_purchase_order_delivered' => (bool) config('warehouse.inbound_from_purchase_order_delivered', true),
-            'inbound_from_delivery_order_received' => (bool) config('warehouse.inbound_from_delivery_order_received', false),
+            'inbound_from_purchase_order_delivered' => (bool) config('warehouse.inbound_from_purchase_order_delivered', false),
+            'inbound_from_delivery_order_received' => (bool) config('warehouse.inbound_from_delivery_order_received', true),
             'sales_outbound_enabled' => (bool) config('warehouse.sales_outbound_enabled', true),
             'sales_outbound_mode' => (string) config('warehouse.sales_outbound_mode', 'shipment'),
             'ai_order_webhook_check_stock' => (bool) config('warehouse.ai_order_webhook_check_stock', true),

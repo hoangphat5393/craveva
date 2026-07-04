@@ -121,19 +121,26 @@
     <script>
         document.loading = '@lang('app.loading')';
          $(body).on('click', '#save-form', function() {
-            $.easyAjax({
-                url: "{{ route('front.gdpr.consent.update', [md5($lead->id)]) }}",
-                container: '#updateconsent',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-form",
-                data: $('#updateconsent').serialize(),
-                success: function(response) {
+            const button = $('#save-form');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#updateconsent');
+
+            window.apiHttp.postUrlEncoded("{{ route('front.gdpr.consent.update', [md5($lead->id)]) }}", $('#updateconsent').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
                         window.location.reload();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#updateconsent');
                 }
-            })
+            );
         })
     </script>
 

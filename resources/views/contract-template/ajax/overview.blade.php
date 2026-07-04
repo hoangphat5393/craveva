@@ -151,15 +151,10 @@
             return false;
         }
 
-        $.easyAjax({
-            url: "{{ route('contracts.sign', $contract->id) }}",
-            container: '#acceptEstimate',
-            type: "POST",
-            blockUI: true,
-            file: true,
-            disableButton: true,
-            buttonSelector : '#save-signature',
-            data: {
+        $('#save-signature').prop('disabled', true);
+        $.easyBlockUI('#acceptEstimate');
+
+        window.apiHttp.postUrlEncoded("{{ route('contracts.sign', $contract->id) }}", {
                 first_name: first_name,
                 last_name: last_name,
                 email: email,
@@ -167,8 +162,16 @@
                 image: image,
                 signature_type: signature_type,
                 _token: '{{ csrf_token() }}'
-            },
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $('#save-signature').prop('disabled', false);
+                $.easyUnblockUI('#acceptEstimate');
+            });
     });
 
 </script>

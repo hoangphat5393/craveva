@@ -82,14 +82,15 @@
                 rotationIds.push($(this).val());
             });
 
-                $.easyAjax({
-                    url: '{{ route("shift-rotations.run_rotation_post") }}',
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        rotation_ids: rotationIds
-                    },
-                    success: function (response) {
+                const requestData = new URLSearchParams();
+                requestData.append('_token', '{{ csrf_token() }}');
+                rotationIds.forEach(function(rotationId) {
+                    requestData.append('rotation_ids[]', rotationId);
+                });
+
+                $.easyBlockUI('#run-rotation-btn');
+                window.apiHttp.postUrlEncoded('{{ route("shift-rotations.run_rotation_post") }}', requestData.toString())
+                    .then(function (response) {
                         if (rotationIds.length > 0) {
                             if (response.status == 'success') {
                                 window.location.reload();
@@ -97,8 +98,13 @@
                         }else{
 
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#run-rotation-btn');
+                    });
           
 
         });

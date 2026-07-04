@@ -87,17 +87,20 @@
 
         });
         taskDropzone.on('completemultiple', function () {
-            $.easyAjax({
-                url: '{{ route('discussion-reply.get_replies', $discussionId) }}',
-                type: 'GET',
-                success: function (response) {
+            window.apiHttp.get('{{ route('discussion-reply.get_replies', $discussionId) }}')
+                .then(function (response) {
                     if(response.status == 'success'){
                         $('#right-modal-content').html(response.html);
                         $(MODAL_XL).modal('hide');
-                        $.easyUnblockUI();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI();
                 }
-            });
+            );
         });
 
         // save discussion
@@ -105,13 +108,10 @@
             const note = document.getElementById('description').children[0].innerHTML;
             document.getElementById('description-text').value = note;
 
-            $.easyAjax({
-                url: "{{ route('discussion-reply.store') }}",
-                container: '#createMethods',
-                type: "POST",
-                blockUI: true,
-                data: $('#createMethods').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#createMethods');
+
+            window.apiHttp.postUrlEncoded("{{ route('discussion-reply.store') }}", $('#createMethods').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
                         if (taskDropzone.getQueuedFiles().length > 0) {
                             discussion_reply_id = response.discussion_reply_id;
@@ -121,8 +121,14 @@
                             $(MODAL_XL).modal('hide');
                         }
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#createMethods');
                 }
-            })
+            );
         });
 
         init('#createMethods');

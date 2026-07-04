@@ -80,13 +80,10 @@
     $('body').on('click', '#save-pusher-form', function() {
         var url = "{{ route('pusher-settings.update', $pusherSettings->id) }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            container: "#editSettings",
-            blockUI: true,
-            data: $('#editSettings').serialize(),
-            success: function(response) {
+        $.easyBlockUI("#editSettings");
+
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .then((response) => {
 
                 if (response.hasOwnProperty('error') && response.error != '') {
                     $('#alert').prepend(
@@ -104,7 +101,14 @@
                     $('#pusher-setting-tab').removeClass('text-light-green');
                     $('#pusher-setting-tab').addClass('text-red');
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI("#editSettings");
+            });
     });
 </script>

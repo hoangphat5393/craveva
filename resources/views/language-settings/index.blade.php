@@ -183,12 +183,18 @@
 
             var url = "{{route('language-settings.update', ':id')}}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                blockUI: true,
-                data: {'id': id, 'status': status, '_method': 'PUT', '_token': '{{ csrf_token() }}'}
-            })
+
+            $.easyBlockUI('body');
+
+            window.apiHttp.postUrlEncoded(url, {'id': id, 'status': status, '_method': 'PUT', '_token': '{{ csrf_token() }}'})
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('body');
+                });
         });
 
         $('body').on('click', '.delete-language', function () {
@@ -218,18 +224,23 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {'_token': token, '_method': 'DELETE'},
-                        blockUI: true,
-                        success: function (response) {
+                    $.easyBlockUI('body');
+
+                    window.apiHttp.delete(url, token)
+                        .then((response) => {
                             if (response.status == "success") {
                                 $.unblockUI();
                                 $('#languageRow' + id).fadeOut();
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        })
+                        .finally(() => {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });

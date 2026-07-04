@@ -255,6 +255,9 @@ return [
     ],
     'reports' => [
         'inventorySummary' => 'Inventory Summary',
+        'warehouseMovementReport' => 'Warehouse Movement Report',
+        'allReferences' => 'All Reference Documents',
+        'referenceId' => 'Reference ID',
         'itemName' => 'Item Name',
         'sku' => 'SKU',
         'quantityOrdered' => 'Quantity Ordered',
@@ -287,8 +290,9 @@ return [
         'confirmed' => 'Confirmed',
         'shipped' => 'Shipped (stock out)',
         'delivered' => 'Delivered',
+        'markDelivered' => 'Mark Delivered',
         'cancelled' => 'Cancelled',
-        'reverse' => 'Reverse shipment',
+        'reverse' => 'Reverse Shipment',
     ],
     'order' => [
         'orderNumber' => 'Order Number',

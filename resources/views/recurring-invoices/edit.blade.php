@@ -608,20 +608,19 @@
             url = url.replace(':id', id);
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.postUrlEncoded(url, {
                     _token: token
-                },
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#project_id').html(response.data);
-                        $('#project_id').selectpicker('refresh');
-                    }
+            }).then(function (response) {
+                if (response.status == 'success') {
+                    $('#project_id').html(response.data);
+                    $('#project_id').selectpicker('refresh');
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
 
         });
@@ -666,30 +665,32 @@
             }
             var currencyId = $('#currency_id').val();
             var exchangeRate = $('#exchange_rate').val();
-            $.easyAjax({
-                url: "{{ route('invoices.add_item') }}",
-                type: "GET",
-                data: {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.get("{{ route('invoices.add_item') }}", {
+                params: {
                     id: id,
                     currencyId: currencyId,
                     exchangeRate: exchangeRate
-                },
-                blockUI: true,
-                success: function (response) {
-                    if($('input[name="item_name[]"]').val() == ''){
-                        $("#sortable .item-row").remove();
-                    }
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    calculateTotal();
-
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length - 1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                        ') select.type');
-                    itemRow.attr('id', 'multiselect' + i);
-                    itemRow.attr('name', 'taxes[' + i + '][]');
-                    $(document).find('#multiselect' + i).selectpicker();
                 }
+            }).then(function (response) {
+                if($('input[name="item_name[]"]').val() == ''){
+                    $("#sortable .item-row").remove();
+                }
+                $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                calculateTotal();
+
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                var i = $(document).find('.item_name').length - 1;
+                var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                    ') select.type');
+                itemRow.attr('id', 'multiselect' + i);
+                itemRow.attr('name', 'taxes[' + i + '][]');
+                $(document).find('#multiselect' + i).selectpicker();
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
         }
 
@@ -821,15 +822,18 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('recurring-invoices.update', $invoice->id) }}",
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                file: true,
-                data: $('#saveInvoiceForm').serialize()
-            })
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.postForm("{{ route('recurring-invoices.update', $invoice->id) }}", document.getElementById('saveInvoiceForm'))
+                .then(function (response) {
+                    if (response.url) {
+                        window.location.href = response.url;
+                    }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
+                }).finally(function () {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         });
 
         $('#saveInvoiceForm').on('click', '.remove-item', function () {
@@ -960,18 +964,19 @@
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('payments.account_list') }}",
-            container: '#saveInvoiceForm',
-            type: "GET",
-            blockUI: true,
-            data: { 'curId' : curId , _token: token},
-            success: function(response) {
-                if (response.status == 'success') {
-                    $('#bank_account_id').html(response.data);
-                    $('#bank_account_id').selectpicker('refresh');
-                }
+        $.easyBlockUI('#saveInvoiceForm');
+
+        window.apiHttp.get("{{ route('payments.account_list') }}", {
+            params: { 'curId' : curId , _token: token}
+        }).then(function(response) {
+            if (response.status == 'success') {
+                $('#bank_account_id').html(response.data);
+                $('#bank_account_id').selectpicker('refresh');
             }
+        }).catch(function (error) {
+            $.handleApiFormError(error);
+        }).finally(function () {
+            $.easyUnblockUI('#saveInvoiceForm');
         });
     });
     </script>

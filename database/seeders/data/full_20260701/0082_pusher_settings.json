@@ -1,0 +1,31 @@
+{
+    "table": "pusher_settings",
+    "columns": [
+        "id",
+        "pusher_app_id",
+        "pusher_app_key",
+        "pusher_app_secret",
+        "pusher_cluster",
+        "force_tls",
+        "status",
+        "taskboard",
+        "messages",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "pusher_app_id": null,
+            "pusher_app_key": null,
+            "pusher_app_secret": null,
+            "pusher_cluster": null,
+            "force_tls": 0,
+            "status": 0,
+            "taskboard": 1,
+            "messages": 0,
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03"
+        }
+    ]
+}

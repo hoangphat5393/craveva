@@ -128,15 +128,14 @@
        var discussionData = $('#createMethods').serialize();
 
         var data = discussionData+='&mention_user_id=' + mention_user_id;
-        $.easyAjax({
-            url: "{{ route('discussion.store') }}",
-            container: '#createMethods',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-discussion",
-            data: data,
-            success: function (response) {
+        const button = $('#save-discussion');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createMethods');
+
+        window.apiHttp.postUrlEncoded("{{ route('discussion.store') }}", data)
+            .then(function (response) {
                 if (response.status === 'success') {
                     if (taskDropzone.getQueuedFiles().length > 0) {
                         discussion_id = response.discussion_id;
@@ -147,8 +146,15 @@
                         window.location.href = "{{ route('projects.show', $projectId) }}?tab=discussion";
                     }
                 }
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#createMethods');
             }
-        })
+        );
     });
 
     init('#createMethods');

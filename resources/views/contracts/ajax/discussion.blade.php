@@ -138,27 +138,31 @@ $deleteContractDiscussionPermission = user()->permission('delete_contract_discus
 
             const url = "{{ route('contractDiscussions.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-comment-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#submit-comment",
-                data: {
-                    '_token': token,
-                    comment: comment,
-                    contract_id: '{{ $contract->id }}'
-                },
-                success: function(response) {
+            const $btn = $('#submit-comment');
+            const previousHtml = $btn.html();
+            $.easyBlockUI('#save-comment-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                comment: comment,
+                contract_id: '{{ $contract->id }}'
+            })
+                .then(function(response) {
                     if (response.status == "success") {
                         $('#comment-list').html(response.view);
                         document.getElementById('task-comment').children[0].innerHTML = "";
                         $('#task-comment-text').val('');
                     }
 
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-comment-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         $('body').on('click', '.delete-comment', function() {
@@ -187,19 +191,19 @@ $deleteContractDiscussionPermission = user()->permission('delete_contract_discus
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('#comment-list');
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#comment-list').html(response.view);
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#comment-list');
+                        });
                 }
             });
         });

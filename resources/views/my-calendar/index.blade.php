@@ -165,33 +165,36 @@
 
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: RIGHT_MODAL,
-                historyPush: true,
-                success: function(response) {
+            historyPush(url);
+            $.easyBlockUI(RIGHT_MODAL);
+
+            window.apiHttp.get(url)
+                .then((response) => {
                     if (response.status == "success") {
                         $(RIGHT_MODAL_CONTENT).html(response.html);
                         $(RIGHT_MODAL_TITLE).html(response.title);
                     }
-                },
-                error: function(request, status, error) {
-                    if (request.status == 403) {
+                })
+                .catch((error) => {
+                    if (error.status == 403) {
                         $(RIGHT_MODAL_CONTENT).html(
                             '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
                         );
-                    } else if (request.status == 404) {
+                    } else if (error.status == 404) {
                         $(RIGHT_MODAL_CONTENT).html(
                             '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
                         );
-                    } else if (request.status == 500) {
+                    } else if (error.status == 500) {
                         $(RIGHT_MODAL_CONTENT).html(
                             '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
                         );
+                    } else if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
                     }
-                }
-            });
+                })
+                .finally(() => {
+                    $.easyUnblockUI(RIGHT_MODAL);
+                });
 
         };
 

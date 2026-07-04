@@ -1,0 +1,59 @@
+{
+    "table": "recruit_email_notification_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "setting_name",
+        "send_email",
+        "slug",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "setting_name": "New Job/Added by Admin",
+            "send_email": "yes",
+            "slug": "new-jobadded-by-admin",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "setting_name": "New Job Application/Added by Admin",
+            "send_email": "yes",
+            "slug": "new-job-applicationadded-by-admin",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "setting_name": "New Interview Schedule/Added by Admin",
+            "send_email": "yes",
+            "slug": "new-interview-scheduleadded-by-admin",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "setting_name": "New Offer Letter/Added by Admin",
+            "send_email": "yes",
+            "slug": "new-offer-letteradded-by-admin",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "setting_name": "Notification to Recruiter",
+            "send_email": "yes",
+            "slug": "notification-to-recruiter",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

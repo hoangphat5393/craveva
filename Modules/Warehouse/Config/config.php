@@ -9,15 +9,14 @@ return [
      */
     'strict_unit_conversion' => env('WAREHOUSE_STRICT_UNIT_CONVERSION', false),
     /**
-     * Inbound stock when PO delivery_status becomes "delivered" (legacy / default on).
-     * Set false if you only post receiving via Delivery Order (received) to avoid double-counting.
+     * Legacy inbound source when PO delivery_status becomes "delivered".
+     * Keep disabled when GRN received is the canonical purchase receipt event.
      */
-    'inbound_from_purchase_order_delivered' => env('WAREHOUSE_INBOUND_FROM_PO_DELIVERED', true),
+    'inbound_from_purchase_order_delivered' => env('WAREHOUSE_INBOUND_FROM_PO_DELIVERED', false),
     /**
-     * Inbound stock when Delivery Order (type inbound) status becomes "received".
-     * Default false — enable when using DO as canonical GRN.
+     * Canonical inbound source when GRN (type inbound) status becomes "received".
      */
-    'inbound_from_delivery_order_received' => env('WAREHOUSE_INBOUND_FROM_DO_RECEIVED', false),
+    'inbound_from_delivery_order_received' => env('WAREHOUSE_INBOUND_FROM_DO_RECEIVED', true),
 
     /**
      * When true, finalized (non-draft) invoices post outbound stock via StockMovementService

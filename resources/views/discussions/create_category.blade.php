@@ -102,22 +102,19 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                window.apiHttp.delete(url, token)
+                    .then(function (response) {
                         if (response.status === 'success') {
                             $('#discussion_category').html(response.data);
                             $('#discussion_category').selectpicker('refresh');
                             showTable();
                             $(MODAL_LG).modal('hide');
                         }
+                    })
+                    .catch(function (error) {
+                        $.handleApiFormError(error);
                     }
-                });
+                );
             }
         });
 
@@ -125,22 +122,29 @@
 
     $('#save-category').click(function () {
         const url = "{{ route('discussion-category.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createTaskCategory',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            type: "POST",
-            data: $('#createTaskCategory').serialize(),
-            success: function (response) {
+
+        const button = $('#save-category');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createTaskCategory');
+
+        window.apiHttp.postUrlEncoded(url, $('#createTaskCategory').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     $('#discussion_category').html(response.data);
                     $('#discussion_category').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#createTaskCategory');
             }
-        })
+        );
     });
 
     $('[contenteditable=true]').focus(function () {
@@ -155,23 +159,26 @@
 
             const token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#row-' + id);
+
+            window.apiHttp.post(url, {
                     'name': value,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function (response) {
+                })
+                .then(function (response) {
                     if (response.status === 'success') {
                         $('#discussion_category').html(response.data);
                         $('#discussion_category').selectpicker('refresh');
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#row-' + id);
                 }
-            })
+            );
         }
     });
 

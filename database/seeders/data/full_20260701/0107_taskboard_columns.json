@@ -1,0 +1,65 @@
+{
+    "table": "taskboard_columns",
+    "columns": [
+        "id",
+        "company_id",
+        "column_name",
+        "slug",
+        "label_color",
+        "priority",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "column_name": "Incomplete",
+            "slug": "incomplete",
+            "label_color": "#d21010",
+            "priority": 1,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "column_name": "To Do",
+            "slug": "to_do",
+            "label_color": "#f5c308",
+            "priority": 2,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "column_name": "Doing",
+            "slug": "doing",
+            "label_color": "#00b5ff",
+            "priority": 3,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "column_name": "Completed",
+            "slug": "completed",
+            "label_color": "#679c0d",
+            "priority": 4,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "column_name": "Waiting Approval",
+            "slug": "waiting_approval",
+            "label_color": "#000",
+            "priority": 5,
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

@@ -120,21 +120,18 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.redirectUrl) {
                                 window.location.href = response.redirectUrl;
                             } else {
                                 showTable();
                             }
+                        })
+                        .catch(function (error) {
+                            $.handleApiFormError(error);
                         }
-                    });
+                    );
                 }
             });
         });
@@ -146,14 +143,14 @@
 
             var url = "{{ route('recurring-event.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            const button = $('#quick-action-apply');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.redirectUrl) {
                         window.location.href = response.redirectUrl;
                     } else {
@@ -161,8 +158,15 @@
                         resetActionButtons();
                         deSelectAll();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#quick-action-form');
                 }
-            })
+            );
         };
 
 </script>

@@ -144,16 +144,29 @@
     var $i = {{ count($ipAddresses) }};
 
     $('#save-form').click(function() {
-        $.easyAjax({
-            url: "{{ route('attendance-settings.update', $attendanceSetting->id) }}",
-            container: '#editSettings',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-form",
-            type: "POST",
-            redirect: true,
-            data: $('#editSettings').serialize()
-        })
+        const $btn = $('#save-form');
+        const previousHtml = $btn.html();
+
+        $.easyBlockUI('#editSettings');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded("{{ route('attendance-settings.update', $attendanceSetting->id) }}", $('#editSettings').serialize())
+            .then(function(response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        $.showApiSuccessToast(response.message);
+                    }
+                }
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 
     $('#employee_clock_in_out').click(function() {

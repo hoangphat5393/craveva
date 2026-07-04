@@ -110,21 +110,26 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
+                $.easyBlockUI('body');
+
+                window.apiHttp.postUrlEncoded(url, {
                         '_token': token,
                         '_method': 'DELETE',
                         'force_delete': force_delete,
-                    },
-                    success: function(response) {
+                    })
+                    .then((response) => {
                         if (response.status == "success") {
                             $('#archivetype-' + id).fadeOut();
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    })
+                    .finally(() => {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
     });
@@ -159,21 +164,26 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
+                $.easyBlockUI('body');
+
+                window.apiHttp.postUrlEncoded(url, {
                         '_token': token,
                          '_method': 'DELETE',
                          'restore' : restore,
-                    },
-                    success: function(response) {
+                    })
+                    .then((response) => {
                         if (response.status == "success") {
                             $('#archivetype-' + id).fadeOut();
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    })
+                    .finally(() => {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
     });

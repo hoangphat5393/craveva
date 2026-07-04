@@ -20,4 +20,4 @@ Tài liệu đặc tả, audit luồng, và snapshot hạ tầng (không thay ch
 | Nội dung                                               | File                                                                                                                 |
 | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | Staging & Hub — RAM, FPM, Redis, disk (SSH snapshot)   | [`STAGING_HUB_SERVER_INFO_2026-04-06.md`](STAGING_HUB_SERVER_INFO_2026-04-06.md)                                     |
-| GCP VMs + Cloud SQL + allowlist hub/staging/test (gộp) | [`GCP_AND_CLOUDSQL_SNAPSHOT_VI.md`](GCP_AND_CLOUDSQL_SNAPSHOT_VI.md) — gồm `craveva-staging-test` (clone 2026-05-23) |
+| GCP VMs + Cloud SQL + allowlist hub/staging/test (gộp) | [`GCP_AND_CLOUDSQL_SNAPSHOT.md`](GCP_AND_CLOUDSQL_SNAPSHOT.md) — gồm `craveva-staging-test` (clone 2026-05-23) |

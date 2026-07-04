@@ -33,19 +33,22 @@
         const note = document.getElementById('description').children[0].innerHTML;
         document.getElementById('description-text').value = note;
 
-        $.easyAjax({
-            url: "{{ route('discussion-reply.update', $reply->id) }}",
-            container: '#createMethods',
-            type: "POST",
-            blockUI: true,
-            data: $('#createMethods').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#createMethods');
+
+        window.apiHttp.postUrlEncoded("{{ route('discussion-reply.update', $reply->id) }}", $('#createMethods').serialize())
+            .then(function (response) {
                 if (response.status === "success") {
                     $('#right-modal-content').html(response.html);
                     $(MODAL_XL).modal('hide');
                 }
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#createMethods');
             }
-        })
+        );
     });
 
     init('#createMethods');

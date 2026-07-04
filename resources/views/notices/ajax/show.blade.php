@@ -265,19 +265,17 @@ $deletePermission = user()->permission('delete_notice');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then((response) => {
                         if (response.status == "success") {
                             window.location.href = response.redirectUrl;
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    });
             }
         });
     });
@@ -308,19 +306,17 @@ $deletePermission = user()->permission('delete_notice');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                window.apiHttp.delete(url, token)
+                    .then((response) => {
                         if (response.status == "success") {
                             $('#notice-file-list').html(response.view);
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    });
             }
         });
     });

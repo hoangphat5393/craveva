@@ -46,15 +46,25 @@
 
     $('body').on('click', '#save-client-signup-setting-form', function () {
         const url = "{{ route('app-settings.update', [company()->id]) }}?page=client-signup-setting";
+        const $btn = $('#save-client-signup-setting-form');
+        const previousHtml = $btn.html();
 
-        $.easyAjax({
-            url: url,
-            container: '#editSettings',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-client-signup-setting-form",
-            data: $('#editSettings').serialize(),
-        })
+        $.easyBlockUI('#editSettings');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .then(function(response) {
+                if (response.status === 'success' && typeof response.message !== 'undefined') {
+                    $.showApiSuccessToast(response.message);
+                }
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 
 

@@ -185,4 +185,18 @@ it('converts an approved estimate to sales order and copies items', function ():
 
     $copiedItemCount = DB::table('order_items')->where('order_id', $order->id)->count();
     expect($copiedItemCount)->toBe($expectedItemCount);
+
+    $retryResponse = $this->actingAs($fix['userAuth'], 'web')
+        ->withSession([
+            'company' => $fix['company'],
+            'multi_company_selected' => 1,
+            'user_company_count' => 1,
+        ])
+        ->post(route('estimates.convert_to_sales_order', $estimate->id), [
+            '_token' => csrf_token(),
+        ]);
+
+    $retryResponse->assertOk();
+    $retryResponse->assertJsonPath('status', 'success');
+    expect(Order::query()->where('estimate_id', $estimate->id)->count())->toBe(1);
 });

@@ -1,0 +1,40 @@
+{
+    "table": "ticket_channels",
+    "columns": [
+        "id",
+        "company_id",
+        "channel_name",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "channel_name": "Email",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "channel_name": "Phone",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "channel_name": "Twitter",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "channel_name": "Facebook",
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

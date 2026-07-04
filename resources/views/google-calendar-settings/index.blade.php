@@ -181,19 +181,22 @@
         });
 
         $('#save-form').click(function () {
-            $.easyAjax({
-                url: "{{ route('google-calendar-settings.store') }}",
-                container: '#editSettings',
-                blockUI: true,
-                type: "POST",
-                file: true,
-                data: $('#editSettings').serialize(),
-                success: function (response) {
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postForm("{{ route('google-calendar-settings.store') }}", document.getElementById('editSettings'))
+                .then((response) => {
                     if (response.status == 'success') {
                         window.location.reload();
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#editSettings');
+                });
         });
 
         // Show/hide google calendar details
@@ -234,19 +237,20 @@
                     const url = "{{ route('googleAuth.destroy') }}";
                     const token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
+                    window.apiHttp.postUrlEncoded(url, {
                             '_token': token,
                             '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                        })
+                        .then((response) => {
                             if (response.status === "success") {
                                 location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        });
                 }
             });
         });

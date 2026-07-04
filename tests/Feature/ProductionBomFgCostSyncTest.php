@@ -41,10 +41,10 @@ beforeEach(function (): void {
         $table->timestamps();
     });
 
-    $migration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
+    $migration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
     $migration->up();
 
-    $wasteMigration = require __DIR__ . '/../../Modules/Production/Database/Migrations/2026_05_20_160000_add_waste_percent_to_production_bom_tables.php';
+    $wasteMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_20_160000_add_waste_percent_to_production_bom_tables.php';
     $wasteMigration->up();
 
     DB::table('companies')->insert([
@@ -153,6 +153,31 @@ it('does not sync when tenant flag is disabled', function (): void {
 
 it('does not sync when fg custom flag is off', function (): void {
     Product::withoutGlobalScopes()->where('id', 2)->update(['cost_from_bom' => false]);
+
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v1',
+        'is_default' => true,
+    ]);
+
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 1,
+    ]);
+
+    $bom->load(['items']);
+
+    $synced = app(ProductionBomFgCostSyncService::class)->syncOutputProductFromBom($bom, 1);
+
+    expect($synced)->toBeFalse()
+        ->and((float) Product::withoutGlobalScopes()->find(2)->purchase_price)->toBe(10.0);
+});
+
+it('does not sync when raw material cost is missing', function (): void {
+    Product::withoutGlobalScopes()->where('id', 1)->update(['purchase_price' => null]);
 
     $bom = ProductionBom::query()->create([
         'company_id' => 1,

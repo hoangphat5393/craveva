@@ -3,12 +3,25 @@
 declare(strict_types=1);
 
 use App\Models\Estimate;
-use App\Models\Tax;
 use App\Services\Estimates\EstimateTotalsCalculator;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-uses(DatabaseTransactions::class);
+beforeEach(function (): void {
+    Schema::dropIfExists('taxes');
+    Schema::create('taxes', function ($table): void {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->string('tax_name');
+        $table->decimal('rate_percent', 8, 2);
+        $table->softDeletes();
+        $table->timestamps();
+    });
+});
+
+afterEach(function (): void {
+    Schema::dropIfExists('taxes');
+});
 
 it('sums line amounts into sub_total and total without tax', function (): void {
     $calculator = new EstimateTotalsCalculator;
@@ -30,24 +43,19 @@ it('sums line amounts into sub_total and total without tax', function (): void {
 });
 
 it('applies percent discount before tax when calculate_tax is after_discount', function (): void {
-    if (! Schema::hasTable('taxes')) {
-        test()->markTestSkipped('Taxes table is not migrated.');
-
-        return;
-    }
-
-    $tax = Tax::query()->first();
-    if (! $tax instanceof Tax) {
-        test()->markTestSkipped('No tax row available for calculator test.');
-
-        return;
-    }
+    $taxId = DB::table('taxes')->insertGetId([
+        'company_id' => 1,
+        'tax_name' => 'VAT',
+        'rate_percent' => 10,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
 
     $calculator = new EstimateTotalsCalculator;
 
     $result = $calculator->calculate(
         [
-            ['amount' => 100.0, 'taxes' => [(int) $tax->id]],
+            ['amount' => 100.0, 'taxes' => [$taxId]],
         ],
         10.0,
         'percent',

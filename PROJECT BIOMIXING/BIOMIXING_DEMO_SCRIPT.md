@@ -4,9 +4,9 @@
 **Focus:** Sustainable Farming Solutions (EHPurge, Probiotics, Feed Additives)
 **Scenario:** A Distributor orders 500kg of **EHPurge**. We demonstrate the synergy between **Craveva ERP (hub.craveva.com)** for operations and **AI Agents (ai.craveva.com)** for intelligence.
 
-**Rehearsal note (2026 Hub):** When demoing **Delivery Order → Ship**, align with live behaviour: **confirm** reserves stock; **ship** consumes by **warehouse + product line + batch + expiry** where applicable. See `FUNC_LOGIC/ERP_SO_PO_DO_INV_WH_QA_VI.md` and `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`.
+**Rehearsal note (2026 Hub):** When demoing **Delivery Order → Ship**, align with live behaviour: **confirm** reserves stock; **ship** consumes by **warehouse + product line + batch + expiry** where applicable. See `FUNC_LOGIC/SALES_FULFILLMENT_QA_CHECKLIST.md` and `FUNC_IMPROVE/BIOMIXING_PREP_INDEX_EN.md`.
 
-**Documentation sync note (2026-06):** This file is a stakeholder storytelling script for ERP + AI. The live Biomixing system flow starts at **Estimate / Quotation**, converts to **Sales Order** after approval, then uses the **Production** module for BOM/order/batch. Use `FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE_VI.md` and `FUNC_LOGIC/PRODUCTION_OPERATIONS_LIVE_VI.md` as the operational source of truth.
+**Documentation sync note (2026-06):** This file is a stakeholder storytelling script for ERP + AI. The live Biomixing system flow starts at **Estimate / Quotation**, converts to **Sales Order** after approval, then uses the **Production** module for BOM/order/batch. Use `FUNC_IMPROVE/BIOMIXING_BUSINESS_FLOW_LIVE.md` and `FUNC_LOGIC/PRODUCTION_BUSINESS.md` as the operational source of truth.
 
 ---
 

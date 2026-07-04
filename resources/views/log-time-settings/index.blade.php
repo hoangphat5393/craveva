@@ -102,11 +102,8 @@
 
                 var time = $('#time').val();
 
-                $.easyAjax({
-                    url: "{{ route('timelog-settings.store') }}",
-                    blockUI: true,
-                    type: "POST",
-                    data: {
+                const url = "{{ route('timelog-settings.store') }}";
+                const data = {
                         'auto_timer_stop': auto_timer_stop,
                         'approval_required': approval_required,
                         'tracker_reminder': tracker_reminder,
@@ -114,8 +111,24 @@
                         'daily_report_roles' : dailyReport,
                         'time': time,
                         '_token': "{{ csrf_token() }}"
-                    }
-                })
+                    };
+
+                $.easyBlockUI('body');
+
+                window.apiHttp.postUrlEncoded(url, data)
+                    .then((response) => {
+                        if (response.status === 'success' && typeof showTableMessage === 'function') {
+                            showTableMessage(response.message, 'success');
+                        }
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    })
+                    .finally(() => {
+                        $.easyUnblockUI('body');
+                    });
             });
 
 

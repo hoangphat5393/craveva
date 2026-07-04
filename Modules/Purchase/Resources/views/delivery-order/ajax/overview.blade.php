@@ -295,7 +295,7 @@
     <div class="card-footer bg-white border-0 d-flex justify-content-start py-0 py-lg-4 py-md-4 mb-4 mb-lg-3 mb-md-3">
         <div class="d-flex">
             <a class="btn btn-primary mr-3" href="{{ route('delivery-orders.download', $delivery->id) }}" target="_blank">
-                <i class="fa fa-download f-w-500 mr-2 f-11"></i> @lang('app.downloadPdf')
+                <i class="fa fa-download mr-2"></i> @lang('app.download')
             </a>
         </div>
     </div>

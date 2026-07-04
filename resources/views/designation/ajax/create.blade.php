@@ -45,16 +45,14 @@
         $('#save-designation-form').click(function () {
 
             const url = "{{ route('designations.store') }}";
+            const button = $('#save-designation-form');
+            const buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#save-designation-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-designation-form",
-                data: $('#save-designation-data-form').serialize(),
-                success: function (response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-designation-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#save-designation-data-form').serialize())
+                .then((response) => {
                     if (response.status === 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -63,8 +61,17 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#save-designation-data-form');
+                });
         });
 
         init(RIGHT_MODAL);

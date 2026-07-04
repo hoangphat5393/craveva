@@ -232,19 +232,24 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function (response) {
+            historyPush(requestUrl);
+            $.easyBlockUI('#nav-tabContent');
+
+            window.apiHttp.get(requestUrl)
+                .then(function (response) {
                     if (response.status === "success") {
                         $('#nav-tabContent').html(response.html);
                         init('.settings-box');
                         init('#F');
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#nav-tabContent');
                 }
-            });
+            );
         });
 
         $("body").on("change", "#paypal_status", function (event) {
@@ -305,18 +310,24 @@
 
         // Save paypal, stripe and razorpay credentials
         $("body").on("click", "#save_paypal_data, #save_stripe_data, #save_razorpay_data, #save_paystack_data, #save_flutterwave_data, #save_mollie_data, #save_payfast_data, #save_authorize_data, #save_square_data", function (event) {
-            $.easyAjax({
-                url: "{{ $updateRoute }}",
-                container: '#editSettings',
-                type: "POST",
-                redirect: true,
-                disableButton: true,
-                blockUI: true,
-                data: $('#editSettings').serialize(),
-                success: function () {
+            const button = $(this);
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded("{{ $updateRoute }}", $('#editSettings').serialize())
+                .then(function () {
                     window.location.reload();
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#editSettings');
                 }
-            })
+            );
         });
 
         // Edit new offline payment method
@@ -364,20 +375,21 @@
 
                     const token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    $.easyBlockUI();
+
+                    window.apiHttp.delete(url, token)
+                        .then(function (response) {
                             if (response.status === "success") {
                                 $('.row' + id).fadeOut();
                             }
+                        })
+                        .catch(function (error) {
+                            $.handleApiFormError(error);
+                        })
+                        .finally(function () {
+                            $.easyUnblockUI();
                         }
-                    });
+                    );
                 }
             });
         });

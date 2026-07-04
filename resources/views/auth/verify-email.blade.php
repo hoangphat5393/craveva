@@ -367,19 +367,20 @@
                 document.addEventListener('click', handleFormSubmit, false);
 
                 const url = "{{ route('verification.send') }}";
-                $.easyAjax({
-                    url: url,
-                    container: 'body',
-                    disableButton: true,
-                    buttonSelector: "#send-verify-code",
-                    type: "POST",
-                    messagePosition: "inline",
-                    blockUI: true,
-                    data: $('#send-email-verification-code').serialize(),
-                    success: function(response) {
+                $('#send-verify-code').prop('disabled', true);
+                $.easyBlockUI('body');
+
+                window.apiHttp.postUrlEncoded(url, $('#send-email-verification-code').serialize())
+                    .then(function(response) {
                         $('#email-code-sent-message').removeClass('d-none');
-                    }
-                })
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $('#send-verify-code').prop('disabled', false);
+                        $.easyUnblockUI('body');
+                    });
             }
 
             function verifyCode() {
@@ -387,24 +388,27 @@
                 document.addEventListener('click', handleFormSubmit, false);
 
                 const url = "{{ route('superadmin.signup.verifyEmail') }}";
-                $.easyAjax({
-                    url: url,
-                    container: '#email-verification-form',
-                    disableButton: true,
-                    buttonSelector: "#verify-code",
-                    type: "POST",
-                    messagePosition: "inline",
-                    data: $('#email-verification-form').serialize(),
-                    success: function(response) {
+                $('#verify-code').prop('disabled', true);
+
+                window.apiHttp.postUrlEncoded(url, $('#email-verification-form').serialize())
+                    .then(function(response) {
                         if (response.status === 'success') {
                             document.removeEventListener('click', handleFormSubmit);
-                        } else if (response.status == 'fail') {
+                        }
+                    })
+                    .catch(function(error) {
+                        if (error.payload && error.payload.status == 'fail') {
                             document.removeEventListener('click', handleFormSubmit);
                             $('#email-verification-form')[0].reset();
                             $('#otc-1').focus();
+                            return;
                         }
-                    }
-                })
+
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $('#verify-code').prop('disabled', false);
+                    });
             }
         </script>
 

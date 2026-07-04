@@ -95,24 +95,77 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            $.easyBlockUI('#nav-tabContent');
+
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
                         showBtn(response.activeTab);
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
+                        window.history.pushState({}, '', requestUrl);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#nav-tabContent');
+                });
         });
 
         function showBtn(activeTab) {
             $('.actionBtn').addClass('d-none');
             $('.' + activeTab + '-btn').removeClass('d-none');
+        }
+
+        function handleLeadSettingError(err) {
+            $.handleApiFormError(err);
+        }
+
+        function deleteLeadSetting(url, token, onSuccess) {
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.delete(url, token)
+                .then(function(response) {
+                    if (response.status == "success" && typeof onSuccess === 'function') {
+                        onSuccess(response);
+                    }
+                })
+                .catch(handleLeadSettingError)
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                });
+        }
+
+        function postLeadSetting(url, data, onSuccess) {
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded(url, data)
+                .then(function(response) {
+                    if (response.status == "success" && typeof onSuccess === 'function') {
+                        onSuccess(response);
+                    }
+                })
+                .catch(handleLeadSettingError)
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                });
+        }
+
+        function getLeadSetting(url, onSuccess) {
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.get(url)
+                .then(function(response) {
+                    if (response.status == "success" && typeof onSuccess === 'function') {
+                        onSuccess(response);
+                    }
+                })
+                .catch(handleLeadSettingError)
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                });
         }
 
         showBtn(activeTab);
@@ -157,19 +210,8 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row'+id).fadeOut();
-                            }
-                        }
+                    deleteLeadSetting(url, token, function() {
+                        $('.row'+id).fadeOut();
                     });
                 }
             });
@@ -222,19 +264,8 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row'+id).fadeOut();
-                            }
-                        }
+                    deleteLeadSetting(url, token, function() {
+                        $('.row'+id).fadeOut();
                     });
                 }
             });
@@ -253,17 +284,9 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
             var url = "{{ route('lead-stage-setting.stageUpdate', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                blockUI: true,
-                container: '#editSettings',
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.location.reload();
-                    }
-                }
-            })
+            getLeadSetting(url, function() {
+                window.location.reload();
+            });
 
         });
 
@@ -274,17 +297,9 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
             var url = "{{ route('lead-pipeline-update.stageUpdate', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                blockUI: true,
-                container: '#editSettings',
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.location.reload();
-                    }
-                }
-            })
+            getLeadSetting(url, function() {
+                window.location.reload();
+            });
 
         });
 
@@ -333,19 +348,8 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row'+id).fadeOut();
-                            }
-                        }
+                    deleteLeadSetting(url, token, function() {
+                        $('.row'+id).fadeOut();
                     });
                 }
             });
@@ -395,19 +399,8 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row'+id).fadeOut();
-                            }
-                        }
+                    deleteLeadSetting(url, token, function() {
+                        $('.row'+id).fadeOut();
                     });
                 }
             });
@@ -462,19 +455,8 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row'+id).fadeOut();
-                            }
-                        }
+                    deleteLeadSetting(url, token, function() {
+                        $('.row'+id).fadeOut();
                     });
                 }
             });
@@ -497,15 +479,10 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
             var url = "{{ route('lead_agents.update_category', ':id') }}";
             url = url.replace(':id', agentId);
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                blockUI: true,
-                data: {
+            postLeadSetting(url, {
                     '_token': token,
                     'categoryId': categoryId
-                }
-            });
+                });
             return false;
         });
         $('body').on('change', '.change-agent-status',function() {
@@ -515,15 +492,10 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
             var url = "{{ route('lead_agents.update_status', ':id') }}";
             url = url.replace(':id', agentId);
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                blockUI: true,
-                data: {
+            postLeadSetting(url, {
                     '_token': token,
                     'status': status
-                }
-            });
+                });
         });
 
         /* delete agent */
@@ -553,19 +525,8 @@ $addLeadCategoryPermission = user()->permission('add_lead_category');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.row' + id).fadeOut(100);
-                            }
-                        }
+                    deleteLeadSetting(url, token, function() {
+                        $('.row' + id).fadeOut(100);
                     });
                 }
             });

@@ -171,14 +171,15 @@
                         var url = "{{ route('custom-fields.order') }}";
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
+                        window.apiHttp.postUrlEncoded(url, {
                                 '_token': token,
                                 'order': order
-                            }
-                        });
+                            })
+                            .catch((error) => {
+                                if (typeof $.handleApiFormError === 'function') {
+                                    $.handleApiFormError(error);
+                                }
+                            });
                     }
                 });
             });
@@ -222,15 +223,10 @@
 
                         const token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
+                        $.easyBlockUI('body');
+
+                        window.apiHttp.delete(url, token)
+                            .then((response) => {
                                 if (response.status == "success") {
                                     $('.row' + id).fadeOut();
                                     const updatedCount = response.updatedCount;
@@ -240,8 +236,15 @@
                                         $('#removeModuleColumns' + module).fadeOut().remove();
                                     }
                                 }
-                            }
-                        });
+                            })
+                            .catch((error) => {
+                                if (typeof $.handleApiFormError === 'function') {
+                                    $.handleApiFormError(error);
+                                }
+                            })
+                            .finally(() => {
+                                $.easyUnblockUI('body');
+                            });
                     }
                 });
             });
@@ -300,15 +303,13 @@
             url = url.replace(':id', id);
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '.row' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('.row' + id);
+
+            window.apiHttp.postUrlEncoded(url, {
                     '_token': token,
                     'label': value
-                },
-                success: function(response) {
+                })
+                .then((response) => {
                     if (response.status == 'success') {
                         span.html(value + ' <i class="fa fa-pencil ml-2 text-lightest"></i>');
                     } else {
@@ -316,12 +317,15 @@
                     }
                     input.hide();
                     span.show();
-                },
-                error: function(response) {
+                })
+                .catch(() => {
+                    input.val(originalValue);
                     input.hide();
                     span.show();
-                }
-            })
+                })
+                .finally(() => {
+                    $.easyUnblockUI('.row' + id);
+                });
         });
 
         // Handle Enter key

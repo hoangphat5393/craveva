@@ -8,7 +8,7 @@
             or: choco install pandoc
 
 .EXAMPLE
-  .\scripts\md_to_docx.ps1 "ERP Product Usage & Policy Clarification.md"
+  .\scripts\md_to_docx.ps1 ".\docs\archive\ERP_PRODUCT_USAGE_POLICY_QUESTIONNAIRE.md"
   .\scripts\md_to_docx.ps1 -InputPath ".\docs\spec.md" -OutputPath ".\docs\spec.docx"
 #>
 

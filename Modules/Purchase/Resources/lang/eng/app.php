@@ -119,6 +119,8 @@ return [
         'grn' => 'GRN',
         'goodsReceivedNote' => 'Goods Received Note',
     ],
+    'createDeliveryOrder' => 'Create Delivery Order',
+    'shipDeliveryOrder' => 'Ship Delivery Order',
     'purchaseOrder' => [
         'vendorPayments' => 'Vendor Payments',
         'addVendorPayments' => 'Add Vendor Payment',
@@ -128,11 +130,12 @@ return [
     ],
     'erpShipmentRef' => 'ERP Shipment Reference',
     'wmsShipmentRef' => 'WMS Shipment Reference',
-    'ship' => 'Deliver',
+    'ship' => 'Ship',
     'shipmentNumber' => 'Sales Delivery Order Number',
     'remainingQty' => 'Remaining Qty',
     'shipQty' => 'Ship Qty',
     'batchNumber' => 'Batch Number',
     'deliveryOrderNumber' => 'Goods Received Note Number',
+    'grnReceivedImmutable' => 'A received goods receipt cannot be edited, deleted, or moved back to an earlier status.',
     'warehouse' => 'Warehouse',
 ];

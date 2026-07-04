@@ -73,26 +73,28 @@
 
         const token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('attendances.store_clock_in') }}",
-            type: "POST",
-            buttonSelector: "#save-clock-in",
-            disableButton: true,
-            blockUI: true,
-            container: '#clockInForm',
-            data: {
+        $('#save-clock-in').prop('disabled', true);
+        $.easyBlockUI('#clockInForm');
+
+        window.apiHttp.postUrlEncoded("{{ route('attendances.store_clock_in') }}", {
                 working_from: workingFrom,
                 location: location,
                 work_from_type: work_from_type,
                 currentLatitude: currentLatitude,
                 currentLongitude: currentLongitude,
                 _token: token
-            },
-            success: function(response) {
+            })
+            .then(function(response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-clock-in').prop('disabled', false);
+                $.easyUnblockUI('#clockInForm');
+            });
     })
 </script>

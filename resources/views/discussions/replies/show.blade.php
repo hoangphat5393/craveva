@@ -192,19 +192,16 @@
 
                 const token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status === "success") {
                             discussionFile.closest('.card').remove();
                         }
+                    })
+                    .catch(function (error) {
+                        $.handleApiFormError(error);
                     }
-                });
+                );
             }
         });
     });
@@ -261,17 +258,20 @@
 
         });
         taskDropzone.on('completemultiple', function () {
-            $.easyAjax({
-                url: '{{ route('discussion-reply.get_replies', $discussionId) }}',
-                type: 'GET',
-                success: function (response) {
+            window.apiHttp.get('{{ route('discussion-reply.get_replies', $discussionId) }}')
+                .then(function (response) {
                     if(response.status == 'success'){
                         $('#right-modal-content').html(response.html);
                         $(MODAL_XL).modal('hide');
-                        $.easyUnblockUI();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI();
                 }
-            });
+            );
         });
 
 
@@ -287,13 +287,10 @@
 
             var data = discussionData+='&mention_user_id=' + mention_user_id;
 
-            $.easyAjax({
-                url: "{{ route('discussion-reply.store') }}",
-                container: '#replyDiscussion',
-                type: "POST",
-                blockUI: true,
-                data: data,
-                success: function(response) {
+            $.easyBlockUI('#replyDiscussion');
+
+            window.apiHttp.postUrlEncoded("{{ route('discussion-reply.store') }}", data)
+                .then(function(response) {
                     if (response.status == "success") {
                         if (taskDropzone.getQueuedFiles().length > 0) {
                             discussion_reply_id = response.discussion_reply_id;
@@ -303,7 +300,13 @@
                             $(MODAL_XL).modal('hide');
                         }
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#replyDiscussion');
                 }
-            })
+            );
         });
 </script>

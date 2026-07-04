@@ -750,22 +750,20 @@
                 // Block model UI until payment happens
                 $.easyBlockUI();
 
-                $.easyAjax({
-                    url: "{{ route('payfast_public') }}",
-                    type: "POST",
-                    blockUI: true,
-                    data: {
+                window.apiHttp.postUrlEncoded("{{ route('payfast_public') }}", {
                         id: '{{ $invoice->id }}',
                         type: 'invoice',
                         _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == 'success') {
                             $('body').append(response.form);
                             $('#payfast-pay-form').submit();
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
             })
         @endif
 
@@ -774,16 +772,14 @@
                 // Block model UI until payment happens
                 $.easyBlockUI();
 
-                $.easyAjax({
-                    url: "{{ route('square_public') }}",
-                    type: "POST",
-                    blockUI: true,
-                    data: {
+                window.apiHttp.postUrlEncoded("{{ route('square_public') }}", {
                         id: '{{ $invoice->id }}',
                         type: 'invoice',
                         _token: '{{ csrf_token() }}'
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
             });
         @endif
 
@@ -842,15 +838,14 @@
                     url = "{{ route('front.invoice_payment_failed', ':id') }}";
                     url = url.replace(':id', invoiceId);
 
-                    $.easyAjax({
-                        url: url,
-                        type: "POST",
-                        data: {
+                    window.apiHttp.postUrlEncoded(url, {
                             errorMessage: response.error,
                             gateway: 'Razorpay',
                             "_token": "{{ csrf_token() }}"
-                        },
-                    })
+                        })
+                        .catch(function(error) {
+                            $.handleApiFormError(error);
+                        });
                 });
 
                 rzp1.open();
@@ -863,19 +858,18 @@
                 // Block model UI until payment happens
                 $.easyBlockUI();
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: "{{ route('pay_with_razorpay', [$invoice->company->hash]) }}",
-                    data: {
+                window.apiHttp.postUrlEncoded("{{ route('pay_with_razorpay', [$invoice->company->hash]) }}", {
                         paymentId: id,
                         invoiceId: invoiceId,
                         _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         // Unblock Modal UI when got error response
                         $.easyUnblockUI('#stripeAddress');
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
             }
         @endif
     </script>

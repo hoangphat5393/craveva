@@ -38,20 +38,22 @@
             $('#submit-login').click(function () {
 
                 const url = "{{ route('password.email') }}";
-                $.easyAjax({
-                    url: url,
-                    container: '#forgot-password-form',
-                    disableButton: true,
-                    blockUI: true,
-                    buttonSelector: "#submit-login",
-                    type: "POST",
-                    data: $('#forgot-password-form').serialize(),
-                    success: function (response) {
+                $('#submit-login').prop('disabled', true);
+                $.easyBlockUI('#forgot-password-form');
+
+                window.apiHttp.postUrlEncoded(url, $('#forgot-password-form').serialize())
+                    .then(function (response) {
                         $('#success-msg').removeClass('d-none');
                         $('#success-msg').html(response.message);
                         $('.group').remove();
-                    }
-                })
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $('#submit-login').prop('disabled', false);
+                        $.easyUnblockUI('#forgot-password-form');
+                    });
             });
 
         </script>

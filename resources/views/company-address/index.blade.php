@@ -146,21 +146,23 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    $.easyBlockUI('body');
+
+                    window.apiHttp.delete(url, token)
+                        .then((response) => {
                             if (response.status == "success") {
                                 $('#address-' + id).fadeOut();
                                 init();
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        })
+                        .finally(() => {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });
@@ -169,21 +171,25 @@
             var addressId = $(this).data('address-id');
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: "{{ route('business-address.set_default') }}",
-                type: "POST",
-                data: {
+            $.easyBlockUI("#nav-tabContent");
+
+            window.apiHttp.postUrlEncoded("{{ route('business-address.set_default') }}", {
                     addressId: addressId,
                     _token: token
-                },
-                blockUI: true,
-                container: "#nav-tabContent",
-                success: function (response) {
+                })
+                .then((response) => {
                     if (response.status == "success") {
                         window.location.reload();
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI("#nav-tabContent");
+                });
         });
 
         // add new leave type

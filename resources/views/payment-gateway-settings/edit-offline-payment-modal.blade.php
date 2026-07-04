@@ -53,19 +53,24 @@
     // update offline methods
     $('#save-method').click(function () {
         var url =  "{{route('offline-payment-setting.update', $method->id)}}";
-        $.easyAjax({
-            url: url,
-            container: '#updateMethods',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-method",
-            blockUI: true,
-            file:true,
-            data: $('#updateMethods').serialize(),
-            success: function (response) {
+        const button = $('#save-method');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#updateMethods');
+
+        window.apiHttp.postUrlEncoded(url, $('#updateMethods').serialize())
+            .then(function (response) {
                 window.location.reload();
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#updateMethods');
             }
-        })
+        );
     });
 </script>
 

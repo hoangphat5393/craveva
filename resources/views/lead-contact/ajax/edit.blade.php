@@ -179,19 +179,23 @@ $addProductPermission = user()->permission('add_product');
 
         $('#save-lead-form').click(function() {
             const url = "{{ route('lead-contact.update', [$leadContact->id]) }}";
-            $.easyAjax({
-                url: url,
-                container: '#save-lead-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-lead-form",
-                data: $('#save-lead-data-form').serialize(),
-                success: function(response) {
+            const $btn = $('#save-lead-form');
+            const previousHtml = $btn.html();
+
+            $.easyBlockUI('#save-lead-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postForm(url, document.getElementById('save-lead-data-form'))
+                .then(function(response) {
                     window.location.href = response.redirectUrl;
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-lead-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         $('body').on('click', '.add-lead-source', function() {
@@ -240,18 +244,21 @@ $addProductPermission = user()->permission('add_product');
         $('#add-project').click(function() {
             $(MODAL_XL).modal('show');
             const url = "{{ route('projects.create') }}";
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status == "success") {
                         $(MODAL_XL + ' .modal-body').html(response.html);
                         $(MODAL_XL + ' .modal-title').html(response.title);
                         init(MODAL_XL);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI(MODAL_XL);
+                });
         });
 
         $('#add-employee').click(function() {
@@ -259,18 +266,21 @@ $addProductPermission = user()->permission('add_product');
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status == "success") {
                         $(MODAL_XL + ' .modal-body').html(response.html);
                         $(MODAL_XL + ' .modal-title').html(response.title);
                         init(MODAL_XL);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI(MODAL_XL);
+                });
         });
 
         var drCustomFieldEvent = $('.custom-field-file .dropify').dropify({

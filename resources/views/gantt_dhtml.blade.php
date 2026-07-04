@@ -511,16 +511,14 @@ var ganttData = @json($ganttData);
         var url = "{{ route('gantt_link.store') }}";
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            blockUI: true,
-            container: '#gantt_here',
-            data: { source: link.source, target: link.target, type: link.type, project: '{{ $project->id }}', '_token': token},
-            success: function (response) {
-
-            }
-        });
+        $.easyBlockUI('#gantt_here');
+        window.apiHttp.postUrlEncoded(url, { source: link.source, target: link.target, type: link.type, project: '{{ $project->id }}', '_token': token})
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#gantt_here');
+            });
         // your code here
         return true;
     });
@@ -530,16 +528,14 @@ var ganttData = @json($ganttData);
         url = url.replace(':id', id);
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            blockUI: true,
-            container: '#gantt_here',
-            data: { id: id, '_token': token, '_method': 'DELETE'},
-            success: function (response) {
-
-            }
-        });
+        $.easyBlockUI('#gantt_here');
+        window.apiHttp.postUrlEncoded(url, { id: id, '_token': token, '_method': 'DELETE'})
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#gantt_here');
+            });
         // your code here
         return true;
         //any custom logic here
@@ -563,16 +559,14 @@ var ganttData = @json($ganttData);
         const eday = String(end_date.getDate()).padStart(2, '0');
         const eformattedDate = `${eyear}-${emonth}-${eday}`;
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            blockUI: true,
-            container: '#gantt_here',
-            data: { id: id, start_date: sformattedDate, end_date: eformattedDate,'_token': token},
-            success: function (response) {
-
-            }
-        });
+        $.easyBlockUI('#gantt_here');
+        window.apiHttp.postUrlEncoded(url, { id: id, start_date: sformattedDate, end_date: eformattedDate,'_token': token})
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#gantt_here');
+            });
 
         //any custom logic here
     });
@@ -599,18 +593,22 @@ var ganttData = @json($ganttData);
         var url = "{{ route('front.task_detail', ':id') }}";
         url = url.replace(':id', task.hash);
 
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            container: RIGHT_MODAL,
-            historyPush: true,
-            success: function (response) {
+        historyPush(url);
+        $.easyBlockUI(RIGHT_MODAL);
+
+        window.apiHttp.get(url)
+            .then(function (response) {
                 if (response.status == "success") {
                     $(RIGHT_MODAL_CONTENT).html(response.html);
                     $(RIGHT_MODAL_TITLE).html(response.title);
                 }
-            }
-        });
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                $.easyUnblockUI(RIGHT_MODAL);
+            });
         //any custom logic here
         return true;
     });

@@ -94,14 +94,11 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
+                window.apiHttp.postUrlEncoded(url, {
                         '_token': token,
                         'roleId': id
-                    },
-                    success: function(response) {
+                    })
+                    .then((response) => {
                         if (response.status == "success") {
                             $('#cat-' + id).fadeOut();
                             var options = [];
@@ -123,8 +120,12 @@
                             $('#sub_category_id').selectpicker('refresh');
                             window.location.reload();
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    });
             }
         });
 
@@ -132,17 +133,22 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('role-permissions.store_role') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createProjectCategory');
+
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('#createProjectCategory');
+            });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -159,17 +165,14 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#cat-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#cat-' + id);
+
+            window.apiHttp.postUrlEncoded(url, {
                     'role_name': value,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+                })
+                .then((response) => {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -187,8 +190,15 @@
                         $('#sub_category_id').html('<option value="">--</option>');
                         $('#sub_category_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#cat-' + id);
+                });
         }
     });
 

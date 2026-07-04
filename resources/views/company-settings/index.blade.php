@@ -58,16 +58,35 @@
     <script>
         $('#save-form').click(function() {
             var url = "{{ route('company-settings.update', company()->id) }}";
+            var button = $('#save-form');
+            var buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-form",
-                data: $('#editSettings').serialize(),
-            })
+            button.prop('disabled', true);
+            button.html('<i class="fa fa-spinner fa-spin"></i> {{ __('app.save') }}');
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+                .then((response) => {
+                    if (response.status === 'success') {
+                        if (typeof showTableMessage === 'function') {
+                            showTableMessage(response.message, 'success');
+                        }
+
+                        if (response.redirectUrl) {
+                            window.location.href = response.redirectUrl;
+                        }
+                    }
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#editSettings');
+                });
         });
     </script>
 @endpush

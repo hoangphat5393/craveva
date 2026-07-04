@@ -114,20 +114,25 @@
 
                 var url = "{{ route('income-expense-report.index') }}";
 
-                $.easyAjax({
-                    url: url,
-                    container: '#task-chart-card',
-                    blockUI: true,
-                    data: {
+                $.easyBlockUI('#task-chart-card');
+
+                window.apiHttp.get(url, {
+                        params: {
                         startDate: startDate,
                         endDate: endDate
-                    },
-                    success: function(response) {
+                        }
+                    })
+                    .then(function(response) {
                         $('#task-chart-card').html(response.html);
                         $('#totalEarning').html(response.totalEarning);
                         $('#totalExpense').html(response.totalExpense);
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#task-chart-card');
+                    });
             }
 
             @if (request('start') && request('end'))

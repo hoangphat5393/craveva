@@ -208,17 +208,18 @@
 
 <script>
     $('#save-dashboard-widget').click(function () {
-        $.easyAjax({
-            url: "{{ route('dashboard.widget', 'admin-client-dashboard') }}",
-            container: '#dashboardWidgetForm',
-            blockUI: true,
-            type: "POST",
-            redirect: true,
-            data: $('#dashboardWidgetForm').serialize(),
-            success: function () {
+        $.easyBlockUI('#dashboardWidgetForm');
+
+        window.apiHttp.postUrlEncoded("{{ route('dashboard.widget', 'admin-client-dashboard') }}", $('#dashboardWidgetForm').serialize())
+            .then(function () {
                 window.location.reload();
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#dashboardWidgetForm');
+            });
     });
 
 
@@ -306,17 +307,17 @@
         var url = "{{ route('dashboard.deal-stage-data', ':id') }}?startDate=" + startDate + "&endDate=" + endDate;
         url = url.replace(':id', pipelineId);
 
-        $.easyAjax({
+        $.easyBlockUI('#dashboardWidgetForm');
 
-            url: url,
-            container: '#dashboardWidgetForm',
-            blockUI: true,
-            type: "GET",
-            redirect: true,
-            data: $('#dashboardWidgetForm').serialize(),
-            success: function (response) {
+        window.apiHttp.get(url)
+            .then(function (response) {
                 $('#leadStageData').html(response.html);
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#dashboardWidgetForm');
+            });
     });
 </script>

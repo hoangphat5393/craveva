@@ -1,0 +1,533 @@
+{
+    "table": "sms_template_ids",
+    "columns": [
+        "id",
+        "sms_setting_slug",
+        "msg91_flow_id",
+        "whatsapp_template_sid",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "sms_setting_slug": "attendance-reminder",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 2,
+            "sms_setting_slug": "follow-up-reminder",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 3,
+            "sms_setting_slug": "auto-task-reminder",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 4,
+            "sms_setting_slug": "contract-signed",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 5,
+            "sms_setting_slug": "estimate-declined",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 6,
+            "sms_setting_slug": "event-invite",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 7,
+            "sms_setting_slug": "event-reminder",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 8,
+            "sms_setting_slug": "recurring-expense-status-updated",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 9,
+            "sms_setting_slug": "new-file-uploaded-to-project",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 10,
+            "sms_setting_slug": "payment-received",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 11,
+            "sms_setting_slug": "payment-reminder",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 12,
+            "sms_setting_slug": "project-reminder",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 13,
+            "sms_setting_slug": "proposal-approved",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 14,
+            "sms_setting_slug": "proposal-rejected",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 15,
+            "sms_setting_slug": "recurring-invoice-status-updated",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 16,
+            "sms_setting_slug": "invoice-reminder",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 17,
+            "sms_setting_slug": "new-expense-added-by-admin",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 18,
+            "sms_setting_slug": "new-expense-added-by-member",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 19,
+            "sms_setting_slug": "invoice-created",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 20,
+            "sms_setting_slug": "invoice-updated",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 21,
+            "sms_setting_slug": "lead-notification",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 22,
+            "sms_setting_slug": "new-leave-application",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 23,
+            "sms_setting_slug": "new-leave-request",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 24,
+            "sms_setting_slug": "leave-approved",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 25,
+            "sms_setting_slug": "leave-rejected",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 26,
+            "sms_setting_slug": "leave-updated",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 27,
+            "sms_setting_slug": "multiple-leave-application",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 28,
+            "sms_setting_slug": "new-multiple-leave-application",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 29,
+            "sms_setting_slug": "new-task",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 30,
+            "sms_setting_slug": "new-order",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 31,
+            "sms_setting_slug": "order-updated",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 32,
+            "sms_setting_slug": "new-payment",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 33,
+            "sms_setting_slug": "new-product-purchase",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 34,
+            "sms_setting_slug": "new-project",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 35,
+            "sms_setting_slug": "new-proposal",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 36,
+            "sms_setting_slug": "new-recurring-invoice",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 37,
+            "sms_setting_slug": "new-ticket-reply",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 38,
+            "sms_setting_slug": "new-ticket-request",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 39,
+            "sms_setting_slug": "task-updated",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 40,
+            "sms_setting_slug": "task-status-changed",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 41,
+            "sms_setting_slug": "task-mention-notification",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 42,
+            "sms_setting_slug": "task-completed-client",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 43,
+            "sms_setting_slug": "task-completed",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 44,
+            "sms_setting_slug": "new-client-task",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 45,
+            "sms_setting_slug": "task-update-client",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 46,
+            "sms_setting_slug": "new-notice-published",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 47,
+            "sms_setting_slug": "new-support-ticket-request",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 48,
+            "sms_setting_slug": "agent-ticket",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 49,
+            "sms_setting_slug": "employee-assign-to-project",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 50,
+            "sms_setting_slug": "user-join-via-invitation",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 51,
+            "sms_setting_slug": "notice-updated",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 52,
+            "sms_setting_slug": "removal-request-admin-notification",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 53,
+            "sms_setting_slug": "removal-request-approved",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 54,
+            "sms_setting_slug": "removal-request-reject",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 55,
+            "sms_setting_slug": "removal-request-approved-lead",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 56,
+            "sms_setting_slug": "removal-request-reject-lead",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 57,
+            "sms_setting_slug": "sub-task-assignee-added",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 58,
+            "sms_setting_slug": "sub-task-completed",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 59,
+            "sms_setting_slug": "task-comment",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 60,
+            "sms_setting_slug": "task-note",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 61,
+            "sms_setting_slug": "task-reminder",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 62,
+            "sms_setting_slug": "user-registrationadded-by-admin",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 63,
+            "sms_setting_slug": "two-factor-code",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 64,
+            "sms_setting_slug": "removal-request-reject-user",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        },
+        {
+            "id": 65,
+            "sms_setting_slug": "removal-request-approved-user",
+            "msg91_flow_id": null,
+            "whatsapp_template_sid": null,
+            "created_at": "2026-07-01 21:00:05",
+            "updated_at": "2026-07-01 21:00:05"
+        }
+    ]
+}

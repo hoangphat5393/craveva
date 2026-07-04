@@ -198,13 +198,13 @@ class Product extends BaseModel
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->default_image) : '';
     }
 
     public function getImageAttribute()
     {
         if ($this->default_image) {
-            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH . '/' . $this->default_image);
+            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH.'/'.$this->default_image);
         }
 
         return $this->default_image;
@@ -212,7 +212,7 @@ class Product extends BaseModel
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->downloadable_file) : null;
+        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->downloadable_file) : null;
     }
 
     public function tax(): BelongsTo
@@ -271,9 +271,9 @@ class Product extends BaseModel
             if (! is_null($productItem->taxes)) {
                 foreach (json_decode($productItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }
@@ -326,11 +326,44 @@ class Product extends BaseModel
     }
 
     /**
+     * Sales documents should only pick sellable catalogue lines.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeSellableDocumentLine(Builder $query): Builder
+    {
+        return $query->whereIn('type', [
+            ProductType::Goods->value,
+            ProductType::Service->value,
+        ]);
+    }
+
+    /**
+     * Purchase documents buy stockable goods/materials, never service lines.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopePurchasableDocumentLine(Builder $query): Builder
+    {
+        return $query->where('type', '!=', ProductType::Service->value);
+    }
+
+    /**
      * @param  Builder<Product>  $query
      * @return Builder<Product>
      */
     public function scopeStockable(Builder $query): Builder
     {
         return $query->where('type', '!=', ProductType::Service->value);
+    }
+
+    public function documentDropdownLabel(): string
+    {
+        $identity = $this->sku ?: ('#'.$this->id);
+        $type = ProductType::labelFor($this->type);
+
+        return "{$this->name} ({$identity}) - {$type}";
     }
 }

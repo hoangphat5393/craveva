@@ -66,16 +66,28 @@
 <script>
     // save agent
     $('#search-app').click(function() {
+        const button = $('#search-app');
+        const buttonText = button.html();
 
-        $.easyAjax({
-            url: "{{ route('search.store') }}",
-            container: '#createAgent',
-            type: "POST",
-            blockUI: true,
-            data: $('#createAgent').serialize(),
-            disableButton: true,
-            buttonSelector: "#search-app"
-        })
+        button.prop('disabled', true);
+        $.easyBlockUI('#createAgent');
+
+        window.apiHttp.postUrlEncoded("{{ route('search.store') }}", $('#createAgent').serialize())
+            .then((response) => {
+                if (response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                }
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#createAgent');
+            });
     });
 
     $('#search_keyword').keypress(function(e) {

@@ -27,19 +27,27 @@
     $('#submit-login').click(function() {
 
         var url = "{{ route('two-fa-settings.confirm') }}";
-        $.easyAjax({
-            url: url,
-            container: '#reset-password-form',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#submit-login",
-            type: "POST",
-            data: $('#reset-password-form').serialize(),
-            success: function(response) {
+        var button = $('#submit-login');
+        var buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#reset-password-form');
+
+        window.apiHttp.postUrlEncoded(url, $('#reset-password-form').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#reset-password-form');
+            });
     });
 </script>

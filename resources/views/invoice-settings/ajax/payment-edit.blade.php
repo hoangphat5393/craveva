@@ -45,18 +45,25 @@
     });
     $('#save-payment').click(function() {
         var url = "{{ route('invoices-payment-details.update', $payment->id) }}";
-        $.easyAjax({
-            url: url,
-            container: '#editPaymentDetails',
-            type: "POST",
-            file: true,
-            data: $('#editPaymentDetails').serialize(),
-            success: function(response) {
+        const $btn = $('#save-payment');
+        const previousHtml = $btn.html();
+
+        $.easyBlockUI('#editPaymentDetails');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postForm(url, document.getElementById('editPaymentDetails'))
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editPaymentDetails');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 
 </script>

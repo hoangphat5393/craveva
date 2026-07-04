@@ -24,8 +24,12 @@ it('embeds unit cost map and native UOM selects on BOM create form', function ()
     $content = $response->getContent();
     expect($content)->toContain('bomUnitCostByProductAndUnit');
     expect($content)->toContain('setRowUnitId');
-    expect($content)->toContain('manufacturedProduct');
+    expect($content)->toContain(__('production::app.manufacturedProduct'));
+    expect($content)->toContain(__('production::app.bomAddComponent'));
+    expect($content)->toContain('add-bom-component');
+    expect($content)->toContain('appendBomLine');
+    expect($content)->toContain('msgComponentMustDifferFromOutput');
     expect($content)->toContain('bom-line-unit-select');
     expect($content)->not->toMatch('/bom-line-unit-select[^>]*select-picker/');
-    expect($content)->toMatch('/class="form-control height-35 f-14 w-100 bom-line-unit-select"/');
+    expect($content)->toMatch('/class="form-control height-35 f-14 bom-line-unit-select"/');
 });

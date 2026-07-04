@@ -112,33 +112,40 @@
     });
 
     $('#save-custom-field').click(function() {
-        $.easyAjax({
-            url: "{{ route('custom-fields.store') }}",
-            container: '#createForm',
-            type: "POST",
-            data: $('#createForm').serialize(),
-            file: true,
-            blockUI: true,
-            buttonSelector: "#save-custom-field",
-            success: function(response) {
+        const button = $('#save-custom-field');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createForm');
+
+        window.apiHttp.postForm("{{ route('custom-fields.store') }}", document.getElementById('createForm'))
+            .then((response) => {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#createForm');
+            });
         return false;
     })
 
     $('#save-add-another').click(function() {
-        $.easyAjax({
-            url: "{{ route('custom-fields.store') }}",
-            container: '#createForm',
-            type: "POST",
-            data: $('#createForm').serialize(),
-            file: true,
-            blockUI: true,
-            buttonSelector: "#save-add-another",
-            success: function(response) {
+        const button = $('#save-add-another');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createForm');
+
+        window.apiHttp.postForm("{{ route('custom-fields.store') }}", document.getElementById('createForm'))
+            .then((response) => {
                 if (response.status === 'success') {
                     // Clear fields but keep Module selected
                     $('#label').val('');
@@ -148,8 +155,17 @@
                     // Keep the first one, remove others
                     // (Implementation detail: check structure)
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#createForm');
+            });
         return false;
     })
 </script>

@@ -192,12 +192,21 @@
     $('#save-form').click(function() {
         var data = ($('#editSettings').serialize()).replace("_method=PUT", "_method=POST");
 
-        $.easyAjax({
-            url: "{{ route('task-settings.store') }}",
-            container: '#editSettings',
-            blockUI: true,
-            type: "POST",
-            data: data
-        })
+        $.easyBlockUI('#editSettings');
+
+        window.apiHttp.postUrlEncoded("{{ route('task-settings.store') }}", data)
+            .then((response) => {
+                if (response.status === 'success' && typeof showTableMessage === 'function') {
+                    showTableMessage(response.message, 'success');
+                }
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('#editSettings');
+            });
     });
 </script>

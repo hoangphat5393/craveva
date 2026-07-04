@@ -277,6 +277,7 @@ return [
     'materialAvailableStock' => '可用库存',
     'materialAvailableInRmWarehouse' => '可用',
     'materialAvailableInRawMaterialWarehouse' => '可用',
+    'materialReservedInRawMaterialWarehouse' => '已预留',
     'materialShortage' => '物料不足',
     'materialShortageHelp' => '当可用库存少于总需求时，原材料仓库尚需补充的数量。',
     'materialShortageToProcure' => '待采购短缺量',

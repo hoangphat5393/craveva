@@ -13,13 +13,16 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use IvanoMatteo\LaravelDeviceTracking\Traits\UseDevices;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -34,8 +37,8 @@ use Laravel\Fortify\TwoFactorAuthenticationProvider;
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property string|null $remember_token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin \Eloquent
  *
@@ -44,10 +47,10 @@ use Laravel\Fortify\TwoFactorAuthenticationProvider;
  * @property string|null $salutation
  * @property string|null $two_fa_verify_via
  * @property string|null $two_factor_code when authenticator is email
- * @property \Illuminate\Support\Carbon|null $two_factor_expires_at
- * @property-read \App\Models\User|null $user
- * @property-read \App\Models\User|null $userWithoutCompany
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property Carbon|null $two_factor_expires_at
+ * @property-read User|null $user
+ * @property-read User|null $userWithoutCompany
+ * @property-read Collection|User[] $users
  * @property-read int|null $users_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|UserAuth newModelQuery()
@@ -64,6 +67,17 @@ class UserAuth extends BaseModel implements AuthenticatableContract, Authorizabl
     protected $hidden = ['password'];
 
     public $dates = ['two_factor_expires_at', 'email_code_expires_at'];
+
+    public function setPasswordAttribute(mixed $value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['password'] = $value;
+
+            return;
+        }
+
+        $this->attributes['password'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
+    }
 
     public function users(): HasMany
     {

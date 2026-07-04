@@ -165,18 +165,25 @@
 
     $('body').on('click', '#save-app-settings-form', function () {
         const url = "{{ route('app-settings.update', [companyOrGlobalSetting()->id]) }}?page=app-setting";
+        const $btn = $('#save-app-settings-form');
+        const previousHtml = $btn.html();
 
-        $.easyAjax({
-            url: url,
-            container: '#editSettings',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-app-settings-form",
-            data: $('#editSettings').serialize(),
-            success: function () {
-                window.location.reload();
-            }
-        })
+        $.easyBlockUI('#editSettings');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .then(function(response) {
+                if (response.status === 'success') {
+                    window.location.reload();
+                }
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 
     $('body').on('click', '#delete-sessions', function () {
@@ -204,17 +211,21 @@
 
                 const token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '#editSettings',
-                    data: {
-                        _token: token
-                    },
-                    success: function () {
+                $.easyBlockUI('#editSettings');
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: token
+                })
+                    .then(function(response) {
+                        if (response.status === 'success') {
                         window.location.reload();
-                    }
-                });
+                        }
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#editSettings');
+                    });
             }
         });
     });

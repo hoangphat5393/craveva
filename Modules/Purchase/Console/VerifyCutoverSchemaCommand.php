@@ -14,7 +14,7 @@ class VerifyCutoverSchemaCommand extends Command
 {
     protected $signature = 'purchase:verify-cutover-schema';
 
-    protected $description = 'Verify Sales DO + GRN cutover tables (and core warehouse tables) exist';
+    protected $description = 'Verify canonical Sales DO, GRN, and core warehouse tables exist';
 
     public function handle(): int
     {
@@ -28,36 +28,35 @@ class VerifyCutoverSchemaCommand extends Command
             ['warehouses', 'stock_movements', 'warehouse_product_stock'],
         )));
 
-        $hints = [
-            'sales_dos' => '2026_03_30_190000_create_sales_do_tables',
-            'sales_do_items' => '2026_03_30_190000_create_sales_do_tables',
-            'grns' => '2026_03_30_191000_create_grn_tables',
-            'grn_items' => '2026_03_30_191000_create_grn_tables',
-            'warehouses' => 'Modules/Warehouse Database 2026_01_19_083640_create_warehouses_table',
-            'stock_movements' => '2026_01_16_000002_create_stock_movements_table_fb',
-            'warehouse_product_stock' => '2026_01_19_083641_create_warehouse_product_stock_table',
+        $schemaSources = [
+            'sales_dos' => 'database/migrations/2000_01_01_000403_create_sales_dos_baseline.php',
+            'sales_do_items' => 'database/migrations/2000_01_01_000402_create_sales_do_items_baseline.php',
+            'grns' => 'database/migrations/2000_01_01_000149_create_grns_baseline.php',
+            'grn_items' => 'database/migrations/2000_01_01_000148_create_grn_items_baseline.php',
+            'warehouses' => 'database/migrations/2000_01_01_000491_create_warehouses_baseline.php',
+            'stock_movements' => 'database/migrations/2000_01_01_000426_create_stock_movements_baseline.php',
+            'warehouse_product_stock' => 'database/migrations/2000_01_01_000489_create_warehouse_product_stock_baseline.php',
         ];
 
-        $missing = collect($required)->filter(fn(string $table) => ! Schema::hasTable($table))->values()->all();
+        $missing = collect($required)->filter(fn (string $table) => ! Schema::hasTable($table))->values()->all();
 
         if ($missing === []) {
             $this->info('OK: all required cutover / warehouse tables exist.');
-            $this->line('Checked: ' . implode(', ', $required));
+            $this->line('Checked: '.implode(', ', $required));
 
             return self::SUCCESS;
         }
 
-        $this->error('Missing table(s): ' . implode(', ', $missing));
+        $this->error('Missing table(s): '.implode(', ', $missing));
         foreach ($missing as $table) {
-            $hint = $hints[$table] ?? '(see migrate:status)';
-            $this->line("  - {$table} ← migration hint: {$hint}");
+            $source = $schemaSources[$table] ?? '(see migrate:status)';
+            $this->line("  - {$table} <- schema source: {$source}");
         }
         $this->newLine();
-        $this->warn('Fix: php artisan migrate (use sudo -u www-data on server).');
-        $this->line('If migrate says "Nothing to migrate" but tables are still missing, the `migrations` row may be out of sync:');
-        $this->line('  DELETE FROM migrations WHERE migration = \'2026_03_30_190000_create_sales_do_tables\';');
-        $this->line('  DELETE FROM migrations WHERE migration = \'2026_03_30_191000_create_grn_tables\';');
-        $this->line('then run migrate again (dev DB only — backup production first).');
+        $this->warn('Inspect with `php artisan migrate:status` before changing the database.');
+        $this->line('Fresh database: rebuild from the current baseline migrations and seed data.');
+        $this->line('Existing database: restore a validated backup or add a reviewed forward repair migration.');
+        $this->line('Do not delete rows from the `migrations` table to force a baseline migration to rerun.');
 
         return self::FAILURE;
     }

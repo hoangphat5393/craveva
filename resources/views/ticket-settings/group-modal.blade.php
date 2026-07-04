@@ -91,36 +91,41 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {'_token': token, '_method': 'DELETE'},
-                    success: function (response) {
+                $.easyBlockUI('#createTicketGroup');
+
+                window.apiHttp.delete(url, token)
+                    .then(function (response) {
                         if (response.status == "success") {
                             window.location.reload();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#createTicketGroup');
+                    });
             }
         });
     });
 
     $('#save-group').click(function () {
-        $.easyAjax({
-            url: "{{route('ticket-groups.store')}}",
-            container: '#createTicketGroup',
-            type: "POST",
-            blockUI: true,
-            data: $('#createTicketGroup').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#createTicketGroup');
+
+        window.apiHttp.postUrlEncoded("{{route('ticket-groups.store')}}", $('#createTicketGroup').serialize())
+            .then(function (response) {
                 if(response.status == 'success'){
                     $('#group_id').html(response.data);
                     $('#group_id').selectpicker('refresh');
                     $("[data-dismiss=modal]").trigger({ type: "click" });
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#createTicketGroup');
+            });
     });
 </script>

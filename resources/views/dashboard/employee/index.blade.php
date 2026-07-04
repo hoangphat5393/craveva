@@ -656,33 +656,36 @@
 
                 url = url.replace(':id', id);
 
-                $.easyAjax({
-                    url: url,
-                    blockUI: true,
-                    container: RIGHT_MODAL,
-                    historyPush: true,
-                    success: function(response) {
+                historyPush(url);
+                $.easyBlockUI(RIGHT_MODAL);
+
+                window.apiHttp.get(url)
+                    .then(function(response) {
                         if (response.status == "success") {
                             $(RIGHT_MODAL_CONTENT).html(response.html);
                             $(RIGHT_MODAL_TITLE).html(response.title);
                         }
-                    },
-                    error: function(request, status, error) {
-                        if (request.status == 403) {
+                    })
+                    .catch(function(error) {
+                        if (error.status == 403) {
                             $(RIGHT_MODAL_CONTENT).html(
                                 '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
                             );
-                        } else if (request.status == 404) {
+                        } else if (error.status == 404) {
                             $(RIGHT_MODAL_CONTENT).html(
                                 '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
                             );
-                        } else if (request.status == 500) {
+                        } else if (error.status == 500) {
                             $(RIGHT_MODAL_CONTENT).html(
                                 '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
                             );
+                        } else {
+                            $.handleApiFormError(error);
                         }
-                    }
-                });
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI(RIGHT_MODAL);
+                    });
 
             };
 
@@ -724,17 +727,18 @@
         }, 1000);
 
         $('#save-dashboard-widget').click(function() {
-            $.easyAjax({
-                url: "{{ route('dashboard.widget', 'private-dashboard') }}",
-                container: '#privateDashboardWidgetForm',
-                blockUI: true,
-                type: "POST",
-                redirect: true,
-                data: $('#privateDashboardWidgetForm').serialize(),
-                success: function() {
+            $.easyBlockUI('#privateDashboardWidgetForm');
+
+            window.apiHttp.postUrlEncoded("{{ route('dashboard.widget', 'private-dashboard') }}", $('#privateDashboardWidgetForm').serialize())
+                .then(function() {
                     window.location.reload();
-                }
-            })
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#privateDashboardWidgetForm');
+                });
         });
 
         $('#clock-in').click(function() {
@@ -780,10 +784,8 @@
                 var clockOutWorkFromType = document.getElementById("clock_out_work_from_type").value;
                 var clockOutWorkFrom = document.getElementById("clock_out_working_from").value;
 
-                $.easyAjax({
-                    url: "{{ route('attendances.update_clock_in') }}",
-                    type: "GET",
-                    data: {
+                window.apiHttp.get("{{ route('attendances.update_clock_in') }}", {
+                        params: {
                         currentLatitude: currentLatitude,
                         currentLongitude: currentLongitude,
                         clockOutLocation: clockOutLocation,
@@ -791,13 +793,16 @@
                         clockOutWorkFrom: clockOutWorkFrom,
                         _token: token,
                         id: '{{ $currentClockIn->id }}'
-                    },
-                    success: function(response) {
+                        }
+                    })
+                    .then(function(response) {
                         if (response.status == 'success') {
                             window.location.reload();
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
             }
         @endif
 
@@ -810,20 +815,21 @@
         $('#weekly-timelogs').on('click', '.week-timelog-day', function() {
             var date = $(this).data('date');
 
-            $.easyAjax({
-                url: "{{ route('dashboard.week_timelog') }}",
-                container: '#weekly-timelogs',
-                blockUI: true,
-                type: "POST",
-                redirect: true,
-                data: {
+            $.easyBlockUI('#weekly-timelogs');
+
+            window.apiHttp.postUrlEncoded("{{ route('dashboard.week_timelog') }}", {
                     'date': date,
                     '_token': "{{ csrf_token() }}"
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     $('#weekly-timelogs').html(response.html)
-                }
-            })
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#weekly-timelogs');
+                });
         });
 
 

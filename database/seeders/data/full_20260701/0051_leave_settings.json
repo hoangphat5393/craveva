@@ -1,0 +1,19 @@
+{
+    "table": "leave_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "manager_permission",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "manager_permission": "pre-approve",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

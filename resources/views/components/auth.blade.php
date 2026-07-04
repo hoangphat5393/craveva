@@ -154,17 +154,20 @@
             event.preventDefault();
             let url = "{{ route('front.changeLang', ':locale') }}";
             url = url.replace(':locale', locale);
-            $.easyAjax({
-                url: url,
-                container: '#login-form',
-                blockUI: true,
-                type: "GET",
-                success: function(response) {
+            $.easyBlockUI('#login-form');
+
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status === 'success') {
                         window.location.reload();
                     }
-                }
-            })
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#login-form');
+                });
         });
 
         $(document).ready(function() {

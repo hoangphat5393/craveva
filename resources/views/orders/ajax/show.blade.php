@@ -16,7 +16,6 @@
     $canCreateSalesDo = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.create');
     $flowNamingMode = config('purchase.flow_naming_mode', 'compat_v2');
     $salesDoRouteName = $flowNamingMode === 'legacy' ? 'sales-shipments.create' : 'sales-do.create';
-    $salesDoLabelKey = $flowNamingMode === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.saleDeliveryOrder';
     $orderCompleteShipmentGateBlocked = $orderCompleteShipmentGateBlocked ?? false;
     $orderCompleteShipmentGateMessage = $orderCompleteShipmentGateMessage ?? '';
 @endphp
@@ -48,7 +47,7 @@
                 </button>
                 <i class="fa fa-info-circle mr-1"></i> {{ $orderCompleteShipmentGateMessage }}
                 @if ($canCreateSalesDo && in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()))
-                    <a class="alert-link openRightModal" href="{{ route($salesDoRouteName, ['order_id' => $order->id]) }}">@lang('app.add') @lang($salesDoLabelKey)</a>
+                    <a class="alert-link openRightModal" href="{{ route($salesDoRouteName, ['order_id' => $order->id]) }}">@lang('purchase::app.createDeliveryOrder')</a>
                 @endif
             </div>
         @endif
@@ -399,12 +398,12 @@
                 </button>
                 <!-- DROPDOWN - INFORMATION -->
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" tabindex="0">
-                    <li><a href="{{ route('orders.download', $order->id) }}" class="dropdown-item"><i class="fa fa-download f-w-500 mr-2 f-11"></i> @lang('app.download')</a></li>
+                    <li><a href="{{ route('orders.download', $order->id) }}" class="dropdown-item"><i class="fa fa-download mr-2"></i> @lang('app.download')</a></li>
                     @if (in_array('admin', user_roles()) || in_array('employee', user_roles()))
                         @if (($editOrderPermission == 'all' || ($editOrderPermission == 'added' && $order->added_by == user()->id)) && $order->status == 'completed')
                             <li>
                                 <a class="dropdown-item f-14 text-dark orderStatus" data-status="refunded" href="javascript:;">
-                                    <i class="fa fa-money-bill f-w-500 mr-2 f-11"></i> @lang('app.refund')
+                                    <i class="fa fa-money-bill mr-2"></i> @lang('app.refund')
                                 </a>
                             </li>
                         @endif
@@ -413,11 +412,11 @@
                             <li>
                                 @if (!empty($orderCompleteShipmentGateBlocked))
                                     <span class="dropdown-item f-14 text-muted disabled-item" tabindex="-1" title="{{ $orderCompleteShipmentGateMessage }}" style="cursor: not-allowed;">
-                                        <i class="fa fa-check f-w-500 mr-2 f-11"></i> @lang('app.orderMarkAsComplete')
+                                        <i class="fa fa-check mr-2"></i> @lang('app.orderMarkAsComplete')
                                     </span>
                                 @else
                                     <a class="dropdown-item f-14 text-dark orderStatus" data-status="completed" href="javascript:;">
-                                        <i class="fa fa-check f-w-500 mr-2 f-11"></i> @lang('app.orderMarkAsComplete')
+                                        <i class="fa fa-check mr-2"></i> @lang('app.orderMarkAsComplete')
                                     </a>
                                 @endif
                             </li>
@@ -426,7 +425,7 @@
                         @if (in_array($order->status, ['completed', 'refunded']) && $order->invoice)
                             <li>
                                 <a class="dropdown-item f-14 text-dark" href="{{ route('invoices.show', $order->invoice->id) }}">
-                                    <i class="fa fa-receipt f-w-500 mr-2 f-11"></i> @lang('app.viewInvoice')
+                                    <i class="fa fa-receipt mr-2"></i> @lang('app.viewInvoice')
                                 </a>
                             </li>
                         @endif
@@ -434,7 +433,7 @@
                         @if ($canCreateSalesDo && in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()))
                             <li>
                                 <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route($salesDoRouteName, ['order_id' => $order->id]) }}">
-                                    <i class="fa fa-truck-loading f-w-500 mr-2 f-11"></i> @lang('app.add') @lang($salesDoLabelKey)
+                                    <i class="fa fa-truck-loading mr-2"></i> @lang('purchase::app.createDeliveryOrder')
                                 </a>
                             </li>
                         @endif
@@ -442,7 +441,7 @@
                         @if (!empty($createProductionOrderUrl))
                             <li>
                                 <a class="dropdown-item f-14 text-dark" href="{{ $createProductionOrderUrl }}">
-                                    <i class="fa fa-industry f-w-500 mr-2 f-11"></i> @lang('production::app.createProductionOrderFromSalesOrder')
+                                    <i class="fa fa-industry mr-2"></i> @lang('production::app.createProductionOrderFromSalesOrder')
                                 </a>
                             </li>
                         @endif
@@ -453,7 +452,7 @@
                                 (!is_null($order->project) && is_null($order->project->deleted_at)))
                             <li>
                                 <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route('orders.edit', $order->id) }}">
-                                    <i class="fa fa-edit f-w-500 mr-2 f-11"></i> @lang('app.edit')
+                                    <i class="fa fa-edit mr-2"></i> @lang('app.edit')
                                 </a>
                             </li>
                         @endif
@@ -461,7 +460,7 @@
                         @if (!in_array($order->status, ['completed', 'refunded']) && ($deleteOrderPermission == 'all' || ($deleteOrderPermission == 'both' && ($order->added_by == user()->id || $order->client_id == user()->id)) || ($deleteOrderPermission == 'added' && $order->added_by == user()->id) || ($deleteOrderPermission == 'owned' && $order->client_id == user()->id)))
                             <li>
                                 <a class="dropdown-item f-14 text-dark deleteOrder" data-order-id="{{ $order->id }}" href="javascript:;">
-                                    <i class="fa fa-trash f-w-500 mr-2 f-11"></i> @lang('app.delete')
+                                    <i class="fa fa-trash mr-2"></i> @lang('app.delete')
                                 </a>
                             </li>
                         @endif

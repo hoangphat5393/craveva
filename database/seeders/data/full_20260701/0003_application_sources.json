@@ -1,0 +1,53 @@
+{
+    "table": "application_sources",
+    "columns": [
+        "id",
+        "company_id",
+        "application_source",
+        "created_at",
+        "updated_at",
+        "is_predefined"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "application_source": "LinkedIn",
+            "created_at": null,
+            "updated_at": null,
+            "is_predefined": 1
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "application_source": "Facebook",
+            "created_at": null,
+            "updated_at": null,
+            "is_predefined": 1
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "application_source": "Instagram",
+            "created_at": null,
+            "updated_at": null,
+            "is_predefined": 1
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "application_source": "Twitter",
+            "created_at": null,
+            "updated_at": null,
+            "is_predefined": 1
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "application_source": "Other",
+            "created_at": null,
+            "updated_at": null,
+            "is_predefined": 1
+        }
+    ]
+}

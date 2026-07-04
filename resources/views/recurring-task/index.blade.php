@@ -523,18 +523,12 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
 
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    showTable();
-                                }
+                        window.apiHttp.delete(url, token).then(function(response) {
+                            if (response.status == "success") {
+                                showTable();
                             }
+                        }).catch(function (error) {
+                            $.handleApiFormError(error);
                         });
                     }
                 });
@@ -549,22 +543,20 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
 
             var url = "{{ route('recurring-task.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            $('#quick-action-apply').prop('disabled', true);
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $('#quick-action-apply').prop('disabled', false);
+            });
         };
 
         $('#allTasks-table').on('change', '.change-status', function() {
@@ -612,39 +604,35 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
 
                             var token = "{{ csrf_token() }}";
                             var isApproval = 1;
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
+                            window.apiHttp.postUrlEncoded(url, {
                                     '_token': token,
                                     taskId: id,
                                     isApproval: isApproval,
                                     '_method': 'POST'
-                                },
-                                success: function(response) {
-                                    if (response.status == "success") {
-                                        showTable();
-                                    }
+                            }).then(function(response) {
+                                if (response.status == "success") {
+                                    showTable();
                                 }
+                            }).catch(function (error) {
+                                $.handleApiFormError(error);
                             });
                         }
                     });
                 }else{
-                    $.easyAjax({
-                        url: url,
-                        type: "POST",
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
+                    $.easyBlockUI('.content-wrapper');
+
+                    window.apiHttp.postUrlEncoded(url, {
                             '_token': token,
                             taskId: id,
                             status: status,
                             sortBy: 'id'
-                        },
-                        success: function(response) {
-                            $('#timer-clock').html(response.clockHtml);
-                            window.LaravelDataTables["allTasks-table"].draw(true);
-                        }
+                    }).then(function(response) {
+                        $('#timer-clock').html(response.clockHtml);
+                        window.LaravelDataTables["allTasks-table"].draw(true);
+                    }).catch(function (error) {
+                        $.handleApiFormError(error);
+                    }).finally(function () {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             }
@@ -668,32 +656,31 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
             var task_id = $(this).data('task-id');
             var memo = "{{ __('app.task') }}#" + $(this).data('task-id');
 
-            $.easyAjax({
-                url: url,
-                container: '#allTasks-table',
-                type: "POST",
-                blockUI: true,
-                data: {
+            $.easyBlockUI('#allTasks-table');
+
+            window.apiHttp.postUrlEncoded(url, {
                     task_id: task_id,
                     memo: memo,
                     '_token': token,
                     user_id: user_id
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (response.activeTimerCount > 0) {
-                            $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                        } else {
-                            $('#show-active-timer .active-timer-count').addClass('d-none');
-                        }
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    if (response.activeTimerCount > 0) {
+                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                    } else {
+                        $('#show-active-timer .active-timer-count').addClass('d-none');
+                    }
 
-                        $('#timer-clock').html(response.clockHtml);
-                        if ($('#allTasks-table').length) {
-                            window.LaravelDataTables["allTasks-table"].draw(true);
-                        }
+                    $('#timer-clock').html(response.clockHtml);
+                    if ($('#allTasks-table').length) {
+                        window.LaravelDataTables["allTasks-table"].draw(true);
                     }
                 }
-            })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#allTasks-table');
+            });
         });
 
         // $('#allTasks-table').on('click', '.stop-timer', function() {
@@ -701,7 +688,7 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
         //     var url = "{{ route('timelogs.stop_timer', ':id') }}";
         //     url = url.replace(':id', id);
         //     var token = '{{ csrf_token() }}';
-        //     $.easyAjax({
+        //     Legacy ajax helper was replaced by apiHttp in active timer actions.
         //         url: url,
         //         blockUI: true,
         //         container: '#allTasks-table',
@@ -734,29 +721,29 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
             var url = "{{ route('timelogs.resume_timer', ':id') }}";
             url = url.replace(':id', id);
             var token = '{{ csrf_token() }}';
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#allTasks-table');
+
+            window.apiHttp.postUrlEncoded(url, {
                     timeId: id,
                     _token: token
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (response.activeTimerCount > 0) {
-                            $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                        } else {
-                            $('#show-active-timer .active-timer-count').addClass('d-none');
-                        }
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    if (response.activeTimerCount > 0) {
+                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                    } else {
+                        $('#show-active-timer .active-timer-count').addClass('d-none');
+                    }
 
-                        $('#timer-clock').html(response.clockHtml);
-                        if ($('#allTasks-table').length) {
-                            window.LaravelDataTables["allTasks-table"].draw(true);
-                        }
+                    $('#timer-clock').html(response.clockHtml);
+                    if ($('#allTasks-table').length) {
+                        window.LaravelDataTables["allTasks-table"].draw(true);
                     }
                 }
-            })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#allTasks-table');
+            });
         });
 
         $('body').on('click', '#pinnedTaskItem', function () {
@@ -788,19 +775,16 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
                             url = url.replace(':id', id);
 
                             var token = "{{ csrf_token() }}";
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
+                            window.apiHttp.postUrlEncoded(url, {
                                     '_token': token,
                                     'type': pinType
-                                },
-                                success: function (response) {
-                                    if (response.status == "success") {
-                                        window.location.reload();
-                                    }
+                            }).then(function (response) {
+                                if (response.status == "success") {
+                                    window.location.reload();
                                 }
-                            })
+                            }).catch(function (error) {
+                                $.handleApiFormError(error);
+                            });
                         }
                     });
 
@@ -826,18 +810,15 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
                             var url = "{{ route('tasks.store_pin') }}?type=" + pinType;
 
                             var token = "{{ csrf_token() }}";
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
+                            window.apiHttp.postUrlEncoded(url, {
                                     '_token': token,
                                     'task_id': id
-                                },
-                                success: function (response) {
-                                    if (response.status == "success") {
-                                        window.location.reload();
-                                    }
+                            }).then(function (response) {
+                                if (response.status == "success") {
+                                    window.location.reload();
                                 }
+                            }).catch(function (error) {
+                                $.handleApiFormError(error);
                             });
                         }
                     });
@@ -849,33 +830,33 @@ $recurringTaskPermission = user()->permission('manage_recurring_task');
             var url = "{{ route('timelogs.pause_timer', ':id') }}";
             url = url.replace(':id', id);
             var token = '{{ csrf_token() }}';
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#pause-timer-btn",
-                data: {
+            $.easyBlockUI('#allTasks-table');
+            $("#pause-timer-btn").prop('disabled', true);
+
+            window.apiHttp.postUrlEncoded(url, {
                     timeId: id,
                     _token: token
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (response.activeTimerCount > 0) {
-                            $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                        } else {
-                            $('#show-active-timer .active-timer-count').addClass('d-none');
-                        }
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    if (response.activeTimerCount > 0) {
+                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                    } else {
+                        $('#show-active-timer .active-timer-count').addClass('d-none');
+                    }
 
-                        $('#timer-clock').html(response.clockHtml);
-                        runTimeClock = false;
+                    $('#timer-clock').html(response.clockHtml);
+                    runTimeClock = false;
 
-                        if ($('#allTasks-table').length) {
-                            window.LaravelDataTables["allTasks-table"].draw(true);
-                        }
+                    if ($('#allTasks-table').length) {
+                        window.LaravelDataTables["allTasks-table"].draw(true);
                     }
                 }
-            })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#allTasks-table');
+                $("#pause-timer-btn").prop('disabled', false);
+            });
         });
 
         $('#allTasks-table').on('click', '.stop-timer', function() {

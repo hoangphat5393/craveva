@@ -2,36 +2,48 @@
 
 use App\Models\Company;
 use App\Models\Estimate;
-use App\Models\ModuleSetting;
-use App\Scopes\CompanyScope;
 use App\Support\EstimatesPhase1Review;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-uses(DatabaseTransactions::class);
+beforeEach(function (): void {
+    Schema::dropIfExists('module_settings');
+    Schema::create('module_settings', function ($table): void {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->string('module_name');
+        $table->string('type');
+        $table->string('status');
+        $table->boolean('is_allowed')->default(false);
+        $table->timestamps();
+    });
+
+    session()->forget('company');
+    Cache::flush();
+});
+
+afterEach(function (): void {
+    Schema::dropIfExists('module_settings');
+    session()->forget('company');
+});
 
 function enablePhase1ReviewForUnitTest(): void
 {
-    $company = Company::withoutGlobalScopes()->where('status', 'active')->orderBy('id')->first();
+    $company = new Company;
+    $company->id = 1;
+    $company->status = 'active';
 
-    if (! $company instanceof Company) {
-        test()->markTestSkipped('No active company.');
-
-        return;
-    }
-
-    ModuleSetting::withoutGlobalScope(CompanyScope::class)->updateOrCreate(
-        [
-            'company_id' => $company->id,
-            'module_name' => EstimatesPhase1Review::MODULE_NAME,
-            'type' => 'admin',
-        ],
-        [
-            'status' => 'active',
-            'is_allowed' => 1,
-        ],
-    );
+    DB::table('module_settings')->insert([
+        'company_id' => $company->id,
+        'module_name' => EstimatesPhase1Review::MODULE_NAME,
+        'type' => 'admin',
+        'status' => 'active',
+        'is_allowed' => 1,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
 
     Cache::flush();
     session(['company' => $company]);

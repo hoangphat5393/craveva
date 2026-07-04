@@ -401,12 +401,10 @@ $addProductPermission = user()->permission('add_product');
         });
 
         function changeProductCategory(url) {
-            $.easyAjax({
-                url : url,
-                type : "GET",
-                container: '#saveInvoiceForm',
-                blockUI: true,
-                success: function (response) {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.get(url)
+                .then(function (response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -422,8 +420,13 @@ $addProductPermission = user()->permission('add_product');
                             options);
                         $('#add-products').selectpicker('refresh');
                     }
-                }
-            });
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         }
 
         const hsn_status = {{ $invoiceSetting->hsn_sac_code_show }};
@@ -474,15 +477,15 @@ $addProductPermission = user()->permission('add_product');
 
             var currencyId = $('#currency_id').val();
 
-            $.easyAjax({
-                url: "{{ route('proposal-template.add_item') }}",
-                type: "GET",
-                data: {
-                    id: id,
-                    currencyId: currencyId
-                },
-                blockUI: true,
-                success: function(response) {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.get("{{ route('proposal-template.add_item') }}", {
+                    params: {
+                        id: id,
+                        currencyId: currencyId
+                    }
+                })
+                .then(function(response) {
                     if($('input[name="item_name[]"]').val() == ''){
                         $("#sortable .item-row").remove();
                     }
@@ -500,8 +503,13 @@ $addProductPermission = user()->permission('add_product');
                     $(document).find('#dropify' + i).dropify({
                         messages: dropifyMessages
                     });
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         }
 
         $(document).on('click', '#add-item', function() {
@@ -635,15 +643,20 @@ $addProductPermission = user()->permission('add_product');
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('proposal-template.store') }}",
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                file: true,
-                data: $('#saveInvoiceForm').serialize()
-            })
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.postForm("{{ route('proposal-template.store') }}", document.getElementById('saveInvoiceForm'))
+                .then(function(response) {
+                    if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    }
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         });
 
         $('#saveInvoiceForm').on('click', '.remove-item', function() {

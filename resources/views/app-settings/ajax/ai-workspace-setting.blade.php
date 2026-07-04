@@ -22,15 +22,24 @@
 <script>
     $('body').on('click', '#save-ai-workspace-setting-form', function() {
         const url = "{{ route('craveva-ai-settings.update', [global_setting()->id]) }}?page=ai-workspace-setting";
+        const $btn = $('#save-ai-workspace-setting-form');
+        const previousHtml = $btn.html();
 
-        $.easyAjax({
-            url: url,
-            container: '#editSettings',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-ai-workspace-setting-form",
-            data: $('#editSettings').serialize(),
-        })
+        $.easyBlockUI('#editSettings');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .then(function(response) {
+                if (response.status === 'success' && typeof response.message !== 'undefined') {
+                    $.showApiSuccessToast(response.message);
+                }
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 </script>

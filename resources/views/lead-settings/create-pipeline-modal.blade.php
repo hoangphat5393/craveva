@@ -55,19 +55,21 @@
 
     // save status
     $('#save-status').click(function() {
-        $.easyAjax({
-            url: "{{ route('lead-pipeline-setting.store') }}",
-            container: '#createStatus',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-status",
-            data: $('#createStatus').serialize(),
-            success: function(response) {
+        $('#save-status').prop('disabled', true);
+        $.easyBlockUI('#createStatus');
+
+        window.apiHttp.postUrlEncoded("{{ route('lead-pipeline-setting.store') }}", $('#createStatus').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-status').prop('disabled', false);
+                $.easyUnblockUI('#createStatus');
+            });
     });
 </script>

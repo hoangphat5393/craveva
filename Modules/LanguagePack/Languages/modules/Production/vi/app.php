@@ -282,6 +282,7 @@ return [
     'materialAvailableStock' => 'Tồn khả dụng',
     'materialAvailableInRmWarehouse' => 'Khả dụng',
     'materialAvailableInRawMaterialWarehouse' => 'Khả dụng',
+    'materialReservedInRawMaterialWarehouse' => 'Đã giữ',
     'materialShortage' => 'Thiếu',
     'materialShortageHelp' => 'Số lượng còn thiếu tại kho nguyên liệu khi tồn khả dụng nhỏ hơn tổng cần.',
     'materialShortageToProcure' => 'Số lượng cần mua bù',

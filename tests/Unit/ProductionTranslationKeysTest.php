@@ -24,16 +24,16 @@ it('resolves production app translation keys used in module code', function (): 
 
 it('resolves production settings menu and heading', function (): void {
     app()->setLocale('en');
-    expect(__('production::app.productionSettingsMenu'))->toBe('Production Settings')
+    expect(__('production::app.productionSettingsMenu'))->toBe('Production')
         ->and(__('production::app.productionSettingsHeading'))->toBe('Production Settings');
 
     app()->setLocale('vi');
-    expect(__('production::app.productionSettingsMenu'))->toBe('Cài đặt Sản xuất');
+    expect(__('production::app.productionSettingsMenu'))->toBe('Sản xuất');
 });
 
 it('resolves bomComponentQtyAndUom column label', function (): void {
     app()->setLocale('en');
-    expect(__('production::app.bomComponentQtyAndUom'))->toBe('Qty / 1 manufactured product');
+    expect(__('production::app.bomComponentQtyAndUom'))->toBe('Qty / 1 Manufactured Product');
 
     app()->setLocale('vi');
     expect(__('production::app.bomComponentQtyAndUom'))->toBe('SL + ĐVT / 1 SP SX');

@@ -1,110 +1,100 @@
-# Warehouse Master Guide
+﻿# Warehouse Master Guide
 
-**Doc hub (2026-04):** Nghiệp vụ & luồng → [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md) · Runbook & WUP → [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](../FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE_VI.md) · Trạng thái PM/QA → [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) · Mục lục → [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) · **UAT E2E** → [`UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md`](UAT_CHECKLIST_MUA_BAN_KHO_E2E_VI.md).
+**Doc hub:** Nghiệp vụ & luồng -> [`WAREHOUSE_BUSINESS.md`](WAREHOUSE_BUSINESS.md) · Runbook & WUP -> [`../FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE.md`](../FUNC_IMPROVE/04_WH_RUNBOOK_UPGRADE.md) · Trạng thái PM/QA -> [`MODULE_WAREHOUSE.md`](MODULE_WAREHOUSE.md) · UAT E2E -> [`SALES_PURCHASE_WAREHOUSE_UAT_CHECKLIST.md`](SALES_PURCHASE_WAREHOUSE_UAT_CHECKLIST.md).
 
----
-
-Tai lieu ky thuat tong hop cho pham vi Warehouse, thay cho cac file:
-
-- `WAREHOUSE_ANALYSIS_AND_PLAN.md`
-- `WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md`
-- `WAREHOUSE_ERP_FLOW.md`
-- `WAREHOUSE_ISSUES_FIXES_AND_NEXT_STEPS.md`
-- `WAREHOUSE_MODULE_INTEGRATION_RUNBOOK.md`
-- `WAREHOUSE_UI_OPERATIONS_GUIDE.md`
+Tài liệu kỹ thuật tổng hợp cho phạm vi Warehouse, thay cho các file audit/plan cũ đã retire.
 
 ---
 
-## 1) Muc tieu va pham vi
+## 1. Mục Tiêu Và Phạm Vi
 
-- Chuan hoa nghiep vu da kho theo huong Purchase-centric.
-- Dung `StockMovementService` lam cong ghi so ton kho duy nhat (inbound/outbound/transfer).
-- Giu ton kho vat ly nhat quan giua movement ledger, batch stock, va tong ton theo kho.
+- Chuẩn hóa nghiệp vụ đa kho theo hướng Purchase-centric.
+- Dùng `StockMovementService` làm cổng ghi sổ tồn kho duy nhất cho inbound/outbound/transfer.
+- Giữ tồn kho vật lý nhất quán giữa movement ledger, batch stock và tổng tồn theo kho.
 
 ---
 
-## 2) Kien truc luong kho (tom tat)
+## 2. Kiến Trúc Luồng Kho
 
-```
+```text
 Master data (Product, Client, Vendor)
         |
         v
-   Warehouse master
+Warehouse master
         |
-   PO / DO / Inventory / Transfer`
+PO / GRN / Inventory / Transfer / Sales DO
         |
         v
-   StockMovementService
+StockMovementService
         |
-   +-------------------------------+
-   | warehouse_product_batches     |
-   | warehouse_product_stock       |
-   | stock_movements               |
-   +-------------------------------+
++-------------------------------+
+| warehouse_product_batches     |
+| warehouse_product_stock       |
+| stock_movements               |
++-------------------------------+
 ```
 
-Nguyen tac:
+Nguyên tắc:
 
-- Add/Remove stock: append movement moi, khong ghi de movement cu.
-- Transfer: tao cap outbound (kho nguon) + inbound (kho dich) trong 1 transaction.
-- Loi 1 buoc -> rollback toan bo.
+- Add/Remove stock: append movement mới, không ghi đè movement cũ.
+- Transfer: tạo cặp outbound (kho nguồn) + inbound (kho đích) trong 1 transaction.
+- Lỗi 1 bước -> rollback toàn bộ.
 
 ---
 
-## 3) Ghi chu DB quan trong (dev ops)
+## 3. Ghi Chú DB Quan Trọng
 
-### Add Stock ghi vao:
+### Add Stock Ghi Vào
 
 1. `warehouse_product_batches`
 2. `warehouse_product_stock`
-3. `stock_movements` (1 dong inbound/outbound)
+3. `stock_movements` (1 dòng inbound/outbound)
 
-### Transfer Stock ghi vao:
+### Transfer Stock Ghi Vào
 
-1. `warehouse_product_batches` kho nguon (giam)
-2. `warehouse_product_batches` kho dich (tang)
-3. `warehouse_product_stock` (sync ca hai kho)
-4. `stock_movements` (2 dong: outbound + inbound)
+1. `warehouse_product_batches` kho nguồn (giảm)
+2. `warehouse_product_batches` kho đích (tăng)
+3. `warehouse_product_stock` (sync cả hai kho)
+4. `stock_movements` (2 dòng: outbound + inbound)
 
-Luu y:
+Lưu ý:
 
-- Khong nen xoa movement trong production.
-- Neu dev can reset local DB, can dong bo lai ton tong sau khi xoa tay.
-
----
-
-## 4) Van hanh UI (quick guide)
-
-URL chinh:
-
-- `/warehouse` - danh sach kho
-- `/warehouse-stock` - stock adjustment list
-- `/warehouse-transfer` - transfer
-- `/warehouse-movements` - movement ledger
-
-Nguyen tac van hanh:
-
-- Tao kho o `All warehouses`.
-- Nhap/xuat ton nhanh qua `Stock adjustment`.
-- Chuyen kho qua `Transfer stock`.
-- Doi soat lich su qua `Stock movements`.
-
-UI hien tai:
-
-- Add Stock va Transfer Stock mo bang right popup.
-- Trong sidebar Operations khong hien item menu Add/Transfer rieng (chi de nut trong man stock).
+- Không nên xóa movement trong production.
+- Nếu dev cần reset local DB, phải đồng bộ lại tồn tổng sau khi xóa tay.
 
 ---
 
-## 5) Module + Permission + Entitlement runbook
+## 4. Vận Hành UI
 
-Muc tieu:
+URL chính:
 
-- Dong bo 2 lop:
-    - Nwidart module status
-    - DB entitlement (`modules`, `module_settings`, `module_in_package`, permission)
+- `/warehouse` — danh sách kho
+- `/warehouse-stock` — stock adjustment list
+- `/warehouse-transfer` — transfer
+- `/warehouse-movements` — movement ledger
 
-Migration da dung:
+Nguyên tắc vận hành:
+
+- Tạo kho ở `All warehouses`.
+- Nhập/xuất tồn nhanh qua `Stock adjustment`.
+- Chuyển kho qua `Transfer stock`.
+- Đối soát lịch sử qua `Stock movements`.
+
+UI hiện tại:
+
+- Add Stock và Transfer Stock mở bằng right popup.
+- Sidebar Operations không hiện item menu Add/Transfer riêng; thao tác nằm trong màn stock.
+
+---
+
+## 5. Module + Permission + Entitlement Runbook
+
+Mục tiêu: đồng bộ 2 lớp:
+
+- Nwidart module status.
+- DB entitlement (`modules`, `module_settings`, `module_in_package`, permission).
+
+Migration đã dùng:
 
 - `Modules/Warehouse/Database/Migrations/2026_03_25_120000_setup_warehouse_module_permissions_and_activation.php`
 
@@ -112,63 +102,78 @@ Checklist rollout:
 
 1. Backup DB.
 2. Deploy code.
-3. Chay migrate.
+3. Chạy migrate.
 4. `php artisan optimize:clear`.
 5. Verify module + permission + module settings.
 6. Smoke test warehouse CRUD + stock + transfer.
 
 ---
 
-## 6) Hardening va rang buoc an toan
+## 6. Hardening Và Ràng Buộc An Toàn
 
-Da ap dung:
+Đã áp dụng:
 
-- Company context bat buoc.
-- Guard warehouse/product phai thuoc company hien tai.
+- Company context bắt buộc.
+- Guard warehouse/product phải thuộc company hiện tại.
 - Transfer from != to.
 - Quantity > 0.
-- Chan outbound khi khong du ton (thong bao ro available/requested).
-- Chan xoa kho khi con stock/batch/movement/reservation.
-- Tra loi user-friendly cho ca ajax/non-ajax (khong generic "Something went wrong").
+- Chặn outbound khi không đủ tồn, thông báo rõ available/requested.
+- Chặn xóa kho khi còn stock/batch/movement/reservation.
+- Trả lời user-friendly cho cả ajax/non-ajax, tránh generic "Something went wrong".
 
 ---
 
-## 7) Custom fields - quyet dinh gon
+## 7. Custom Fields — Quyết Định Gọn
 
-Nguyen tac:
+Nguyên tắc:
 
-- Du lieu ton kho da kho/lot/expiry phai o core DB, khong dung custom field lam source of truth.
-- Custom field chi giu cho metadata BI/legacy neu khong trung cot core.
+- Dữ liệu tồn kho đa kho/lot/expiry phải ở core DB, không dùng custom field làm source of truth.
+- Custom field chỉ giữ cho metadata BI/legacy nếu không trùng cột core.
 
-Khuyen nghi:
+Khuyến nghị:
 
-- Inventory CF trung voi `warehouse_id`, `batch_number`, `expiration_date`, snapshot ky -> nen bo.
-- Product CF trung cot core (`brand`, `product_grade`, `product_source`, ...) -> nen bo.
-- Client CF nghiep vu kinh doanh (khong trung core) -> co the giu.
+- Inventory CF trùng với `warehouse_id`, `batch_number`, `expiration_date`, snapshot kỳ -> nên bỏ.
+- Product CF trùng cột core (`brand`, `product_grade`, `product_source`, ...) -> nên bỏ.
+- Client CF nghiệp vụ kinh doanh, không trùng core -> có thể giữ.
 
 ---
 
-## 8) Van de da gap va trang thai hien tai
+## 8. Bin / Location Future Scope
 
-Da xu ly:
+Hiện tại scope đa kho chỉ cần **Warehouse** ở cấp kho. Chưa bắt buộc làm sâu tới kệ/ngăn/vị trí.
+
+Nếu sau này cần biết hàng nằm chính xác ở đâu trong kho, ví dụ `Aisle A / Rack 02 / Bin 05`, cần bổ sung master **Bin/Location**:
+
+- `warehouse_locations` hoặc bảng tương đương, thuộc `warehouse_id`.
+- Dòng stock/batch có thêm `location_id`.
+- Transfer có thể là kho -> kho hoặc vị trí -> vị trí.
+- Picking Sales DO có thể gợi ý vị trí theo FEFO/FIFO.
+
+Trạng thái quyết định: **Not required for current multi-warehouse scope**. Chỉ mở lại khi PM yêu cầu quản lý vị trí trong kho thật.
+
+---
+
+## 9. Vấn Đề Đã Gặp Và Trạng Thái Hiện Tại
+
+Đã xử lý:
 
 - UI action dropdown warehouse theo pattern Product.
-- Sidebar Operations tu dong mo khi vao route warehouse.
-- Add Stock/Transfer popup submit duoc.
-- Hardening loi nghiep vu va thong bao ro rang.
+- Sidebar Operations tự động mở khi vào route warehouse.
+- Add Stock/Transfer popup submit được.
+- Hardening lỗi nghiệp vụ và thông báo rõ ràng.
 
-Con theo doi:
+Còn theo dõi:
 
-- Bo test tu dong (feature/integration) cho stock flows.
-- Scope B (invoice outbound) da trien khai v1 — xem `WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md` va `WAREHOUSE_TOM_TAT_NOI_BO.md`; van can UAT staging va co the mo rong trigger/kho theo PM.
+- Bộ test tự động (feature/integration) cho stock flows.
+- Scope B (invoice outbound) đã triển khai v1 — xem `WAREHOUSE_BUSINESS.md` và `MODULE_WAREHOUSE.md`; vẫn cần UAT staging và có thể mở rộng trigger/kho theo PM.
 
 ---
 
-## 9) Checklist test tay de ban giao
+## 10. Checklist Test Tay Để Bàn Giao
 
 - Happy path add/remove/transfer.
-- Transfer same warehouse -> bi chan.
-- Insufficient stock -> message ro.
+- Transfer same warehouse -> bị chặn.
+- Insufficient stock -> message rõ.
 - Delete warehouse blocked cases.
 - Permission denied.
 - Missing company context.
@@ -176,19 +181,19 @@ Con theo doi:
 
 ---
 
-## 10) Lich su tinh gon
+## 11. Lịch Sử Tinh Gọn
 
-- 2026-03: Hoan thien warehouse multi-flow + UI/UX + hardening.
-- 2026-03: Gom tai lieu warehouse ve 1 file master de giam roi.
+- 2026-03: Hoàn thiện warehouse multi-flow + UI/UX + hardening.
+- 2026-03: Gộp tài liệu warehouse về 1 file master để giảm rối.
+- 2026-06-21: Chuẩn hóa tiếng Việt có dấu và thêm Bin/Location future scope.
 
-## Auto-added links by md_master_sync.ps1
+## Link Liên Quan
 
-- Living guides: `WAREHOUSE_MASTER_GUIDE.md`, `ERP_SO_PO_DO_INV_WH_QA_VI.md`
-- `ERP_SO_PO_DO_GRN_SCHEMA_MATRIX_VI.md`
-- `ERP_SO_PO_DO_INV_WH_QA_VI.md`
-- `PROMPT_REFACTOR_SO_DO_PO_GRN_VI.md`
-- `QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
-- `WH_PURCHASE_ENV_REFERENCE_VI.md`
-- `FLOW_ADD_INVENTORY.md`
-- `PURCHASE_RETURN_VENDOR_CREDIT_STOCK_VI.md`
-- `SALES_RETURN_CREDIT_NOTE_STOCK_VI.md`
+- `WAREHOUSE_BUSINESS.md`
+- `SALES_FULFILLMENT_SCHEMA_MATRIX.md`
+- `SALES_FULFILLMENT_QA_CHECKLIST.md`
+- `SALES_BUSINESS.md`
+- `INVENTORY_BUSINESS.md`
+- `PURCHASE_RETURN_BUSINESS.md`
+- `SALES_RETURN_BUSINESS.md`
+- `../docs/WAREHOUSE_PURCHASE_ENV_REFERENCE.md`

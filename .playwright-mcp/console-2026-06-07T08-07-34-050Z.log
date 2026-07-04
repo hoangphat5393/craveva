@@ -1,2 +1,0 @@
-[    3453ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: https://craveva-staging.test/_boost/browser-logs @ https://craveva-staging.test/login:202
-[    3512ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://craveva-staging.test/login:0

@@ -56,18 +56,19 @@
 
 <script>
         $(body).on('click', '#save-consent-data', function() {
-        $.easyAjax({
-            url: "{{ route('gdpr.update_client_consent') }}",
-            container: '#updateconsent',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-consent-data",
-            data: $('#updateconsent').serialize(),
-            success: function(response) {
+        $('#save-consent-data').prop('disabled', true);
+
+        window.apiHttp.postUrlEncoded("{{ route('gdpr.update_client_consent') }}", $('#updateconsent').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-consent-data').prop('disabled', false);
+            });
     })
 </script>

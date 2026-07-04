@@ -17,7 +17,7 @@ Incoming payments — apply to invoices.
 ## Who uses it / access
 
 - Requires module **`payments`** in `user_modules()` and matching permission.
-- Role details: [01-ROLES-AND-ACCESS.md](../01-ROLES-AND-ACCESS.md).
+- Role details: [01-ROLES-AND-ACCESS.md](../../01-ROLES-AND-ACCESS.md).
 
 ## How to open the screen
 
@@ -37,7 +37,7 @@ Finance → Payments
 ## Expected results
 
 - On successful save: return to list or close modal; new/updated row on DataTable.
-- AJAX form: toast success; validation errors → red border + toast (see [UI-CONVENTIONS.md](../REFERENCE/UI-CONVENTIONS.md)).
+- AJAX form: toast success; validation errors → red border + toast (see [UI-CONVENTIONS.md](../../REFERENCE/UI-CONVENTIONS.md)).
 
 ## Common errors
 
@@ -50,5 +50,5 @@ Finance → Payments
 
 ## Related
 
-[01-ROLES-AND-ACCESS.md](../01-ROLES-AND-ACCESS.md)
+[01-ROLES-AND-ACCESS.md](../../01-ROLES-AND-ACCESS.md)
 

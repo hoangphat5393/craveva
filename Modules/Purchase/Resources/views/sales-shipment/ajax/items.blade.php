@@ -20,7 +20,7 @@
                 @php
                     $line = $existing->get($item->id);
                     $remaining = (float) ($remainingByItem[$item->id] ?? 0);
-                    $qtyShipped = $line ? (float) $line->quantity_shipped : 0;
+                    $qtyShipped = $line ? (float) $line->quantity_shipped : $remaining;
                     $maxQty = $remaining + $qtyShipped;
                     $lineDisabled = $maxQty <= 0;
                     $lineSku = $item->sku ?: $item->product?->sku ?? null;
@@ -32,6 +32,9 @@
                             return ($opt['batch_number'] ?? null) === $line->batch_number && ($opt['expiration_date'] ?? null) === $lineExpiry;
                         });
                         $selectedBatchId = $matched['id'] ?? null;
+                    }
+                    if (!$selectedBatchId && !$line && $batchOptions->count() === 1) {
+                        $selectedBatchId = $batchOptions->first()['id'] ?? null;
                     }
                     $missingBatchOptions = $batchOptions->isEmpty();
                     $requiresBatchSelection = $batchOptions->contains(function ($opt) {
@@ -50,13 +53,12 @@
                     <td class="text-right">{{ number_format((float) $item->quantity, 2) }}</td>
                     <td class="text-right">{{ number_format($remaining, 2) }}</td>
                     <td class="text-right">
-                        <input type="number" step="0.01" min="0" max="{{ $maxQty }}" class="form-control text-right shipment-qty-input" name="quantity_shipped[]" value="{{ $lineDisabled ? 0 : $qtyShipped }}" @disabled($lineDisabled)>
+                        <input type="number" step="0.01" min="0" max="{{ $maxQty }}" class="form-control height-35 f-14 text-right shipment-qty-input" name="quantity_shipped[]" value="{{ $lineDisabled ? 0 : $qtyShipped }}" @readonly($lineDisabled)>
                     </td>
                     <td>
-                        <input type="hidden" name="batch_number[]" value="{{ $line?->batch_number }}" class="shipment-batch-number-input">
-                        <input type="hidden" name="expiration_date[]" value="{{ $lineExpiry }}" class="shipment-expiry-date-input">
-                        <input type="hidden" name="warehouse_batch_id[]" value="{{ $selectedBatchId ?: '' }}" class="shipment-batch-id-input">
-                        <select class="form-control select-picker shipment-batch-select" name="warehouse_batch_ui[]" data-live-search="true" @disabled($lineDisabled)>
+                        <input type="hidden" name="batch_number[]" value="">
+                        <input type="hidden" name="expiration_date[]" value="">
+                        <select class="form-control select-picker shipment-batch-select" name="warehouse_batch_id[]" data-live-search="true" data-size="8" data-container="body">
                             <option value="">--</option>
                             @foreach ($batchOptions as $batch)
                                 @php
@@ -83,23 +85,7 @@
 </div>
 
 <script>
-    window.syncShipmentBatchIdentity = function(selectEl) {
-        const $select = $(selectEl);
-        const $row = $select.closest('tr');
-        const selectedBatchId = String($select.val() || '');
-        const $opt = $select.find('option:selected');
-        const batchNumber = $opt.data('batch-number') || '';
-        const expiryDate = $opt.data('expiry-date') || '';
-        $row.find('.shipment-batch-id-input').val(selectedBatchId);
-        $row.find('.shipment-batch-number-input').val(batchNumber);
-        $row.find('.shipment-expiry-date-input').val(expiryDate);
-    };
-
-    window.syncAllShipmentBatchRows = function() {
-        $('.shipment-batch-select').each(function() {
-            window.syncShipmentBatchIdentity(this);
-        });
-    };
+    window.syncAllShipmentBatchRows = function() {};
 
     window.validateSalesShipmentRows = function() {
         let firstError = null;
@@ -109,7 +95,7 @@
             const $row = $(this);
             const itemName = $.trim($row.find('td:first').clone().children().remove().end().text()) || 'Item';
             const qty = parseFloat($row.find('.shipment-qty-input').val() || '0');
-            const $batchSelect = $row.find('.shipment-batch-select');
+            const $batchSelect = $row.find('select.shipment-batch-select');
             const selectedBatchId = String($batchSelect.val() || '').trim();
             const $selectedOption = $batchSelect.find('option:selected');
             const availableQty = parseFloat($selectedOption.data('available-quantity') || '0');
@@ -121,14 +107,16 @@
             }
 
             if (requiresBatch && !selectedBatchId) {
-                const msg = `Please select batch for "${itemName}" before shipping.`;
+                const msg = @json(__('messages.salesDoBatchRequiredForItem', ['item' => '__ITEM__'])).replace('__ITEM__', itemName);
                 $err.text(msg).removeClass('d-none');
                 firstError = firstError || msg;
                 return;
             }
 
             if (requiresBatch && selectedBatchId && Number.isFinite(availableQty) && qty > availableQty) {
-                const msg = `Ship qty for "${itemName}" exceeds selected batch available (${availableQty.toFixed(4)}).`;
+                const msg = @json(__('messages.salesDoBatchQtyExceedsAvailableForItem', ['item' => '__ITEM__', 'available' => '__AVAILABLE__']))
+                    .replace('__ITEM__', itemName)
+                    .replace('__AVAILABLE__', availableQty.toFixed(4));
                 $err.text(msg).removeClass('d-none');
                 firstError = firstError || msg;
             }
@@ -137,10 +125,7 @@
         return firstError;
     };
 
-    window.syncAllShipmentBatchRows();
-
-    $('.shipment-batch-select').on('change', function() {
-        window.syncShipmentBatchIdentity(this);
+    $('select.shipment-batch-select').on('change changed.bs.select', function() {
         $(this).closest('tr').find('.shipment-batch-error').addClass('d-none').text('');
     });
 
@@ -149,7 +134,7 @@
     });
 
     if (typeof $.fn.selectpicker !== 'undefined') {
-        $('.shipment-batch-select').selectpicker();
-        $('.shipment-batch-select').selectpicker('refresh');
+        $('select.shipment-batch-select').selectpicker();
+        $('select.shipment-batch-select').selectpicker('refresh');
     }
 </script>

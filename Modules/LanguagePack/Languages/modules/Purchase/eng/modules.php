@@ -267,6 +267,9 @@ return [
         'availableForSale' => 'Available For Sale',
         'committed_Stock' => 'Committed Stock',
         'commitedStock' => 'Committed Stock',
+        'warehouseMovementReport' => 'Warehouse Movement Report',
+        'allReferences' => 'All Reference Documents',
+        'referenceId' => 'Reference ID',
     ],
     'deliveryOrder' => [
         'draft' => 'Draft',
@@ -289,8 +292,9 @@ return [
         'confirmed' => 'Confirmed',
         'shipped' => 'Shipped (stock out)',
         'delivered' => 'Delivered',
+        'markDelivered' => 'Mark Delivered',
         'cancelled' => 'Cancelled',
-        'reverse' => 'Reverse sales delivery order',
+        'reverse' => 'Reverse Shipment',
     ],
     'order' => [
         'orderNumber' => 'Order Number',

@@ -1,0 +1,37 @@
+{
+    "table": "ticket_email_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "mail_username",
+        "mail_password",
+        "mail_from_name",
+        "mail_from_email",
+        "imap_host",
+        "imap_port",
+        "imap_encryption",
+        "status",
+        "verified",
+        "sync_interval",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "mail_username": null,
+            "mail_password": null,
+            "mail_from_name": null,
+            "mail_from_email": null,
+            "imap_host": null,
+            "imap_port": null,
+            "imap_encryption": null,
+            "status": 0,
+            "verified": 0,
+            "sync_interval": 1,
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

@@ -94,24 +94,27 @@
         const status = $('#status').val();
         const action_type = $('#quick-action-type').val();
 
-        $.easyAjax({
-            url: url,
-            container: '#editSettings',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: {
+        $('#quick-action-apply').prop('disabled', true);
+        $.easyBlockUI('#editSettings');
+
+        window.apiHttp.postUrlEncoded(url, {
                 status: status,
                 action_type: action_type,
                 _token: token
-            },
-            success: function(response) {
+            })
+            .then(function(response) {
                 if (response.status == 'success') {
                     showTable();
                     deSelectAll();
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#quick-action-apply').prop('disabled', false);
+                $.easyUnblockUI('#editSettings');
+            });
     };
 
 </script>

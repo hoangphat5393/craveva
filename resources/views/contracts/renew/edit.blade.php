@@ -74,22 +74,26 @@
 
             const url = "{{ route('contract-renew.update', $renew->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#edit-renew-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-edit-renew",
-                data: $('#edit-renew-data-form').serialize(),
-                success: function(response) {
+            const $btn = $('#save-edit-renew');
+            const previousHtml = $btn.html();
+            $.easyBlockUI('#edit-renew-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, $('#edit-renew-data-form').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
                         document.getElementById('comment-list').innerHTML = response.view;
                         $(MODAL_LG).modal('hide');
                     }
 
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#edit-renew-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         init(MODAL_LG)

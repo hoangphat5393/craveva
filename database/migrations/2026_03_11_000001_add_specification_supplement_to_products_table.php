@@ -8,13 +8,13 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * Specification supplement (規格補充 / specification bổ sung) for product details.
+     * Final product specification field.
      */
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            if (! Schema::hasColumn('products', 'specification_supplement')) {
-                $table->text('specification_supplement')->nullable()->after('description');
+            if (! Schema::hasColumn('products', 'specification')) {
+                $table->text('specification')->nullable()->after('description');
             }
         });
     }
@@ -25,8 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            if (Schema::hasColumn('products', 'specification_supplement')) {
-                $table->dropColumn('specification_supplement');
+            if (Schema::hasColumn('products', 'specification')) {
+                $table->dropColumn('specification');
             }
         });
     }

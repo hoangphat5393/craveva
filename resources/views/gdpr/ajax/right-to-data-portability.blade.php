@@ -9,16 +9,19 @@
 
 <script>
     $(body).on('click', '#save-right-to-data-portability', function() {
-        $.easyAjax({
-            url: "{{ route('gdpr.export_data') }}",
-            disableButton: true,
-            buttonSelector: "#save-right-to-data-portability",
-            success: function(response) {
+        $('#save-right-to-data-portability').prop('disabled', true);
+
+        window.apiHttp.get("{{ route('gdpr.export_data') }}")
+            .then(function(response) {
                 if (response.status == "success") {
                     location.reload();
                 }
-            }
-
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-right-to-data-portability').prop('disabled', false);
+            });
     })
 </script>

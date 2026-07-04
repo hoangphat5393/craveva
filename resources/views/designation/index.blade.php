@@ -196,20 +196,22 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    $.easyBlockUI('body');
+
+                    window.apiHttp.delete(url, token)
+                        .then((response) => {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        })
+                        .finally(() => {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });
@@ -263,23 +265,29 @@
             }).get();
 
             const url = "{{ route('designations.apply_quick_action') }}?row_ids=" + rowdIds;
+            const button = $('#quick-action-apply');
+            const buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
+            button.prop('disabled', true);
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then((response) => {
                     if (response.status === 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                });
         };
 
     </script>

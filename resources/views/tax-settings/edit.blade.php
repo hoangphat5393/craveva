@@ -31,16 +31,21 @@
 <script>
     $('#save-tax').click(function() {
         var url = "{{ route('taxes.update', $tax->id) }}?via=tax-setting";
-        $.easyAjax({
-            url: url,
-            container: '#updateTax',
-            type: "POST",
-            data: $('#updateTax').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#updateTax');
+
+        window.apiHttp.postUrlEncoded(url, $('#updateTax').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('#updateTax');
+            });
     });
 </script>

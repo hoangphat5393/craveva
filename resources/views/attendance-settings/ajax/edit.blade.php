@@ -155,23 +155,26 @@
 
         $('#update-rotation-form').click(function() {
             let url = "{{ route('shift-rotations.update', $shiftRotation->id) }}";
+            const $btn = $('#update-rotation-form');
+            const previousHtml = $btn.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#update-rotation-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#update-rotation-data-form",
-                file: true,
-                data: $('#update-rotation-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#update-rotation-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postForm(url, document.getElementById('update-rotation-data-form'))
+                .then(function(response) {
                     if (response.status == 'success') {
                         let url = "{{ route('attendance-settings.index') }}?tab=shift-rotation";
                         window.location.href = url;
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#update-rotation-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         $(document).ready(function() {

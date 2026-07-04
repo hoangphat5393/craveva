@@ -14,6 +14,8 @@ use Modules\Production\Services\ProductionPlannedConsumptionFromSnapshotService;
 use Modules\Production\Services\ProductionPostingService;
 use Modules\Warehouse\Entities\StockReservation;
 
+require_once __DIR__.'/../Support/ProductionPostingSchema.php';
+
 beforeEach(function (): void {
     Config::set('database.default', 'sqlite');
     Config::set('database.connections.sqlite.database', ':memory:');
@@ -150,19 +152,7 @@ beforeEach(function (): void {
         $table->timestamps();
     });
 
-    $migration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_05_100000_create_production_mvp_tables.php';
-    $migration->up();
-
-    $productionFgQuantityPolicyMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_120000_add_production_fg_policy_and_variance_columns.php';
-    $productionFgQuantityPolicyMigration->up();
-
-    $bomSnapshotMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_07_120000_add_production_order_bom_snapshot.php';
-    $bomSnapshotMigration->up();
-    $yieldUomShadowMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_06_192423_add_phase2_yield_uom_shadow_columns_to_production_tables.php';
-    $yieldUomShadowMigration->up();
-
-    $wastePercentMigration = require __DIR__.'/../../Modules/Production/Database/Migrations/2026_05_20_160000_add_waste_percent_to_production_bom_tables.php';
-    $wastePercentMigration->up();
+    createProductionPostingSchema();
 
     DB::table('companies')->insert([
         'company_name' => 'Acme',
@@ -342,6 +332,67 @@ it('posts RM consumption then FG receipt via warehouse stock movements', functio
         ->and($ledgerLine)->not->toBeNull()
         ->and((float) $ledgerLine->net_quantity)->toBe(100.0)
         ->and($ledgerLine->batch_number)->toBe('FG-LOT-1');
+});
+
+it('consumes raw material fully reserved by the same production order', function (): void {
+    DB::table('warehouse_product_batches')->where('id', 1)->update([
+        'quantity' => 50,
+        'reserved_quantity' => 0,
+    ]);
+    DB::table('warehouse_product_stock')->where('warehouse_id', 1)->where('product_id', 1)->update([
+        'quantity' => 50,
+    ]);
+
+    $bom = ProductionBom::query()->create([
+        'company_id' => 1,
+        'output_product_id' => 2,
+        'version' => 'v-exact-reserve',
+        'code' => 'BOM-EXACT-RESERVE',
+        'is_default' => true,
+    ]);
+    ProductionBomItem::query()->create([
+        'company_id' => 1,
+        'production_bom_id' => $bom->id,
+        'component_product_id' => 1,
+        'quantity' => 1,
+        'sort_order' => 0,
+    ]);
+    $order = ProductionOrder::query()->create([
+        'company_id' => 1,
+        'status' => ProductionOrder::STATUS_DRAFT,
+        'output_product_id' => 2,
+        'production_bom_id' => $bom->id,
+        'rm_warehouse_id' => 1,
+        'fg_warehouse_id' => 1,
+        'planned_quantity' => 50,
+    ]);
+    $batch = ProductionBatch::query()->create([
+        'company_id' => 1,
+        'production_order_id' => $order->id,
+        'batch_code' => 'PB-EXACT-RESERVE',
+    ]);
+    ProductionBatchConsumption::query()->create([
+        'company_id' => 1,
+        'production_batch_id' => $batch->id,
+        'component_product_id' => 1,
+        'warehouse_product_batch_id' => 1,
+        'planned_quantity' => 50,
+        'line_order' => 0,
+    ]);
+
+    $service = app(ProductionPostingService::class);
+    $service->releaseOrder($order);
+    expect((float) DB::table('warehouse_product_batches')->where('id', 1)->value('reserved_quantity'))->toBe(50.0);
+
+    $service->postConsumptionsForBatch($batch->fresh());
+
+    expect((float) DB::table('warehouse_product_batches')->where('id', 1)->value('quantity'))->toBe(0.0)
+        ->and((float) DB::table('warehouse_product_batches')->where('id', 1)->value('reserved_quantity'))->toBe(0.0)
+        ->and(StockReservation::query()
+            ->where('reference_type', ProductionOrder::class)
+            ->where('reference_id', $order->id)
+            ->where('status', 'consumed')
+            ->count())->toBe(1);
 });
 
 it('posts RM consumption in product base unit when line unit_id differs from base (P2-UOM-OUTBOUND)', function (): void {

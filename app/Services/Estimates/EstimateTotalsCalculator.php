@@ -90,7 +90,11 @@ class EstimateTotalsCalculator
     {
         $lineItems = [];
 
-        foreach ($estimate->items()->where('type', 'item')->orderBy('field_order')->get() as $item) {
+        $items = $estimate->relationLoaded('items')
+            ? $estimate->items->where('type', 'item')->sortBy('field_order')
+            : $estimate->items()->where('type', 'item')->orderBy('field_order')->get();
+
+        foreach ($items as $item) {
             $lineItems[] = [
                 'amount' => (float) $item->amount,
                 'taxes' => $item->taxes ? json_decode($item->taxes, true) : [],

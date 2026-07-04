@@ -13,9 +13,10 @@ class CompanyPurgeTransactionsCommand extends Command
                             {--company-id= : Company ID to purge transactional data for}
                             {--execute : Actually DELETE rows (default is dry-run only)}
                             {--confirm-token= : Required with --execute; value printed at end of dry-run}
+                            {--include-boms : Also delete Production BOM master and BOM items}
                             {--include-optional : Include optional modules (not implemented yet)}';
 
-    protected $description = 'Dry-run or purge transactional ERP data for one company (keeps clients, products, BOM master). Default: dry-run only.';
+    protected $description = 'Dry-run or purge operational ERP data for one company; BOM master is deleted only with --include-boms.';
 
     public function handle(CompanyTransactionPurgeService $service): int
     {
@@ -35,12 +36,14 @@ class CompanyPurgeTransactionsCommand extends Command
             return self::FAILURE;
         }
 
-        $token = $this->expectedConfirmToken($companyId, (string) $company->company_name);
+        $includeBoms = (bool) $this->option('include-boms');
+        $token = $this->expectedConfirmToken($companyId, (string) $company->company_name, $includeBoms);
         $execute = (bool) $this->option('execute');
 
         $this->info('Company: #'.$companyId.' — '.$company->company_name);
         $this->line('Mode: '.($execute ? 'EXECUTE (destructive)' : 'DRY-RUN (count only, no DELETE)'));
-        $this->line('Reference: FUNC_LOGIC/COMPANY_TRANSACTION_PURGE_GUIDE_VI.md');
+        $this->line('Production BOM master: '.($includeBoms ? 'DELETE' : 'KEEP'));
+        $this->line('Reference: docs/OPS_COMPANY_TRANSACTION_PURGE.md');
         $this->newLine();
 
         if ($execute) {
@@ -65,8 +68,8 @@ class CompanyPurgeTransactionsCommand extends Command
         }
 
         $results = $execute
-            ? $service->execute($companyId)
-            : $service->dryRun($companyId);
+            ? $service->execute($companyId, $includeBoms)
+            : $service->dryRun($companyId, $includeBoms);
 
         $total = 0;
         $headers = ['Phase', 'Table', 'Scope', 'Rows', 'Note'];
@@ -95,7 +98,8 @@ class CompanyPurgeTransactionsCommand extends Command
             $this->line('To execute later:');
             $this->line('  1) Backup DB');
             $this->line('  2) COMPANY_PURGE_ALLOW_EXECUTE=true in .env');
-            $this->line('  3) php artisan company:purge-transactions --company-id='.$companyId.' --execute --confirm-token='.$token);
+            $includeBomsOption = $includeBoms ? ' --include-boms' : '';
+            $this->line('  3) php artisan company:purge-transactions --company-id='.$companyId.$includeBomsOption.' --execute --confirm-token='.$token);
         } else {
             $this->writeLog($companyId, $results, $total);
             $this->info('Done. Run: php artisan cache:clear');
@@ -104,12 +108,12 @@ class CompanyPurgeTransactionsCommand extends Command
         return self::SUCCESS;
     }
 
-    private function expectedConfirmToken(int $companyId, string $companyName): string
+    private function expectedConfirmToken(int $companyId, string $companyName, bool $includeBoms): string
     {
         $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $companyName) ?? '');
         $slug = trim($slug, '-');
 
-        return 'PURGE-'.$companyId.'-'.$slug;
+        return 'PURGE-'.$companyId.'-'.$slug.($includeBoms ? '-WITH-BOMS' : '');
     }
 
     /**

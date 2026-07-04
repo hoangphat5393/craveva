@@ -61,25 +61,30 @@
         $('body').on('click', '#save-slack-form', function () {
             var url = "{{ route('slack-settings.update', slack_setting()->id) }}";
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                container: "#editSettings",
-                blockUI: true,
-                file: true,
-                data: $('#editSettings').serialize(),
-                success: function () {
+            $.easyBlockUI("#editSettings");
+
+            window.apiHttp.postForm(url, document.getElementById('editSettings'))
+                .then(() => {
                     window.location.reload();
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI("#editSettings");
+                });
         });
 
         $('body').on('click', '#send-test-notification', function () {
             var url = '{{ route('slack_settings.send_test_notification') }}';
-            $.easyAjax({
-                url: url,
-                type: "GET",
-            })
+            window.apiHttp.get(url)
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                });
         });
 
         init('#slack-row');

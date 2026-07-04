@@ -1,0 +1,131 @@
+{
+    "table": "custom_field_groups",
+    "columns": [
+        "id",
+        "company_id",
+        "name",
+        "model"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": null,
+            "name": "Purchase Order",
+            "model": "Modules\\Purchase\\Entities\\PurchaseOrder"
+        },
+        {
+            "id": 3,
+            "company_id": null,
+            "name": "Company",
+            "model": "App\\Models\\Company"
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "name": "Client",
+            "model": "App\\Models\\ClientDetails"
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "name": "Employee",
+            "model": "App\\Models\\EmployeeDetails"
+        },
+        {
+            "id": 6,
+            "company_id": 1,
+            "name": "Project",
+            "model": "App\\Models\\Project"
+        },
+        {
+            "id": 7,
+            "company_id": 1,
+            "name": "Invoice",
+            "model": "App\\Models\\Invoice"
+        },
+        {
+            "id": 8,
+            "company_id": 1,
+            "name": "Estimate",
+            "model": "App\\Models\\Estimate"
+        },
+        {
+            "id": 9,
+            "company_id": 1,
+            "name": "Task",
+            "model": "App\\Models\\Task"
+        },
+        {
+            "id": 10,
+            "company_id": 1,
+            "name": "Expense",
+            "model": "App\\Models\\Expense"
+        },
+        {
+            "id": 11,
+            "company_id": 1,
+            "name": "Lead",
+            "model": "App\\Models\\Lead"
+        },
+        {
+            "id": 12,
+            "company_id": 1,
+            "name": "Deal",
+            "model": "App\\Models\\Deal"
+        },
+        {
+            "id": 13,
+            "company_id": 1,
+            "name": "Product",
+            "model": "App\\Models\\Product"
+        },
+        {
+            "id": 14,
+            "company_id": 1,
+            "name": "Order",
+            "model": "App\\Models\\Order"
+        },
+        {
+            "id": 15,
+            "company_id": 1,
+            "name": "Purchase Order",
+            "model": "Modules\\Purchase\\Entities\\PurchaseOrder"
+        },
+        {
+            "id": 16,
+            "company_id": 1,
+            "name": "Delivery Order",
+            "model": "App\\Models\\DeliveryOrder"
+        },
+        {
+            "id": 17,
+            "company_id": 1,
+            "name": "Inventory",
+            "model": "Modules\\Purchase\\Entities\\PurchaseInventory"
+        },
+        {
+            "id": 18,
+            "company_id": 1,
+            "name": "Event",
+            "model": "App\\Models\\Event"
+        },
+        {
+            "id": 19,
+            "company_id": 1,
+            "name": "Ticket",
+            "model": "App\\Models\\Ticket"
+        },
+        {
+            "id": 20,
+            "company_id": 1,
+            "name": "Time Log",
+            "model": "App\\Models\\ProjectTimeLog"
+        },
+        {
+            "id": 21,
+            "company_id": 1,
+            "name": "Contract",
+            "model": "App\\Models\\Contract"
+        }
+    ]
+}

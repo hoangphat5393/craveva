@@ -78,37 +78,41 @@
 
         var url = "{{route('project-settings.changeStatus', ':id')}}";
         url = url.replace(':id', id);
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            blockUI: true,
-            data: {'id': id, 'status': status, '_method': 'PUT', '_token': '{{ csrf_token() }}'},
-            success: function (response) {
+        $.easyBlockUI('#nav-tabContent');
+        window.apiHttp.postUrlEncoded(url, {'id': id, 'status': status, '_method': 'PUT', '_token': '{{ csrf_token() }}'})
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#nav-tabContent');
+            });
     });
 
     $('body').on('click', '.default_status', function () {
         var statusID = $(this).data('status-id');
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('project-settings.setDefault', ':id') }}",
-            type: "POST",
-            data: {
-                id: statusID,
-                _token: token
-            },
-            blockUI: true,
-            success: function (response) {
+        $.easyBlockUI('#nav-tabContent');
+        window.apiHttp.postUrlEncoded("{{ route('project-settings.setDefault', ':id') }}", {
+            id: statusID,
+            _token: token
+        })
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#nav-tabContent');
+            });
     });
 
     $('#add-status').click(function () {
@@ -157,20 +161,19 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                $.easyBlockUI('#nav-tabContent');
+                window.apiHttp.delete(url, token)
+                    .then(function (response) {
                         if (response.status == "success") {
                             $('#status-' + id).fadeOut();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#nav-tabContent');
+                    });
             }
         });
     });

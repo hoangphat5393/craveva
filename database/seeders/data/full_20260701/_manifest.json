@@ -1,0 +1,498 @@
+{
+    "generated_at": "2026-07-01T21:01:01+07:00",
+    "profile": "full",
+    "source_database": "craveva_consolidated_source_20260701_205549",
+    "excluded_tables": [
+        "users",
+        "user_auths"
+    ],
+    "table_count": 121,
+    "row_count": 3458,
+    "data_sha256": "533d91c8f04b0b440793b9b629e6be6378b7dd779e6e48f3a19c38f4d03e1f54",
+    "tables": {
+        "affiliate_global_settings": {
+            "file": "0001_affiliate_global_settings.json",
+            "rows": 1
+        },
+        "affiliate_settings": {
+            "file": "0002_affiliate_settings.json",
+            "rows": 1
+        },
+        "application_sources": {
+            "file": "0003_application_sources.json",
+            "rows": 5
+        },
+        "asset_settings": {
+            "file": "0004_asset_settings.json",
+            "rows": 1
+        },
+        "attendance_settings": {
+            "file": "0005_attendance_settings.json",
+            "rows": 1
+        },
+        "award_icons": {
+            "file": "0006_award_icons.json",
+            "rows": 20
+        },
+        "biolinks_global_settings": {
+            "file": "0007_biolinks_global_settings.json",
+            "rows": 1
+        },
+        "biometric_global_settings": {
+            "file": "0008_biometric_global_settings.json",
+            "rows": 1
+        },
+        "biometric_settings": {
+            "file": "0009_biometric_settings.json",
+            "rows": 1
+        },
+        "companies": {
+            "file": "0010_companies.json",
+            "rows": 1
+        },
+        "company_addresses": {
+            "file": "0011_company_addresses.json",
+            "rows": 1
+        },
+        "countries": {
+            "file": "0012_countries.json",
+            "rows": 253
+        },
+        "currencies": {
+            "file": "0013_currencies.json",
+            "rows": 4
+        },
+        "currency_format_settings": {
+            "file": "0014_currency_format_settings.json",
+            "rows": 1
+        },
+        "custom_field_groups": {
+            "file": "0015_custom_field_groups.json",
+            "rows": 20
+        },
+        "cyber_securities": {
+            "file": "0016_cyber_securities.json",
+            "rows": 1
+        },
+        "cyber_security_settings": {
+            "file": "0017_cyber_security_settings.json",
+            "rows": 1
+        },
+        "dashboard_widgets": {
+            "file": "0018_dashboard_widgets.json",
+            "rows": 87
+        },
+        "database_backup_cron_settings": {
+            "file": "0019_database_backup_cron_settings.json",
+            "rows": 1
+        },
+        "discussion_categories": {
+            "file": "0020_discussion_categories.json",
+            "rows": 1
+        },
+        "e_invoice_company_settings": {
+            "file": "0021_e_invoice_company_settings.json",
+            "rows": 1
+        },
+        "e_invoice_settings": {
+            "file": "0022_e_invoice_settings.json",
+            "rows": 1
+        },
+        "email_notification_settings": {
+            "file": "0023_email_notification_settings.json",
+            "rows": 29
+        },
+        "employee_shifts": {
+            "file": "0024_employee_shifts.json",
+            "rows": 2
+        },
+        "features": {
+            "file": "0025_features.json",
+            "rows": 22
+        },
+        "file_storage_settings": {
+            "file": "0026_file_storage_settings.json",
+            "rows": 1
+        },
+        "flags": {
+            "file": "0027_flags.json",
+            "rows": 266
+        },
+        "footer_menu": {
+            "file": "0028_footer_menu.json",
+            "rows": 2
+        },
+        "front_clients": {
+            "file": "0029_front_clients.json",
+            "rows": 4
+        },
+        "front_details": {
+            "file": "0030_front_details.json",
+            "rows": 2
+        },
+        "front_faqs": {
+            "file": "0031_front_faqs.json",
+            "rows": 2
+        },
+        "front_features": {
+            "file": "0032_front_features.json",
+            "rows": 3
+        },
+        "front_menu_buttons": {
+            "file": "0033_front_menu_buttons.json",
+            "rows": 1
+        },
+        "gdpr_settings": {
+            "file": "0034_gdpr_settings.json",
+            "rows": 1
+        },
+        "global_currencies": {
+            "file": "0035_global_currencies.json",
+            "rows": 4
+        },
+        "global_invoice_settings": {
+            "file": "0036_global_invoice_settings.json",
+            "rows": 1
+        },
+        "global_invoices": {
+            "file": "0037_global_invoices.json",
+            "rows": 1
+        },
+        "global_payment_gateway_credentials": {
+            "file": "0038_global_payment_gateway_credentials.json",
+            "rows": 1
+        },
+        "global_settings": {
+            "file": "0039_global_settings.json",
+            "rows": 1
+        },
+        "global_subscriptions": {
+            "file": "0040_global_subscriptions.json",
+            "rows": 1
+        },
+        "goal_types": {
+            "file": "0041_goal_types.json",
+            "rows": 3
+        },
+        "google_calendar_modules": {
+            "file": "0042_google_calendar_modules.json",
+            "rows": 1
+        },
+        "invoice_settings": {
+            "file": "0043_invoice_settings.json",
+            "rows": 1
+        },
+        "key_results_metrics": {
+            "file": "0044_key_results_metrics.json",
+            "rows": 3
+        },
+        "language_pack_settings": {
+            "file": "0045_language_pack_settings.json",
+            "rows": 1
+        },
+        "language_settings": {
+            "file": "0046_language_settings.json",
+            "rows": 28
+        },
+        "lead_custom_forms": {
+            "file": "0047_lead_custom_forms.json",
+            "rows": 13
+        },
+        "lead_pipelines": {
+            "file": "0048_lead_pipelines.json",
+            "rows": 1
+        },
+        "lead_sources": {
+            "file": "0049_lead_sources.json",
+            "rows": 6
+        },
+        "lead_status": {
+            "file": "0050_lead_status.json",
+            "rows": 3
+        },
+        "leave_settings": {
+            "file": "0051_leave_settings.json",
+            "rows": 1
+        },
+        "leave_types": {
+            "file": "0052_leave_types.json",
+            "rows": 3
+        },
+        "letter_settings": {
+            "file": "0053_letter_settings.json",
+            "rows": 1
+        },
+        "letter_templates": {
+            "file": "0054_letter_templates.json",
+            "rows": 7
+        },
+        "log_time_for": {
+            "file": "0055_log_time_for.json",
+            "rows": 1
+        },
+        "message_settings": {
+            "file": "0056_message_settings.json",
+            "rows": 1
+        },
+        "module_settings": {
+            "file": "0057_module_settings.json",
+            "rows": 97
+        },
+        "modules": {
+            "file": "0058_modules.json",
+            "rows": 60
+        },
+        "onboarding_notification_settings": {
+            "file": "0059_onboarding_notification_settings.json",
+            "rows": 2
+        },
+        "onboarding_settings": {
+            "file": "0060_onboarding_settings.json",
+            "rows": 1
+        },
+        "onboarding_tasks": {
+            "file": "0061_onboarding_tasks.json",
+            "rows": 7
+        },
+        "package_settings": {
+            "file": "0062_package_settings.json",
+            "rows": 1
+        },
+        "packages": {
+            "file": "0063_packages.json",
+            "rows": 5
+        },
+        "payment_gateway_credentials": {
+            "file": "0064_payment_gateway_credentials.json",
+            "rows": 1
+        },
+        "payroll_cycles": {
+            "file": "0065_payroll_cycles.json",
+            "rows": 4
+        },
+        "payroll_global_settings": {
+            "file": "0066_payroll_global_settings.json",
+            "rows": 1
+        },
+        "payroll_settings": {
+            "file": "0067_payroll_settings.json",
+            "rows": 1
+        },
+        "performance_global_settings": {
+            "file": "0068_performance_global_settings.json",
+            "rows": 1
+        },
+        "performance_settings": {
+            "file": "0069_performance_settings.json",
+            "rows": 1
+        },
+        "permission_role": {
+            "file": "0070_permission_role.json",
+            "rows": 1606
+        },
+        "permission_types": {
+            "file": "0071_permission_types.json",
+            "rows": 10
+        },
+        "permissions": {
+            "file": "0072_permissions.json",
+            "rows": 574
+        },
+        "pipeline_stages": {
+            "file": "0073_pipeline_stages.json",
+            "rows": 7
+        },
+        "policy_settings": {
+            "file": "0074_policy_settings.json",
+            "rows": 1
+        },
+        "project_roadmap_settings": {
+            "file": "0075_project_roadmap_settings.json",
+            "rows": 1
+        },
+        "project_settings": {
+            "file": "0076_project_settings.json",
+            "rows": 1
+        },
+        "project_status_settings": {
+            "file": "0077_project_status_settings.json",
+            "rows": 5
+        },
+        "purchase_management_settings": {
+            "file": "0078_purchase_management_settings.json",
+            "rows": 1
+        },
+        "purchase_notification_settings": {
+            "file": "0079_purchase_notification_settings.json",
+            "rows": 6
+        },
+        "purchase_settings": {
+            "file": "0080_purchase_settings.json",
+            "rows": 1
+        },
+        "push_notification_settings": {
+            "file": "0081_push_notification_settings.json",
+            "rows": 1
+        },
+        "pusher_settings": {
+            "file": "0082_pusher_settings.json",
+            "rows": 1
+        },
+        "qr_code_settings": {
+            "file": "0083_qr_code_settings.json",
+            "rows": 1
+        },
+        "quick_books_settings": {
+            "file": "0084_quick_books_settings.json",
+            "rows": 1
+        },
+        "recruit_application_status": {
+            "file": "0085_recruit_application_status.json",
+            "rows": 5
+        },
+        "recruit_application_status_categories": {
+            "file": "0086_recruit_application_status_categories.json",
+            "rows": 6
+        },
+        "recruit_email_notification_settings": {
+            "file": "0087_recruit_email_notification_settings.json",
+            "rows": 5
+        },
+        "recruit_global_settings": {
+            "file": "0088_recruit_global_settings.json",
+            "rows": 1
+        },
+        "recruit_interview_stages": {
+            "file": "0089_recruit_interview_stages.json",
+            "rows": 3
+        },
+        "recruit_job_types": {
+            "file": "0090_recruit_job_types.json",
+            "rows": 5
+        },
+        "recruit_settings": {
+            "file": "0091_recruit_settings.json",
+            "rows": 1
+        },
+        "recruit_work_experiences": {
+            "file": "0092_recruit_work_experiences.json",
+            "rows": 5
+        },
+        "roles": {
+            "file": "0093_roles.json",
+            "rows": 4
+        },
+        "salary_payment_methods": {
+            "file": "0094_salary_payment_methods.json",
+            "rows": 4
+        },
+        "seo_details": {
+            "file": "0095_seo_details.json",
+            "rows": 6
+        },
+        "server_manager_global_settings": {
+            "file": "0096_server_manager_global_settings.json",
+            "rows": 1
+        },
+        "slack_settings": {
+            "file": "0097_slack_settings.json",
+            "rows": 1
+        },
+        "sms_notification_settings": {
+            "file": "0098_sms_notification_settings.json",
+            "rows": 66
+        },
+        "sms_settings": {
+            "file": "0099_sms_settings.json",
+            "rows": 1
+        },
+        "sms_template_ids": {
+            "file": "0100_sms_template_ids.json",
+            "rows": 65
+        },
+        "smtp_settings": {
+            "file": "0101_smtp_settings.json",
+            "rows": 1
+        },
+        "social_auth_settings": {
+            "file": "0102_social_auth_settings.json",
+            "rows": 1
+        },
+        "stripe_setting": {
+            "file": "0103_stripe_setting.json",
+            "rows": 1
+        },
+        "sub_domain_module_settings": {
+            "file": "0104_sub_domain_module_settings.json",
+            "rows": 1
+        },
+        "support_ticket_types": {
+            "file": "0105_support_ticket_types.json",
+            "rows": 3
+        },
+        "task_settings": {
+            "file": "0106_task_settings.json",
+            "rows": 1
+        },
+        "taskboard_columns": {
+            "file": "0107_taskboard_columns.json",
+            "rows": 5
+        },
+        "testimonials": {
+            "file": "0108_testimonials.json",
+            "rows": 9
+        },
+        "theme_settings": {
+            "file": "0109_theme_settings.json",
+            "rows": 5
+        },
+        "ticket_channels": {
+            "file": "0110_ticket_channels.json",
+            "rows": 4
+        },
+        "ticket_custom_forms": {
+            "file": "0111_ticket_custom_forms.json",
+            "rows": 7
+        },
+        "ticket_email_settings": {
+            "file": "0112_ticket_email_settings.json",
+            "rows": 1
+        },
+        "ticket_settings_for_agents": {
+            "file": "0113_ticket_settings_for_agents.json",
+            "rows": 1
+        },
+        "ticket_types": {
+            "file": "0114_ticket_types.json",
+            "rows": 9
+        },
+        "tr_front_details": {
+            "file": "0115_tr_front_details.json",
+            "rows": 1
+        },
+        "translate_settings": {
+            "file": "0116_translate_settings.json",
+            "rows": 1
+        },
+        "unit_types": {
+            "file": "0117_unit_types.json",
+            "rows": 1
+        },
+        "webhooks_global_settings": {
+            "file": "0118_webhooks_global_settings.json",
+            "rows": 1
+        },
+        "zoom_global_settings": {
+            "file": "0119_zoom_global_settings.json",
+            "rows": 1
+        },
+        "zoom_notification_settings": {
+            "file": "0120_zoom_notification_settings.json",
+            "rows": 1
+        },
+        "zoom_setting": {
+            "file": "0121_zoom_setting.json",
+            "rows": 2
+        }
+    }
+}

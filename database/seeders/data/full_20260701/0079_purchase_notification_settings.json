@@ -1,0 +1,68 @@
+{
+    "table": "purchase_notification_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "slug",
+        "setting_name",
+        "send_email",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "slug": "new-purchase-order",
+            "setting_name": "New Purchase Order",
+            "send_email": "yes",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "slug": "new-purchase-bill",
+            "setting_name": "New Purchase Bill",
+            "send_email": "yes",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "slug": "admin-new-vendor-payment",
+            "setting_name": "Admin New Vendor Payment",
+            "send_email": "yes",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "slug": "update-new-vendor-payment",
+            "setting_name": "Update New Vendor Payment",
+            "send_email": "yes",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "slug": "vendor-credit",
+            "setting_name": "Vendor Credit",
+            "send_email": "yes",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        },
+        {
+            "id": 6,
+            "company_id": 1,
+            "slug": "new-purchase-inventory",
+            "setting_name": "New Purchase Inventory",
+            "send_email": "yes",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

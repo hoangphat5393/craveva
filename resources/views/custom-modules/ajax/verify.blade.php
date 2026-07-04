@@ -34,21 +34,26 @@
     $('#save-module-verify').click(function () {
 
         const url = "{{ route('custom-modules.verify_purchase') }}";
-        $.easyAjax({
-            url: url,
-            container: '#verify-form',
-            type: "POST",
-            messagePosition: 'inline',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-module-verify",
-            data: $('#verify-form').serialize(),
-            success: function (response) {
+        const button = $('#save-module-verify');
+        const buttonHtml = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#verify-form');
+
+        window.apiHttp.postUrlEncoded(url, $('#verify-form').serialize())
+            .then(function (response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
+            })
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function () {
+                button.prop('disabled', false).html(buttonHtml);
+                $.easyUnblockUI('#verify-form');
             }
-        })
+        );
     });
 
 </script>

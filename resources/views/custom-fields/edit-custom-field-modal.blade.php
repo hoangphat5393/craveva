@@ -120,19 +120,27 @@
     });
 
     $('#update-custom-field').click(function() {
-        $.easyAjax({
-            url: "{{ route('custom-fields.update', $field->id) }}",
-            container: '#editForm',
-            type: "POST",
-            data: $('#editForm').serialize(),
-            file: true,
-            blockUI: true,
-            buttonSelector: "#update-custom-field",
-            success: function(response) {
+        const button = $('#update-custom-field');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#editForm');
+
+        window.apiHttp.postForm("{{ route('custom-fields.update', $field->id) }}", document.getElementById('editForm'))
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#editForm');
+            });
     });
 </script>

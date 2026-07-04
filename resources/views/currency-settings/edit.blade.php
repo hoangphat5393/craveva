@@ -157,21 +157,28 @@
         // Save form data
         $('#save-form').click(function () {
             const url = "{{ route('currency-settings.update', [$currency->id]) }}";
-            $.easyAjax({
-                url: url,
-                container: '#editCurrency',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-form",
-                data: $('#editCurrency').serialize(),
-                success: function (response) {
+            const button = $('#save-form');
+            const buttonText = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#editCurrency');
+
+            window.apiHttp.postUrlEncoded(url, $('#editCurrency').serialize())
+                .then((response) => {
                     if (response.status == 'success') {
                         window.location.reload();
                     }
-                }
-
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#editCurrency');
+                });
         });
 
         $('.fetch-exchange-rate').click(function () {
@@ -187,21 +194,26 @@
             let url = "{{ route('currency_settings.exchange_rate', '#cc') }}";
             url = url.replace('#cc', currencyCode);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
+            $.easyBlockUI('body');
+
+            window.apiHttp.get(url, {
+                params: {
                     currencyCode: currencyCode
-                },
-                disableButton: true,
-                messagePosition: "inline",
-                blockUI: true,
-                success: function (response) {
+                }
+            })
+                .then((response) => {
                     if (response.status === 'success') {
                         $('#exchange_rate').val(response.value);
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('body');
+                });
         });
 
         function addCurrencyExchangeKey() {

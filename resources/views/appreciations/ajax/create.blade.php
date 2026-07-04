@@ -110,21 +110,18 @@
 
         $('#save-appreciation').click(function() {
             const url = "{{ route('appreciations.store') }}";
+            const button = $('#save-appreciation');
+            const buttonText = button.html();
 
             var note = document.getElementById('summery').children[0].innerHTML;
 
             document.getElementById('summery-text').value = note;
 
-            $.easyAjax({
-                url: url,
-                container: '#save-notice-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-appreciation",
-                data: $('#save-notice-data-form').serialize(),
-                file: true,
-                success: function(response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-notice-data-form');
+
+            window.apiHttp.postForm(url, document.getElementById('save-notice-data-form'))
+                .then((response) => {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -133,8 +130,17 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#save-notice-data-form');
+                });
         });
 
         init(RIGHT_MODAL);

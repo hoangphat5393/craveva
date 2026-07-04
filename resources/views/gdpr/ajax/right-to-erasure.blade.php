@@ -26,13 +26,16 @@
 
 <script>
     $(body).on('click', '#save-right-to-erasure-data', function() {
-        $.easyAjax({
-            url: "{{route('gdpr.update_consent_block')}}",
-            container: '#edit-right-to-erasure',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-right-to-erasure-data",
-            data: $('#edit-right-to-erasure').serialize(),
-        })
+        $('#save-right-to-erasure-data').prop('disabled', true);
+        $.easyBlockUI('#edit-right-to-erasure');
+
+        window.apiHttp.postUrlEncoded("{{route('gdpr.update_consent_block')}}", $('#edit-right-to-erasure').serialize())
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-right-to-erasure-data').prop('disabled', false);
+                $.easyUnblockUI('#edit-right-to-erasure');
+            });
     })
 </script>

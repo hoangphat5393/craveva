@@ -219,23 +219,25 @@
 
             var url = "{{ route('finance-report.chart') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#task-chart-card',
-                blockUI: true,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#task-chart-card');
+
+            window.apiHttp.postUrlEncoded(url, {
                     startDate: startDate,
                     endDate: endDate,
                     projectID: projectID,
                     clientID: clientID,
                     _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     $('#task-chart-card .card-body').html(response.html);
                     $('#totalEarnings').html(response.totalEarnings);
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#task-chart-card');
+                });
         }
         pieChart();
 

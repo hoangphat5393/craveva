@@ -226,19 +226,16 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('#invoices-recurring-table');
+
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function (error) {
+                        $.handleApiFormError(error);
+                    }).finally(function () {
+                        $.easyUnblockUI('#invoices-recurring-table');
                     });
                 }
             });
@@ -251,19 +248,18 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#invoices-recurring-table',
-                blockUI: true,
-                data: {
+            $.easyBlockUI('#invoices-recurring-table');
+
+            window.apiHttp.postUrlEncoded(url, {
                     '_token': token
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        showTable();
-                    }
+            }).then(function(response) {
+                if (response.status == "success") {
+                    showTable();
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#invoices-recurring-table');
             });
         });
 
@@ -274,17 +270,17 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'GET',
-                container: '#invoices-recurring-table',
-                blockUI: true,
-                url: url,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $.unblockUI();
-                        showTable();
-                    }
+            $.easyBlockUI('#invoices-recurring-table');
+
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $.unblockUI();
+                    showTable();
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#invoices-recurring-table');
             });
         });
 
@@ -303,16 +299,14 @@
             var id =  $(this).data('invoice-id');
             var status = $(this).val();
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {'_token': token, invoiceId: id, status: status},
-                success: function (data) {
-                    if (data.status == "success") {
-                        showTable();
-                    }
+            window.apiHttp.postUrlEncoded(url, {'_token': token, invoiceId: id, status: status})
+                .then(function (data) {
+                if (data.status == "success") {
+                    showTable();
                 }
-            })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            });
         });
 
     </script>

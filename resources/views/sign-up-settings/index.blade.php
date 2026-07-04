@@ -80,16 +80,28 @@
 
         $('#save-form').click(function () {
             var url = "{{ route('sign-up-settings.update', company()->id) }}";
+            var button = $('#save-form');
+            var buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-form",
-                data: $('#editSettings').serialize(),
-            })
+            button.prop('disabled', true);
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+                .then((response) => {
+                    if (response.status === 'success' && typeof showTableMessage === 'function') {
+                        showTableMessage(response.message, 'success');
+                    }
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#editSettings');
+                });
         });
     </script>
 @endpush

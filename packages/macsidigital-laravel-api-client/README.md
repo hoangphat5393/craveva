@@ -925,7 +925,7 @@ If you discover any security-related issues, please email [info@macsi.co.uk](mai
 
 - [Colin Hall](https://github.com/colinhall17)
 - [MacsiDigital](https://github.com/MacsiDigital)
-- [All Contributors](../../contributors)
+- [All Contributors](https://github.com/macsidigital/laravel-api-client/graphs/contributors)
 
 We use a lot of Laravel type functions taken directly from Laravel, or taken and modified so we also have to credit the Laravel team.
 

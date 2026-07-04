@@ -17,7 +17,7 @@ Customer invoices — payments, credit notes.
 ## Who uses it / access
 
 - Requires module **`invoices`** in `user_modules()` and matching permission.
-- Role details: [01-ROLES-AND-ACCESS.md](../01-ROLES-AND-ACCESS.md).
+- Role details: [01-ROLES-AND-ACCESS.md](../../01-ROLES-AND-ACCESS.md).
 
 ## How to open the screen
 
@@ -37,7 +37,7 @@ Finance → Invoices
 ## Expected results
 
 - On successful save: return to list or close modal; new/updated row on DataTable.
-- AJAX form: toast success; validation errors → red border + toast (see [UI-CONVENTIONS.md](../REFERENCE/UI-CONVENTIONS.md)).
+- AJAX form: toast success; validation errors → red border + toast (see [UI-CONVENTIONS.md](../../REFERENCE/UI-CONVENTIONS.md)).
 
 ## Common errors
 
@@ -50,5 +50,5 @@ Finance → Invoices
 
 ## Related
 
-[20-so-do-invoice-warehouse.md](../flows/20-so-do-invoice-warehouse.md)
+[20-so-do-invoice-warehouse.md](../../flows/20-so-do-invoice-warehouse.md)
 

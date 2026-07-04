@@ -208,25 +208,34 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                data: {
-                    '_token': token,
-                    year: year,
-                    month: month,
-                    department: department,
-                    userId: userId,
-                    view_type: viewType,
-                    week_start_date: weekStartDate,
-                },
-                url: url,
-                blockUI: loading,
-                container: '.content-wrapper',
-                success: function(response) {
+            if (loading) {
+                $.easyBlockUI('.content-wrapper');
+            }
+
+            window.apiHttp.get(url, {
+                    params: {
+                        '_token': token,
+                        year: year,
+                        month: month,
+                        department: department,
+                        userId: userId,
+                        view_type: viewType,
+                        week_start_date: weekStartDate,
+                    }
+                })
+                .then(function(response) {
                     $('#attendance-data').html(response.data);
                     $('#attendance-data #change-year').selectpicker("refresh");
                     $('#attendance-data #change-month').selectpicker("refresh");
-                }
-            });
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    if (loading) {
+                        $.easyUnblockUI('.content-wrapper');
+                    }
+                });
 
         }
 
@@ -301,20 +310,22 @@
             var url = "{{ route('shifts-change.approve_request', ':id') }}";
             url = url.replace(':id', id);
             var token = '{{ csrf_token() }}';
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                blockUI: true,
-                container: '.content-wrapper',
-                data: {
+            $.easyBlockUI('.content-wrapper');
+
+            window.apiHttp.post(url, {
                     id: id,
                     _token: token
-                },
-                success: function(data) {
+                })
+                .then(function(data) {
                     showTable();
                     $(MODAL_DEFAULT).modal('hide');
-                }
-            })
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('.content-wrapper');
+                });
 
         });
 
@@ -323,20 +334,22 @@
             var url = "{{ route('shifts-change.decline_request', ':id') }}";
             url = url.replace(':id', id);
             var token = '{{ csrf_token() }}';
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                blockUI: true,
-                container: '.content-wrapper',
-                data: {
+            $.easyBlockUI('.content-wrapper');
+
+            window.apiHttp.post(url, {
                     id: id,
                     _token: token
-                },
-                success: function(data) {
+                })
+                .then(function(data) {
                     showTable();
                     $(MODAL_DEFAULT).modal('hide');
-                }
-            })
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('.content-wrapper');
+                });
 
         });
     </script>

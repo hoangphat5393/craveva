@@ -104,18 +104,28 @@ $manageContractTypePermission = user()->permission('manage_contract_type');
             document.getElementById('description-text').value = note;
 
             const url = "{{ route('contract-template.update', $contract->id) }}";
+            const button = $('#save-contract-form');
+            const buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#save-contract-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-contract-form",
-                file: true,
-                data: $('#save-contract-data-form').serialize(),
-                redirect: true
-            })
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-contract-data-form');
+
+            window.apiHttp.postForm(url, document.getElementById('save-contract-data-form'))
+                .then((response) => {
+                    if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    }
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#save-contract-data-form');
+                });
         });
 
         quillImageLoad('#description');

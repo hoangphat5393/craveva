@@ -54,23 +54,25 @@
             $('#submit-login').click(function () {
 
                 var url = "{{ route('password.update') }}";
-                $.easyAjax({
-                    url: url,
-                    container: '#reset-password-form',
-                    disableButton: true,
-                    blockUI: true,
-                    buttonSelector: "#submit-login",
-                    type: "POST",
-                    data: $('#reset-password-form').serialize(),
-                    success: function (response) {
+                $('#submit-login').prop('disabled', true);
+                $.easyBlockUI('#reset-password-form');
+
+                window.apiHttp.postUrlEncoded(url, $('#reset-password-form').serialize())
+                    .then(function (response) {
                         $('#success-msg').removeClass('d-none');
                         $('#success-msg').html(response.message);
                         $('.group').remove();
                         setTimeout(() => {
                             window.location.href = "{{ route('login') }}"
                         }, 3000);
-                    }
-                })
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    })
+                    .finally(function() {
+                        $('#submit-login').prop('disabled', false);
+                        $.easyUnblockUI('#reset-password-form');
+                    });
             });
 
         </script>

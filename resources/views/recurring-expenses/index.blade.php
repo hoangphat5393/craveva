@@ -243,22 +243,18 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('recurring-expenses.change_status') }}",
-                    type: "POST",
-                    data: {
+                window.apiHttp.postUrlEncoded("{{ route('recurring-expenses.change_status') }}", {
                         '_token': token,
                         expenseId: id,
                         status: status
-                    },
-
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                            resetActionButtons();
-                            deSelectAll();
-                        }
+                }).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                        resetActionButtons();
+                        deSelectAll();
                     }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
                 });
             }
         });
@@ -289,18 +285,12 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function (error) {
+                        $.handleApiFormError(error);
                     });
                 }
             });
@@ -313,21 +303,19 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
 
             var url = "{{ route('expenses.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                    }
+            $('#quick-action-apply').prop('disabled', true);
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
                 }
-            })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $('#quick-action-apply').prop('disabled', false);
+            });
         };
     </script>
 @endpush

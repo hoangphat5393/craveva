@@ -58,20 +58,20 @@
         let invoice_id = '{{$invoiceID}}';
 
         var url = "{{ route('front.save_stripe_detail')}}";
-        $.easyAjax({
-            container: '#stripeAddress',
-            buttonSelector: "#save-stripe-detail",
-            disableButton: true,
-            blockUI: true,
-            type:'POST',
-            url:url,
-            data: $('#stripeAddress').serialize()+'&invoice_id='+invoice_id,
-            success: function(res) {
+        $.easyBlockUI('#stripeAddress');
+        $('#save-stripe-detail').prop('disabled', true);
+
+        window.apiHttp.postUrlEncoded(url, $('#stripeAddress').serialize()+'&invoice_id='+invoice_id)
+            .then(function(res) {
                 $('#addressDetail').hide();
                 $('.modal-footer').hide();
                 $('#modelHeading').html('@lang('app.cardDetails')');
                 $('#stripe-modal').html(res.view);
-            }
-        })
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#stripeAddress');
+                $('#save-stripe-detail').prop('disabled', false);
+            });
     })
 </script>

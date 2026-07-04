@@ -1,0 +1,89 @@
+{
+    "table": "seo_details",
+    "columns": [
+        "id",
+        "page_name",
+        "seo_title",
+        "seo_keywords",
+        "seo_description",
+        "seo_author",
+        "language_setting_id",
+        "og_image",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "page_name": "home",
+            "seo_title": "Home",
+            "seo_keywords": "best crm,hr management software, web hr software, hr software online, free hr software, hr software for sme, hr management software for small business, cloud hr software, online hr management software",
+            "seo_description": "CRAVEVA saas is easy to use CRM software that is designed for B2B. It include  everything you need to run your businesses. like manage customers, projects, invoices, estimates, timelogs, cont",
+            "seo_author": "CRAVEVA",
+            "language_setting_id": 1,
+            "og_image": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "page_name": "feature",
+            "seo_title": "Features",
+            "seo_keywords": "best crm,hr management software, web hr software, hr software online, free hr software, hr software for sme, hr management software for small business, cloud hr software, online hr management software",
+            "seo_description": "CRAVEVA saas is easy to use CRM software that is designed for B2B. It include  everything you need to run your businesses. like manage customers, projects, invoices, estimates, timelogs, cont",
+            "seo_author": "CRAVEVA",
+            "language_setting_id": 1,
+            "og_image": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "page_name": "pricing",
+            "seo_title": "Pricing",
+            "seo_keywords": "best crm,hr management software, web hr software, hr software online, free hr software, hr software for sme, hr management software for small business, cloud hr software, online hr management software",
+            "seo_description": "CRAVEVA saas is easy to use CRM software that is designed for B2B. It include  everything you need to run your businesses. like manage customers, projects, invoices, estimates, timelogs, cont",
+            "seo_author": "CRAVEVA",
+            "language_setting_id": 1,
+            "og_image": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "page_name": "contact",
+            "seo_title": "Contact",
+            "seo_keywords": "best crm,hr management software, web hr software, hr software online, free hr software, hr software for sme, hr management software for small business, cloud hr software, online hr management software",
+            "seo_description": "CRAVEVA saas is easy to use CRM software that is designed for B2B. It include  everything you need to run your businesses. like manage customers, projects, invoices, estimates, timelogs, cont",
+            "seo_author": "CRAVEVA",
+            "language_setting_id": 1,
+            "og_image": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "page_name": "terms-of-use",
+            "seo_title": "Terms of use",
+            "seo_keywords": "best crm,hr management software, web hr software, hr software online, free hr software, hr software for sme, hr management software for small business, cloud hr software, online hr management software",
+            "seo_description": "CRAVEVA saas is easy to use CRM software that is designed for B2B. It include  everything you need to run your businesses. like manage customers, projects, invoices, estimates, timelogs, cont",
+            "seo_author": "CRAVEVA",
+            "language_setting_id": 1,
+            "og_image": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 6,
+            "page_name": "privacy-policy",
+            "seo_title": "Privacy Policy",
+            "seo_keywords": "best crm,hr management software, web hr software, hr software online, free hr software, hr software for sme, hr management software for small business, cloud hr software, online hr management software",
+            "seo_description": "CRAVEVA saas is easy to use CRM software that is designed for B2B. It include  everything you need to run your businesses. like manage customers, projects, invoices, estimates, timelogs, cont",
+            "seo_author": "CRAVEVA",
+            "language_setting_id": 1,
+            "og_image": null,
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

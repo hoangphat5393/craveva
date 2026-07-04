@@ -115,21 +115,26 @@
         $('#save-bankaccount').click(function() {
         const url = "{{ route('bankaccounts.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-bankaccount-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-bankaccount",
-                data: $('#save-bankaccount-data-form').serialize(),
-                success: function(response) {
+            const button = $('#save-bankaccount');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-bankaccount-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#save-bankaccount-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         window.location.href = response.redirectUrl;
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#save-bankaccount-data-form');
                 }
-            });
+            );
         });
 
        // show/hide bank accoun detail

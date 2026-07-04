@@ -70,20 +70,22 @@
         else{
             var url = "{{ route('taskboards.store') }}";
         }
-        $.easyAjax({
-            url: url,
-            container: '#createTaskBoardColumn',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-board-column",
-            type: "POST",
-            data: $('#createTaskBoardColumn').serialize(),
-            success: function(response) {
+        $('#save-board-column').prop('disabled', true);
+        $.easyBlockUI('#createTaskBoardColumn');
+
+        window.apiHttp.postUrlEncoded(url, $('#createTaskBoardColumn').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-board-column').prop('disabled', false);
+                $.easyUnblockUI('#createTaskBoardColumn');
+            });
     });
 
 </script>

@@ -50,19 +50,24 @@
 
     $('#save-tax').click(function() {
         var url = "{{ route('taxes.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createTax',
-            type: "POST",
-            data: $('#createTax').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createTax');
+
+        window.apiHttp.postUrlEncoded(url, $('#createTax').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     $('#tax_id').html(response.data);
                     $('#tax_id').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('#createTax');
+            });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -81,24 +86,28 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#row-' + id);
+
+            window.apiHttp.postUrlEncoded(url, {
                     'value': value,
                     'type': type,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+                })
+                .then((response) => {
                     if (response.status == 'success') {
                         $('#tax_id').html(response.data);
                         $('#tax_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#row-' + id);
+                });
         }
     });
 

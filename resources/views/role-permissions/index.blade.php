@@ -68,16 +68,13 @@
             var roleId = $(this).data('role-id');
             var url = "{{ route('role-permissions.permissions') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: '.settings-box',
-                type: "POST",
-                data: {
+            $.easyBlockUI('.settings-box');
+
+            window.apiHttp.postUrlEncoded(url, {
                     'roleId': roleId,
                     '_token': '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then((response) => {
                     if (response.status == 'success') {
 
                         if ($('#role-permission-' + roleId).html() != '') {
@@ -91,8 +88,15 @@
                             }, 300);
                         }
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('.settings-box');
+                });
         });
 
         $('body').on('click', '.reset-permission', function() {
@@ -119,21 +123,25 @@
 
                     var url = "{{ route('role-permissions.reset_permissions') }}";
 
-                    $.easyAjax({
-                        url: url,
-                        blockUI: true,
-                        container: '.settings-box',
-                        type: "POST",
-                        data: {
+                    $.easyBlockUI('.settings-box');
+
+                    window.apiHttp.postUrlEncoded(url, {
                             'roleId': roleId,
                             '_token': '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
+                        })
+                        .then((response) => {
                             if (response.status == 'success') {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        })
+                        .finally(() => {
+                            $.easyUnblockUI('.settings-box');
+                        });
                 }
             });
         });
@@ -144,18 +152,22 @@
             var permissionType = $(this).val();
             var url = "{{ route('role-permissions.store') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: '.main-container',
-                type: "POST",
-                data: {
+            $.easyBlockUI('.main-container');
+
+            window.apiHttp.postUrlEncoded(url, {
                     'roleId': roleId,
                     'permissionId': permissionId,
                     'permissionType': permissionType,
                     '_token': '{{ csrf_token() }}'
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('.main-container');
+                });
         });
 
         $('body').on('click', '.show-custom-permission', function() {
@@ -165,17 +177,14 @@
             var url = "{{ route('role-permissions.custom_permissions') }}";
             var showCustomPermissionButton = $(this);
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: '#role-permission-' + roleId,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#role-permission-' + roleId);
+
+            window.apiHttp.postUrlEncoded(url, {
                     'roleId': roleId,
                     'moduleId': moduleId,
                     '_token': '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then((response) => {
                     if (response.status == 'success') {
                         if ($('#role-permission-' + roleId).find(
                                 'table.permisison-table tbody #module-custom-permission-' + moduleId)
@@ -195,8 +204,15 @@
                             .find(".svg-inline--fa")
                             .toggleClass("fa-chevron-down fa-chevron-up");
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#role-permission-' + roleId);
+                });
         });
 
 

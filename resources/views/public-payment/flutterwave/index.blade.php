@@ -40,14 +40,15 @@
     $('#save-flutterwave-detail').click( function () {
 
         var url = "{{ route('flutterwave_public', $id)}}";
-        $.easyAjax({
-            container: '#flutterwaveDetails',
-            buttonSelector: "#save-flutterwave-detail",
-            disableButton: true,
-            blockUI: true,
-            type:'POST',
-            url:url,
-            data: $('#flutterwaveDetails').serialize()
-        })
+        $.easyBlockUI('#flutterwaveDetails');
+        $('#save-flutterwave-detail').prop('disabled', true);
+
+        window.apiHttp.postUrlEncoded(url, $('#flutterwaveDetails').serialize())
+            .catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#flutterwaveDetails');
+                $('#save-flutterwave-detail').prop('disabled', false);
+            });
     })
 </script>

@@ -78,6 +78,7 @@ class DeliveryOrderDataTable extends BaseDataTable
                 $canView = FlowPermission::allowsAlias('grn.view');
                 $canUpdate = FlowPermission::allowsAlias('grn.update');
                 $canDelete = FlowPermission::allowsAlias('grn.delete');
+                $isReceived = (string) $row->status === 'received' || (bool) $row->inbound_stock_applied;
                 $action = '<div class="task_view">';
                 $action .= '<div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
@@ -92,7 +93,7 @@ class DeliveryOrderDataTable extends BaseDataTable
                                 </a>';
                 }
 
-                if ($canUpdate) {
+                if ($canUpdate && ! $isReceived) {
                     $action .= '<a class="dropdown-item f-14 text-dark openRightModal" href="' . route($editRoute, $row->id) . '">
                                     <i class="fa fa-edit mr-2"></i>' . trans('app.edit') . '
                                 </a>';
@@ -104,7 +105,7 @@ class DeliveryOrderDataTable extends BaseDataTable
                                 </a>';
                 }
 
-                if ($canDelete) {
+                if ($canDelete && ! $isReceived) {
                     $action .= '<a class="dropdown-item f-14 text-dark delete-table-row" href="javascript:;" data-id="' . $row->id . '">
                                     <i class="fa fa-trash mr-2"></i>' . trans('app.delete') . '
                                 </a>';
@@ -147,8 +148,9 @@ class DeliveryOrderDataTable extends BaseDataTable
             })
             ->editColumn('status', function ($row) {
                 $canChangeStatus = FlowPermission::allowsAlias('grn.change_status');
+                $statusLocked = (string) $row->status === 'received' || (bool) $row->inbound_stock_applied;
                 $status = '<div class="dropdown bootstrap-select form-control select-picker change-do-status">';
-                $status .= '<select class="form-control select-picker change-do-status" data-delivery-id="' . $row->id . '"' . ($canChangeStatus ? '' : ' disabled') . '>';
+                $status .= '<select class="form-control select-picker change-do-status" data-delivery-id="' . $row->id . '"' . ($canChangeStatus && ! $statusLocked ? '' : ' disabled') . '>';
 
                 $status .= '<option value="draft" ' . ($row->status == 'draft' ? 'selected' : '') .
                     ' data-content="<i class=\'fa fa-circle mr-2 text-dark\'></i> Draft">Draft</option>';

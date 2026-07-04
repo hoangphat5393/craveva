@@ -68,21 +68,28 @@ $(".select-picker").selectpicker();
 
     // Save form data
         $('#save-form').click(function () {
-            $.easyAjax({
-                url: "{{ route('custom-link-settings.store') }}",
-                container: '#addCustomLink',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                disableButton: true,
-                buttonSelector: "#save-form",
-                data: $('#addCustomLink').serialize(),
-                success: function (response) {
+            const button = $('#save-form');
+            const buttonText = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#addCustomLink');
+
+            window.apiHttp.postUrlEncoded("{{ route('custom-link-settings.store') }}", $('#addCustomLink').serialize())
+                .then((response) => {
                     if (response.status == 'success') {
                         window.location.reload();
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#addCustomLink');
+                });
         });
 
 </script>

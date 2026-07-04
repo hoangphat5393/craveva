@@ -90,20 +90,19 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                $.easyBlockUI('#nav-tabContent');
+                window.apiHttp.delete(url, token)
+                    .then(function (response) {
                         if (response.status == "success") {
                             $('#category-' + id).fadeOut();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#nav-tabContent');
+                    });
             }
         });
     });

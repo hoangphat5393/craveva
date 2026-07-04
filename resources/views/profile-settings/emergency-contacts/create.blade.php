@@ -54,20 +54,25 @@
 <script>
     $('#save-contact').click(function () {
         const url = "{{ route('emergency-contacts.store') }}";
+        const $btn = $('#save-contact');
+        const previousHtml = $btn.html();
 
-        $.easyAjax({
-            url: url,
-            container: '#save-emergency-contact-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-contact",
-            data: $('#save-emergency-contact-form').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#save-emergency-contact-form');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postUrlEncoded(url, $('#save-emergency-contact-form').serialize())
+            .then(function (response) {
                 if (response.status === 'success') {
                     $('#example tbody').html(response.html);
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#save-emergency-contact-form');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 </script>

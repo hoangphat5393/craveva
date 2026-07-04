@@ -120,13 +120,16 @@
 
         var url = "{{ route('profile.update', [user()->id]) }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#rightToAccess',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-right-to-access-data",
-            data: $('#rightToAccess').serialize(),
-        })
+        $('#save-right-to-access-data').prop('disabled', true);
+        $.easyBlockUI('#rightToAccess');
+
+        window.apiHttp.postUrlEncoded(url, $('#rightToAccess').serialize())
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $('#save-right-to-access-data').prop('disabled', false);
+                $.easyUnblockUI('#rightToAccess');
+            });
     })
 </script>

@@ -191,19 +191,21 @@
             var url = "{{ route('employees.by_department', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-attendance-data-form',
-                type: "GET",
-                blockUI: true,
-                data: $('#save-attendance-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#save-attendance-data-form');
+
+            window.apiHttp.get(url + '?' + $('#save-attendance-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#selectEmployee').html(response.data);
                         $('#selectEmployee').selectpicker('refresh');
                     }
-                }
-            });
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#save-attendance-data-form');
+                });
         });
 
         $('#save-attendance-form').click(function() {
@@ -223,16 +225,20 @@
 
             const url = "{{ route('shifts.bulk_shift') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-attendance-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-attendance-form",
-                data: $('#save-attendance-data-form').serialize(),
-            });
+            const button = $('#save-attendance-form');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#save-attendance-data-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#save-attendance-data-form').serialize())
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#save-attendance-data-form');
+                });
         });
 
         $("input[name=assign_shift_by]").click(function() {

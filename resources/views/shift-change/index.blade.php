@@ -227,19 +227,24 @@ $addTimelogPermission = user()->permission('add_timelogs');
             var url = "{{ route('shifts-change.approve_request', ':id') }}";
             url = url.replace(':id', id);
             var token = '{{ csrf_token() }}';
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                blockUI: true,
-                container: '.content-wrapper',
-                data: {
+
+            $.easyBlockUI('.content-wrapper');
+
+            window.apiHttp.postUrlEncoded(url, {
                     id: id,
                     _token: token
-                },
-                success: function(data) {
+                })
+                .then(() => {
                     showTable();
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('.content-wrapper');
+                });
 
         });
 
@@ -248,19 +253,24 @@ $addTimelogPermission = user()->permission('add_timelogs');
             var url = "{{ route('shifts-change.decline_request', ':id') }}";
             url = url.replace(':id', id);
             var token = '{{ csrf_token() }}';
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                blockUI: true,
-                container: '.content-wrapper',
-                data: {
+
+            $.easyBlockUI('.content-wrapper');
+
+            window.apiHttp.postUrlEncoded(url, {
                     id: id,
                     _token: token
-                },
-                success: function(data) {
+                })
+                .then(() => {
                     showTable();
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('.content-wrapper');
+                });
 
         });
 
@@ -270,23 +280,30 @@ $addTimelogPermission = user()->permission('add_timelogs');
             }).get();
 
             var url = "{{ route('shifts-change.apply_quick_action') }}?row_ids=" + rowdIds;
+            var button = $('#quick-action-apply');
+            var buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                blockUI: true,
-                success: function(response) {
+            button.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then((response) => {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#quick-action-form');
+                });
         };
     </script>
 

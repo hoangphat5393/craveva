@@ -61,20 +61,28 @@
     $(".select-picker").selectpicker();
 
     $('#save-language').click(function () {
-        $.easyAjax({
-            container: '#editLanguage',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-language",
-            url: "{{route('language_settings.update_data', $languageSetting->id)}}",
-            data: $('#editLanguage').serialize(),
-            success: function (response) {
+        const button = $('#save-language');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#editLanguage');
+
+        window.apiHttp.postUrlEncoded("{{route('language_settings.update_data', $languageSetting->id)}}", $('#editLanguage').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#editLanguage');
+            });
     });
 
 </script>

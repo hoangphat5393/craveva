@@ -3,7 +3,6 @@
 Central index for function-level documentation groups:
 
 - `FUNC_BUG`
-- `FUNC_IMPORT`
 - `FUNC_IMPROVE`
 - `FUNC_LOGIC`
 - `FUNC_TEST`
@@ -14,39 +13,32 @@ This file is the root navigation layer only. Detailed business flow and module l
 
 | Group          | Purpose                                                                 | Primary entry file      |
 | -------------- | ----------------------------------------------------------------------- | ----------------------- |
-| `FUNC_BUG`     | Bugs, incidents, diagnostics, environment-specific fixes                | `FUNC_BUG/REGISTRY.md`  |
-| `FUNC_IMPORT`  | Import design, implementation prompts, trackers                         | `FUNC_IMPORT/INDEX.md`  |
-| `FUNC_IMPROVE` | Improvement proposals, refactor plans, optimization tasks               | `FUNC_IMPROVE/INDEX.md` |
+| `FUNC_BUG`     | Bugs, incidents, diagnostics, environment-specific fixes                | `FUNC_BUG/INDEX.md`     |
+| `FUNC_IMPROVE` | Improvement proposals, refactor plans, optimization tasks, import specs | `FUNC_IMPROVE/INDEX.md` |
 | `FUNC_LOGIC`   | Master business logic, functional flow, audits, cross-module references | `FUNC_LOGIC/INDEX.md`   |
 | `FUNC_TEST`    | Test strategy, test cases, UAT execution matrix                         | `FUNC_TEST/INDEX.md`    |
-| `FUNC_REPORT`  | Cleanup audit logs, infra snapshots                                     | `FUNC_REPORT/INDEX.md`  |
-
-**Báo cáo số dòng code (không thuộc nhóm FUNC\_\*):** `LOG_REPORT/README.md` — thư mục **`LOG_REPORT/`** (đổi tên từ `LOC_REPORT/`, 2026-05-12). Mục lục: `LOG_REPORT/INDEX.md`.
 
 ## 2) Module Master Guides (Single source per module)
 
 Use one master guide per module/domain, then link detailed files under that master:
 
 - Warehouse: `FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`
-- Maolin Import domain: `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`
-- Sales/Fulfillment docs index: `FUNC_LOGIC/SALES_FULFILLMENT_DOCS_INDEX.md`
+- Maolin Import domain: `FUNC_LOGIC/MAOLIN_BUSINESS.md`
+- Sales/Fulfillment docs index: `FUNC_LOGIC/INDEX.md`
 
 When a module needs deep details (product/client/production integrations), keep those in focused files and reference them from the module master guide.
 
 ## 3) Group Index Files (Level 2 navigation)
 
-- `FUNC_BUG/REGISTRY.md` — bảng tra cứu bug; `FUNC_BUG/README.md` — hướng dẫn thư mục
-- `FUNC_IMPORT/INDEX.md` — import specs (gộp 2026-05-12)
+- `FUNC_BUG/INDEX.md` — mục lục; `FUNC_BUG/SO_LOI.md` — bảng tra cứu bug; `FUNC_BUG/README.md` — hướng dẫn thư mục
 - `FUNC_IMPROVE/INDEX.md` — cải tiến & backlog; **retired:** `FUNC_IMPROVE/LEGACY_ARCHIVE.md`
 - `FUNC_LOGIC/INDEX.md` — **retired snapshots:** `FUNC_LOGIC/LEGACY_ARCHIVE.md`
 - `FUNC_TEST/INDEX.md`
-- `FUNC_REPORT/INDEX.md` — cleanup log + Cloud SQL archive
-- `LOG_REPORT/INDEX.md` — snapshot LOC backend
 - `SPECIFICATION/INDEX.md` — spec + snapshot infra
 
 1. Keep this index updated when adding new major doc groups or new module master guides.
 2. Do not duplicate full content here; only route users to source documents.
-3. For each new `.md` file, apply the standard header template in `MD_HEADER_TEMPLATE.md`.
+3. For each new `.md` file, apply the standard header template in `docs/documentation/MD_HEADER_TEMPLATE.md`.
 4. If a file becomes obsolete, mark status as `deprecated` and point to replacement.
 5. Prefer additive updates and preserve historical context in dedicated archival files.
 

@@ -170,15 +170,20 @@
         function submitForm() {
             CHANGE_DETECTED = false;
             const data = ($('#editSettings').serialize()).replace("_method=PUT", "_method=POST");
-            $.easyAjax({
-                url: "{{ route('storage-settings.store') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-form",
-                data: data,
-            })
+            const button = $('#save-form');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded("{{ route('storage-settings.store') }}", data)
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#editSettings');
+                });
         }
 
         $('body').on('click', '#local-to-aws', function () {

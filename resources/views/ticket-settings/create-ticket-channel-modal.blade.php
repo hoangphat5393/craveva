@@ -26,13 +26,10 @@
 <script>
     // save channel
     $('#save-ticket-channel').click(function() {
-        $.easyAjax({
-            url: "{{ route('ticketChannels.store') }}",
-            container: '#addTicketChannel',
-            type: "POST",
-            blockUI: true,
-            data: $('#addTicketChannel').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#addTicketChannel');
+
+        window.apiHttp.postUrlEncoded("{{ route('ticketChannels.store') }}", $('#addTicketChannel').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     if ($('#ticket_channel_id').length > 0) {
                         $('#ticket_channel_id').html(response.optionData);
@@ -42,8 +39,13 @@
                         window.location.reload();
                     }
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#addTicketChannel');
+            });
     });
 
 </script>

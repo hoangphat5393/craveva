@@ -265,20 +265,20 @@ $viewEstimatePermission = user()->permission('view_estimates');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('#estimate-request-table');
+
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#estimate-request-table');
+                        });
                 }
             });
         });
@@ -290,21 +290,23 @@ $viewEstimatePermission = user()->permission('view_estimates');
 
             var url = "{{ route('estimate-request.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                blockUI: true,
-                success: function(response) {
+            $('#quick-action-apply').prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $('#quick-action-apply').prop('disabled', false);
+                    $.easyUnblockUI('#quick-action-form');
+                });
         };
 
         $('body').on('click', '.sendButton', function() {
@@ -314,20 +316,22 @@ $viewEstimatePermission = user()->permission('view_estimates');
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#estimate-request-table',
-                blockUI: true,
-                data: {
+            $.easyBlockUI('#estimate-request-table');
+
+            window.apiHttp.postUrlEncoded(url, {
                     '_token': token
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == "success") {
                         window.LaravelDataTables["estimate-request-table"].draw(true);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#estimate-request-table');
+                });
         });
 
         $('body').on('click', '.change-status', function() {

@@ -25,24 +25,28 @@
         let token = "{{ csrf_token() }}";
         let status = 'rejected';
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            data: {
+        $('#save-confirm_paid').prop('disabled', true);
+        $.easyBlockUI('.modal-content');
+
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token,
                 id: {{ $estimateRequest->id }},
                 status: status,
                 reason: $('#reason').val(),
-            },
-            success: function(response) {
+            })
+            .then(function(response) {
                 if (response.status == "success") {
                     $(MODAL_LG).modal('hide');
                     location.reload();
                     showTable();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-confirm_paid').prop('disabled', false);
+                $.easyUnblockUI('.modal-content');
+            });
     });
 </script>

@@ -312,20 +312,27 @@
     });
 
     $('#save-leave-setting').click(function() {
-        $.easyAjax({
-            container: '#editLeave',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-leave-setting",
-            errorPosition: 'inline',
-            url: "{{ route('leaveType.update', $leaveType->id) }}",
-            data: $('#editLeave').serialize(),
-            success: function(response) {
+        const button = $('#save-leave-setting');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#editLeave');
+
+        window.apiHttp.postUrlEncoded("{{ route('leaveType.update', $leaveType->id) }}", $('#editLeave').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#editLeave');
+            });
     });
 </script>

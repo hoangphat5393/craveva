@@ -126,15 +126,25 @@
 
         $('body').on('click', '#save-file-upload-setting-form', function () {
             const url = "{{ route('app-settings.update', [companyOrGlobalSetting()->id]) }}?page=file-upload-setting";
+            const $btn = $('#save-file-upload-setting-form');
+            const previousHtml = $btn.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-file-upload-setting-form",
-                data: $('#editSettings').serialize(),
-            })
+            $.easyBlockUI('#editSettings');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+                .then(function(response) {
+                    if (response.status === 'success' && typeof response.message !== 'undefined') {
+                        $.showApiSuccessToast(response.message);
+                    }
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
     });
 

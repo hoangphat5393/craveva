@@ -44,21 +44,20 @@
                             @endforeach
                         </x-forms.select>
                     </div>
+                </div>
 
-                    <div class="col-md-12">
-                        <div class="d-flex flex-wrap">
-                            <div class="col-md-6 col-sm-12 p-0 mb-lg-0 mb-md-0 mb-3 pr-md-2">
-                                <x-forms.textarea fieldName="notes" fieldId="notes" :fieldLabel="__('app.note')" :fieldValue="$shipment->notes" />
-                            </div>
-                            @php
-                                $salesDoTermsText = \App\Support\CompanyDocumentTerms::resolveSaleOrderTerms(invoice_setting());
-                            @endphp
-                            @include('partials.company-document-terms-readonly', [
-                                'termsText' => $salesDoTermsText,
-                                'label' => __('modules.invoiceSettings.saleOrderAndDeliveryOrderTerms'),
-                            ])
-                        </div>
+                <div class="row p-20">
+                    <div class="col-md-6 col-sm-12">
+                        <x-forms.textarea fieldName="notes" fieldId="notes" :fieldLabel="__('app.note')" :fieldValue="$shipment->notes" />
                     </div>
+                    @php
+                        $salesDoTermsText = \App\Support\CompanyDocumentTerms::resolveSaleOrderTerms(invoice_setting());
+                    @endphp
+                    @include('partials.company-document-terms-readonly', [
+                        'termsText' => $salesDoTermsText,
+                        'label' => __('modules.invoiceSettings.saleOrderAndDeliveryOrderTerms'),
+                        'wrapperClass' => 'col-md-6 col-sm-12 c-inv-note-terms',
+                    ])
                 </div>
 
                 <div class="row px-20 pb-3">
@@ -138,7 +137,7 @@
                 if (!warehouseId) {
                     Swal.fire({
                         icon: 'error',
-                        text: 'Please select warehouse before saving.',
+                        text: @json(__('messages.salesDoSaveRequiresWarehouse')),
                         toast: true,
                         position: 'top-end',
                         timer: 4000,

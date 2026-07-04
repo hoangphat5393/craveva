@@ -1,0 +1,101 @@
+{
+    "table": "onboarding_tasks",
+    "columns": [
+        "id",
+        "title",
+        "company_id",
+        "task_for",
+        "employee_can_see",
+        "type",
+        "column_priority",
+        "added_by",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "title": "Assign Laptop/ Assets / Joining kit",
+            "company_id": 1,
+            "task_for": "company",
+            "employee_can_see": 1,
+            "type": "onboard",
+            "column_priority": 1,
+            "added_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 2,
+            "title": "Collect document (marksheet/ pan card / Aadhar card/salary slip/ Bank statement)",
+            "company_id": 1,
+            "task_for": "company",
+            "employee_can_see": 1,
+            "type": "onboard",
+            "column_priority": 2,
+            "added_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 3,
+            "title": "Sign Document (bond/ acceptance letter)",
+            "company_id": 1,
+            "task_for": "employee",
+            "employee_can_see": 1,
+            "type": "onboard",
+            "column_priority": 3,
+            "added_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 4,
+            "title": "Provide Documents (Joining letter /welcome letter)",
+            "company_id": 1,
+            "task_for": "company",
+            "employee_can_see": 1,
+            "type": "onboard",
+            "column_priority": 4,
+            "added_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 5,
+            "title": "Collect Assets",
+            "company_id": 1,
+            "task_for": "company",
+            "employee_can_see": 1,
+            "type": "offboard",
+            "column_priority": 1,
+            "added_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 6,
+            "title": "Sign No Dues Certificate",
+            "company_id": 1,
+            "task_for": "employee",
+            "employee_can_see": 1,
+            "type": "offboard",
+            "column_priority": 2,
+            "added_by": null,
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "id": 7,
+            "title": "Provide Experience Letter",
+            "company_id": 1,
+            "task_for": "company",
+            "employee_can_see": 1,
+            "type": "offboard",
+            "column_priority": 3,
+            "added_by": null,
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

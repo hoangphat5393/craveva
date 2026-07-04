@@ -47,18 +47,20 @@
         var note = document.getElementById('description').children[0].innerHTML;
         document.getElementById('description_text').value = note;
 
-        $.easyAjax({
-            url: "{{ route('replyTemplates.update', $template->id) }}",
-            container: '#editTicketTemplate',
-            type: "POST",
-            blockUI: true,
-            data: $('#editTicketTemplate').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#editTicketTemplate');
+
+        window.apiHttp.postUrlEncoded("{{ route('replyTemplates.update', $template->id) }}", $('#editTicketTemplate').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editTicketTemplate');
+            });
     });
 
 

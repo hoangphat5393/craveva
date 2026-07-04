@@ -294,16 +294,14 @@
     });
 
     $('#save-leave-setting').click(function() {
-        $.easyAjax({
-            container: '#createLeave',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-leave-setting",
-            errorPosition: 'inline',
-            url: "{{ route('leaveType.store') }}",
-            data: $('#createLeave').serialize(),
-            success: function(response) {
+        const button = $('#save-leave-setting');
+        const buttonText = button.html();
+
+        button.prop('disabled', true);
+        $.easyBlockUI('#createLeave');
+
+        window.apiHttp.postUrlEncoded("{{ route('leaveType.store') }}", $('#createLeave').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     if (response.page_reload == 'true') {
                         window.location.reload();
@@ -313,7 +311,16 @@
                         $(MODAL_XL).modal('hide');
                     }
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+                button.html(buttonText);
+                $.easyUnblockUI('#createLeave');
+            });
     });
 </script>

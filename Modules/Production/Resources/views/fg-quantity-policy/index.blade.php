@@ -120,15 +120,18 @@
         })();
 
         $('#save-production-fg-policy').click(function() {
-            $.easyAjax({
-                url: "{{ route('production.fg-quantity-policy.update') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-production-fg-policy",
-                data: $('#editSettings').serialize(),
-            });
+            const button = $(this);
+            button.prop('disabled', true);
+            $.easyBlockUI('#editSettings');
+
+            window.apiHttp.postUrlEncoded("{{ route('production.fg-quantity-policy.update') }}", $('#editSettings').serialize())
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    button.prop('disabled', false);
+                    $.easyUnblockUI('#editSettings');
+                });
         });
     </script>
 @endpush

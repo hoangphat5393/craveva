@@ -217,17 +217,22 @@
 
                 $("form#login-form").submit(function(e) {
                     e.preventDefault();
-                    $.easyAjax({
-                        url: "{{ route('login') }}",
-                        container: '#login-form',
-                        type: "POST",
-                        blockUI: true,
-                        data: $('#login-form').serialize(),
-                        disableButton: true,
-                        buttonSelector: "#submit-login",
-                        messagePosition: "inline",
-                        errorPosition: "field",
-                    });
+                    $('#submit-login').prop('disabled', true);
+                    $.easyBlockUI('#login-form');
+
+                    window.apiHttp.postUrlEncoded("{{ route('login') }}", $('#login-form').serialize())
+                        .then(function(response) {
+                            if (response.action === 'redirect' && response.url) {
+                                window.location.href = response.url;
+                            }
+                        })
+                        .catch(function(error) {
+                            $.handleApiFormError(error);
+                        })
+                        .finally(function() {
+                            $('#submit-login').prop('disabled', false);
+                            $.easyUnblockUI('#login-form');
+                        });
                 });
 
                 function handleFormSubmit(e) {
@@ -239,16 +244,10 @@
                     document.addEventListener('click', handleFormSubmit, false);
 
                     const url = "{{ route('check_email') }}";
-                    $.easyAjax({
-                        url: url,
-                        container: '#login-form',
-                        disableButton: true,
-                        buttonSelector: "#submit-next",
-                        type: "POST",
-                        data: $('#login-form').serialize(),
-                        messagePosition: "inline",
-                        errorPosition: "field",
-                        success: function(response) {
+                    $('#submit-next').prop('disabled', true);
+
+                    window.apiHttp.postUrlEncoded(url, $('#login-form').serialize())
+                        .then(function(response) {
                             if (response.status === 'success') {
                                 $('#submit-next, #signup-client-next, #signup-customer').remove();
                                 $('#password-section').removeClass('d-none');
@@ -256,8 +255,13 @@
                                 $("#password").focus();
                                 document.removeEventListener('click', handleFormSubmit);
                             }
-                        }
-                    })
+                        })
+                        .catch(function(error) {
+                            $.handleApiFormError(error);
+                        })
+                        .finally(function() {
+                            $('#submit-next').prop('disabled', false);
+                        });
                 });
 
                 @if (session('message'))

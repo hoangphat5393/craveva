@@ -1,0 +1,23 @@
+{
+    "table": "discussion_categories",
+    "columns": [
+        "id",
+        "company_id",
+        "order",
+        "name",
+        "color",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "order": 1,
+            "name": "General",
+            "color": "#3498DB",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04"
+        }
+    ]
+}

@@ -340,28 +340,27 @@
         function addProduct(id) {
             var currencyId = $('#currency_id').val();
             var exchangeRate = $('#exchange_rate').val();
-            $.easyAjax({
-                url:"{{ route('invoices.add_item') }}",
-                type: "GET",
-                data: {
+            window.apiHttp.get("{{ route('invoices.add_item') }}", {
+                params: {
                     id: id,
                     currencyId: currencyId,
                     exchangeRate: exchangeRate
-                },
-                success: function(response) {
-                    if($('input[name="item_name[]"]').val() == ''){
-                        $("#sortable .item-row").remove();
-                    }
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    calculateTotal();
-
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length-1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child('+noOfRows+') select.type');
-                    itemRow.attr('id', 'multiselect'+i);
-                    itemRow.attr('name', 'taxes['+i+'][]');
-                    $(document).find('#multiselect'+i).selectpicker();
                 }
+            }).then(function(response) {
+                if($('input[name="item_name[]"]').val() == ''){
+                    $("#sortable .item-row").remove();
+                }
+                $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                calculateTotal();
+
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                var i = $(document).find('.item_name').length-1;
+                var itemRow = $(document).find('#sortable .item-row:nth-child('+noOfRows+') select.type');
+                itemRow.attr('id', 'multiselect'+i);
+                itemRow.attr('name', 'taxes['+i+'][]');
+                $(document).find('#multiselect'+i).selectpicker();
+            }).catch(function (error) {
+                $.handleApiFormError(error);
             });
         }
 
@@ -461,14 +460,18 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{route('estimates.update', $estimate->id)}}",
-                container:'#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                data: $('#saveInvoiceForm').serialize()
-            })
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.postUrlEncoded("{{route('estimates.update', $estimate->id)}}", $('#saveInvoiceForm').serialize())
+                .then(function (response) {
+                    if (response.url) {
+                        window.location.href = response.url;
+                    }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
+                }).finally(function () {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         });
 
     </script>

@@ -223,18 +223,15 @@
 
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'DELETE',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function () {
+                        window.apiHttp.delete(url, token)
+                            .then(function () {
                                 fetchUserList();
                                 resetChatBoxView();
+                            })
+                            .catch(function (error) {
+                                $.handleApiFormError(error);
                             }
-                        });
+                        );
                     }
                 });
             });
@@ -330,18 +327,14 @@
             //getting values by input fields
             var url = "{{ route('messages.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#sendMessageForm',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#sendMessage",
-                data: $('#sendMessageForm').serialize(),
-                success: function (response) {
-                    if (response.status === 'fail') {
-                            $('#message-text').html(`<div class="alert alert-danger">${response.message}</div>`);
-                        }
+            const button = $('#sendMessage');
+            const buttonHtml = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#sendMessageForm');
+
+            window.apiHttp.postUrlEncoded(url, $('#sendMessageForm').serialize())
+                .then(function (response) {
                     if(response.status != 'fail')
                     {
                         $('#user_list').val(response.user_list);
@@ -359,8 +352,20 @@
                             showContent();
                         }
                     }
+                })
+                .catch(function (error) {
+                    if (error.payload && error.payload.status === 'fail') {
+                        $('#message-text').html(`<div class="alert alert-danger">${error.message}</div>`);
+                        return;
+                    }
+
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    button.prop('disabled', false).html(buttonHtml);
+                    $.easyUnblockUI('#sendMessageForm');
                 }
-            });
+            );
 
             return false;
         });
@@ -386,22 +391,28 @@
             var url = "{{ route('messages.index') }}";
             var term = $(this).val();
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: "#msgLeft",
-                data: {
-                    term: term
-                },
-                success: function (response) {
+            $.easyBlockUI('#msgLeft');
+
+            window.apiHttp.get(url, {
+                    params: {
+                        term: term
+                    }
+                })
+                .then(function (response) {
                     if (response.status == "success") {
                         $('#msgLeft').html(response.userList);
                         {{-- $('#current_user_id').val(''); --}}
                         {{-- $('#chatBox').html(''); --}}
                         {{-- $('#sendMessageForm').addClass('d-none'); --}}
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#msgLeft');
                 }
-            });
+            );
         });
 
         $('body').on('click', '#add-file', function () {
@@ -430,12 +441,12 @@
             var url = "{{ route('messages.show', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: "#chatBox",
-                data: {'unreadMessageCount': unreadMessageCount},
-                success: function (response) {
+            $.easyBlockUI('#chatBox');
+
+            window.apiHttp.get(url, {
+                    params: {'unreadMessageCount': unreadMessageCount}
+                })
+                .then(function (response) {
                     if (response.status == "success") {
                         $('#chatBox').html(response.html);
                         $('#user-no-' + response.id + ' > a').attr("data-unread-message-count", 0);
@@ -459,8 +470,14 @@
 
                         scrollChat();
                     }
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#chatBox');
                 }
-            });
+            );
 
         });
 
@@ -509,14 +526,8 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function (response) {
                             if (response.status == "success") {
                                 $('#message-' + id).remove();
 
@@ -528,8 +539,11 @@
                                 }
 
                             }
+                        })
+                        .catch(function (error) {
+                            $.handleApiFormError(error);
                         }
-                    });
+                    );
                 }
             });
         });
@@ -550,17 +564,18 @@
         function fetchUserList() {
             var url = "{{ route('messages.fetch_user_list') }}";
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function (response) {
+            window.apiHttp.get(url)
+                .then(function (response) {
                     $('#msgLeft').html(response.user_list);
 
                     let receiverId = $('#chatBox').data('chat-for-user');
                     $('#user-no-' + receiverId + ' a').addClass('active');
 
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
                 }
-            });
+            );
         }
 
         function fetchUserMessages(scrollChatBox = true) {
@@ -574,22 +589,26 @@
             var token = "{{ csrf_token() }}";
 
 
-            $.easyAjax({
-                url: url,
-                container: '#sendMessageForm',
-                type: "POST",
-                data: {
+            $.easyBlockUI('#sendMessageForm');
+
+            window.apiHttp.post(url, {
                     '_token': token,
-                },
-                success: function (response) {
+                })
+                .then(function (response) {
                     $('#chatBox').html(response.message_list);
                     {{-- fetchUserList(); --}}
                     if(scrollChatBox){
                         scrollChat();
                     }
                     $('#msgContentRight').addClass('d-block');
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#sendMessageForm');
                 }
-            });
+            );
         }
 
         function getUserMention(){
@@ -679,19 +698,16 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function (response) {
                             if (response.status == "success") {
                                 messageFile.closest('.card').remove();
                             }
+                        })
+                        .catch(function (error) {
+                            $.handleApiFormError(error);
                         }
-                    });
+                    );
                 }
             });
         });

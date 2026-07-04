@@ -33,7 +33,7 @@ return [
     'checkDayHoliday' => 'Chọn ít nhất 1.',
     'addItem' => 'Thêm ít nhất 1 mục.',
     'quantityNumber' => 'Số lượng phải là một con số',
-    'salesDoShipQuantityRequired' => 'Số lượng giao (Ship Qty) phải lớn hơn 0 ở ít nhất một dòng. Vui lòng sửa phiếu xuất giao bán hàng (Sales DO) và nhập số lượng giao.',
+    'salesDoShipQuantityRequired' => 'Số lượng giao (Ship Qty) phải lớn hơn 0 ở ít nhất một dòng. Vui lòng mở form Ship để nhập số lượng xuất kho.',
     'salesDoHeaderRequiresOrderAndWarehouse' => 'Phiếu xuất giao bán hàng (Sales DO) phải gắn với đơn bán hàng (SO) và kho trước khi xác nhận hoặc giao hàng. Hãy mở phiếu, chọn SO và kho, lưu rồi thử lại.',
     'salesDoHeaderOrderNotFoundForCompany' => 'Không tìm thấy đơn bán hàng (SO) gắn với phiếu này trong công ty hiện tại. Chọn SO hợp lệ, lưu rồi mới xác nhận hoặc giao hàng.',
     'salesDoHeaderWarehouseNotFoundForCompany' => 'Không tìm thấy kho gắn với phiếu này trong công ty hiện tại. Chọn kho hợp lệ, lưu rồi mới xác nhận hoặc giao hàng.',

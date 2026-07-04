@@ -38,15 +38,15 @@
     $('#save-paystack-detail').click(function () {
 
         var url = "{{ route('paystack_public',[ $id, $company->hash])}}";
-        $.easyAjax({
-            container: '#paystackDetails',
-            messagePosition: 'inline',
-            buttonSelector: "#save-paystack-detail",
-            disableButton: true,
-            blockUI: true,
-            type: 'POST',
-            url: url,
-            data: $('#paystackDetails').serialize()
-        })
+        $.easyBlockUI('#paystackDetails');
+        $('#save-paystack-detail').prop('disabled', true);
+
+        window.apiHttp.postUrlEncoded(url, $('#paystackDetails').serialize())
+            .catch(function (error) {
+                $.handleApiFormError(error, 'inline');
+            }).finally(function () {
+                $.easyUnblockUI('#paystackDetails');
+                $('#save-paystack-detail').prop('disabled', false);
+            });
     })
 </script>

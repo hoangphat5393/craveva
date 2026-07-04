@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Services;
 
+use DomainException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Modules\Purchase\Support\GrnRuntime;
@@ -12,6 +13,14 @@ class GrnService
     {
         if (! in_array($status, ['draft', 'inbound', 'received'], true)) {
             return 'messages.invalidRequest';
+        }
+
+        if ($this->mutationBlockedMessage($delivery) && $status !== 'received') {
+            return 'purchase::app.grnReceivedImmutable';
+        }
+
+        if ((string) $delivery->status === $status) {
+            return null;
         }
 
         $delivery->status = $status;
@@ -52,6 +61,10 @@ class GrnService
 
     public function update(Model $delivery, array $payload): Model
     {
+        if ($message = $this->mutationBlockedMessage($delivery)) {
+            throw new DomainException(__($message));
+        }
+
         return DB::transaction(function () use ($delivery, $payload) {
             $this->fillDelivery($delivery, $payload);
             $delivery->save();
@@ -60,6 +73,15 @@ class GrnService
 
             return $delivery;
         });
+    }
+
+    public function mutationBlockedMessage(Model $delivery): ?string
+    {
+        if ((string) $delivery->status === 'received' || (bool) ($delivery->inbound_stock_applied ?? false)) {
+            return 'purchase::app.grnReceivedImmutable';
+        }
+
+        return null;
     }
 
     protected function fillDelivery(Model $delivery, array $payload): void

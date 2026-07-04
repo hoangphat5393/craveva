@@ -1,0 +1,25 @@
+{
+    "table": "package_settings",
+    "columns": [
+        "id",
+        "status",
+        "no_of_days",
+        "modules",
+        "trial_message",
+        "notification_before",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "status": "inactive",
+            "no_of_days": 30,
+            "modules": "[\"clients\",\"employees\",\"projects\",\"attendance\",\"tasks\",\"estimates\",\"invoices\",\"payments\",\"timelogs\",\"tickets\",\"events\",\"notices\",\"leaves\",\"leads\",\"holidays\",\"products\",\"expenses\",\"contracts\",\"reports\",\"orders\",\"knowledgebase\",\"bankaccount\",\"messages\",\"pricing\",\"asset\",\"zoom\",\"sms\",\"recruit\",\"payroll\",\"purchase\",\"letter\",\"webhooks\",\"qrcode\",\"biolinks\",\"policy\",\"performance\",\"biometric\",\"warehouse\",\"cybersecurity\",\"developertools\",\"einvoice\",\"languagepack\",\"lineintegration\",\"onboarding\",\"production\",\"projectroadmap\"]",
+            "trial_message": "Start 30 days free trial",
+            "notification_before": null,
+            "created_at": "2026-07-01 21:00:03",
+            "updated_at": "2026-07-01 21:00:03"
+        }
+    ]
+}

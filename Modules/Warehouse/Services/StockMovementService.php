@@ -27,6 +27,10 @@ class StockMovementService
     public function recordInbound(array $payload): void
     {
         DB::transaction(function () use ($payload) {
+            if (! $this->claimMovementCommand($payload, 'inbound')) {
+                return;
+            }
+
             $this->applyInboundOnce($payload);
         });
     }
@@ -44,6 +48,10 @@ class StockMovementService
 
         DB::transaction(function () use ($payloads) {
             foreach ($payloads as $payload) {
+                if (! $this->claimMovementCommand($payload, 'inbound')) {
+                    continue;
+                }
+
                 $this->applyInboundOnce($payload);
             }
         });
@@ -79,6 +87,10 @@ class StockMovementService
     public function recordOutbound(array $payload, ?bool $allowNegativeStock = null): void
     {
         DB::transaction(function () use ($payload, $allowNegativeStock) {
+            if (! $this->claimMovementCommand($payload, 'outbound')) {
+                return;
+            }
+
             $this->executeOutboundMovement($payload, $allowNegativeStock);
         });
     }
@@ -111,6 +123,7 @@ class StockMovementService
         $this->guardStockNotNegative($available, $requested, $allowNegativeStock, $companyId);
 
         $remaining = $requested;
+        $movementPart = 0;
         foreach ($rows as $row) {
             if ($remaining <= 0) {
                 break;
@@ -130,7 +143,15 @@ class StockMovementService
             $linePayload['batch_number'] = $row->batch_number;
             $linePayload['expiry_date'] = $row->expiration_date;
             $linePayload['fefo_fifo_rule'] = 'FEFO';
+            if ($movementPart > 0 && ! empty($payload['idempotency_key'])) {
+                $linePayload['idempotency_key'] = $this->movementPartKey(
+                    (string) $payload['idempotency_key'],
+                    $movementPart,
+                    (int) $row->id,
+                );
+            }
             $this->createMovement($linePayload, 'outbound');
+            $movementPart++;
         }
 
         $this->syncLegacyWarehouseStock($payload['warehouse_id'], $payload['product_id']);
@@ -154,6 +175,13 @@ class StockMovementService
         $this->assertProductBelongsToCompany((int) $payload['product_id'], $companyId);
 
         DB::transaction(function () use ($payload, $allowNegativeStock) {
+            if (! $this->claimMovementCommand($payload, 'transfer')) {
+                return;
+            }
+
+            $commandKey = ! empty($payload['idempotency_key'])
+                ? (string) $payload['idempotency_key']
+                : null;
             $outboundPayload = [
                 'company_id' => $payload['company_id'] ?? null,
                 'warehouse_id' => $payload['warehouse_from_id'],
@@ -163,6 +191,7 @@ class StockMovementService
                 'expiry_date' => $payload['expiry_date'] ?? null,
                 'reference_type' => $payload['reference_type'] ?? 'transfer',
                 'reference_id' => $payload['reference_id'] ?? null,
+                'idempotency_key' => $commandKey ? $this->movementPartKey($commandKey, 0, 0) : null,
             ];
             $this->executeOutboundMovement($outboundPayload, $allowNegativeStock);
 
@@ -176,6 +205,7 @@ class StockMovementService
                 'manufacturing_date' => $payload['manufacturing_date'] ?? null,
                 'reference_type' => $payload['reference_type'] ?? 'transfer',
                 'reference_id' => $payload['reference_id'] ?? null,
+                'idempotency_key' => $commandKey ? $this->movementPartKey($commandKey, 1, 0) : null,
             ];
             $this->applyInboundOnce($inboundPayload);
             // Single DB transaction (avoids nested savepoints from recordOutbound + recordInbound).
@@ -389,11 +419,66 @@ class StockMovementService
         if (Schema::hasColumn('stock_movements', 'unit_id')) {
             $attributes['unit_id'] = $payload['unit_id'] ?? null;
         }
+        if (Schema::hasColumn('stock_movements', 'warehouse_location_from_id')) {
+            $attributes['warehouse_location_from_id'] = $payload['warehouse_location_from_id']
+                ?? (($type === 'outbound') ? ($payload['warehouse_location_id'] ?? null) : null);
+        }
+        if (Schema::hasColumn('stock_movements', 'warehouse_location_to_id')) {
+            $attributes['warehouse_location_to_id'] = $payload['warehouse_location_to_id']
+                ?? (($type === 'inbound') ? ($payload['warehouse_location_id'] ?? null) : null);
+        }
         if ($hasIdempotencyColumn) {
             $attributes['idempotency_key'] = $idempotencyKey;
         }
 
         StockMovement::create($attributes);
+    }
+
+    /**
+     * Claims an idempotent stock command before any physical quantity is changed.
+     * The claim is in the caller transaction, so failures roll it back with stock.
+     */
+    protected function claimMovementCommand(array $payload, string $type): bool
+    {
+        $idempotencyKey = trim((string) ($payload['idempotency_key'] ?? ''));
+        if ($idempotencyKey === '') {
+            return true;
+        }
+
+        $companyId = $this->requireCompanyId($payload);
+        if (Schema::hasColumn('stock_movements', 'idempotency_key')) {
+            $alreadyPosted = StockMovement::query()
+                ->where('company_id', $companyId)
+                ->where('movement_type', $type)
+                ->where('idempotency_key', $idempotencyKey)
+                ->exists();
+
+            if ($alreadyPosted) {
+                return false;
+            }
+        }
+
+        if (! Schema::hasTable('stock_movement_commands')) {
+            return true;
+        }
+
+        return DB::table('stock_movement_commands')->insertOrIgnore([
+            'company_id' => $companyId,
+            'movement_type' => $type,
+            'idempotency_key' => $idempotencyKey,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]) === 1;
+    }
+
+    protected function movementPartKey(string $commandKey, int $part, int $batchId): string
+    {
+        $suffix = ':part:'.$part.':'.$batchId;
+        if (strlen($commandKey.$suffix) <= 100) {
+            return $commandKey.$suffix;
+        }
+
+        return substr($commandKey, 0, 74).':'.substr(hash('sha256', $commandKey.$suffix), 0, 25);
     }
 
     protected function convertToBaseQuantity(array $payload, float $quantity): float

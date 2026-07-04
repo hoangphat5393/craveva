@@ -1,0 +1,885 @@
+{
+    "table": "dashboard_widgets",
+    "columns": [
+        "id",
+        "company_id",
+        "widget_name",
+        "status",
+        "dashboard_type",
+        "created_at",
+        "updated_at",
+        "active"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "widget_name": "total_clients",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 2,
+            "company_id": 1,
+            "widget_name": "total_employees",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 3,
+            "company_id": 1,
+            "widget_name": "total_projects",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 4,
+            "company_id": 1,
+            "widget_name": "total_unpaid_invoices",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 5,
+            "company_id": 1,
+            "widget_name": "total_hours_logged",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 6,
+            "company_id": 1,
+            "widget_name": "total_pending_tasks",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 7,
+            "company_id": 1,
+            "widget_name": "total_today_attendance",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 8,
+            "company_id": 1,
+            "widget_name": "total_unresolved_tickets",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 9,
+            "company_id": 1,
+            "widget_name": "recent_earnings",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 10,
+            "company_id": 1,
+            "widget_name": "settings_leaves",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 11,
+            "company_id": 1,
+            "widget_name": "new_tickets",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 12,
+            "company_id": 1,
+            "widget_name": "overdue_tasks",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 13,
+            "company_id": 1,
+            "widget_name": "pending_follow_up",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 14,
+            "company_id": 1,
+            "widget_name": "documents",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 15,
+            "company_id": 1,
+            "widget_name": "project_activity_timeline",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 16,
+            "company_id": 1,
+            "widget_name": "user_activity_timeline",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 17,
+            "company_id": 1,
+            "widget_name": "timelogs",
+            "status": 1,
+            "dashboard_type": "admin-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 18,
+            "company_id": 1,
+            "widget_name": "total_clients",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 19,
+            "company_id": 1,
+            "widget_name": "total_leads",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 20,
+            "company_id": 1,
+            "widget_name": "total_lead_conversions",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 21,
+            "company_id": 1,
+            "widget_name": "total_contracts_generated",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 22,
+            "company_id": 1,
+            "widget_name": "total_contracts_signed",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 23,
+            "company_id": 1,
+            "widget_name": "client_wise_earnings",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 24,
+            "company_id": 1,
+            "widget_name": "client_wise_timelogs",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 25,
+            "company_id": 1,
+            "widget_name": "lead_vs_status",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 26,
+            "company_id": 1,
+            "widget_name": "lead_vs_source",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 27,
+            "company_id": 1,
+            "widget_name": "latest_client",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 28,
+            "company_id": 1,
+            "widget_name": "recent_login_activities",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 29,
+            "company_id": 1,
+            "widget_name": "total_deals",
+            "status": 1,
+            "dashboard_type": "admin-client-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 30,
+            "company_id": 1,
+            "widget_name": "total_paid_invoices",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 31,
+            "company_id": 1,
+            "widget_name": "total_expenses",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 32,
+            "company_id": 1,
+            "widget_name": "total_earnings",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 33,
+            "company_id": 1,
+            "widget_name": "total_pending_amount",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 34,
+            "company_id": 1,
+            "widget_name": "invoice_overview",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 35,
+            "company_id": 1,
+            "widget_name": "estimate_overview",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 36,
+            "company_id": 1,
+            "widget_name": "proposal_overview",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 37,
+            "company_id": 1,
+            "widget_name": "earnings_by_client",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 38,
+            "company_id": 1,
+            "widget_name": "earnings_by_projects",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 39,
+            "company_id": 1,
+            "widget_name": "total_unpaid_invoices",
+            "status": 1,
+            "dashboard_type": "admin-finance-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 40,
+            "company_id": 1,
+            "widget_name": "total_leaves_approved",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 41,
+            "company_id": 1,
+            "widget_name": "total_new_employee",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 42,
+            "company_id": 1,
+            "widget_name": "total_employee_exits",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 43,
+            "company_id": 1,
+            "widget_name": "average_attendance",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 44,
+            "company_id": 1,
+            "widget_name": "department_wise_employee",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 45,
+            "company_id": 1,
+            "widget_name": "designation_wise_employee",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 46,
+            "company_id": 1,
+            "widget_name": "gender_wise_employee",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 47,
+            "company_id": 1,
+            "widget_name": "role_wise_employee",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 48,
+            "company_id": 1,
+            "widget_name": "leaves_taken",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 49,
+            "company_id": 1,
+            "widget_name": "late_attendance_mark",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 50,
+            "company_id": 1,
+            "widget_name": "headcount",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 51,
+            "company_id": 1,
+            "widget_name": "joining_vs_attrition",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 52,
+            "company_id": 1,
+            "widget_name": "birthday",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 53,
+            "company_id": 1,
+            "widget_name": "total_today_attendance",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 54,
+            "company_id": 1,
+            "widget_name": "total_project",
+            "status": 1,
+            "dashboard_type": "admin-project-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 55,
+            "company_id": 1,
+            "widget_name": "total_hours_logged",
+            "status": 1,
+            "dashboard_type": "admin-project-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 56,
+            "company_id": 1,
+            "widget_name": "total_overdue_project",
+            "status": 1,
+            "dashboard_type": "admin-project-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 57,
+            "company_id": 1,
+            "widget_name": "status_wise_project",
+            "status": 1,
+            "dashboard_type": "admin-project-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 58,
+            "company_id": 1,
+            "widget_name": "pending_milestone",
+            "status": 1,
+            "dashboard_type": "admin-project-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 59,
+            "company_id": 1,
+            "widget_name": "total_tickets",
+            "status": 1,
+            "dashboard_type": "admin-ticket-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 60,
+            "company_id": 1,
+            "widget_name": "total_unassigned_ticket",
+            "status": 1,
+            "dashboard_type": "admin-ticket-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 61,
+            "company_id": 1,
+            "widget_name": "type_wise_ticket",
+            "status": 1,
+            "dashboard_type": "admin-ticket-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 62,
+            "company_id": 1,
+            "widget_name": "status_wise_ticket",
+            "status": 1,
+            "dashboard_type": "admin-ticket-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 63,
+            "company_id": 1,
+            "widget_name": "channel_wise_ticket",
+            "status": 1,
+            "dashboard_type": "admin-ticket-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 64,
+            "company_id": 1,
+            "widget_name": "new_tickets",
+            "status": 1,
+            "dashboard_type": "admin-ticket-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 65,
+            "company_id": 1,
+            "widget_name": "profile",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 66,
+            "company_id": 1,
+            "widget_name": "shift_schedule",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 67,
+            "company_id": 1,
+            "widget_name": "birthday",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 68,
+            "company_id": 1,
+            "widget_name": "notices",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 69,
+            "company_id": 1,
+            "widget_name": "tasks",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 70,
+            "company_id": 1,
+            "widget_name": "projects",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 71,
+            "company_id": 1,
+            "widget_name": "my_task",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 72,
+            "company_id": 1,
+            "widget_name": "my_calender",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 73,
+            "company_id": 1,
+            "widget_name": "week_timelog",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 74,
+            "company_id": 1,
+            "widget_name": "leave",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 75,
+            "company_id": 1,
+            "widget_name": "lead",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 76,
+            "company_id": 1,
+            "widget_name": "work_from_home",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 77,
+            "company_id": 1,
+            "widget_name": "appreciation",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 78,
+            "company_id": 1,
+            "widget_name": "work_anniversary",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 79,
+            "company_id": 1,
+            "widget_name": "ticket",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 80,
+            "company_id": 1,
+            "widget_name": "notice_period_duration",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 81,
+            "company_id": 1,
+            "widget_name": "probation_date",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 82,
+            "company_id": 1,
+            "widget_name": "contract_date",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 83,
+            "company_id": 1,
+            "widget_name": "internship_date",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 84,
+            "company_id": 1,
+            "widget_name": "follow_ups",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 85,
+            "company_id": 1,
+            "widget_name": "documents",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 86,
+            "company_id": 1,
+            "widget_name": "onboarding",
+            "status": 1,
+            "dashboard_type": "private-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        },
+        {
+            "id": 87,
+            "company_id": 1,
+            "widget_name": "onboarding",
+            "status": 1,
+            "dashboard_type": "admin-hr-dashboard",
+            "created_at": null,
+            "updated_at": null,
+            "active": 1
+        }
+    ]
+}

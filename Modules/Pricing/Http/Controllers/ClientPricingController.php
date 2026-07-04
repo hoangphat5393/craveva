@@ -10,9 +10,12 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Modules\Pricing\Entities\ClientProductPricing;
+use Modules\Pricing\Http\Controllers\Concerns\ValidatesBulkRowIds;
 
 class ClientPricingController extends AccountBaseController
 {
+    use ValidatesBulkRowIds;
+
     public function __construct()
     {
         parent::__construct();
@@ -77,8 +80,8 @@ class ClientPricingController extends AccountBaseController
             'custom_price' => 'nullable|numeric',
             'discount_type' => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric',
-            'start_date' => 'required|date_format:"' . company()->date_format . '"|after_or_equal:today',
-            'end_date' => 'nullable|date_format:"' . company()->date_format . '"|after_or_equal:start_date',
+            'start_date' => 'required|date_format:"'.company()->date_format.'"|after_or_equal:today',
+            'end_date' => 'nullable|date_format:"'.company()->date_format.'"|after_or_equal:start_date',
         ], [
             'product_id.required' => __('pricing::app.productRequired'),
             'start_date.required' => __('pricing::app.startDateRequired'),
@@ -92,7 +95,9 @@ class ClientPricingController extends AccountBaseController
             : '2099-12-31';
 
         $overlap = ClientProductPricing::where('client_id', $request->client_id)
+            ->where('company_id', $companyId)
             ->where('product_id', $request->product_id)
+            ->where('is_active', true)
             ->where('start_date', '<=', $endDate)
             ->where('end_date', '>=', $startDate)
             ->exists();
@@ -121,7 +126,7 @@ class ClientPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        $this->pricing = ClientProductPricing::findOrFail($id);
+        $this->pricing = ClientProductPricing::where('company_id', user()->company_id)->findOrFail($id);
         $this->clients = User::allClients();
         $this->products = Product::orderBy('name')->get();
         $this->view = 'pricing::client_pricing.ajax.edit';
@@ -154,8 +159,8 @@ class ClientPricingController extends AccountBaseController
             'custom_price' => 'nullable|numeric',
             'discount_type' => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric',
-            'start_date' => 'required|date_format:"' . company()->date_format . '"',
-            'end_date' => 'nullable|date_format:"' . company()->date_format . '"|after_or_equal:start_date',
+            'start_date' => 'required|date_format:"'.company()->date_format.'"',
+            'end_date' => 'nullable|date_format:"'.company()->date_format.'"|after_or_equal:start_date',
         ], [
             'product_id.required' => __('pricing::app.productRequired'),
             'start_date.required' => __('pricing::app.startDateRequired'),
@@ -168,8 +173,10 @@ class ClientPricingController extends AccountBaseController
             : '2099-12-31';
 
         $overlap = ClientProductPricing::where('client_id', $request->client_id)
+            ->where('company_id', $companyId)
             ->where('product_id', $request->product_id)
             ->where('id', '!=', $id)
+            ->where('is_active', true)
             ->where('start_date', '<=', $endDate)
             ->where('end_date', '>=', $startDate)
             ->exists();
@@ -178,7 +185,7 @@ class ClientPricingController extends AccountBaseController
             return Reply::error(__('pricing::app.overlapError'));
         }
 
-        $pricing = ClientProductPricing::findOrFail($id);
+        $pricing = ClientProductPricing::where('company_id', user()->company_id)->findOrFail($id);
         $pricing->client_id = $request->client_id;
         $pricing->product_id = $request->product_id;
         $pricing->custom_price = $request->custom_price;
@@ -197,10 +204,15 @@ class ClientPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        $pricing = ClientProductPricing::find($request->id);
+        $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $pricing = ClientProductPricing::where('company_id', user()->company_id)->find($request->id);
 
         if (! $pricing) {
-            return Reply::error('Record not found for ID: ' . ($request->id ?? 'NULL'));
+            return Reply::error('Record not found for ID: '.($request->id ?? 'NULL'));
         }
 
         $pricing->is_active = ($request->status == 'active');
@@ -244,10 +256,7 @@ class ClientPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
+        $ids = $this->validatedBulkRowIds($request);
 
         ClientProductPricing::where('company_id', user()->company_id)->whereIn('id', $ids)->delete();
     }
@@ -257,10 +266,11 @@ class ClientPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
-        if (empty($ids)) {
-            return;
-        }
+        $request->validate([
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $ids = $this->validatedBulkRowIds($request);
 
         ClientProductPricing::where('company_id', user()->company_id)->whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
     }

@@ -133,21 +133,17 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == 'success') {
                             $('#task_labels').html(response.data);
                             $('#task_labels').selectpicker('refresh');
                             $(MODAL_LG).modal('hide');
                         }
-                    }
-                });
+                    })
+                    .catch(function(error) {
+                        $.handleApiFormError(error);
+                    });
             }
         });
 
@@ -155,19 +151,22 @@
 
     $('#save-label').click(function() {
         var url = "{{ route('task-label.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createTaskLabelForm',
-            type: "POST",
-            data: $('#createTaskLabelForm').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createTaskLabelForm');
+
+        window.apiHttp.postUrlEncoded(url, $('#createTaskLabelForm').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     $('#task_labels').html(response.data);
                     $('#task_labels').selectpicker('refresh');
                     $(MODAL_XL).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#createTaskLabelForm');
+            });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -183,23 +182,25 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#row-' + id);
+
+            window.apiHttp.postUrlEncoded(url, {
                     'category_name': value,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#task_labels').html(response.data);
                         $('#task_labels').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#row-' + id);
+                });
         }
     });
 

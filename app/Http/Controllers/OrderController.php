@@ -117,7 +117,8 @@ class OrderController extends AccountBaseController
             ->get();
         // Keep create modal payload lean: the dropdown only needs id/name/sku.
         $this->products = Product::query()
-            ->select('id', 'name', 'sku')
+            ->select('id', 'name', 'sku', 'type')
+            ->sellableDocumentLine()
             ->orderBy('name')
             ->limit(100)
             ->get();
@@ -381,7 +382,8 @@ class OrderController extends AccountBaseController
         $this->currencies = Currency::all();
         $this->taxes = Tax::all();
         $this->products = Product::query()
-            ->select('id', 'name', 'sku')
+            ->select('id', 'name', 'sku', 'type')
+            ->sellableDocumentLine()
             ->orderBy('name')
             ->limit(100)
             ->get();
@@ -463,7 +465,8 @@ class OrderController extends AccountBaseController
         $perPage = max(10, min(100, $perPage));
 
         $query = Product::query()
-            ->select('id', 'name', 'sku')
+            ->select('id', 'name', 'sku', 'type')
+            ->sellableDocumentLine()
             ->orderBy('name');
 
         if ($term !== '') {
@@ -486,6 +489,8 @@ class OrderController extends AccountBaseController
                     'id' => $product->id,
                     'name' => $product->name,
                     'sku' => $product->sku,
+                    'type' => $product->type,
+                    'label' => $product->documentDropdownLabel(),
                 ];
             })->values(),
             'pagination' => [

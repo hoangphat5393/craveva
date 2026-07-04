@@ -1,0 +1,25 @@
+{
+    "table": "ticket_settings_for_agents",
+    "columns": [
+        "id",
+        "user_id",
+        "company_id",
+        "ticket_scope",
+        "group_id",
+        "updated_by",
+        "created_at",
+        "updated_at"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "user_id": null,
+            "company_id": 1,
+            "ticket_scope": "assigned_tickets",
+            "group_id": null,
+            "updated_by": null,
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+}

@@ -124,20 +124,29 @@
 <script>
     // save prefix setting
     $('#save-prefix-form').click(function() {
-        $.easyAjax({
-            url: "{{ route('invoice_settings.update_prefix', $invoiceSetting->id) }}",
-            container: '#editSettings',
-            type: "POST",
-            redirect: true,
-            file: true,
-            data: $('#editSettings').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-prefix-form",
-            success: function() {
-                window.location.reload();
-            }
-        })
+        const $btn = $('#save-prefix-form');
+        const previousHtml = $btn.html();
+
+        $.easyBlockUI('#editSettings');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+        window.apiHttp.postForm("{{ route('invoice_settings.update_prefix', $invoiceSetting->id) }}", document.getElementById('editSettings'))
+            .then(function(response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                        return;
+                    }
+                    window.location.reload();
+                }
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editSettings');
+                $btn.prop('disabled', false).html(previousHtml);
+            });
     });
 
     $('#invoice_prefix, #invoice_number_separator, #invoice_digit, #estimate_prefix,#estimate_number_separator, #estimate_digit, #credit_note_prefix, #credit_note_number_separator, #credit_note_digit, #order_prefix, #order_number_separator, #order_digit').on('keyup', function() {

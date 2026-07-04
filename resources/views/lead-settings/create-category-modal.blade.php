@@ -26,15 +26,11 @@
 <script>
     // save source
     $('#save-source').click(function() {
-        $.easyAjax({
-            url: "{{ route('leadCategory.store') }}",
-            container: '#add-lead-category',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-source",
-            data: $('#add-lead-category').serialize(),
-            success: function(response) {
+        $('#save-source').prop('disabled', true);
+        $.easyBlockUI('#add-lead-category');
+
+        window.apiHttp.postUrlEncoded("{{ route('leadCategory.store') }}", $('#add-lead-category').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     if($('table#example').length) {
                         window.location.reload();
@@ -47,7 +43,13 @@
                         $(MODAL_LG).modal('hide');
                     }
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-source').prop('disabled', false);
+                $.easyUnblockUI('#add-lead-category');
+            });
     });
 </script>

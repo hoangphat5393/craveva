@@ -17,7 +17,7 @@ Manage **Employee Hourly Rate Settings** in the current company.
 ## Who uses it / access
 
 - Requires module **`payroll`** in `user_modules()` and matching permission.
-- Role details: [01-ROLES-AND-ACCESS.md](../01-ROLES-AND-ACCESS.md).
+- Role details: [01-ROLES-AND-ACCESS.md](../../01-ROLES-AND-ACCESS.md).
 
 ## How to open the screen
 
@@ -37,7 +37,7 @@ Sidebar group for module `payroll` (module must be enabled).
 ## Expected results
 
 - After save: return to list or close modal; row appears/updates in DataTable.
-- AJAX forms: success toast; validation errors show red borders + toast ([UI-CONVENTIONS.md](../REFERENCE/UI-CONVENTIONS.md)).
+- AJAX forms: success toast; validation errors show red borders + toast ([UI-CONVENTIONS.md](../../REFERENCE/UI-CONVENTIONS.md)).
 
 ## Common errors
 
@@ -50,4 +50,4 @@ Sidebar group for module `payroll` (module must be enabled).
 
 ## Related
 
-[01-ROLES-AND-ACCESS.md](../01-ROLES-AND-ACCESS.md)
+[01-ROLES-AND-ACCESS.md](../../01-ROLES-AND-ACCESS.md)

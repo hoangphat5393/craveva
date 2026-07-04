@@ -625,48 +625,46 @@
             url = url.replace(':id', id);
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.postUrlEncoded(url, {
                     _token: token
-                },
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#project_id').html(response.data);
-                        $('#project_id').selectpicker('refresh');
-                    }
+            }).then(function (response) {
+                if (response.status == 'success') {
+                    $('#project_id').html(response.data);
+                    $('#project_id').selectpicker('refresh');
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
 
             var url = "{{ route('clients.ajax_details', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: token
-                },
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#client_billing_address').html(nl2br(response.data.client_details.address));
-                        $('#add-shipping-field').addClass('d-none');
-                        $('#client_shipping_address').removeClass('d-none');
+            $.easyBlockUI('#saveInvoiceForm');
 
-                        if (response.data.client_details.shipping_address === null) {
-                            var addShippingLink =
-                                '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang("app.addShippingAddress")</a>';
-                            $('#client_shipping_address').html(addShippingLink);
-                        } else {
-                            $('#client_shipping_address').html(nl2br(response.data.client_details.shipping_address));
-                        }
+            window.apiHttp.postUrlEncoded(url, {
+                    _token: token
+            }).then(function (response) {
+                if (response.status == 'success') {
+                    $('#client_billing_address').html(nl2br(response.data.client_details.address));
+                    $('#add-shipping-field').addClass('d-none');
+                    $('#client_shipping_address').removeClass('d-none');
+
+                    if (response.data.client_details.shipping_address === null) {
+                        var addShippingLink =
+                            '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang("app.addShippingAddress")</a>';
+                        $('#client_shipping_address').html(addShippingLink);
+                    } else {
+                        $('#client_shipping_address').html(nl2br(response.data.client_details.shipping_address));
                     }
                 }
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
 
         });
@@ -719,30 +717,32 @@
 
             var currencyId = $('#currency_id').val();
             var exchangeRate = $('#exchange_rate').val();
-            $.easyAjax({
-                url: "{{ route('invoices.add_item') }}",
-                type: "GET",
-                data: {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.get("{{ route('invoices.add_item') }}", {
+                params: {
                     id: id,
                     currencyId: currencyId,
                     exchangeRate: exchangeRate
-                },
-                blockUI: true,
-                success: function (response) {
-                    if ($('input[name="item_name[]"]').val() == '') {
-                        $("#sortable .item-row").remove();
-                    }
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    calculateTotal();
-
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length - 1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                        ') select.type');
-                    itemRow.attr('id', 'multiselect' + i);
-                    itemRow.attr('name', 'taxes[' + i + '][]');
-                    $(document).find('#multiselect' + i).selectpicker();
                 }
+            }).then(function (response) {
+                if ($('input[name="item_name[]"]').val() == '') {
+                    $("#sortable .item-row").remove();
+                }
+                $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                calculateTotal();
+
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                var i = $(document).find('.item_name').length - 1;
+                var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                    ') select.type');
+                itemRow.attr('id', 'multiselect' + i);
+                itemRow.attr('name', 'taxes[' + i + '][]');
+                $(document).find('#multiselect' + i).selectpicker();
+            }).catch(function (error) {
+                $.handleApiFormError(error);
+            }).finally(function () {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
         }
 
@@ -874,16 +874,20 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('recurring-invoices.store') }}" + "?type=" + type,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                disableButton: true,
-                file: true,
-                data: $('#saveInvoiceForm').serialize()
-            })
+            $.easyBlockUI('#saveInvoiceForm');
+            $('#save-form').prop('disabled', true);
+
+            window.apiHttp.postForm("{{ route('recurring-invoices.store') }}" + "?type=" + type, document.getElementById('saveInvoiceForm'))
+                .then(function (response) {
+                    if (response.url) {
+                        window.location.href = response.url;
+                    }
+                }).catch(function (error) {
+                    $.handleApiFormError(error);
+                }).finally(function () {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                    $('#save-form').prop('disabled', false);
+                });
         });
 
         $('#saveInvoiceForm').on('click', '.remove-item', function () {
@@ -1042,18 +1046,19 @@
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('payments.account_list') }}",
-            container: '#saveInvoiceForm',
-            type: "GET",
-            blockUI: true,
-            data: { 'curId' : curId , _token: token},
-            success: function(response) {
-                if (response.status == 'success') {
-                    $('#bank_account_id').html(response.data);
-                    $('#bank_account_id').selectpicker('refresh');
-                }
+        $.easyBlockUI('#saveInvoiceForm');
+
+        window.apiHttp.get("{{ route('payments.account_list') }}", {
+            params: { 'curId' : curId , _token: token}
+        }).then(function(response) {
+            if (response.status == 'success') {
+                $('#bank_account_id').html(response.data);
+                $('#bank_account_id').selectpicker('refresh');
             }
+        }).catch(function (error) {
+            $.handleApiFormError(error);
+        }).finally(function () {
+            $.easyUnblockUI('#saveInvoiceForm');
         });
     });
 

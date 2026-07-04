@@ -29,17 +29,19 @@
 <script>
 
     $('#save-group').click(function () {
-        $.easyAjax({
-            url: "{{route('ticket-groups.update', $group->id)}}",
-            container: '#editTicketGroup',
-            type: "POST",
-            blockUI: true,
-            data: $('#editTicketGroup').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#editTicketGroup');
+
+        window.apiHttp.postUrlEncoded("{{route('ticket-groups.update', $group->id)}}", $('#editTicketGroup').serialize())
+            .then(function (response) {
                 if(response.status == 'success'){
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editTicketGroup');
+            });
     });
 </script>

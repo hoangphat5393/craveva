@@ -452,25 +452,25 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 
 | Resource                                                          | Description                                                                                    |
 | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `ai-context/core/SYSTEM_OVERVIEW.md`                              | AI context: tổng quan hệ thống (routes, scan coverage, risk signals).                          |
-| `ai-context/core/MODULE_INDEX.md`                                 | AI context: mục lục module → context theo module.                                              |
-| `ai-context/core/FUNC_DOCS_INDEX.md`                              | AI context: map tài liệu `FUNC_*` vào kiến trúc retrieval.                                     |
+| `scripts/generate_ai_context.php`                                 | Trình tạo AI context theo nhu cầu; output `ai-context/` không được commit.                      |
+| `docs/archive/README.md`                                          | Chỉ mục các audit đã hoàn thành và được lưu để truy vết.                                       |
+| `docs/FULL_SYSTEM_AUDIT_PROMPT.md`                                | Prompt audit read-only toàn hệ thống, ưu tiên database và fresh-install contract.              |
 | `FUNC_LOGIC/README.md`                                            | Logic & flow docs index (login, package/module commands, flows).                               |
-| `FUNC_LOGIC/FLOW_ADD_CLIENT.md`                                   | Flow: add client (form + import), DB writes, role/permissions.                                 |
-| `FUNC_LOGIC/FLOW_ADD_PRODUCT.md`                                  | Flow: add product.                                                                             |
-| `FUNC_LOGIC/FLOW_ADD_INVENTORY.md`                                | Flow: add inventory.                                                                           |
+| `FUNC_LOGIC/CLIENT_BUSINESS.md`                                   | Business logic: add client (form + import), DB writes, role/permissions.                       |
+| `FUNC_LOGIC/PRODUCT_BUSINESS.md`                                  | Business logic: add product.                                                                   |
+| `FUNC_LOGIC/INVENTORY_BUSINESS.md`                                | Business logic: add inventory.                                                                 |
 | `FUNC_LOGIC/Login_Flow.md`                                        | Login flow (Fortify, session).                                                                 |
-| `FUNC_LOGIC/FLOW_Modules_Package_LanguagePack_CustomFields_VI.md` | Package → module_settings, nwidart `modules_statuses.json`, LanguagePack, custom fields audit. |
-| `FUNC_LOGIC/DEVELOPER_TOOLS_EXT_PLAN.md`                          | Developer Tools — kế hoạch mở rộng.                                                            |
-| `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md`                | Fix: Social Auth Settings crash `The MAC is invalid.` when encrypted secrets cannot decrypt.   |
+| `docs/SYSTEM_MODULE_LANGUAGEPACK_CUSTOM_FIELDS.md` | Package → module_settings, nwidart `modules_statuses.json`, LanguagePack, custom fields audit. |
+| `FUNC_IMPROVE/DEVTOOLS_DB_LOGGING_PLAN.md`                          | Developer Tools — kế hoạch mở rộng.                                                            |
+| `FUNC_BUG/BUG_SOCIAL_AUTH_MAC.md`                | Fix: Social Auth Settings crash `The MAC is invalid.` when encrypted secrets cannot decrypt.   |
 | `docs/MENU_ROUTES_AND_CACHE.md`                                   | Why menu routes can fail and how to fix (route:clear, Route::has).                             |
 | `docs/PACKAGE_MODULES_ACTIVATE.md`                                | Activating package modules.                                                                    |
 | `docs/axios-migration/README.md`                                  | easyAjax → `window.apiHttp` migration standards and module wave tracker.                       |
 | `docs/STAGING_OPERATIONS.md`                                      | Staging rehearsal, non-destructive operation policy, and deploy safety notes.                  |
-| `docs/SERVER_RUNBOOK_VI.md`                                       | Hub/staging runbook: deploy flow, permissions, queue, and go-live pitfalls.                    |
-| `docs/ORDER_CREATE_PERFORMANCE_IMPROVEMENT_PLAN_2026-03-30.md`    | Create Order performance strategy (server-side search/pagination, rollout phases).             |
-| `docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md`                       | Staging progress log for PHP 8.3 + Laravel 11 + safe deploy procedures.                        |
-| `docs/GCP_INFRA_INVENTORY_SUMMARY.md`                             | Current VM/Cloud SQL inventory snapshot for operations context.                                |
+| `docs/SERVER_RUNBOOK.md`                                       | Hub/staging runbook: deploy flow, permissions, queue, and go-live pitfalls.                    |
+| `docs/ORDER_CREATE_PERF.md`    | Create Order performance strategy (server-side search/pagination, rollout phases).             |
+| `docs/STAGING_DEPLOY_PROGRESS.md`                       | Staging progress log for PHP 8.3 + Laravel 11 + safe deploy procedures.                        |
+| `docs/GCP_INVENTORY.md`                             | Current VM/Cloud SQL inventory snapshot for operations context.                                |
 | `DIAGRAM/order_process_flowchart.md`                              | Order process (chat → PO → DO → invoice).                                                      |
 | `DIAGRAM/chat_order_flow.md`                                      | Chat and order flow.                                                                           |
 | `app/Models/Module.php`                                           | Full list of modules and permissions (MODULE_LIST, SUPERADMIN_MODULE_LIST).                    |
@@ -486,7 +486,7 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 
 ## 9. Laravel 11 upgrade
 
-Nâng cấp framework **Laravel 10 → 11** (breaking changes, migration, QA thanh toán, đóng gói deploy): **`docs/LARAVEL_11_UPGRADE_GUIDE.md`**. Tóm tắt cho người dùng không kỹ thuật: **`docs/LARAVEL_11_NGUOI_DUNG_KHONG_KY_THUAT.md`**.
+Nâng cấp framework **Laravel 10 → 11** (breaking changes, migration, QA thanh toán, đóng gói deploy): **`docs/LARAVEL_11_UPGRADE.md`**. Tóm tắt cho người dùng không kỹ thuật: **`docs/LARAVEL_11_TOM_TAT.md`**.
 
 ---
 
@@ -498,7 +498,7 @@ This section summarizes major updates added after the initial version of this do
 
 - Core and module UIs are being migrated from legacy `$.easyAjax` to `window.apiHttp` (Axios wrapper in `resources/js/http/apiClient.js`).
 - Completed migration waves include key business areas: tasks, projects, leads, tickets, event calendar, super-admin, and multiple add-on modules.
-- Migration rules and module trackers are maintained in `docs/axios-migration/README.md` and per-module files under `docs/axios-migration/`.
+- Migration rules and completed wave status are maintained in `docs/axios-migration/README.md`.
 
 ### 10.2 Sales / Purchase / Warehouse flow strengthening
 

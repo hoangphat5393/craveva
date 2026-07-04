@@ -1,0 +1,31 @@
+{
+    "table": "payroll_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "tds_salary",
+        "tds_status",
+        "finance_month",
+        "created_at",
+        "updated_at",
+        "extra_fields",
+        "semi_monthly_start",
+        "semi_monthly_end",
+        "currency_id"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": 1,
+            "tds_salary": "",
+            "tds_status": 0,
+            "finance_month": "04",
+            "created_at": "2026-07-01 21:00:04",
+            "updated_at": "2026-07-01 21:00:04",
+            "extra_fields": null,
+            "semi_monthly_start": 1,
+            "semi_monthly_end": 30,
+            "currency_id": null
+        }
+    ]
+}

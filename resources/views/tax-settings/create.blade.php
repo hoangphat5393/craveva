@@ -31,16 +31,21 @@
 <script>
     $('#save-tax').click(function() {
         var url = "{{ route('taxes.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createTax',
-            type: "POST",
-            data: $('#createTax').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createTax');
+
+        window.apiHttp.postUrlEncoded(url, $('#createTax').serialize())
+            .then((response) => {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch((error) => {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(error);
+                }
+            })
+            .finally(() => {
+                $.easyUnblockUI('#createTax');
+            });
     });
 </script>

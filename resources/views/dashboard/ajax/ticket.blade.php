@@ -135,17 +135,18 @@
 
 <script>
     $('#save-dashboard-widget').click(function() {
-        $.easyAjax({
-            url: "{{ route('dashboard.widget', 'admin-ticket-dashboard') }}",
-            container: '#dashboardWidgetForm',
-            blockUI: true,
-            type: "POST",
-            redirect: true,
-            data: $('#dashboardWidgetForm').serialize(),
-            success: function() {
+        $.easyBlockUI('#dashboardWidgetForm');
+
+        window.apiHttp.postUrlEncoded("{{ route('dashboard.widget', 'admin-ticket-dashboard') }}", $('#dashboardWidgetForm').serialize())
+            .then(function() {
                 window.location.reload();
-            }
-        })
+            })
+            .catch(function(error) {
+                $.handleApiFormError(error);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#dashboardWidgetForm');
+            });
     });
 
     $('#totalUnassignedTicket').click(function() {

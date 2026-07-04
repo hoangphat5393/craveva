@@ -209,3 +209,12 @@ it('shows estimate detail with bom lines section', function (): void {
     $response->assertSee(__('modules.estimates.bomLinesHeading'), false);
     $response->assertSee('Test Material', false);
 });
+
+it('includes bom lines partial in every estimate pdf template', function (): void {
+    foreach (range(1, 5) as $templateNumber) {
+        $template = base_path("resources/views/estimates/pdf/invoice-{$templateNumber}.blade.php");
+
+        expect($template)->toBeFile()
+            ->and(file_get_contents($template))->toContain("@include('estimates.partials.pdf-bom-lines')");
+    }
+});

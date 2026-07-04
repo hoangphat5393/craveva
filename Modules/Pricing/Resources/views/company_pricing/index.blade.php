@@ -62,7 +62,7 @@
                             </td>
                             <td data-order="{{ $row->tier?->name ?? '' }}">{{ $row->tier?->name ?? '--' }}</td>
                             <td data-order="{{ $row->custom_discount_value ?? 0 }}">
-                                @if ($row->custom_discount_type && $row->custom_discount_value)
+                                @if ($row->custom_discount_type !== null && $row->custom_discount_value !== null)
                                     {{ $row->custom_discount_value }}
                                     ({{ $row->custom_discount_type == 'percentage' ? '%' : 'Fixed' }})
                                 @else

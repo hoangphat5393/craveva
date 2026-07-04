@@ -136,18 +136,20 @@
 
                     const url = "{{ route('register') }}";
 
-                    $.easyAjax({
-                        url: url,
-                        container: '.login_box',
-                        disableButton: true,
-                        buttonSelector: "#submit-register",
-                        type: "POST",
-                        blockUI: true,
-                        data: $('#login-form').serialize(),
-                        success: function (response) {
+                    $('#submit-register').prop('disabled', true);
+                    $.easyBlockUI('.login_box');
+
+                    window.apiHttp.postUrlEncoded(url, $('#login-form').serialize())
+                        .then(function (response) {
                             window.location.href = "{{ route('dashboard') }}";
-                        }
-                    })
+                        })
+                        .catch(function(error) {
+                            $.handleApiFormError(error);
+                        })
+                        .finally(function() {
+                            $('#submit-register').prop('disabled', false);
+                            $.easyUnblockUI('.login_box');
+                        });
                 });
 
                 @if (session('message'))

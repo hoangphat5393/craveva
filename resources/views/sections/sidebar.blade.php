@@ -178,20 +178,23 @@
         $('#dark-theme-toggle').change(function() {
             const darkTheme = ($(this).is(':checked')) ? '1' : '0'
 
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('profile.dark_theme') }}",
-                blockUI: true,
-                data: {
+            $.easyBlockUI('body');
+
+            window.apiHttp.post("{{ route('profile.dark_theme') }}", {
                     '_token': '{{ csrf_token() }}',
                     'darkTheme': darkTheme
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status === 'success') {
                         window.location.reload();
                     }
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('body');
+                });
 
         });
 

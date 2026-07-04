@@ -25,17 +25,19 @@ r<div class="modal-header">
 <script>
     // save ticket channnel
     $('#save-ticket-channel').click(function () {
-        $.easyAjax({
-            url: "{{route('ticketChannels.update', $channel->id)}}",
-            container: '#editTicketChannel',
-            type: "POST",
-            blockUI: true,
-            data: $('#editTicketChannel').serialize(),
-            success: function (response) {
+        $.easyBlockUI('#editTicketChannel');
+
+        window.apiHttp.postUrlEncoded("{{route('ticketChannels.update', $channel->id)}}", $('#editTicketChannel').serialize())
+            .then(function (response) {
                 if(response.status == 'success'){
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#editTicketChannel');
+            });
     });
 </script>

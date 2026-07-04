@@ -111,20 +111,22 @@
             var url = "{{route('lead-stage-setting.update', $stage->id)}}";
         }
 
-        $.easyAjax({
-            url: url,
-            container: '#editStatus',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-status",
-            data: $('#editStatus').serialize(),
-            success: function(response) {
+        $('#save-status').prop('disabled', true);
+        $.easyBlockUI('#editStatus');
+
+        window.apiHttp.postUrlEncoded(url, $('#editStatus').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-status').prop('disabled', false);
+                $.easyUnblockUI('#editStatus');
+            });
     });
 
 </script>

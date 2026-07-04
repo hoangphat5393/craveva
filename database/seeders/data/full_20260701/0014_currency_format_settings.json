@@ -1,0 +1,21 @@
+{
+    "table": "currency_format_settings",
+    "columns": [
+        "id",
+        "company_id",
+        "currency_position",
+        "no_of_decimal",
+        "thousand_separator",
+        "decimal_separator"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "company_id": null,
+            "currency_position": "left",
+            "no_of_decimal": 2,
+            "thousand_separator": ",",
+            "decimal_separator": "."
+        }
+    ]
+}

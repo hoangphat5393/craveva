@@ -435,17 +435,16 @@
                 priority +
                 '&date_filter_on=' + date_filter_on;
 
-            $.easyAjax({
-                url: url,
-                container: '#taskboard-columns',
-                type: "GET",
-                success: function(response) {
+            window.apiHttp.get(url)
+                .then(function(response) {
                     $('#taskboard-columns').html(response.view);
                     $("body").tooltip({
                         selector: '[data-toggle="tooltip"]'
                     });
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                });
         }
 
         $('body').on('click', '.load-more-tasks', function() {
@@ -481,12 +480,10 @@
                 '&searchText=' + searchText + '&columnId=' + columnId + '&currentTotalTasks=' + currentTotalTasks +
                 '&totalTasks=' + totalTasks;
 
-            $.easyAjax({
-                url: url,
-                container: '#drag-container-' + columnId,
-                blockUI: true,
-                type: "GET",
-                success: function(response) {
+            $.easyBlockUI('#drag-container-' + columnId);
+
+            window.apiHttp.get(url)
+                .then(function(response) {
                     $('#drag-container-' + columnId).append(response.view);
                     if (response.load_more == 'show') {
                         $('#drag-container-' + columnId).closest('.b-p-body').find('.load-more-tasks');
@@ -499,8 +496,13 @@
                     $("body").tooltip({
                         selector: '[data-toggle="tooltip"]'
                     });
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#drag-container-' + columnId);
+                });
 
         });
 
@@ -561,19 +563,15 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: url,
-                        type: 'POST',
-                        data: {
-                            '_token': '{{ csrf_token() }}',
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, '{{ csrf_token() }}')
+                        .then(function(response) {
                             if (response.status == 'success') {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(error) {
+                            $.handleApiFormError(error);
+                        });
                 }
             });
 
@@ -597,22 +595,24 @@
             var boardColumnId = $(this).data('column-id');
             var type = $(this).data('type');
 
-            $.easyAjax({
-                url: "{{ route('taskboards.collapse_column') }}",
-                type: 'POST',
-                container: '#taskboard-columns',
-                blockUI: true,
-                data: {
+            $.easyBlockUI('#taskboard-columns');
+
+            window.apiHttp.postUrlEncoded("{{ route('taskboards.collapse_column') }}", {
                     boardColumnId: boardColumnId,
                     type: type,
                     '_token': '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         loadData();
                     }
-                }
-            });
+                })
+                .catch(function(error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#taskboard-columns');
+                });
         });
 
         //pusher

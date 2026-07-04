@@ -1,1 +1,0 @@
-{"sessionId":"ae998e","hypothesisId":"H1","location":"ProductionOrderMaterialRequirementsSummary.php:resolveComponents","message":"BOM snapshot path","data":{"order_id":24,"bom_snapshot_at":"2026-05-23 13:06:39","snapshot_item_count":1,"snapshot_has_unit_relation":false},"timestamp":1779516399163}

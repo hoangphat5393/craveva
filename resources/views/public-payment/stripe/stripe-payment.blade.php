@@ -107,30 +107,44 @@
     var orderComplete = function (paymentIntentId) {
         loading(false);
         cardButton.disabled = true;
-        $.easyAjax({
-            url: "{{ route('stripe_public', $invoice->hash) }}",
-            container: '#invoice_container',
-            buttonSelector: "#card-button",
-            disableButton: true,
-            blockUI: true,
-            type: "POST",
-            redirect: true,
-            data: {paymentIntentId: paymentIntentId, "_token": "{{ csrf_token() }}"},
-        })
+        $.easyBlockUI('#invoice_container');
+        $('#card-button').prop('disabled', true);
+
+        window.apiHttp.postUrlEncoded("{{ route('stripe_public', $invoice->hash) }}", {
+            paymentIntentId: paymentIntentId,
+            "_token": "{{ csrf_token() }}"
+        }).then(function (response) {
+            if (response.url) {
+                window.location.href = response.url;
+            }
+        }).catch(function (error) {
+            $.handleApiFormError(error);
+        }).finally(function () {
+            $.easyUnblockUI('#invoice_container');
+            $('#card-button').prop('disabled', false);
+        });
     };
 
     var paymentFailed = function (result) {
-        $.easyAjax({
-            url: "{{ route('front.invoice_payment_failed', [$invoice->id]) }}",
-            container: '#invoice_container',
-            type: "POST",
-            redirect: true,
-            data: {errorMessage: result.error, gateway: 'Stripe', "_token": "{{ csrf_token() }}"},
-            success: function (response) {
-                // Unblock Modal UI when got error response
-                $.easyUnblockUI('#stripeAddress');
+        $.easyBlockUI('#invoice_container');
+
+        window.apiHttp.postUrlEncoded("{{ route('front.invoice_payment_failed', [$invoice->id]) }}", {
+            errorMessage: result.error,
+            gateway: 'Stripe',
+            "_token": "{{ csrf_token() }}"
+        }).then(function (response) {
+            if (response.url) {
+                window.location.href = response.url;
+                return;
             }
-        })
+
+            // Unblock Modal UI when got error response
+            $.easyUnblockUI('#stripeAddress');
+        }).catch(function (error) {
+            $.handleApiFormError(error);
+        }).finally(function () {
+            $.easyUnblockUI('#invoice_container');
+        });
     }
 
     // Show the customer the error from Stripe if their card fails to charge

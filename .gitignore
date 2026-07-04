@@ -20,6 +20,10 @@ yarn-error.log
 /.idea
 /.vscode
 /.vagrant
+/.agents/
+/.phpstorm.meta.php
+/.playwright-mcp/
+/test-results/
 *.zip
 .DS_Store
 mix.js.map
@@ -68,3 +72,7 @@ GEMINI.md
 /scripts/deploy-secrets.local.ps1
 
 graphify-out/
+ai-context/
+
+# Laravel 11 default output; mysql-schema.dump is the canonical schema path here.
+/database/schema/mysql-schema.sql

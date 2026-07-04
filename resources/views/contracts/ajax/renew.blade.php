@@ -109,21 +109,25 @@ $addContractPermission = user()->permission('renew_contract');
         $('#submit-renew').click(function() {
             const url = "{{ route('contract-renew.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-renew-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#submit-renew",
-                data: $('#save-renew-data-form').serialize(),
-                success: function(response) {
+            const $btn = $('#submit-renew');
+            const previousHtml = $btn.html();
+            $.easyBlockUI('#save-renew-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, $('#save-renew-data-form').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
                         $('#comment-list').html(response.view);
                     }
 
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-renew-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         $('body').on('click', '.delete-comment', function() {
@@ -152,19 +156,19 @@ $addContractPermission = user()->permission('renew_contract');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('#comment-list');
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#comment-list').html(response.view);
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#comment-list');
+                        });
                 }
             });
         });

@@ -144,23 +144,23 @@ $viewAppreciationPermission = user()->permission('view_appreciation');
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('awards.change-status') }}",
-                    type: "POST",
-                    data: {
+                window.apiHttp.postUrlEncoded("{{ route('awards.change-status') }}", {
                         '_token': token,
                         appreciationId: id,
                         status: status
-                    },
-
-                    success: function(response) {
+                    })
+                    .then((response) => {
                         if (response.status == "success") {
                             showTable();
                             resetActionButtons();
                             deSelectAll();
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        if (typeof $.handleApiFormError === 'function') {
+                            $.handleApiFormError(error);
+                        }
+                    });
             }
         });
 
@@ -218,19 +218,17 @@ $viewAppreciationPermission = user()->permission('view_appreciation');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then((response) => {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        });
                 }
                 else if (result.isDenied) {
                     if(status == 'active'){
@@ -244,20 +242,21 @@ $viewAppreciationPermission = user()->permission('view_appreciation');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
+                    window.apiHttp.postUrlEncoded(url, {
                             '_token': token,
                             'appreciationId': id,
                             'status': status,
-                        },
-                        success: function(response) {
+                        })
+                        .then((response) => {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch((error) => {
+                            if (typeof $.handleApiFormError === 'function') {
+                                $.handleApiFormError(error);
+                            }
+                        });
                 }
             });
         });
@@ -286,23 +285,29 @@ $viewAppreciationPermission = user()->permission('view_appreciation');
             }).get();
 
             var url = "{{ route('awards.apply_quick_action') }}?row_ids=" + rowdIds;
+            var button = $('#quick-action-apply');
+            var buttonText = button.html();
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            button.prop('disabled', true);
+
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then((response) => {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('.quick-action-field').addClass('d-none');
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                });
         };
 
         $('#quick-action-apply').click(function() {

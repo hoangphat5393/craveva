@@ -11,27 +11,29 @@ final class CompanyTransactionPurgeService
     /**
      * @return list<array{phase: string, table: string, scope: string, count: int, skipped: bool, reason: ?string}>
      */
-    public function dryRun(int $companyId): array
+    public function dryRun(int $companyId, bool $includeBoms = false): array
     {
-        return $this->run($companyId, execute: false);
+        return $this->run($companyId, execute: false, includeBoms: $includeBoms);
     }
 
     /**
      * @return list<array{phase: string, table: string, scope: string, count: int, skipped: bool, reason: ?string}>
      */
-    public function execute(int $companyId): array
+    public function execute(int $companyId, bool $includeBoms = false): array
     {
-        return $this->run($companyId, execute: true);
+        return DB::transaction(
+            fn (): array => $this->run($companyId, execute: true, includeBoms: $includeBoms)
+        );
     }
 
     /**
      * @return list<array{phase: string, table: string, scope: string, count: int, skipped: bool, reason: ?string}>
      */
-    private function run(int $companyId, bool $execute): array
+    private function run(int $companyId, bool $execute, bool $includeBoms): array
     {
         $rows = [];
 
-        foreach (CompanyTransactionPurgePlan::steps() as $step) {
+        foreach (CompanyTransactionPurgePlan::steps($includeBoms) as $step) {
             if (! Schema::hasTable($step->table)) {
                 $rows[] = $this->resultRow($step, 0, true, 'table_missing');
 

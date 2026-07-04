@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('estimates', function (Blueprint $table): void {
             if (! Schema::hasColumn('estimates', 'recipe_moq')) {
-                $table->unsignedInteger('recipe_moq')->nullable()->after('total_volume');
+                $table->unsignedInteger('recipe_moq')->nullable()->after('valid_till');
             }
 
             if (! Schema::hasColumn('estimates', 'recipe_packaging')) {
@@ -21,9 +21,6 @@ return new class extends Migration
                 $table->string('recipe_oem_sku', 128)->nullable()->after('recipe_packaging');
             }
 
-            if (! Schema::hasColumn('estimates', 'recipe_target_unit_price')) {
-                $table->decimal('recipe_target_unit_price', 16, 4)->nullable()->after('recipe_oem_sku');
-            }
         });
     }
 
@@ -34,7 +31,6 @@ return new class extends Migration
                 'recipe_moq',
                 'recipe_packaging',
                 'recipe_oem_sku',
-                'recipe_target_unit_price',
             ];
 
             foreach ($columns as $column) {

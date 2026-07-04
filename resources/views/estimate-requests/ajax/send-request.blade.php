@@ -32,21 +32,25 @@
         var url = "{{ route('estimate-request.send_estimate_mail') }}";
         let token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            data: {
+        $('#save-confirm_paid').prop('disabled', true);
+        $.easyBlockUI('.modal-content');
+
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token,
                 client_id: $('#client_id').val(),
-            },
-            success: function(response) {
+            })
+            .then(function(response) {
                 if (response.status == "success") {
                     $(MODAL_LG).modal('hide');
                     showTable();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-confirm_paid').prop('disabled', false);
+                $.easyUnblockUI('.modal-content');
+            });
     });
 </script>

@@ -163,6 +163,9 @@ return [
     'reference_sales_shipment' => 'Sales Delivery Order',
     'reference_sales_shipment_stock_reversal' => 'Sales Delivery Order Reversal',
     'reference_production_batch' => 'Production Batch',
+    'reference_purchase_order' => 'Purchase Order',
+    'reference_grn' => 'Goods Receipt Note (GRN)',
+    'reference_purchase_inventory' => 'Opening Stock',
     'reference_transfer' => 'Stock Transfer',
     'reference_unknown' => 'Reference Document',
 ];

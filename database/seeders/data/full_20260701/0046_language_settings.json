@@ -1,0 +1,295 @@
+{
+    "table": "language_settings",
+    "columns": [
+        "id",
+        "language_code",
+        "language_name",
+        "status",
+        "created_at",
+        "updated_at",
+        "flag_code",
+        "is_rtl"
+    ],
+    "rows": [
+        {
+            "id": 1,
+            "language_code": "en",
+            "language_name": "English",
+            "status": "enabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "en",
+            "is_rtl": 0
+        },
+        {
+            "id": 2,
+            "language_code": "ar",
+            "language_name": "Arabic",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "sa",
+            "is_rtl": 1
+        },
+        {
+            "id": 3,
+            "language_code": "bg",
+            "language_name": "Bulgarian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "bg",
+            "is_rtl": 0
+        },
+        {
+            "id": 4,
+            "language_code": "th",
+            "language_name": "Thai",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "th",
+            "is_rtl": 0
+        },
+        {
+            "id": 5,
+            "language_code": "sr",
+            "language_name": "Serbian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "rs",
+            "is_rtl": 0
+        },
+        {
+            "id": 6,
+            "language_code": "ka",
+            "language_name": "Georgian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "ge",
+            "is_rtl": 0
+        },
+        {
+            "id": 7,
+            "language_code": "de",
+            "language_name": "German",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "de",
+            "is_rtl": 0
+        },
+        {
+            "id": 8,
+            "language_code": "es",
+            "language_name": "Spanish",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "es",
+            "is_rtl": 0
+        },
+        {
+            "id": 9,
+            "language_code": "et",
+            "language_name": "Estonian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "et",
+            "is_rtl": 0
+        },
+        {
+            "id": 10,
+            "language_code": "fa",
+            "language_name": "Farsi",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "ir",
+            "is_rtl": 1
+        },
+        {
+            "id": 11,
+            "language_code": "fr",
+            "language_name": "French",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "fr",
+            "is_rtl": 0
+        },
+        {
+            "id": 12,
+            "language_code": "ja",
+            "language_name": "Japanese",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "jp",
+            "is_rtl": 0
+        },
+        {
+            "id": 13,
+            "language_code": "el",
+            "language_name": "Greek",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "gr",
+            "is_rtl": 0
+        },
+        {
+            "id": 14,
+            "language_code": "hi",
+            "language_name": "Hindi",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "in",
+            "is_rtl": 0
+        },
+        {
+            "id": 15,
+            "language_code": "id",
+            "language_name": "Indonesian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "id",
+            "is_rtl": 0
+        },
+        {
+            "id": 16,
+            "language_code": "it",
+            "language_name": "Italian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "it",
+            "is_rtl": 0
+        },
+        {
+            "id": 17,
+            "language_code": "nl",
+            "language_name": "Dutch",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "nl",
+            "is_rtl": 0
+        },
+        {
+            "id": 18,
+            "language_code": "pl",
+            "language_name": "Polish",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "pl",
+            "is_rtl": 0
+        },
+        {
+            "id": 19,
+            "language_code": "pt",
+            "language_name": "Portuguese",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "pt",
+            "is_rtl": 0
+        },
+        {
+            "id": 20,
+            "language_code": "pt-br",
+            "language_name": "Portuguese (Brazil)",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "br",
+            "is_rtl": 0
+        },
+        {
+            "id": 21,
+            "language_code": "ro",
+            "language_name": "Romanian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "ro",
+            "is_rtl": 0
+        },
+        {
+            "id": 22,
+            "language_code": "ru",
+            "language_name": "Russian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "ru",
+            "is_rtl": 0
+        },
+        {
+            "id": 23,
+            "language_code": "tr",
+            "language_name": "Turkish",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "tr",
+            "is_rtl": 0
+        },
+        {
+            "id": 24,
+            "language_code": "vi",
+            "language_name": "Vietnamese",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "vn",
+            "is_rtl": 0
+        },
+        {
+            "id": 25,
+            "language_code": "zh-CN",
+            "language_name": "Chinese (S)",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "cn",
+            "is_rtl": 0
+        },
+        {
+            "id": 26,
+            "language_code": "zh-TW",
+            "language_name": "Chinese (T)",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "cn",
+            "is_rtl": 0
+        },
+        {
+            "id": 27,
+            "language_code": "sq",
+            "language_name": "Albanian",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "al",
+            "is_rtl": 0
+        },
+        {
+            "id": 28,
+            "language_code": "ko",
+            "language_name": "korean",
+            "status": "disabled",
+            "created_at": null,
+            "updated_at": null,
+            "flag_code": "ko",
+            "is_rtl": 0
+        }
+    ]
+}

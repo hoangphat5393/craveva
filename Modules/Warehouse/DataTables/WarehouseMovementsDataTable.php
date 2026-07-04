@@ -4,6 +4,7 @@ namespace Modules\Warehouse\DataTables;
 
 use App\DataTables\BaseDataTable;
 use App\Models\StockMovement;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTableAbstract;
@@ -115,6 +116,24 @@ class WarehouseMovementsDataTable extends BaseDataTable
 
         if (($request->movement_type ?? '') !== '') {
             $model->where('movement_type', $request->movement_type);
+        }
+
+        if (($request->reference_type ?? '') !== '') {
+            $model->whereIn('reference_type', $this->referenceTypeVariants((string) $request->reference_type));
+        }
+
+        if (($request->reference_id ?? '') !== '') {
+            $model->where('reference_id', (int) $request->reference_id);
+        }
+
+        if (($request->startDate ?? '') !== '' && ($request->startDate ?? '') !== 'null') {
+            $startDate = Carbon::createFromFormat($this->company->date_format, $request->startDate)->startOfDay();
+            $model->where('stock_movements.created_at', '>=', $startDate);
+        }
+
+        if (($request->endDate ?? '') !== '' && ($request->endDate ?? '') !== 'null') {
+            $endDate = Carbon::createFromFormat($this->company->date_format, $request->endDate)->endOfDay();
+            $model->where('stock_movements.created_at', '<=', $endDate);
         }
 
         if (($request->searchText ?? '') !== '') {
@@ -243,14 +262,69 @@ class WarehouseMovementsDataTable extends BaseDataTable
             'invoice' => __('warehouse::app.reference_invoice'),
             'invoice_stock_reversal' => __('warehouse::app.reference_invoice_stock_reversal'),
             'creditnotes' => __('warehouse::app.reference_credit_notes'),
+            'credit_notes' => __('warehouse::app.reference_credit_notes'),
             'credit_note_stock_reversal' => __('warehouse::app.reference_credit_note_stock_reversal'),
             'purchasevendorcredit' => __('warehouse::app.reference_purchase_vendor_credit'),
+            'purchase_vendor_credit' => __('warehouse::app.reference_purchase_vendor_credit'),
             'purchase_vendor_credit_stock_reversal' => __('warehouse::app.reference_purchase_vendor_credit_stock_reversal'),
             'salesshipment' => __('warehouse::app.reference_sales_shipment'),
+            'salesdo' => __('warehouse::app.reference_sales_shipment'),
+            'sales_shipment' => __('warehouse::app.reference_sales_shipment'),
             'sales_shipment_stock_reversal' => __('warehouse::app.reference_sales_shipment_stock_reversal'),
             'productionbatch' => __('warehouse::app.reference_production_batch'),
+            'production_batch' => __('warehouse::app.reference_production_batch'),
+            'purchaseorder' => __('warehouse::app.reference_purchase_order'),
+            'purchase_order' => __('warehouse::app.reference_purchase_order'),
+            'deliveryorder' => __('warehouse::app.reference_grn'),
+            'grn' => __('warehouse::app.reference_grn'),
+            'purchaseinventory' => __('warehouse::app.reference_purchase_inventory'),
+            'purchase_inventory' => __('warehouse::app.reference_purchase_inventory'),
             'transfer' => __('warehouse::app.reference_transfer'),
             default => $raw ? Str::headline(str_replace('_', ' ', $raw)) : '—',
+        };
+    }
+
+    /**
+     * Stock movement references are stored by older code both as class names and
+     * stable snake-case keys. Reports use one business key and expand it here.
+     */
+    private function referenceTypeVariants(string $referenceType): array
+    {
+        return match ($referenceType) {
+            'sales_shipment' => [
+                'sales_shipment',
+                'Modules\\Purchase\\Entities\\SalesDo',
+                'Modules\\Purchase\\Entities\\SalesShipment',
+            ],
+            'production_batch' => [
+                'production_batch',
+                'Modules\\Production\\Entities\\ProductionBatch',
+            ],
+            'purchase_order' => [
+                'purchase_order',
+                'Modules\\Purchase\\Entities\\PurchaseOrder',
+            ],
+            'grn' => [
+                'grn',
+                'Modules\\Purchase\\Entities\\DeliveryOrder',
+            ],
+            'purchase_inventory' => [
+                'purchase_inventory',
+                'Modules\\Purchase\\Entities\\PurchaseInventory',
+            ],
+            'invoice' => [
+                'invoice',
+                'App\\Models\\Invoice',
+            ],
+            'credit_notes' => [
+                'credit_notes',
+                'App\\Models\\CreditNotes',
+            ],
+            'purchase_vendor_credit' => [
+                'purchase_vendor_credit',
+                'Modules\\Purchase\\Entities\\PurchaseVendorCredit',
+            ],
+            default => [$referenceType],
         };
     }
 

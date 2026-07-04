@@ -101,15 +101,14 @@
 
         $('#save-appreciationType').click(function() {
             var url = "{{ route('awards.store') }}";
-            $.easyAjax({
-                url: url,
-                container: '#createAppreciationType',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: '#save-appreciationType',
-                data: $('#createAppreciationType').serialize(),
-                success: function(response) {
+            const button = $('#save-appreciationType');
+            const buttonText = button.html();
+
+            button.prop('disabled', true);
+            $.easyBlockUI('#createAppreciationType');
+
+            window.apiHttp.postUrlEncoded(url, $('#createAppreciationType').serialize())
+                .then((response) => {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -118,8 +117,17 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            })
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                    button.html(buttonText);
+                    $.easyUnblockUI('#createAppreciationType');
+                });
         });
 
         showIconPreview();

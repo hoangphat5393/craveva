@@ -90,19 +90,25 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+
+            window.apiHttp.get(requestUrl)
+                .then((response) => {
                     if (response.status == "success") {
                         showBtn(response.activeTab);
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI("#nav-tabContent");
+                });
         });
 
         $(MODAL_XL).on('shown.bs.modal', function () {

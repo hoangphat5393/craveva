@@ -54,6 +54,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Modules\Pricing\Entities\ClientProductPricing;
+use Modules\Pricing\Entities\PricingTier;
 use Modules\Warehouse\Entities\Warehouse;
 
 class ClientController extends AccountBaseController
@@ -660,6 +662,8 @@ class ClientController extends AccountBaseController
                 return $this->contacts();
             case 'orders':
                 return $this->orders();
+            case 'pricing':
+                return $this->pricing();
             case 'documents':
                 abort_403(! ($this->viewDocumentPermission == 'all'
                     || ($this->viewDocumentPermission == 'added' && $this->client->clientDetails->added_by == user()->id)
@@ -903,6 +907,59 @@ class ClientController extends AccountBaseController
         $this->view = 'clients.ajax.credit_notes';
 
         return $dataTable->render('clients.show', $this->data);
+    }
+
+    public function pricing()
+    {
+        abort_403(! in_array('pricing', array_map('strtolower', user_modules())));
+
+        $viewClientTiersPermission = user()->permission('view_client_tiers');
+        $viewClientPricingPermission = user()->permission('view_client_pricing');
+
+        abort_403($viewClientTiersPermission == 'none' && $viewClientPricingPermission == 'none');
+
+        $tab = request('tab');
+        $this->activeTab = $tab ?: 'profile';
+        $this->view = 'clients.ajax.pricing';
+        $this->pricingTier = null;
+        $this->contractPricingRows = collect();
+        $this->contractPricingTotal = 0;
+        $this->contractPricingActiveTotal = 0;
+
+        if ($this->client->clientDetails?->pricing_tier_id) {
+            $this->pricingTier = PricingTier::query()
+                ->where('company_id', company()->id)
+                ->find($this->client->clientDetails->pricing_tier_id);
+        }
+
+        if ($viewClientPricingPermission != 'none') {
+            $today = now(company()->timezone)->toDateString();
+
+            $baseContractPricing = ClientProductPricing::query()
+                ->with('product:id,name,sku')
+                ->where('company_id', company()->id)
+                ->where('client_id', $this->client->id);
+
+            $this->contractPricingTotal = (clone $baseContractPricing)->count();
+            $this->contractPricingActiveTotal = (clone $baseContractPricing)
+                ->where('is_active', true)
+                ->whereDate('start_date', '<=', $today)
+                ->where(function ($query) use ($today) {
+                    $query->whereNull('end_date')
+                        ->orWhereDate('end_date', '>=', $today);
+                })
+                ->count();
+            $this->contractPricingRows = (clone $baseContractPricing)
+                ->latest('id')
+                ->limit(10)
+                ->get();
+        }
+
+        if (request()->ajax()) {
+            return $this->returnAjax($this->view);
+        }
+
+        return view('clients.show', $this->data);
     }
 
     public function contacts()

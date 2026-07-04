@@ -164,15 +164,13 @@
             $('#install-process').html('<div class="alert alert-primary">@lang("messages.installingUpdateMessage")</div>');
 
             let filePath = $(this).data('file-path');
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('custom-modules.store') }}",
-                blockUI: true,
-                data: {
+            $.easyBlockUI();
+
+            window.apiHttp.post("{{ route('custom-modules.store') }}", {
                     "_token": "{{ csrf_token() }}",
                     filePath: filePath
-                },
-                success: function (response) {
+                })
+                .then(function (response) {
                     $('#install-process').html('');
 
                     if (response.status === 'success') {
@@ -184,8 +182,19 @@
                     if (response.status === 'fail') {
                         $('#install-process').html(`<div class="alert alert-danger">${response.message}</div>`);
                     }
+                })
+                .catch(function (error) {
+                    if (error.payload && error.payload.status === 'fail') {
+                        $('#install-process').html(`<div class="alert alert-danger">${error.message}</div>`);
+                        return;
+                    }
+
+                    $.handleApiFormError(error);
+                })
+                .finally(function () {
+                    $.easyUnblockUI();
                 }
-            });
+            );
         });
 
         $('body').on('click', '.delete-files', function () {
@@ -211,18 +220,22 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        type: 'POST',
-                        url: "{{ route('update-settings.deleteFile') }}",
-                        blockUI: true,
-                        data: {
+                    $.easyBlockUI();
+
+                    window.apiHttp.post("{{ route('update-settings.deleteFile') }}", {
                             "_token": "{{ csrf_token() }}",
                             filePath: filePath
-                        },
-                        success: function (response) {
+                        })
+                        .then(function (response) {
                             $('#file-' + fileNumber).remove();
+                        })
+                        .catch(function (error) {
+                            $.handleApiFormError(error);
+                        })
+                        .finally(function () {
+                            $.easyUnblockUI();
                         }
-                    });
+                    );
                 }
             });
 

@@ -133,16 +133,8 @@
             var prev = $btn.html();
             $.easyBlockUI('.form-section');
             $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('front.signup.store') }}",
-                container: '#register',
-                data: $('#register').serialize(),
-                messagePosition: 'inline',
-                errorPosition: 'field',
-                blockUI: false,
-                disableButton: false,
-                success: function(response) {
+            window.apiHttp.postUrlEncoded("{{ route('front.signup.store') }}", $('#register').serialize())
+                .then(function(response) {
                     if (response.status === 'success') {
                         $('#form-box').remove();
                         if (response.action === 'redirect' && response.url) {
@@ -157,15 +149,17 @@
                             }
                         }
                     }
-                },
-                complete: function() {
+                })
+                .catch(function (error) {
+                    $.handleApiFormError(error);
+                })
+                .finally(function() {
                     $.easyUnblockUI('.form-section');
                     $btn.prop('disabled', false).html(prev);
                     @if ($global->google_recaptcha_status == 'active')
                         grecaptcha.reset();
                     @endif
-                }
-            });
+                });
 
         });
     </script>

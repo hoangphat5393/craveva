@@ -30,24 +30,26 @@ $(document).ready(function () {
         var url = "{{ route('lead-setting.update_status', ':id') }}";
         url = url.replace(':id', companyID);
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            container: '#save-lead-status',
-            blockUI: true,
-            data: {
+        $.easyBlockUI('#save-lead-status');
+
+        window.apiHttp.postUrlEncoded(url, {
                 '_token': token,
                 lead_setting_status: status,
                 id: companyID,
                 userId: userID,
                 requestFromTicket: 'no',
-            },
-            success: function (response) {
+            })
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#save-lead-status');
+            });
     });
 });
 </script>

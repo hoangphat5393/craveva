@@ -12,6 +12,7 @@ use Modules\Production\Entities\ProductionOrder;
 use Modules\Production\Entities\ProductionOrderBomSnapshotItem;
 use Modules\Production\Support\ProductionBomFirstPolicy;
 use Modules\Purchase\Services\ProductionFgInventoryLedgerSync;
+use Modules\Warehouse\Entities\StockReservation;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Services\StockMovementService;
 use Modules\Warehouse\Services\WarehouseUnitConversionService;
@@ -32,25 +33,29 @@ class ProductionPostingService
 
     public function releaseOrder(ProductionOrder $order): void
     {
-        if ($order->status !== ProductionOrder::STATUS_DRAFT) {
-            throw new InvalidArgumentException(__('production::app.onlyDraftReleasable'));
-        }
-
-        if (ProductionBomFirstPolicy::requireBomOnOrder()) {
-            $this->assertOrderHasReleasableBom($order);
-        }
-
         DB::transaction(function () use ($order): void {
-            $this->syncBomSnapshotForReleasedOrder($order);
-            $order->refresh();
-            $order->load(['bomSnapshotItems.componentProduct.unit', 'bomSnapshotItems.unit']);
+            $lockedOrder = ProductionOrder::query()
+                ->lockForUpdate()
+                ->findOrFail($order->id);
 
-            $this->materialReservationService->assertCanReserve($order);
-            $this->materialReservationService->syncForOrder($order);
+            if ($lockedOrder->status !== ProductionOrder::STATUS_DRAFT) {
+                throw new InvalidArgumentException(__('production::app.onlyDraftReleasable'));
+            }
 
-            $order->status = ProductionOrder::STATUS_RELEASED;
-            $order->released_at = now();
-            $order->save();
+            if (ProductionBomFirstPolicy::requireBomOnOrder()) {
+                $this->assertOrderHasReleasableBom($lockedOrder);
+            }
+
+            $this->syncBomSnapshotForReleasedOrder($lockedOrder);
+            $lockedOrder->refresh();
+            $lockedOrder->load(['bomSnapshotItems.componentProduct.unit', 'bomSnapshotItems.unit']);
+
+            $this->materialReservationService->assertCanReserve($lockedOrder);
+            $this->materialReservationService->syncForOrder($lockedOrder);
+
+            $lockedOrder->status = ProductionOrder::STATUS_RELEASED;
+            $lockedOrder->released_at = now();
+            $lockedOrder->save();
         });
     }
 
@@ -143,45 +148,48 @@ class ProductionPostingService
      */
     public function cancelOrder(ProductionOrder $order): void
     {
-        if ($order->status === ProductionOrder::STATUS_CANCELLED) {
-            return;
-        }
+        DB::transaction(function () use ($order): void {
+            $lockedOrder = ProductionOrder::query()
+                ->lockForUpdate()
+                ->findOrFail($order->id);
 
-        if ($order->status === ProductionOrder::STATUS_COMPLETED) {
-            throw new InvalidArgumentException(__('production::app.completedCannotCancel'));
-        }
-
-        if ($order->status === ProductionOrder::STATUS_IN_PROGRESS) {
-            throw new InvalidArgumentException(__('production::app.cannotCancelInProgress'));
-        }
-
-        $wasReleased = $order->status === ProductionOrder::STATUS_RELEASED;
-
-        if ($wasReleased) {
-            $batchIds = $order->batches()->pluck('id');
-            $hasPostedConsumptions = $order->batches()->whereNotNull('posted_consumptions_at')->exists();
-            if ($hasPostedConsumptions) {
-                throw new InvalidArgumentException(__('production::app.cannotCancelRmPosted'));
+            if ($lockedOrder->status === ProductionOrder::STATUS_CANCELLED) {
+                return;
             }
 
-            if ($batchIds->isNotEmpty()) {
-                $hasPostedFg = ProductionBatchOutput::query()
-                    ->whereIn('production_batch_id', $batchIds)
-                    ->whereNotNull('posted_at')
-                    ->exists();
-                if ($hasPostedFg) {
-                    throw new InvalidArgumentException(__('production::app.cannotCancelFgPosted'));
+            if ($lockedOrder->status === ProductionOrder::STATUS_COMPLETED) {
+                throw new InvalidArgumentException(__('production::app.completedCannotCancel'));
+            }
+
+            if ($lockedOrder->status === ProductionOrder::STATUS_IN_PROGRESS) {
+                throw new InvalidArgumentException(__('production::app.cannotCancelInProgress'));
+            }
+
+            $wasReleased = $lockedOrder->status === ProductionOrder::STATUS_RELEASED;
+            if ($wasReleased) {
+                $batchIds = $lockedOrder->batches()->pluck('id');
+                $hasPostedConsumptions = $lockedOrder->batches()->whereNotNull('posted_consumptions_at')->exists();
+                if ($hasPostedConsumptions) {
+                    throw new InvalidArgumentException(__('production::app.cannotCancelRmPosted'));
+                }
+
+                if ($batchIds->isNotEmpty()) {
+                    $hasPostedFg = ProductionBatchOutput::query()
+                        ->whereIn('production_batch_id', $batchIds)
+                        ->whereNotNull('posted_at')
+                        ->exists();
+                    if ($hasPostedFg) {
+                        throw new InvalidArgumentException(__('production::app.cannotCancelFgPosted'));
+                    }
                 }
             }
-        }
 
-        DB::transaction(function () use ($order, $wasReleased): void {
             if ($wasReleased) {
-                $this->materialReservationService->releaseForOrder($order);
+                $this->materialReservationService->releaseForOrder($lockedOrder);
             }
 
-            $order->status = ProductionOrder::STATUS_CANCELLED;
-            $order->save();
+            $lockedOrder->status = ProductionOrder::STATUS_CANCELLED;
+            $lockedOrder->save();
         });
     }
 
@@ -192,28 +200,36 @@ class ProductionPostingService
      */
     public function postConsumptionsForBatch(ProductionBatch $batch): void
     {
-        if ($batch->posted_consumptions_at !== null) {
-            return;
-        }
+        DB::transaction(function () use ($batch): void {
+            $lockedBatch = ProductionBatch::query()
+                ->lockForUpdate()
+                ->findOrFail($batch->id);
 
-        $order = $batch->order;
-        if (! in_array($order->status, [ProductionOrder::STATUS_RELEASED, ProductionOrder::STATUS_IN_PROGRESS], true)) {
-            throw new InvalidArgumentException(__('production::app.orderMustBeReleasedForConsumptions'));
-        }
-
-        $batch->loadMissing(['consumptions.warehouseProductBatch']);
-
-        if ($batch->consumptions->isEmpty()) {
-            throw new InvalidArgumentException(__('production::app.postRawMaterialUsageRequiresLines'));
-        }
-
-        DB::transaction(function () use ($batch, $order): void {
-            foreach ($batch->consumptions as $consumption) {
-                $this->postSingleConsumption($batch, $consumption, (int) $order->company_id, (int) $order->rm_warehouse_id);
+            if ($lockedBatch->posted_consumptions_at !== null) {
+                return;
             }
 
-            $batch->posted_consumptions_at = now();
-            $batch->save();
+            $order = ProductionOrder::query()
+                ->lockForUpdate()
+                ->findOrFail($lockedBatch->production_order_id);
+
+            if (! in_array($order->status, [ProductionOrder::STATUS_RELEASED, ProductionOrder::STATUS_IN_PROGRESS], true)) {
+                throw new InvalidArgumentException(__('production::app.orderMustBeReleasedForConsumptions'));
+            }
+
+            $lockedBatch->load(['consumptions.warehouseProductBatch']);
+            $lockedBatch->setRelation('order', $order);
+
+            if ($lockedBatch->consumptions->isEmpty()) {
+                throw new InvalidArgumentException(__('production::app.postRawMaterialUsageRequiresLines'));
+            }
+
+            foreach ($lockedBatch->consumptions as $consumption) {
+                $this->postSingleConsumption($lockedBatch, $consumption, (int) $order->company_id, (int) $order->rm_warehouse_id);
+            }
+
+            $lockedBatch->posted_consumptions_at = now();
+            $lockedBatch->save();
 
             $order->refresh();
             if (! $this->materialReservationService->orderHasPendingConsumptionBatches($order)) {
@@ -237,62 +253,68 @@ class ProductionPostingService
      */
     public function postFinishedGoodsReceipt(ProductionBatchOutput $output): void
     {
-        if ($output->posted_at !== null) {
-            return;
-        }
+        DB::transaction(function () use ($output): void {
+            $lockedOutput = ProductionBatchOutput::query()
+                ->lockForUpdate()
+                ->findOrFail($output->id);
 
-        $batch = $output->batch()->with('order')->first();
-        if ($batch === null || $batch->posted_consumptions_at === null) {
-            throw new InvalidArgumentException(__('production::app.postRmBeforeFgReceipt'));
-        }
+            if ($lockedOutput->posted_at !== null) {
+                return;
+            }
 
-        $order = $batch->order;
-        if ($order === null) {
-            throw new InvalidArgumentException(__('production::app.missingOrderOnBatch'));
-        }
+            $batch = ProductionBatch::query()
+                ->lockForUpdate()
+                ->findOrFail($lockedOutput->production_batch_id);
+            if ($batch->posted_consumptions_at === null) {
+                throw new InvalidArgumentException(__('production::app.postRmBeforeFgReceipt'));
+            }
 
-        $companyId = (int) $order->company_id;
-        if ($companyId <= 0) {
-            throw new InvalidArgumentException(__('production::app.missingCompanyOnOrder'));
-        }
+            $order = ProductionOrder::query()
+                ->lockForUpdate()
+                ->find($batch->production_order_id);
+            if ($order === null) {
+                throw new InvalidArgumentException(__('production::app.missingOrderOnBatch'));
+            }
 
-        $registeredFgTotal = $this->fgQuantityPolicy->registeredFgTotalForOrder($order);
+            $companyId = (int) $order->company_id;
+            if ($companyId <= 0) {
+                throw new InvalidArgumentException(__('production::app.missingCompanyOnOrder'));
+            }
 
-        $this->fgQuantityPolicy->assertProjectedTotalsAllowedForOrder(
-            $order,
-            $registeredFgTotal,
-            $output->variance_reason,
-        );
+            $registeredFgTotal = $this->fgQuantityPolicy->registeredFgTotalForOrder($order);
+            $this->fgQuantityPolicy->assertProjectedTotalsAllowedForOrder(
+                $order,
+                $registeredFgTotal,
+                $lockedOutput->variance_reason,
+            );
 
-        if (
-            $this->fgQuantityPolicy->outputRequiresVarianceApproval($order, $output)
-            && ($output->approved_by === null || $output->approved_at === null)
-        ) {
-            throw new InvalidArgumentException(__('production::app.fgVarianceApprovalRequired'));
-        }
+            if (
+                $this->fgQuantityPolicy->outputRequiresVarianceApproval($order, $lockedOutput)
+                && ($lockedOutput->approved_by === null || $lockedOutput->approved_at === null)
+            ) {
+                throw new InvalidArgumentException(__('production::app.fgVarianceApprovalRequired'));
+            }
 
-        $payload = [
-            'company_id' => $companyId,
-            'warehouse_id' => (int) $output->warehouse_id,
-            'product_id' => (int) $output->output_product_id,
-            'quantity' => (float) $output->quantity,
-            'batch_number' => $output->batch_number,
-            'expiry_date' => $output->expiration_date?->format('Y-m-d'),
-            'manufacturing_date' => $output->manufacturing_date?->format('Y-m-d'),
-            'reference_type' => ProductionBatch::class,
-            'reference_id' => (int) $batch->id,
-            'idempotency_key' => 'production-fg-receipt:'.$output->id,
-        ];
+            $payload = [
+                'company_id' => $companyId,
+                'warehouse_id' => (int) $lockedOutput->warehouse_id,
+                'product_id' => (int) $lockedOutput->output_product_id,
+                'quantity' => (float) $lockedOutput->quantity,
+                'batch_number' => $lockedOutput->batch_number,
+                'expiry_date' => $lockedOutput->expiration_date?->format('Y-m-d'),
+                'manufacturing_date' => $lockedOutput->manufacturing_date?->format('Y-m-d'),
+                'reference_type' => ProductionBatch::class,
+                'reference_id' => (int) $batch->id,
+                'idempotency_key' => 'production-fg-receipt:'.$lockedOutput->id,
+            ];
 
-        DB::transaction(function () use ($payload, $output, $batch, $order): void {
             $this->stockMovementService->recordInbound($payload);
 
-            $output->posted_at = now();
-            $output->save();
+            $lockedOutput->posted_at = now();
+            $lockedOutput->save();
 
-            $this->fgInventoryLedgerSync->ensureLedgerLineAfterFgReceipt($output->fresh());
+            $this->fgInventoryLedgerSync->ensureLedgerLineAfterFgReceipt($lockedOutput->fresh());
 
-            $batch->refresh();
             $hasUnpostedOutputs = $batch->outputs()->whereNull('posted_at')->exists();
 
             if (! $hasUnpostedOutputs) {
@@ -344,6 +366,7 @@ class ProductionPostingService
             $companyId,
             $rmWarehouseId,
             $qtyBase,
+            (int) $batch->production_order_id,
             $consumption->warehouse_product_batch_id !== null ? (int) $consumption->warehouse_product_batch_id : null,
         );
 
@@ -370,6 +393,9 @@ class ProductionPostingService
 
             $this->stockMovementService->recordOutbound($payload);
         }
+
+        $order = $batch->relationLoaded('order') ? $batch->order : $batch->order()->firstOrFail();
+        $this->materialReservationService->consumeForProduct($order, $productId, $qtyBase);
     }
 
     /**
@@ -380,6 +406,7 @@ class ProductionPostingService
         int $companyId,
         int $rmWarehouseId,
         float $requiredQty,
+        int $productionOrderId,
         ?int $preferredBatchId = null
     ): array {
         $allocations = [];
@@ -391,10 +418,19 @@ class ProductionPostingService
                 ->where('company_id', $companyId)
                 ->where('warehouse_id', $rmWarehouseId)
                 ->where('product_id', (int) $consumption->component_product_id)
-                ->first(['id', 'quantity', 'reserved_quantity']);
+                ->first([
+                    'id',
+                    'company_id',
+                    'warehouse_id',
+                    'product_id',
+                    'batch_number',
+                    'expiration_date',
+                    'quantity',
+                    'reserved_quantity',
+                ]);
 
             if ($preferred !== null && $remaining > 0) {
-                $preferredAvailable = max(0.0, (float) $preferred->quantity - (float) $preferred->reserved_quantity);
+                $preferredAvailable = $this->availableToProductionOrder($preferred, $productionOrderId);
                 if ($preferredAvailable > 0) {
                     $take = min($remaining, $preferredAvailable);
                     $allocations[] = [
@@ -418,14 +454,23 @@ class ProductionPostingService
             ->when($preferredBatchId !== null, fn ($query) => $query->where('id', '!=', (int) $preferredBatchId))
             ->orderByDesc('quantity')
             ->orderBy('id')
-            ->get(['id', 'quantity', 'reserved_quantity']);
+            ->get([
+                'id',
+                'company_id',
+                'warehouse_id',
+                'product_id',
+                'batch_number',
+                'expiration_date',
+                'quantity',
+                'reserved_quantity',
+            ]);
 
         foreach ($candidates as $candidate) {
             if ($remaining <= 0.0000001) {
                 break;
             }
 
-            $available = max(0.0, (float) $candidate->quantity - (float) $candidate->reserved_quantity);
+            $available = $this->availableToProductionOrder($candidate, $productionOrderId);
             if ($available <= 0) {
                 continue;
             }
@@ -443,5 +488,35 @@ class ProductionPostingService
         }
 
         return $allocations;
+    }
+
+    protected function availableToProductionOrder(WarehouseProductBatch $batch, int $productionOrderId): float
+    {
+        $ownReservation = StockReservation::query()
+            ->where('company_id', $batch->company_id)
+            ->where('warehouse_id', $batch->warehouse_id)
+            ->where('product_id', $batch->product_id)
+            ->where('reference_type', ProductionOrder::class)
+            ->where('reference_id', $productionOrderId)
+            ->where('status', 'active')
+            ->when(
+                $batch->batch_number === null,
+                fn ($query) => $query->whereNull('batch_number'),
+                fn ($query) => $query->where('batch_number', $batch->batch_number),
+            )
+            ->when(
+                $batch->expiration_date === null,
+                fn ($query) => $query->whereNull('expiration_date'),
+                fn ($query) => $query->whereDate('expiration_date', $batch->expiration_date),
+            )
+            ->sum('reserved_quantity');
+
+        return max(
+            0.0,
+            min(
+                (float) $batch->quantity,
+                (float) $batch->quantity - (float) $batch->reserved_quantity + (float) $ownReservation,
+            ),
+        );
     }
 }

@@ -63,19 +63,25 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+
+            window.apiHttp.get(requestUrl)
+                .then((response) => {
                     showBtn(response.activeTab);
                     if (response.status == "success") {
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI("#nav-tabContent");
+                });
         });
 
         function showBtn(activeTab) {

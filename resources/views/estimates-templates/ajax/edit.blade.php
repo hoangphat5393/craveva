@@ -450,12 +450,10 @@ $addProductPermission = user()->permission('add_product');
         });
 
         function changeProductCategory(url) {
-            $.easyAjax({
-                url : url,
-                type : "GET",
-                container: '#saveInvoiceForm',
-                blockUI: true,
-                success: function (response) {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.get(url)
+                .then(function (response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -471,8 +469,13 @@ $addProductPermission = user()->permission('add_product');
                             options);
                         $('#add-products').selectpicker('refresh');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         }
 
         var file = $('.dropify').dropify({
@@ -507,21 +510,26 @@ $addProductPermission = user()->permission('add_product');
                     var url = "{{ route('estimate-template.delete_image') }}";
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'get',
-                        url: url,
-                        blockUI: true,
-                        data: {
+                    $.easyBlockUI('#saveInvoiceForm');
+
+                    window.apiHttp.get(url, {
+                            params: {
                             '_token': token,
                             'invoice_item_id': invoice_item_id,
                             'file_path': file_path
-                        },
-                        success: function(response) {
+                            }
+                        })
+                        .then(function(response) {
                             if (response.status == "success") {
                                 element.resetPreview();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#saveInvoiceForm');
+                        });
                 }
             });
 
@@ -555,16 +563,16 @@ $addProductPermission = user()->permission('add_product');
         function addProduct(id) {
             var currencyId = $('#currency_id').val();
             var exchangeRate = $('#exchange_rate').val();
-            $.easyAjax({
-                url: "{{ route('invoices.add_item') }}",
-                type: "GET",
-                data: {
-                    id: id,
-                    currencyId: currencyId,
-                    exchangeRate: exchangeRate
-                },
-                blockUI: true,
-                success: function(response) {
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.get("{{ route('invoices.add_item') }}", {
+                    params: {
+                        id: id,
+                        currencyId: currencyId,
+                        exchangeRate: exchangeRate
+                    }
+                })
+                .then(function(response) {
                     if($('input[name="item_name[]"]').val() == ''){
                         $("#sortable .item-row").remove();
                     }
@@ -578,8 +586,13 @@ $addProductPermission = user()->permission('add_product');
                     itemRow.attr('id', 'multiselect' + i);
                     itemRow.attr('name', 'taxes[' + i + '][]');
                     $(document).find('#multiselect' + i).selectpicker();
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         }
 
 
@@ -715,15 +728,20 @@ $addProductPermission = user()->permission('add_product');
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('estimate-template.update', $estimate->id) }}",
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                file: true,
-                data: $('#saveInvoiceForm').serialize()
-            })
+            $.easyBlockUI('#saveInvoiceForm');
+
+            window.apiHttp.postUrlEncoded("{{ route('estimate-template.update', $estimate->id) }}", $('#saveInvoiceForm').serialize())
+                .then(function(response) {
+                    if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    }
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
         });
 
         $('#saveInvoiceForm').on('click', '.remove-item', function() {

@@ -26,15 +26,11 @@
 <script>
     // save source
     $('#save-category').click(function() {
-        $.easyAjax({
-            url: "{{route('leadCategory.update', $category->id)}}",
-            container: '#add-lead-category',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-category",
-            data: $('#add-lead-category').serialize(),
-            success: function(response) {
+        $('#save-category').prop('disabled', true);
+        $.easyBlockUI('#add-lead-category');
+
+        window.apiHttp.postUrlEncoded("{{route('leadCategory.update', $category->id)}}", $('#add-lead-category').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     if($('table').length) {
                         window.location.reload();
@@ -53,7 +49,13 @@
                         $(MODAL_LG).modal('hide');
                     }
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $('#save-category').prop('disabled', false);
+                $.easyUnblockUI('#add-lead-category');
+            });
     });
 </script>

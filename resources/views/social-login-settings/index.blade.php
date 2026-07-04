@@ -78,35 +78,44 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function (response) {
+            historyPush(requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+
+            window.apiHttp.get(requestUrl)
+                .then(function (response) {
                     if (response.status === "success") {
                         $('#nav-tabContent').html(response.html);
                         init('.settings-box');
                         init('#F');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI("#nav-tabContent");
+                });
         });
 
         $('body').on('click', '#save_google_data, #save_facebook_data, #save_linkedin_data, #save_twitter_data', function(event) {
             var url = "{{ route('social-auth-settings.update', $credentials->id) }}";
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                redirect: true,
-                disableButton: true,
-                blockUI: true,
-                container: '#editSettings',
-                data: $('#editSettings').serialize(),
-                success: function () {
+            const $btn = $(this);
+            const previousHtml = $btn.html();
+
+            $.easyBlockUI('#editSettings');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+                .then(function () {
                     window.location.reload();
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         var clipboard = new ClipboardJS('.btn-copy');

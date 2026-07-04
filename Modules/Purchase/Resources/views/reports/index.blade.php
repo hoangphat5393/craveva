@@ -27,6 +27,9 @@
                     <li>
                         <x-tab :href="route('reports.index') . '?tab=inventory-valuation-summary'" :text="__('purchase::app.menu.inventoryValuationSummary')" class="inventory-valuation-summary" ajax="false" />
                     </li>
+                    <li>
+                        <x-tab :href="route('reports.index') . '?tab=warehouse-movement-report'" :text="__('purchase::modules.reports.warehouseMovementReport')" class="warehouse-movement-report" ajax="false" />
+                    </li>
                 </ul>
             </nav>
         </div>

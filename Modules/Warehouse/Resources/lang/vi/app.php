@@ -163,6 +163,9 @@ return [
     'reference_sales_shipment' => 'Phiếu xuất giao bán hàng (Sales DO)',
     'reference_sales_shipment_stock_reversal' => 'Đảo bút toán phiếu xuất giao bán hàng (Sales DO)',
     'reference_production_batch' => 'Mẻ sản xuất',
+    'reference_purchase_order' => 'Đơn mua hàng',
+    'reference_grn' => 'Phiếu nhận hàng (GRN)',
+    'reference_purchase_inventory' => 'Tồn đầu kỳ',
     'reference_transfer' => 'Phiếu chuyển kho',
     'reference_unknown' => 'Chứng từ tham chiếu',
 ];

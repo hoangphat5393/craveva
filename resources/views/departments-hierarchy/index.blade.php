@@ -431,14 +431,14 @@
             var searchText = $('#search-text-field').val();
             const url = "{{ route('departments.search') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#search-departments',
-                type: "GET",
-                data: {
+            $.easyBlockUI('#search-departments');
+
+            window.apiHttp.get(url, {
+                params: {
                     searchText: searchText,
-                },
-                success: function(data) {
+                }
+            })
+                .then((data) => {
                     if (data.status == 'success') {
                         $('#chartTree').html(data.html);
                         $('#chartOrganization').html(data.organizational);
@@ -446,8 +446,15 @@
                             DragAndDrop.enable("#dragRoot");
                         });
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    if (typeof $.handleApiFormError === 'function') {
+                        $.handleApiFormError(error);
+                    }
+                })
+                .finally(() => {
+                    $.easyUnblockUI('#search-departments');
+                });
         }
     </script>
 @endpush

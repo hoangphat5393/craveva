@@ -190,26 +190,25 @@
 
         $('#custom-module-alert').addClass('d-none');
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            disableButton: true,
-            buttonSelector: ".change-module-status",
-            container: '.custom-modules-table',
-            blockUI: true,
-            data: {
+        $('.change-module-status').prop('disabled', true);
+        $.easyBlockUI('.custom-modules-table');
+
+        window.apiHttp.post(url, {
                 'id': module,
                 'status': moduleStatus,
                 '_method': 'PUT',
                 '_token': '{{ csrf_token() }}'
-            },
-            error: function(response) {
-                if (response.responseJSON) {
-                    $('#custom-module-alert').html(response.responseJSON.message).removeClass('d-none');
+            })
+            .catch(function(response) {
+                if (response.payload) {
+                    $('#custom-module-alert').html(response.payload.message).removeClass('d-none');
                     $('#module-' + module).prop('checked', false);
                 }
-            }
-        });
+            })
+            .finally(function () {
+                $('.change-module-status').prop('disabled', false);
+                $.easyUnblockUI('.custom-modules-table');
+            });
     }
 
     $('body').on('click', '.verify-module', function() {

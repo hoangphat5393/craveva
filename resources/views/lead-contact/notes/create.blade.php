@@ -103,20 +103,24 @@
 
             const url = "{{ route('lead-notes.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-lead-note-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-lead-note-form",
-                data: $('#save-lead-note-data-form').serialize(),
-                success: function(response) {
+            const $btn = $('#save-lead-note-form');
+            const previousHtml = $btn.html();
+            $.easyBlockUI('#save-lead-note-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+
+            window.apiHttp.postUrlEncoded(url, $('#save-lead-note-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         window.location.href = response.redirectUrl;
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-lead-note-data-form');
+                    $btn.prop('disabled', false).html(previousHtml);
+                });
         });
 
         $("input[name=type]").click(function() {

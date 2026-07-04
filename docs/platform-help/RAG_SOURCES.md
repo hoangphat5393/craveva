@@ -11,7 +11,6 @@
 
 - `FUNC_BUG/**`
 - `**/AUDIT_*`, `**/FIX_*`, `**/TEST_*`
-- `LOG_REPORT/**`
 - `REFERENCE/ERP-SYSTEM-OVERVIEW.md`
 - `REFERENCE/BUSINESS-FLOWS-SUMMARY.md` (technical; user content duplicated here in English)
 
